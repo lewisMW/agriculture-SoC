@@ -5,6 +5,8 @@
 // Version : 0.04
 // ************************************************************
 
+// TODO: Replace with CMDSK SRAM IP
+
 module AHB2SRAM # (parameter WIDTH = 14)(
 
 // Clock and Reset

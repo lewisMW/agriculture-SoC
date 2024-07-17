@@ -233,6 +233,7 @@ AHBMUX Peripheral_MUX(
 //     AHB Peripherals 
 // ***************************************************
 
+// TODO: Reconfigure SRAM for CMDSK SRAM IP
 
 // SRAM - Device0
 AHB2SRAM SRAM_Bank0 (
