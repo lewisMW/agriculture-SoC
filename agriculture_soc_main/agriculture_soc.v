@@ -5,7 +5,7 @@
 // Version : 0.02
 // ************************************************************
 
-module Hell_Fire_SoC_Top_Wrapper_V3 #(parameter W = 32)(
+module agriculture_soc #(parameter W = 32)(
    // Global Clock and Reset 
    input wire clk, 
    input wire reset, 
@@ -16,8 +16,8 @@ module Hell_Fire_SoC_Top_Wrapper_V3 #(parameter W = 32)(
    // Debug 
    input wire  TDI, 
    input wire  TCK, 
-   input wire  TMS, 
-   output wire TDO
+   inout wire  TMS, 
+   inout wire TDO
 );
 
 // Clocking 
@@ -284,28 +284,25 @@ AHB2IO IO_Bank0 (
     .LED(LED)
 );
 
-// Accelerator - Device2
-AHB_Soc_Interface MMA0 (
-    // Global Clock and Reset
-    .HCLK(fclk), 
-    .HRESETn(hresetn), 
-    // Control Signals 
-    .HSEL(hsel_array), 
-    .HWRITE(hwrite_soc), 
-    .HMASTLOCK(hmastlock_soc),  
-    .HTRANS(htrans_soc), 
-    .HBURST(hburst_soc), 
-    .HSIZE(hsize_soc), 
-    // Address and Data  
-    .HWDATA(hwdata_soc), 
-    // Response
-    .HRDATA(hrdata_array), // Done
-    .HREADYOUT(hready_array),    // Done
-    .HRESP()   // Done
+// // Accelerator - Device2
+// AHB_Soc_Interface MMA0 (
+//     // Global Clock and Reset
+//     .HCLK(fclk), 
+//     .HRESETn(hresetn), 
+//     // Control Signals 
+//     .HSEL(hsel_array), 
+//     .HWRITE(hwrite_soc), 
+//     .HMASTLOCK(hmastlock_soc),  
+//     .HTRANS(htrans_soc), 
+//     .HBURST(hburst_soc), 
+//     .HSIZE(hsize_soc), 
+//     // Address and Data  
+//     .HWDATA(hwdata_soc), 
+//     // Response
+//     .HRDATA(hrdata_array), // Done
+//     .HREADYOUT(hready_array),    // Done
+//     .HRESP()   // Done
  
-);
+// );
 
 endmodule
-
-
-

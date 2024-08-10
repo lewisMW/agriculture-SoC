@@ -7,7 +7,7 @@
 
 // TODO: Replace with CMDSK SRAM IP
 
-module AHB2SRAM # (parameter WIDTH = 14)(
+module AHB2SRAM # (parameter WIDTH = 18)(
 
 // Clock and Reset
 
