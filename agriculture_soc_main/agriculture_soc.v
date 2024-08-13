@@ -5,7 +5,11 @@
 // Version : 0.02
 // ************************************************************
 
-module agriculture_soc #(parameter W = 32)(
+module agriculture_soc #(
+   parameter W = 32,
+   parameter BE = 0 // 1: Big endian 0: little endian
+   )
+   (
    // Global Clock and Reset 
    input wire clk, 
    input wire reset, 
@@ -284,31 +288,40 @@ cmsdk_fpga_sram SRAM_Bank0 (
    .RDATA(sram_r_data)
 );
 
-// TODO: modify GPIO so ADC is fed into the FIFO
-
 // GPIO Bank - Device1
-AHB2IO IO_Bank0 (
-    // Global Clock and Reset
-    .HCLK(fclk), 
-    .HRESETn(hresetn), 
-    // AHB Control Signals 
-    .HSEL(hsel_gpio), 
-    .HWRITE(hwrite_soc), 
-    .HREADY(mux2cpu_hready), 
-    .HMASTLOCK(), 
-    // Address and Data  
-    .HADDR(haddr_soc), 
-    .HWDATA(hwdata_soc), 
-    // Transaction Control 
-    .HTRANS(htrans_soc), 
-    .HBURST(hburst_soc), 
-    .HSIZE(hsize_soc), 
-    // Output and Transfer Response
-    .HRESP(), 
-    .HREADYOUT(hready_gpio), 
-    .HRDATA(hrdata_gpio), 
-    // Peripheral Control 
-    .LED(LED)
+cmsdk_ahb_gpio #(
+   .ALTERNATE_FUNC_MASK     (16'h0000), // No pin muxing for Port #0
+   .ALTERNATE_FUNC_DEFAULT  (16'h0000), // All pins default to GPIO
+   .BE                      (BE)
+   )
+   u_ahb_to_gpio  (
+   // AHB Inputs
+   .HCLK         (fclk),
+   .HRESETn      (hresetn),
+   .FCLK         (fclk),
+   .HSEL         (hsel_gpio),
+   .HREADY       (mux2cpu_hready),
+   .HTRANS       (htrans_soc),
+   .HSIZE        (hsize_soc),
+   .HWRITE       (hwrite_soc),
+   .HADDR        (haddr_soc),
+   .HWDATA       (hwdata_soc),
+
+   // AHB Outputs
+   .HREADYOUT    (hready_gpio),
+   .HRESP        (),
+   .HRDATA       (hrdata_gpio),
+
+   .ECOREVNUM    (),// Engineering-change-order revision bits
+
+   // TODO: connect to ADC?
+   .PORTIN       (),   // GPIO Interface inputs
+   .PORTOUT      (),  // GPIO Interface outputs
+   .PORTEN       (),
+   .PORTFUNC     (), // Alternate function control
+
+   .GPIOINT      (),  // Interrupt outputs
+   .COMBINT      ()
 );
 
 // // Accelerator - Device2
