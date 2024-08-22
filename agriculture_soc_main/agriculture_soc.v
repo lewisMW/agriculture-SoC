@@ -35,7 +35,9 @@ wire mux2cpu_hready;
 wire [W - 1 : 0] mux2cpu_hrdata; 
 
 // Mux Select 
-wire [1:0] muxsel; 
+wire [1:0] muxseltemp;
+wire [9:0] muxsel;
+assign muxsel = {muxseltemp, 0, 0, 0, 0, 0, 0, 0}; 
 
 // Peripheral Select 
 wire hsel_memory; 
@@ -203,6 +205,8 @@ CORTEXM0INTEGRATION cpu0(
 );
 
 // TODO: connect the correct peripherals
+
+
 AHBDCD Peripheral_Decoder (
     // Input Address
    .HADDR(haddr_soc), 
@@ -213,33 +217,69 @@ AHBDCD Peripheral_Decoder (
    .hsel_s3(),
    .hsel_nomap(hsel_nomap),
     // Mux Select  
-   .mux_sel_out(muxsel)  
+   .mux_sel_out(muxseltemp)  
 ); 
 
 // TODO: connect the correct peripherals
-AHBMUX Peripheral_MUX(
+//NOTE TODO - each one needs it's own connector
+// #(PORT0_ENABLE=0,...)
+cmsdk_ahb_slave_mux #(
+.PORT4_ENABLE(0), 
+.PORT5_ENABLE(0),
+.PORT6_ENABLE(0),
+.PORT7_ENABLE(0),
+.PORT8_ENABLE(0),
+.PORT9_ENABLE(0),
+) 
+Peripheral_MUX(
   // Clock and Reset 
   . HCLK(fclk), 
   . HRESETn(hresetn), 
   // Mux Select Genenrated by decoder 
-  .mux_sel(muxsel), 
   // HRDATA Slaves 
-  .hrdata_s0(hrdata_memory), 
-  .hrdata_s1(hrdata_gpio), 
-  .hrdata_s2(hrdata_array), 
-  .hrdata_s3(), 
-  .hrdata_nomap(hrdata_nomap), 
+  .HRDATA0(hrdata_memory), 
+  .HRDATA1(hrdata_gpio), 
+  .HRDATA2(hrdata_array), 
+  .HRDATA3(), 
+  .HRDATA9(hrdata_nomap), 
+  .HSEL0(muxsel[0]), 
+  .HSEL1(muxsel[1]), 
+  .HSEL2(muxsel[2]), 
+  .HSEL3(muxsel[3]), 
   // HREADY Slaves 
-  . hready_s0(hready_memory), 
-  . hready_s1(hready_gpio), 
-  . hready_s2(hready_array), 
-  . hready_s3(), 
-  . hready_nomap(hready_nomap), 
+  .HREADYOUT0(hready_memory), 
+  .HREADYOUT1(hready_gpio), 
+  .HREADYOUT2(hready_array), 
+  .HREADYOUT3(), 
+  .HREADYOUT9(hready_nomap), 
   // To Master 
-  .hrdata_out(mux2cpu_hrdata), 
-  .hready_out(mux2cpu_hready)
+  .HRDATA(mux2cpu_hrdata), 
+  .HREADYOUT(mux2cpu_hready)
+);
 
-); 
+// AHBMUX Peripheral_MUX(
+//   // Clock and Reset 
+//   . HCLK(fclk), 
+//   . HRESETn(hresetn), 
+//   // Mux Select Genenrated by decoder 
+//   .mux_sel(muxsel), 
+//   // HRDATA Slaves 
+//   .hrdata_s0(hrdata_memory), 
+//   .hrdata_s1(hrdata_gpio), 
+//   .hrdata_s2(hrdata_array), 
+//   .hrdata_s3(), 
+//   .hrdata_nomap(hrdata_nomap), 
+//   // HREADY Slaves 
+//   . hready_s0(hready_memory), 
+//   . hready_s1(hready_gpio), 
+//   . hready_s2(hready_array), 
+//   . hready_s3(), 
+//   . hready_nomap(hready_nomap), 
+//   // To Master 
+//   .hrdata_out(mux2cpu_hrdata), 
+//   .hready_out(mux2cpu_hready)
+
+// ); 
 
 // ***************************************************
 //     AHB Peripherals 
