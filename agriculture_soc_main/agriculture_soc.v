@@ -278,7 +278,7 @@ cmsdk_ahb_to_sram SRAM_Interface (
 cmsdk_fpga_sram SRAM_Bank0 (
    // Clock and Reset
    .CLK(fclk),
-   .RESETn(hresetn),
+   // .RESETn(hresetn),    // This module doesn't have a reset
    // Address and Control
    .ADDR(sram_addr),
    .WREN(sram_w_en),
