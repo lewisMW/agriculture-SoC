@@ -13,14 +13,14 @@ module agriculture_soc_tb;
 
     initial
     begin
-        $dumpfile("waveform.fst");
+        $dumpfile("waveform.vcd");
         $dumpvars();
         #(10*T);
         clk = 1'b1;
         reset = 1'b0;
         #(5*T);
         reset = 1'b1;
-        #(1000*T);
+        #(10000*T);
         $finish();
     end
 
