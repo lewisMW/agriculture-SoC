@@ -5,7 +5,11 @@
 // Version : 0.02
 // ************************************************************
 
-module agriculture_soc #(parameter W = 32)(
+module agriculture_soc #(
+   parameter W = 32,
+   parameter BE = 0 // 1: Big endian 0: little endian
+   )
+   (
    // Global Clock and Reset 
    input wire clk, 
    input wire reset, 
@@ -115,6 +119,14 @@ assign        TDO            = tdo_enable           ? tdo_tms    : 1'bz;
 // Debug Power Controller 
 wire cdbgpwrupack, cdbgpwrupreq; 
 assign cdbgpwrupack = cdbgpwrupreq; 
+
+// SRAM Connections
+wire [31:0]sram_data;
+wire [15:0]sram_addr;
+wire [3:0]sram_w_en;
+wire [31:0]sram_w_data;
+wire [31:0]sram_r_data;
+wire sram_cs;
 
 CORTEXM0INTEGRATION cpu0(
 
@@ -235,53 +247,81 @@ AHBMUX Peripheral_MUX(
 
 // TODO: Reconfigure SRAM for CMDSK SRAM IP
 
-// SRAM - Device0
-AHB2SRAM SRAM_Bank0 (
-    // Clock and Reset
-    .HCLK(fclk), 
-    .HRESETn(hresetn), 
-    // Address and Control 
-    .HSEL(hsel_memory), 
-    .HWRITE(hwrite_soc), 
-    .HREADY(mux2cpu_hready), 
-    .HMASTLOCK(), 
-    .HADDR(haddr_soc), 
-    .HTRANS(htrans_soc), 
-    .HSIZE(hsize_soc), 
-    .HBURST(hburst_soc), 
-    // Data 
-    .HWDATA(hwdata_soc), 
-    .HRDATA(hrdata_memory), 
-    // Response 
-    .HRESP(), 
-    .HREADYOUT(hready_memory)
+// SRAM interface - Device0
+cmsdk_ahb_to_sram SRAM_Interface (
+   // Clock and Reset
+   .HCLK(fclk),
+   .HRESETn(hresetn),
+
+   // AHB Control Signals
+   .HSEL(hsel_memory),
+   .HREADY(mux2cpu_hready),
+   .HTRANS(htrans_soc),
+   .HSIZE(hsize_soc),
+   .HWRITE(hwrite_soc),
+   .HADDR(haddr_soc),
+   .HWDATA(hwdata_soc),
+   .HREADYOUT(hready_memory),
+   .HRESP(hresp_soc),
+   .HRDATA(hrdata_memory),
+   //  .HBURST(hburst_soc),   //TODO: this is not present in the IP interface
+
+   // SRAM Connections
+   .SRAMRDATA(sram_data),
+   .SRAMADDR(sram_addr),
+   .SRAMWEN(sram_w_en),
+   .SRAMWDATA(sram_w_data),
+   .SRAMCS(sram_cs)
 ); 
 
-// TODO: modify GPIO so ADC is fed into the FIFO
+// Mock SRAM
+cmsdk_fpga_sram SRAM_Bank0 (
+   // Clock and Reset
+   .CLK(fclk),
+   // .RESETn(hresetn),    // This module doesn't have a reset
+   // Address and Control
+   .ADDR(sram_addr),
+   .WREN(sram_w_en),
+   .CS(sram_cs),
+   // Data
+   .WDATA(sram_data),
+   .RDATA(sram_r_data)
+);
 
 // GPIO Bank - Device1
-AHB2IO IO_Bank0 (
-    // Global Clock and Reset
-    .HCLK(fclk), 
-    .HRESETn(hresetn), 
-    // AHB Control Signals 
-    .HSEL(hsel_gpio), 
-    .HWRITE(hwrite_soc), 
-    .HREADY(mux2cpu_hready), 
-    .HMASTLOCK(), 
-    // Address and Data  
-    .HADDR(haddr_soc), 
-    .HWDATA(hwdata_soc), 
-    // Transaction Control 
-    .HTRANS(htrans_soc), 
-    .HBURST(hburst_soc), 
-    .HSIZE(hsize_soc), 
-    // Output and Transfer Response
-    .HRESP(), 
-    .HREADYOUT(hready_gpio), 
-    .HRDATA(hrdata_gpio), 
-    // Peripheral Control 
-    .LED(LED)
+cmsdk_ahb_gpio #(
+   .ALTERNATE_FUNC_MASK     (16'h0000), // No pin muxing for Port #0
+   .ALTERNATE_FUNC_DEFAULT  (16'h0000), // All pins default to GPIO
+   .BE                      (BE)
+   )
+   u_ahb_to_gpio  (
+   // AHB Inputs
+   .HCLK         (fclk),
+   .HRESETn      (hresetn),
+   .FCLK         (fclk),
+   .HSEL         (hsel_gpio),
+   .HREADY       (mux2cpu_hready),
+   .HTRANS       (htrans_soc),
+   .HSIZE        (hsize_soc),
+   .HWRITE       (hwrite_soc),
+   .HADDR        (haddr_soc),
+   .HWDATA       (hwdata_soc),
+
+   // AHB Outputs
+   .HREADYOUT    (hready_gpio),
+   .HRESP        (),
+   .HRDATA       (hrdata_gpio),
+
+   .ECOREVNUM    (),// Engineering-change-order revision bits
+
+   // TODO: connect to ADC?
+   .PORTIN       (),   // GPIO Interface inputs
+   .PORTOUT      (),  // GPIO Interface outputs
+   .PORTEN       (),
+   .PORTFUNC     (), // Alternate function control
+
+   .GPIOINT      (),  // Interrupt outputs
+   .COMBINT      ()
 );
 
 // // Accelerator - Device2
