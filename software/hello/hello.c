@@ -33,20 +33,17 @@
 #endif
 
 #include <stdio.h>
-#include "uart_stdout.h"
 
 int main (void)
 {
-  // UART init
-  UartStdOutInit();
+    // Pointer to GPIO register from memory map
+    volatile unsigned int *GPIO_DATA = (unsigned int *)0x40010000;
 
-  printf("Hello world\n");
+    // Set GPIO pins to high
+    *GPIO_DATA = 0xFFFFFFFF;
 
-  printf("** TEST PASSED **\n");
+    while (1);
 
-  // End simulation
-  UartEndSimulation();
-
-  return 0;
+    return 0;
 }
 
