@@ -100,5 +100,6 @@ all_gcc:
 	# Generate binary file
 	$(GNU_OBJCOPY) -S $(TESTNAME).o -O binary $(TESTNAME).bin
 	# Generate hex file
-	# $(GNU_OBJCOPY) -S $(TESTNAME).o -O verilog $(TESTNAME).hex
-	od -v -A n -t x4 $(TESTNAME).bin > $(TESTNAME).hex
+	$(GNU_OBJCOPY) -S $(TESTNAME).o -O verilog $(TESTNAME).hex
+	#od -v -A n -t x1 $(TESTNAME).bin > $(TESTNAME).hex
+

@@ -20,7 +20,7 @@ module agriculture_soc_tb;
         reset = 1'b0;
         #(5*T);
         reset = 1'b1;
-        #(10000*T);
+        #(10001*T);
         $finish();
     end
 
