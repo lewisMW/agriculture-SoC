@@ -1,0 +1,90 @@
+//-----------------------------------------------------------------------------
+// NanoSoC Corstone-101 Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for Arm Corstone-101
+//-----------------------------------------------------------------------------
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+// =============    Corstone-101 search path    =============
++incdir+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_dualtimers/verilog
++incdir+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_watchdog/verilog
++incdir+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/memories/
+
+// CMSDK APB Timer IP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_timer/verilog
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_timer/verilog/cmsdk_apb_timer.v
+
+// CMSDK Dual Timers IP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_dualtimers/verilog
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_dualtimers/verilog/cmsdk_apb_dualtimers_frc.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_dualtimers/verilog/cmsdk_apb_dualtimers.v
+
+// CMSDK APB UART IP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_uart/verilog
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_uart/verilog/cmsdk_apb_uart.v
+
+// CMSDK APB Watchdog IP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_watchdog/verilog
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_watchdog/verilog/cmsdk_apb_watchdog_frc.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_watchdog/verilog/cmsdk_apb_watchdog.v
+
+// CMSDK APB Slave Mux IP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_slave_mux/verilog
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_slave_mux/verilog/cmsdk_apb_slave_mux.v
+
+// CMSDK APB Subystem Top IP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_subsystem/verilog
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_subsystem/verilog/cmsdk_apb_subsystem.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_subsystem/verilog/cmsdk_apb_test_slave.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb_subsystem/verilog/cmsdk_irq_sync.v
+
+// CMSDK AHB Slave Mux IP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_ahb_slave_mux/verilog
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_ahb_slave_mux/verilog/cmsdk_ahb_slave_mux.v
+
+// CMSDK AHB Default Slave IP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_ahb_default_slave/verilog
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_ahb_default_slave/verilog/cmsdk_ahb_default_slave.v
+
+// CMSDK AHB GPIO IP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_ahb_gpio/verilog
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_ahb_gpio/verilog/cmsdk_ahb_gpio.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_ahb_gpio/verilog/cmsdk_ahb_to_iop.v
+
+// CMSDK AHB to APB Bridge IP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_ahb_to_apb/verilog
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_ahb_to_apb/verilog/cmsdk_ahb_to_apb.v
+
+// CMSDK IOP to GPIO IP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_iop_gpio/verilog
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_iop_gpio/verilog/cmsdk_iop_gpio.v
+
+// CMSDK Clockgate Models
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/clkgate
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/clkgate/cmsdk_clock_gate.v
+
+// CMSDK Memory Models
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/memories/
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/memories/cmsdk_ahb_ram_beh.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/memories/cmsdk_ahb_ram.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/memories/cmsdk_ahb_rom.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/memories/cmsdk_flash_rom16.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/memories/cmsdk_flash_rom32.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/memories/cmsdk_fpga_rom.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/memories/cmsdk_fpga_sram.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/memories/cmsdk_sram256x16.v
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/models/memories/cmsdk_sram256x8.v
+
+// CMSDK AHB to SRAM bridge IP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_ahb_to_sram/verilog
+$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_ahb_to_sram/verilog/cmsdk_ahb_to_sram.v

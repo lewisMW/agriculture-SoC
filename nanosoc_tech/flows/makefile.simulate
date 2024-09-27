@@ -1,0 +1,192 @@
+#-----------------------------------------------------------------------------
+# NanoSoC Simulation Makefile 
+# A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+#
+# Contributors
+#
+# David Mapstone (d.a.mapstone@soton.ac.uk)
+#
+# Copyright (C) 2021-3, SoC Labs (www.soclabs.org)
+#-----------------------------------------------------------------------------
+
+# ADP command File
+DEFAULT_ADP_FILE  = $(SIM_DIR)/adp.cmd
+ADP_FILE         ?= $(DEFAULT_ADP_FILE)
+ADP_OPTIONS      := -define ADP_FILE=\"$(ADP_FILE)\"
+
+# MTI options
+MTI_VC_OPTIONS    = +acc
+MTI_VC_OPTIONS    += -suppress 2892
+MTI_VC_OPTIONS    += -f $(TBENCH_VC) $(ADP_OPTIONS)
+
+MTI_RUN_OPTIONS   = -voptargs=+acc
+
+# VCS options
+VCS_OPTIONS    =  +vcs+lic+wait +v2k -sverilog -override_timescale=1ns/1ps +lint=all,noTMR,noVCDE -debug -debug_access+all
+VCS_SIM_OPTION = +vcs+lic+wait +vcs+flush+log -assert nopostproc
+VCS_VC_OPTIONS = -f $(TBENCH_VC) $(ADP_OPTIONS)
+
+ifdef AMS
+	VCS_OPTIONS += -ad=$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/sl_ams_tech/vcsAD.init -ams_discipline logic  -ams
+endif
+
+# XM verilog options
+XMSIM_OPTIONS  = -unbuffered -64bit -status -LICQUEUE -f xmsim.args -cdslib cds.lib -hdlvar hdl.var -NBASYNC
+XM_VC_OPTIONS  = -f $(TBENCH_VC) $(ADP_OPTIONS) 
+
+# Icarus Verilog options
+IVERILOG_OPTIONS = -g2005-sv -DVCD_SIM
+
+
+# ------- Cocotb Variables -----------
+# Convert Simulator Name for Cocotb
+COCOTB_SIMULATOR ?= questa
+
+ifeq ($(SIMULATOR),mti)
+	COCOTB_SIMULATOR := questa
+else ifeq ($(SIMULATOR),xm)
+	COCOTB_SIMULATOR := xcelium
+else ifeq ($(SIMULATOR),vcs)
+	COCOTB_SIMULATOR := vcs
+endif
+
+# Cocotb GUI Variable
+GUI ?= 0
+
+# Cocotb Test Location
+COCOTB_TEST_DIR := $(SOCLABS_NANOSOC_TECH_DIR)/verif/cocotb
+
+# Cocotb Scratch Directory
+COCOTB_DIR := $(SIM_TOP_DIR)/cocotb
+COCOTB_SCRATCH_DIR := $(COCOTB_DIR)/scratch
+
+# Filelist for Cocotb 
+MAKEFILE_FILELIST     := $(COCOTB_DIR)/makefile.flist
+
+MODULE ?= test_adp
+
+# Create a List of PHONY Targets
+.PHONY: compile_$(SIMULATOR) run_$(SIMULATOR) sim_$(SIMULATOR)
+
+# ------- Simulator redirect -----------
+
+compile: compile_$(SIMULATOR)
+
+run: run_$(SIMULATOR)
+
+sim: sim_$(SIMULATOR)
+
+# Preload IMEM in Simulation
+compile_mti: NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
+compile_vcs: NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
+compile_xm:  NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
+compile_iverilog: NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
+
+
+# Generate verilog .vc filelist from flists
+flist_vfiles_nanosoc: gen_defs
+	@if [ ! -d $(SIM_DIR) ] ; then \
+	  mkdir -p $(SIM_DIR); \
+	fi
+	@if [ ! -d $(SIM_DIR)/logs ] ; then \
+	  mkdir -p $(SIM_DIR)/logs; \
+	fi
+	@cd $(SIM_DIR); python $(SOCLABS_SOCTOOLS_FLOW_DIR)/bin/filelist_compile.py -f $(TBENCH_VC) -a -i $(FLIST_INCLUDES) -v -o tbench.vc
+
+
+# ------- VCS -----------
+
+# Compile RTL
+compile_vcs : gen_defs flist_vfiles_nanosoc
+	cd $(SIM_DIR); vcs $(VCS_OPTIONS) -f tbench.vc  $(DEFINES_VC)  | tee compile_vcs.log
+
+
+# Run simulation in batch mode
+run_vcs : code compile_vcs
+	@echo quit > $(SIM_DIR)/quit.do
+	cd $(SIM_DIR); ./simv $(VCS_SIM_OPTION) -define ADP_FILE=adp.cmd < quit.do | tee logs/run_$(TESTNAME).log ;
+
+# Run simulation in interactive mode
+sim_vcs : code compile_vcs
+	cd $(SIM_DIR); ./simv -gui +vcs+lic+wait +vcs+flush+log &
+
+# ------- XM -----------
+
+# Compile RTL
+compile_xm : bootrom gen_defs flist_vfiles_nanosoc
+	@echo ADP_FILE
+	@echo $(ADP_OPTIONS)
+	cd $(SIM_DIR); xmprep  +overwrite $(XM_VC_OPTIONS) $(DEFINES_VC) +debug -timescale 1ns/1ps -top $(TB_TOP) | tee compile_xm.log
+	cd $(SIM_DIR); xmvlog  -work worklib -f xmvlog_ver.args | tee -a compile_xm.log
+	cd $(SIM_DIR); xmelab  -mess -f xmelab.args -access +r | tee -a compile_xm.log
+	
+# Note : If coverage is required, you can add -coverage all to xmelab
+
+# Run simulation in batch mode
+run_xm : code compile_xm
+	@echo run  >  $(SIM_DIR)/run.tcl.tmp
+	@echo exit >> $(SIM_DIR)/run.tcl.tmp
+	@mv  $(SIM_DIR)/run.tcl.tmp $(SIM_DIR)/run.tcl
+	cd $(SIM_DIR); xmsim $(XMSIM_OPTIONS) -input run.tcl  | tee logs/run_$(TESTNAME).log ;
+
+# Run simulation in interactive mode
+sim_xm : code compile_xm
+	cd $(SIM_DIR); xmsim -gui $(XMSIM_OPTIONS)
+
+# ------- MTI -----------
+
+# Compile RTL
+compile_mti : bootrom gen_defs flist_vfiles_nanosoc lib_mti
+	cd $(SIM_DIR); vlog -incr -lint +v2k -f tbench.vc $(ADP_OPTIONS) $(DEFINES_VC) | tee compile_mti.log
+
+# Run simulation in batch mode
+run_mti : code compile_mti
+	@echo "run -all" > $(SIM_DIR)/run.tcl.tmp
+	@echo "quit -f" >> $(SIM_DIR)/run.tcl.tmp
+	@mv  $(SIM_DIR)/run.tcl.tmp $(SIM_DIR)/run.tcl
+	cd $(SIM_DIR); vsim $(MTI_RUN_OPTIONS) -c $(TB_TOP) -do run.tcl | tee $(SIM_DIR)/logs/run_$(TESTNAME).log ;
+
+run_mti_to:
+	timeout 2s $(MAKE) run_mti >> /dev/null 2>&1 
+	
+run_mti_wrap:
+	$(MAKE) run_mti_to
+	
+# Run simulation in interactive mode
+sim_mti : code compile_mti
+	cd $(SIM_DIR); vsim $(MTI_RUN_OPTIONS) -gui $(TB_TOP) &
+
+# Create work directory
+lib_mti :
+	@if [ -d $(SIM_DIR)/work ] ; then \
+          true ; \
+	else \
+	  vlib  $(SIM_DIR)/work; \
+	fi
+
+# ------- Icarus -----------
+
+# Compile RTL
+compile_iverilog: bootrom gen_defs flist_vfiles_nanosoc
+	cd $(SIM_DIR); iverilog $(IVERILOG_OPTIONS) -o nanosoc_chip_pads -c tbench.vc
+
+run_iverilog: code compile_iverilog
+	cd $(SIM_DIR); vvp -l $(SIM_DIR)/logs/run_$(TESTNAME).log nanosoc_chip_pads;
+
+sim_iverilog: run_iverilog
+	cd $(SIM_DIR); gtkwave waves.vcd
+
+# Generate Make filelist from flists
+flist_makefile_nanosoc: gen_defs
+	@mkdir -p $(COCOTB_DIR)
+	@(cd $(COCOTB_DIR); \
+	$(SOCLABS_SOCTOOLS_FLOW_DIR)/bin/filelist_compile.py -m -f $(DESIGN_VC) -o $(MAKEFILE_FILELIST);)
+
+run_cocotb: DEFINES_VC += COCOTB_SIM
+run_cocotb: flist_makefile_nanosoc
+	@mkdir -p $(SIM_DIR)
+	@cd $(SIM_DIR); $(MAKE) -C $(SOCLABS_NANOSOC_TECH_DIR)/verif/cocotb clean SIM_BUILD=$(COCOTB_SCRATCH_DIR)
+	@cd $(SIM_DIR); $(MAKE) -C $(SOCLABS_NANOSOC_TECH_DIR)/verif/cocotb sim MODULE=$(MODULE) SIM=$(COCOTB_SIMULATOR) TESTCASE=$(TESTNAME) GUI=$(GUI) SIM_BUILD=$(COCOTB_SCRATCH_DIR) ACCELERATOR=$(ACCELERATOR)
+
+sim_cocotb: GUI=1
+sim_cocotb: run_cocotb

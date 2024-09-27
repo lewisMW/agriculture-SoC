@@ -1,0 +1,65 @@
+# Exclude Simulation Files
+verif/cocotb/*
+!verif/cocotb/makefile
+!verif/cocotb/*.py
+
+#Exclude synthesis files
+ASIC/*.pvl
+ASIC/*.syn
+ASIC/*.mr
+ASIC/*.pvk
+ASIC/alib-52
+ASIC/WORK/*
+ASIC/*/Cadence/scripts/fv
+ASIC/*/Cadence/scripts/*.rpt
+ASIC/*/Cadence/scripts/*.tstamp
+
+ASIC/*/Cadence/scripts/.cadence
+ASIC/*/Cadence/scripts/.*
+ASIC/*/Cadence/scripts/*.spec
+ASIC/*/Cadence/scripts/*.sdf
+ASIC/*/Cadence/scripts/*.gif
+ASIC/*/Cadence/scripts/*.lef
+ASIC/*/Cadence/scripts/result
+ASIC/*/Cadence/scripts/nanosoc_chip_pads
+ASIC/*/Cadence/scripts/timingReports
+ASIC/*/Cadence/scripts/*.db*
+ASIC/*/Cadence/scripts/*.rpt*
+ASIC/*/Cadence/scripts/*.checkFPlan
+ASIC/*/Cadence/scripts/*.ptiavg
+ASIC/*/Cadence/scripts/*.ptifiles
+ASIC/Synopsys/Formality/FM_INFO/*
+ASIC/Synopsys/ICC2/CLIBs
+ASIC/Synopsys/ICC2/PreFrameCheck
+ASIC/Synopsys/ICC2/tsmc65lp/*
+ASIC/Synopsys/ICC2/*.svf
+ASIC/Synopsys/ICC2/*.ems
+ASIC/Synopsys/ICC2/icc2_output.txt
+*.pvl
+*.syn
+*.mr
+*.pvk
+# Exclude Compiled Binaries
+/software/*/*.elf
+/software/*/*.ELF
+/software/*/*.lst
+/software/*/*.o
+/software/*/*.bin
+
+# Compile Test Code Removal
+/testcodes/*/*.elf
+/testcodes/*/*.ELF
+/testcodes/*/*.lst
+/testcodes/*/*.o
+/testcodes/*/*.bin
+# Bootrom removal
+system/src/bootrom/
+
+# Simulation Removal (If running at Tech Level)
+sim
+
+work
+
+*.log*
+*.cmd*
+*.jou

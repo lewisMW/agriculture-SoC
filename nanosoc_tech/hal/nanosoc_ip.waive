@@ -1,0 +1,461 @@
+
+//-----------------------------------------------------------------------------
+// NanoSoC Lint Waivers 
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : HAL Wavier file for NanoSoC Chip Pads
+//-----------------------------------------------------------------------------
+lint_checking designunit = nanosoc_chip_pads
+{
+    // Combinatorial Wiring of outputs in top level of hierarchy
+    CBPAHI off;
+    
+    // Input/Output PIns decalred as inout so may have multiple drivers
+    GLTASR off;
+    
+    // Simple Glue-logic at top-level
+    ATLGLC off;
+    
+    // Inout Pads at top-level
+    IOCOMB {"P0|P1"} off;
+    IOPNTA {"XTAL1|XTAL2|NRST|P0|P1|SWDIOTMS|SWCLKTCK"} off;
+    MULWIR {"XTAL1|XTAL2|NRST|P0|P1|SWDIOTMS|SWCLKTCK"} off;
+    
+    // Reset Name Changes in hierarchy
+    RSTUCL {"PRESETn"} off;
+    
+    // Output on pad disconnected
+    UNCONN {"uPAD_XTAL_O"} off;
+    
+    // Pad output signals not wired up (Technology dependent)
+    UNCONO {"p0_e|p1_e|swdio_e|I"} off;
+    URDWIR {"p0_e|p1_e|swdio_e"} off;
+}
+
+lint_checking designunit = nanosoc_chip
+{
+    // Not top-level of design
+    ATLGLC off;
+    
+    // Combinatorial Wiring of outputs in top level of hierarchy
+    CBPAHI off;
+    
+    // CLock Generation Logic around extraneous logic
+    CLKGNP off;
+    
+    // Doesn't recognise XTAL as Clock or PORESETn as reset
+    CLKUCL {"XTAL|PORESTn"} off;
+    
+    // Renaming of nrst_i to PRESETn
+    RSTUCL {"PRESETn"} off; 
+    
+    // Constant conditional expression for SYS_TESTMODE
+    CONSTC {"TESTMODE"} off;
+    
+    // Pin Mux and FT signals driven by same pin
+    DALIAS {"P1_IN_MUX"} off;
+    
+    // Renamed System Reset
+    DIFRST {"SYS_SYSRESETn"} off;
+    
+    // Combinatorial path for Crystal Clock Input->Output
+    IOCOMB {"xtal_clk"} off;
+    
+    // FT Signals One-pin Bus
+    ONPNSG {"FT_MIOSIO"} off;
+    
+    // Some Pins are Tied Off
+    TIELOG {"p1_o|p1_e|p1_z"} off;
+    
+    // Not Top-level in design_info
+    TPOUNR off;
+    
+    // Intentionally Unconnected Signals 
+    // - Chip Port Signals : P0 | P1
+    // - Scanchain output disconnected
+    UNCONO {"P0|P1|SYS_SCANOUTHCLK"} off;
+    URDWIR {"P0|P1|SYS_SCANOUTHCLK"} off;
+}
+
+lint_checking designunit = nanosoc_system
+{
+    // FT Signals One-pin Bus
+    ONPNSG {"FT_MIOSIO"} off;
+    
+    // Intentionally Unconnected Signals 
+    // - AHB Signals: HMASTLOCK | HBURST 
+    // - System Control: CPU_0_TXEV - unused
+    // - APB SS IRQs: [3:0] are unused
+    UNCONO {"HMASTLOCK|HBURST|TXEV|SYS_APB_IRQ"} off;
+    URDWIR {"HMASTLOCK|HBURST|TXEV|SYS_APB_IRQ"} off;
+}
+
+lint_checking designunit = nanosoc_ss_cpu
+{
+    // SYS Clock name renamed to just Clock
+    DIFCLK {"SYS_"} off;
+    
+    // Not Top-level in design_info
+    IOCOMB off;
+    TPOUNR off;
+    
+    // Some AHB Signals Unused 
+    USEPRT {"HBURST|HMASTLOCK"} off;
+}
+
+lint_checking designunit = nanosoc_ss_dma
+{    
+    ATLGLC off;
+    
+    // Not Top-level in design_info
+    TPOUNR off;
+    
+    // DMAC 0 and DMAC 1 Can be unininsantiated
+    TIELOG {"DMAC_0|DMAC_1"} off;
+    USEPRT {"DMAC_0|DMAC_1"} off;
+    
+}
+
+lint_checking designunit = nanosoc_ss_interconnect
+{    
+    // Not Top-level in design_info
+    TPOUNR off;
+    
+    // System Width Parameters Unused (Interconnect generated from Arm Script)
+    USEPAR {"SYS_ADDR_W|SYS_DATA_W"} off;
+}
+
+lint_checking designunit = nanosoc_ss_debug
+{    
+    // Not Top-level in design_info
+    TPOUNR off;
+    
+    // FT1248 can be a one-bit bus
+    ONPNSG {"FT_"} off;
+    
+    // Word Address Used only on APB
+    USEPRT {"DEBUG_PADDR"} off;   
+}
+
+lint_checking designunit = nanosoc_ss_expansion
+{    
+    // Not Top-level in design_info
+    TPOUNR off;
+    
+    // FT1248 can be a one-bit bus
+    ONPNSG {"FT_"} off;
+    
+    // Word Address Used only on APB
+    USEPRT {"DEBUG_PADDR"} off;   
+}
+
+lint_checking designunit = nanosoc_ss_systemctrl
+{    
+    // Not Top-level in design_info
+    IOCOMB off;
+    TPOUNR off;
+    
+    // Doesn't recognise XTAL as Clock
+    CLKUCL {"XTAL"} off;
+    
+    // Resets have different names in Arm IP
+    DIFRST {"SYS_"} off;
+    
+    // Clocks have different names in Arm IP
+    DIFCLK {"SYS_"} off;
+    
+    // APB Write tied low
+    EXPIPC {"APB_DATA_W"} off;
+    
+    // APB Reset driven from SystemReset
+    RSTUCL off;
+    
+    // Unconnected Ports on Pin Mux and other peripherals
+    UNCONN {"p0_in|p1_in|P0|P1|_psel"} off;
+    
+    // TODO: UART Cross Over wiring Needs looking at
+    UNCONO {"p0_in|p1_in|uart|_psel"} off;
+    URDWIR {"uart0_rxd|uart1_rxd"} off;
+}
+
+lint_checking designunit = nanosoc_region_exp
+{    
+    // In Case of Default Slave, Read Data and IRQS and DRQs constant Assigned
+    TIELOG {"HRDATA|EXP_IRQ|EXP_DRQ"} off;
+    // Some AHB Signals wont be used in this case
+    USEPRT {"HADDR|HTRANS|HSIZE|HWDATA|HPROT|HWRITE|EXP_DLAST"} off;
+}
+
+lint_checking designunit = nanosoc_region_bootrom_0
+{   
+    // Some Bits of AHB Signals not Used
+    URDPRT {"HADDR|HTRANS|HSIZE|HWDATA|HPROT"} off;
+    
+    // AHB Signals bits unused:
+    // - HADDR - BITS 0 & 1
+    // - TRANS - BIT 0
+    // - HSIZE
+    // - HWDATA 
+    // - HPROT
+    USEPRT {"HADDR|HTRANS|HSIZE|HWDATA|HPROT"} off;
+}
+
+lint_checking designunit = nanosoc_region_imem_0
+{   
+    // Some Bits of AHB Signals not Used
+    URDPRT {"HADDR|HTRANS|HSIZE|HWDATA|HPROT"} off;
+    
+    // Filename not used in SRAM
+    USEPAR {"IMEM_MEM_FPGA_IMG"} off;
+    
+    // AHB Signals bits unused:
+    // - HADDR - BITS 31:15
+    // - HPROT
+    USEPRT {"HADDR|HPROT"} off;
+}
+
+lint_checking designunit = nanosoc_region_dmem_0
+{   
+    // Some Bits of AHB Signals not Used
+    URDPRT {"HADDR|HTRANS|HSIZE|HWDATA|HPROT"} off;
+    
+    // AHB Signals bits unused:
+    // - HADDR - BITS 31:15
+    // - HPROT
+    USEPRT {"HADDR|HPROT"} off;
+}
+
+lint_checking designunit = nanosoc_region_expram_l
+{   
+    // Some Bits of AHB Signals not Used
+    USEPRT {"HADDR|HTRANS|HSIZE|HWDATA|HPROT"} off;
+}
+
+lint_checking designunit = nanosoc_region_expram_h
+{   
+    // Some Bits of AHB Signals not Used
+    USEPRT {"HADDR|HTRANS|HSIZE|HWDATA|HPROT"} off;
+}
+
+lint_checking designunit = nanosoc_region_sysio
+{   
+    // Multiple Clock Domains in Module
+    MCKDMN off;
+    
+    // Combined Interrupts not connected
+    UNCONO {"COMBINT"} off;
+    UNCONN {"COMBINT"} off;
+    
+    // AHB signals unused
+    USEPRT {"HBURST|HMASTLOCK"} off;
+}
+
+lint_checking designunit = nanosoc_bootrom_cpu_0
+{
+    // Bootrom Clock name different to HCLK
+    DIFCLK {"HCLK"} off;
+    
+    // AHB Reponse Contant for Bootrom other than rdata
+    TIELOG {"HREADYOUT|HRESP"} off;
+    
+    // Some Bits of AHB Signals not Used
+    URDPRT {"HADDR|HTRANS|HSIZE|HWDATA"} off;
+    USEPRT {"HADDR|HTRANS|HSIZE|HWDATA"} off;
+}
+
+lint_checking designunit = bootrom
+{
+    // Combinatorial wiring through multiple levels of hierarchy to bootrom (wrappers)
+    CBPAHI off;
+    
+    // Default Case used for simulation
+    CDEFCV off;
+    
+    // Bootrom has no Reset
+    FFWNSR off;
+    
+    // States in Case Statements needs to be more than 40
+    LMTSTS off;
+}
+
+lint_checking designunit = nanosoc_clkctrl
+{
+    // Based Off of Arm IP
+    CBPAHI off;
+    NBGEND off;
+    
+    // Clocks Aliased (Clock control module)
+    DALIAS off;
+    DIFCLK off;
+    FDTHRU {"CLK"} off;
+    
+    // Reset Bypass select
+    GLTASR off;
+    
+    // Synchronous Reset
+    FRSTDF {"sync"} off;
+    RSTGNP off;
+    RSTINP {"prst"} off;
+    
+    // Bitwise Not Intended
+    LOGNEG {"reset|RST|RESET"} off;
+    
+    // Contains Synchronous and Asynchronous logic
+    SYNASN off;
+    
+    // Clock Gating Disable
+    TIELOG {"CLKEN"} off;
+    
+    // SYSRESETREQ crosses clock domain
+    CLKDMN {"nxt_prst"} off;
+    
+    // Combined Interrupts not connected
+    UNCONO {"COMBINT"} off;
+    
+    // pclkgen not used
+    URDWIR {"pclkgen"} off;
+    
+    // Some Ports Unused (Arm IP)
+    USEPRT off;
+    
+    // Asynchronous Reset
+    ACNCPI {"NRST"} off;
+}
+
+lint_checking designunit = nanosoc_pin_mux
+{   
+    // Arm IP Feedthrough on Pins
+    FDTHRU off;
+    IOCPIO off;
+    
+    // Inout Ports used
+    IOPNTA off;
+    
+    // Tristate Enable not driven by primary input
+    SLNOTP off;
+    
+    // Synopsys pragmas in RTL
+    TPRUSD off;
+    
+    // Inferred Tristate Correctly
+    TSBINF {"P0|P1"} off;
+    
+    // Contains logic other than Tri-States
+    TSMHOL off;
+    
+    // Some Ports Unused (Arm IP)
+    USEPRT {"altfunc"} off;
+
+}
+
+lint_checking designunit = nanosoc_sysctrl
+{
+    // Based off of Arm IP - bad pratice
+    CBPAHI off;
+    BOUINC off;
+    NBGEND off;
+    REVROP off;
+    
+    // Default Case still useful
+    CDEFCV off;
+    
+    // Parameters used in conditional Assignments
+    CONSTC {"BE"} off;
+    
+    // Bitwise Not Intended
+    LOGNEG {"reset|RST|RESET"} off;
+    
+    // Multiple Clocks
+    MULMCK off;
+    
+    // Contains Synchronous and Asynchronous logic
+    SYNASN off;
+    
+    // Some AHB Response Signals tied off
+    TIELOG {"HREADYOUT|HRESP"} off;
+    
+    // SYSRESETREQ crosses clock domain
+    CLKDMN {"reg_resetinfo"} off;
+    
+    // Not all Byte Strobes used and little endian data unused
+    URDREG {"byte_strobe|HWDATALE"} off;
+    
+    // Some AHB Signals unused
+    USEPRT {"HTRANS|HSIZE"} off;
+    
+    // Asynchronous Reset
+    ACNCPI {"RESETn"} off;
+}
+
+lint_checking designunit = nanosoc_sysio_apb_ss
+{
+    // Based off of Arm IP with bad lint rules
+    CBPAHI off;
+    NBGEND off;
+    
+    // Parameters used in conditional Assignments
+    CONSTC {"BE"} off;
+    
+    // Bitwise And Intended
+    LOGAND {"endian"} off;
+    
+    // Bitwise Not Intended
+    LOGNEG {"RESET"} off;
+    
+    // Contains Synchronous and Asynchronous logic
+    SYNASN off;
+    
+    // Some Peripheral Signals Tied off
+    TIELOG {"uart|interrupt"} off;
+    
+    // BaudTick not connected
+    UNCONN {"BAUDTICK"} off;
+    
+    // APB Peripherals and interrupts tied off
+    UNCONO {"PPROT|PSEL|INT|BAUD"} off;
+    
+    // Some APB and Interrupts unused
+    URDWIR {"pprot|psel|int"} off;
+    
+    // TODO: Uart Crossover needs looking at
+    USEPRT {"uart0_rxd|uart1_rxd"} off;
+    
+    // Asynchronous Reset
+    ACNCPI {"HRESETn"} off;
+}
+
+lint_checking designunit = nanosoc_coresight_systable
+{
+    // Based off of Arm IP with bad lint rules
+    FFWNSR off; // No reset
+    NBGEND off; // No begin/end
+    
+    // Contains Synchronous and Asynchronous logic
+    SYNASN off;
+    
+    // Some AHB Response Signals tied off
+    TIELOG {"HREADYOUT|HRESP"} off;
+    
+    // Unequal Operands in assignment (Can't fix Arm IP)
+    ULCMPE {"PRESENT"} off;
+    
+    // Unused wire is unused
+    URDWIR {"unused"} off;
+    
+    // TODO: Uart Crossover needs looking at
+    USEPRT {"uart0_rxd|uart1_rxd"} off;
+}
+
+lint_checking designunit = nanosoc_sysio_decode
+{
+    // Some of AHB Address Unused
+    USEPRT {"haddr"} off;
+    
+}
