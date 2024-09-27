@@ -1,0 +1,3 @@
+ensure correct IP directory structure
+provide correct variables for top-level makefile. e.g. SOCLABS_NANOSOC_TECH_DIR
+makefile.simulate is the simulation one! integrate ARM and test
