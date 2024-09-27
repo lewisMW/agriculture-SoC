@@ -1,3 +1,7 @@
 ensure correct IP directory structure
+    Get the rest of the IPs! Corstone-101, Arm DMA-230 (PL230) OR Arm DMA-350
+    structure them as per https://soclabs.org/design-flow/ip-library-structure. are all required?
 provide correct variables for top-level makefile. e.g. SOCLABS_NANOSOC_TECH_DIR
 makefile.simulate is the simulation one! integrate ARM and test
+
+makefile.simulate uses makefile.software. make sure that can build

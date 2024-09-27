@@ -1,0 +1,1 @@
+# common paths for making nanosoc

@@ -1,0 +1,1 @@
+# individual paths for making nanosoc, such as ARM IPs. CHANGE!

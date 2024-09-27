@@ -82,6 +82,8 @@ compile_vcs: NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
 compile_xm:  NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
 compile_iverilog: NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
 
+compile_verilator: NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
+
 
 # Generate verilog .vc filelist from flists
 flist_vfiles_nanosoc: gen_defs
@@ -175,6 +177,19 @@ run_iverilog: code compile_iverilog
 
 sim_iverilog: run_iverilog
 	cd $(SIM_DIR); gtkwave waves.vcd
+
+# ------- Verilator -----------
+
+# probably need to have verilator arguments here as well
+
+compile_verilator: bootrom gen_defs flist_vfiles_nanosoc
+	echo "placeholder, compile verilator"
+
+run_verilator: code compile_verilator
+	echo "placeholder, run verilator"
+
+sim_verilator: run_verilator
+	echo "placeholder, sim verilator"
 
 # Generate Make filelist from flists
 flist_makefile_nanosoc: gen_defs
