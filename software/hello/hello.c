@@ -37,7 +37,7 @@
 int main (void)
 {
     // Pointer to GPIO register from memory map
-    volatile unsigned int *GPIO_DATA = (unsigned int *)0x40010000;
+    volatile unsigned int *GPIO_DATA = (unsigned int *)0x50000000;
 
     // Set GPIO pins to high
     *GPIO_DATA = 0xFFFFFFFF;

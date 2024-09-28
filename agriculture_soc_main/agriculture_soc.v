@@ -121,7 +121,6 @@ wire cdbgpwrupack, cdbgpwrupreq;
 assign cdbgpwrupack = cdbgpwrupreq; 
 
 // SRAM Connections
-wire [31:0]sram_data;
 wire [15:0]sram_addr;
 wire [3:0]sram_w_en;
 wire [31:0]sram_w_data;
@@ -267,7 +266,7 @@ cmsdk_ahb_to_sram SRAM_Interface (
    //  .HBURST(hburst_soc),   //TODO: this is not present in the IP interface
 
    // SRAM Connections
-   .SRAMRDATA(sram_data),
+   .SRAMRDATA(sram_r_data),
    .SRAMADDR(sram_addr),
    .SRAMWEN(sram_w_en),
    .SRAMWDATA(sram_w_data),
@@ -275,7 +274,7 @@ cmsdk_ahb_to_sram SRAM_Interface (
 ); 
 
 // Mock SRAM
-cmsdk_fpga_sram SRAM_Bank0 (
+cmsdk_fpga_sram #(.MEMFILE("code.hex")) SRAM_Bank0 (
    // Clock and Reset
    .CLK(fclk),
    // .RESETn(hresetn),    // This module doesn't have a reset
@@ -284,7 +283,7 @@ cmsdk_fpga_sram SRAM_Bank0 (
    .WREN(sram_w_en),
    .CS(sram_cs),
    // Data
-   .WDATA(sram_data),
+   .WDATA(sram_w_data),
    .RDATA(sram_r_data)
 );
 
