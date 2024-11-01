@@ -52,6 +52,8 @@ wire ADC_TRIGGER_OUT;
 // --------------------------------------------------------------------------
 // Status Register bits
 // --------------------------------------------------------------------------
+
+// ADC read addresses?
 // Need to update this to have appropriate values.
 	localparam STATUS_REG_ADDR      = ( 10'b0000_0000_00 );
 	localparam PLL_CONTROL          = ( STATUS_REG_ADDR + 1 ); // 0x004
@@ -60,12 +62,24 @@ wire ADC_TRIGGER_OUT;
 	localparam ADC_TRIGGER 		    = ( SAMPLING_TRIGGER+ 1);       // 0x010 
 
 
+// ADC write addresses
+localparam ADC_VREF 		    = 0x000; // TODO: set
+localparam ADC_W_EN 		    = 0x001; // TODO: set
+
 // --------------------------------------------------------------------------
 // Internal wires
 // --------------------------------------------------------------------------
-// TODO figure out what wires need.
+reg  [DATA_WIDTH - 1 : 0] read_mux;     // stores read data
+
+// TODO this depends on the ADC spec
 wire [DATA_WIDTH - 1 : 0] status_reg;
-reg  [DATA_WIDTH - 1 : 0] read_mux;
+wire [DATA_WIDTH - 1 : 0] pll_wire;
+wire [DATA_WIDTH - 1 : 0] sample_trig;
+wire [DATA_WIDTH - 1 : 0] amux_wire;
+wire [DATA_WIDTH - 1 : 0] adc_trigger_wire;
+
+wire [DATA_WIDTH - 1 : 0] vref;
+wire [DATA_WIDTH - 1 : 0] enable;
 
 wire read_enable;
 wire write_enable;
@@ -75,19 +89,18 @@ wire write_enable;
 // --------------------------------------------------------------------------
 // Read Mux
 // --------------------------------------------------------------------------
-// TODO figure out what need.
 assign read_enable = PSEL & ~PWRITE;
 //DUMMY reading
 always @(posedge PCLK) begin
     if (read_enable) begin
-        case( PADDR )
-                    STATUS_REG_ADDR : read_mux = status_reg; // 0x000
-                    PLL_CONTROL      : read_mux = pll_wire;  // 0x004
-                    SAMPLING_TRIGGER		: read_mux = sample_trig;     // 0x008
-                    AMUX			: read_mux = amux_wire;      // 0x00c
-                    ADC_TRIGGER    : read_mux = adc_trigger_wire; // 0x010
-                    default :
-                        read_mux = {DATA_WIDTH{1'b0}};
+        case( PADDR )   // TODO: Add cases based on ADC specs
+                        // TODO: shouldn't these be read parameters rather than write?
+            STATUS_REG_ADDR  : read_mux = status_reg;       // 0x000
+            PLL_CONTROL      : read_mux = pll_wire;         // 0x004
+            SAMPLING_TRIGGER : read_mux = sample_trig;      // 0x008
+            AMUX			 : read_mux = amux_wire;        // 0x00c
+            ADC_TRIGGER      : read_mux = adc_trigger_wire; // 0x010
+            default          : read_mux = {DATA_WIDTH{1'b0}};
         endcase
         else
 			read_mux = {DATA_WIDTH{1'b0}};
@@ -99,13 +112,44 @@ assign PRDATA = read_mux;
 //--------------------------------------------------------------------------
 // Write Mux
 // --------------------------------------------------------------------------
-//TODO implement properly. 
 assign write_enable = PSEL & PWRITE & PENABLE;
-always @(posedge PCLK)
-    if (write_enable)
-        assign internal_dummy_wire <= PWDATA
+
+always @* begin
+    write_vref = 1'b0;
+    write_enable = 1'b0;
+
+    if ( write_enable )
+        case ( PADDR[ADDR_WIDTH - 1 : 2] )
+            ADC_VREF : write_vref = 1'b1;
+            ADC_W_EN : write_enable = 1'b1;
+
+            default : begin
+                write_vref = 1'b0;
+                write_enable = 1'b0;
+            end
+        endcase
+end
+assign PRDATA = read_mux;
 
 
+// --------------------------------------------------------------------------
+// Write Operands
+// --------------------------------------------------------------------------
+
+
+always @ ( posedge PCLK, negedge PRESETn )
+    if ( ~PRESETn )
+        vref <= {DATA_WIDTH{1'b0}};
+    else
+        if ( write_data_b )
+            vref <= PWDATA;
+
+always @ ( posedge PCLK, negedge PRESETn )
+    if ( ~PRESETn )
+        enable <= {DATA_WIDTH{1'b0}};
+    else
+        if ( write_data_b )
+            enable <= PWDATA;
 
 
 // --------------------------------------------------------------------------
