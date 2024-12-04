@@ -4,7 +4,7 @@ module adc_apb_wrapper #(
     parameter ADDR_WIDTH = 12,
     parameter DATA_WIDTH = 32
 )
-// TODO: Instantiate - cmsdk_apb_slave_mux
+// TODO: Instantiate - cmsdk_apb_slave_mux 
 
 // APB wires
 (
@@ -44,116 +44,118 @@ output wire PSLVERR
 // THE fpu_apb_wrapper gives an example of using this to write to the correct item.
 // This should be implemented.
 // Consider what actual inputs and outputs are needed.
-reg [DATA_WIDTH - 1 : 0] PLL_CONTROL;
-reg [DATA_WIDTH - 1 : 0] SAMPLING_TRIGGER;
-reg [2 : 0] AMUX;
-wire ADC_TRIGGER_OUT;
+reg [DATA_WIDTH - 1 : 0] pll_reg;
+reg [DATA_WIDTH - 1 : 0] amux_reg;
+reg [DATA_WIDTH - 1 : 0] trig_reg;
+
+wire [DATA_WIDTH - 1 : 0] status_wire;
+wire [DATA_WIDTH - 1 : 0] measurement_wire;
 
 // --------------------------------------------------------------------------
-// Status Register bits
+// APB addresses for various ADC functionality
 // --------------------------------------------------------------------------
+//TODO: change these addresses 
 
-// ADC read addresses?
-// Need to update this to have appropriate values.
-	localparam STATUS_REG_ADDR      = ( 10'b0000_0000_00 );
-	localparam PLL_CONTROL          = ( STATUS_REG_ADDR + 1 ); // 0x004
-	localparam SAMPLING_TRIGGER     = (PLL_CONTROL + 1 );      // 0x008
-	localparam AMUX                 = (SAMPLING_TRIGGER  + 1 );	  // 0X00C
-	localparam ADC_TRIGGER 		    = ( SAMPLING_TRIGGER+ 1);       // 0x010 
+// ADC Reads
+localparam STATUS_REG_ADDR          = 0x000;
+localparam MEASUREMENT_ADDR         = 0x001;
 
-
-// ADC write addresses
-localparam ADC_VREF 		    = 0x000; // TODO: set
-localparam ADC_W_EN 		    = 0x001; // TODO: set
+// ADC Writes
+localparam PLL_CONTROL_ADDR         = 0x000;
+localparam AMUX_ADDR                = 0x001;
+localparam ADC_TRIGGER_ADDR         = 0x002;
 
 // --------------------------------------------------------------------------
 // Internal wires
 // --------------------------------------------------------------------------
 reg  [DATA_WIDTH - 1 : 0] read_mux;     // stores read data
 
-// TODO this depends on the ADC spec
-wire [DATA_WIDTH - 1 : 0] status_reg;
-wire [DATA_WIDTH - 1 : 0] pll_wire;
-wire [DATA_WIDTH - 1 : 0] sample_trig;
-wire [DATA_WIDTH - 1 : 0] amux_wire;
-wire [DATA_WIDTH - 1 : 0] adc_trigger_wire;
-
-wire [DATA_WIDTH - 1 : 0] vref;
-wire [DATA_WIDTH - 1 : 0] enable;
-
 wire read_enable;
 wire write_enable;
 
 
-
 // --------------------------------------------------------------------------
-// Read Mux
+// Read
 // --------------------------------------------------------------------------
 assign read_enable = PSEL & ~PWRITE;
-//DUMMY reading
+
 always @(posedge PCLK) begin
     if (read_enable) begin
-        case( PADDR )   // TODO: Add cases based on ADC specs
-                        // TODO: shouldn't these be read parameters rather than write?
-            STATUS_REG_ADDR  : read_mux = status_reg;       // 0x000
-            PLL_CONTROL      : read_mux = pll_wire;         // 0x004
-            SAMPLING_TRIGGER : read_mux = sample_trig;      // 0x008
-            AMUX			 : read_mux = amux_wire;        // 0x00c
-            ADC_TRIGGER      : read_mux = adc_trigger_wire; // 0x010
+        case( PADDR )
+            STATUS_REG_ADDR  : read_mux = status_wire;
+            MEASUREMENT_ADDR : read_mux = measurement_wire;
             default          : read_mux = {DATA_WIDTH{1'b0}};
         endcase
-        else
-			read_mux = {DATA_WIDTH{1'b0}};
+    end else begin
+        read_mux = {DATA_WIDTH{1'b0}};
     end
 end
 assign PRDATA = read_mux;
 
 
 //--------------------------------------------------------------------------
-// Write Mux
+// Write
 // --------------------------------------------------------------------------
 assign write_enable = PSEL & PWRITE & PENABLE;
 
 always @* begin
-    write_vref = 1'b0;
     write_enable = 1'b0;
 
     if ( write_enable )
         case ( PADDR[ADDR_WIDTH - 1 : 2] )
-            ADC_VREF : write_vref = 1'b1;
-            ADC_W_EN : write_enable = 1'b1;
-
+            PLL_CONTROL_ADDR : write_pll = 1'b1;
+            AMUX_ADDR : write_amux = 1'b1;
+            ADC_TRIGGER_ADDR : write_trig = 1'b1;
             default : begin
-                write_vref = 1'b0;
-                write_enable = 1'b0;
+                write_pll = 1'b0;
+                write_amux = 1'b0;
+                write_trig = 1'b0;
             end
         endcase
+    else begin
+        write_pll = 1'b0;
+        write_amux = 1'b0;
+        write_trig = 1'b0;
+    end
 end
-assign PRDATA = read_mux;
 
 
 // --------------------------------------------------------------------------
 // Write Operands
 // --------------------------------------------------------------------------
 
+always @ ( posedge PCLK, negedge PRESETn )
+    if ( ~PRESETn )
+        pll_reg <= {DATA_WIDTH{1'b0}};
+    else
+        if ( write_pll )
+            pll_reg <= PWDATA;
 
 always @ ( posedge PCLK, negedge PRESETn )
     if ( ~PRESETn )
-        vref <= {DATA_WIDTH{1'b0}};
+        amux_reg <= {DATA_WIDTH{1'b0}};
     else
-        if ( write_data_b )
-            vref <= PWDATA;
+        if ( write_amux )
+            amux_reg <= PWDATA;
 
 always @ ( posedge PCLK, negedge PRESETn )
     if ( ~PRESETn )
-        enable <= {DATA_WIDTH{1'b0}};
+        trig_reg <= {DATA_WIDTH{1'b0}};
     else
-        if ( write_data_b )
-            enable <= PWDATA;
+        if ( write_trig )
+            trig_reg <= PWDATA;
 
 
 // --------------------------------------------------------------------------
 // INSERT ADC module here.
 // --------------------------------------------------------------------------
+
+dummy_adc(
+    .STATUS_REG_ADDR(status_wire),
+    .MEASUREMENT(measurement_wire),
+    .PLL_CONTROL(pll_reg),
+    .AMUX(amux_reg),
+    .ADC_TRIGGER(trig_reg)
+);
 
 endmodule
