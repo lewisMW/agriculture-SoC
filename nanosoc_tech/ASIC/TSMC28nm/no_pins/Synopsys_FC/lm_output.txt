@@ -1,0 +1,48 @@
+ 
+                              Library Manager (TM)
+
+                  Version U-2022.12 for linux64 - Dec 11, 2022
+  This release has significant feature enhancements. Please review the Release
+                       Notes associated with this release.
+
+                    Copyright (c) 1988 - 2022 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+   or distribution of this software is strictly prohibited.  Licensed Products
+     communicate with Synopsys servers for the purpose of providing software
+    updates, detecting software piracy and verifying that customers are using
+    Licensed Products in conformity with the applicable License Key for such
+  Licensed Products. Synopsys will use information gathered in connection with
+    this process to deliver software updates and pursue software pirates and
+                                   infringers.
+
+ Inclusivity & Diversity - Visit SolvNetPlus to read the "Synopsys Statement on
+            Inclusivity and Diversity" (Refer to article 000036315 at
+                        https://solvnetplus.synopsys.com)
+
+Error: Message for 'CLE-10' not found
+lm_shell> set sc9mcpp140z_base_path /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc9mcpp140z_base_svt_c35/r0p0
+/home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc9mcpp140z_base_svt_c35/r0p0
+lm_shell> set cln28ht_tech_path /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/arm_tech/r1p0
+/home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/arm_tech/r1p0
+lm_shell> 
+lm_shell> set cln28ht_tech_file   $cln28ht_tech_path/milkyway/1p9m_5x1y2z_utalrdl/sc9mcpp140z_tech.tf
+/home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/arm_tech/r1p0/milkyway/1p9m_5x1y2z_utalrdl/sc9mcpp140z_tech.tf
+lm_shell> set cln28ht_lef_file    $cln28ht_tech_path/lef/1p9m_5x1y2z_utalrdl/sc9mcpp140z_tech.lef
+/home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/arm_tech/r1p0/lef/1p9m_5x1y2z_utalrdl/sc9mcpp140z_tech.lef
+lm_shell> 
+lm_shell> set sc9mcpp140z_lef_file    $sc9mcpp140z_base_path/lef/sc9mcpp140z_cln28ht_base_svt_c35.lef
+/home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc9mcpp140z_base_svt_c35/r0p0/lef/sc9mcpp140z_cln28ht_base_svt_c35.lef
+lm_shell> set sc9mcpp140z_gds_file    $sc9mcpp140z_base_path/gds2/sc9mcpp140z_cln28ht_base_svt_c35.gds2
+/home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc9mcpp140z_base_svt_c35/r0p0/gds2/sc9mcpp140z_cln28ht_base_svt_c35.gds2
+lm_shell> set sc9mcpp140z_db_file     $sc9mcpp140z_base_path/db/sc9mcpp140z_cln28ht_base_svt_c35_ssg_cworstt_max_0p81v_125c.db
+/home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc9mcpp140z_base_svt_c35/r0p0/db/sc9mcpp140z_cln28ht_base_svt_c35_ssg_cworstt_max_0p81v_125c.db
+lm_shell> set sc9mcpp140z_antenna_file   $sc9mcpp140z_base_path/milkyway/1p9m_5x1y2z_utalrdl/sc9mcpp140z_cln28ht_base_svt_c35_antenna.clf
+/home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc9mcpp140z_base_svt_c35/r0p0/milkyway/1p9m_5x1y2z_utalrdl/sc9mcpp140z_cln28ht_base_svt_c35_antenna.clf
+lm_shell> exit
+Maximum memory usage for this session: 82.41 MB
+CPU usage for this session:      2 seconds (  0.00 hours)
+Elapsed time for this session:     14 seconds (  0.00 hours)
+Thank you for using Library Manager.
+

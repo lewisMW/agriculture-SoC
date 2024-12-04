@@ -1,0 +1,86 @@
+set phys_lib /home/dwn1c21/SoC-Labs/phys_ip
+
+set base_path ${phys_lib}/arm/tsmc/cln65lp/sc9_base_rvt/r0p0
+set tech_path ${phys_lib}/arm/tsmc/cln65lp/arm_tech/r2p0
+set ram_16k_path /home/dwn1c21/SoC-Labs/accelerator-project/memories/rf_16k/
+set ram_08k_path /home/dwn1c21/SoC-Labs/accelerator-project/memories/rf_08k/
+
+set rom_path /home/dwn1c21/SoC-Labs/accelerator-project/memories/bootrom/
+set IO_driver_path /home/dwn1c21/SoC-Labs/phys_ip/tsmc/cln65lp/Front_End/timing_power_noise/NLDM/tpdn65lpnv2od3_200a/
+
+create_library_set -name default_libset_max\
+   -timing\
+    [list ${base_path}/lib/sc9_cln65lp_base_rvt_ss_typical_max_1p08v_125c.lib ${ram_08k_path}/rf_08k_ss_1p08v_1p08v_125c.lib ${ram_16k_path}/rf_16k_ss_1p08v_1p08v_125c.lib ${rom_path}/rom_via_ss_1p08v_1p08v_125c.lib ${IO_driver_path}/tpdn65lpnv2od3wc.lib] \
+   -si\
+    [list ${base_path}/celtic/sc9_cln65lp_base_rvt_ss_typical_max_1p08v_125c.cdB]
+
+create_library_set -name default_libset_min\
+   -timing\
+    [list ${base_path}/lib/sc9_cln65lp_base_rvt_ff_typical_min_1p32v_m40c.lib ${ram_08k_path}/rf_08k_ff_1p32v_1p32v_m40c.lib ${ram_16k_path}/rf_16k_ff_1p32v_1p32v_m40c.lib ${rom_path}/rom_via_ff_1p32v_1p32v_m40c.lib ${IO_driver_path}/tpdn65lpnv2od3bc.lib] \
+   -si\
+    [list ${base_path}/celtic/sc9_cln65lp_base_rvt_ff_typical_min_1p32v_m40c.cdB]
+
+create_timing_condition -name default_mapping_tc_2\
+   -library_sets [list default_libset_min]
+create_timing_condition -name default_mapping_tc_1\
+   -library_sets [list default_libset_max]
+
+create_rc_corner -name default_rc_corner_worst\
+   -pre_route_res 1\
+   -post_route_res 1\
+   -pre_route_cap 1\
+   -post_route_cap 1\
+   -post_route_cross_cap 1\
+   -pre_route_clock_res 0\
+   -pre_route_clock_cap 0\
+   -cap_table ${tech_path}/cadence_captable/1p9m_6x2z/rcworst.captbl
+
+create_rc_corner -name default_rc_corner_best\
+   -pre_route_res 1\
+   -post_route_res 1\
+   -pre_route_cap 1\
+   -post_route_cap 1\
+   -post_route_cross_cap 1\
+   -pre_route_clock_res 0\
+   -pre_route_clock_cap 0\
+   -cap_table ${tech_path}/cadence_captable/1p9m_6x2z/rcbest.captbl
+
+create_rc_corner -name default_rc_corner_typical\
+   -pre_route_res 1\
+   -post_route_res 1\
+   -pre_route_cap 1\
+   -post_route_cap 1\
+   -post_route_cross_cap 1\
+   -pre_route_clock_res 0\
+   -pre_route_clock_cap 0\
+   -cap_table ${tech_path}/cadence_captable/1p9m_6x2z/typical.captbl
+
+
+
+create_delay_corner -name default_delay_corner_max\
+   -timing_condition {default_mapping_tc_1}\
+   -rc_corner default_rc_corner_worst
+
+create_delay_corner -name default_delay_corner_ocv\
+   -early_timing_condition {default_mapping_tc_2}\
+   -late_timing_condition {default_mapping_tc_1}\
+   -rc_corner default_rc_corner_typical
+
+create_delay_corner -name default_delay_corner_min\
+   -timing_condition default_mapping_tc_2\
+   -rc_corner default_rc_corner_best
+
+create_constraint_mode -name default_constraint_mode\
+   -sdc_files\
+    [list ../../../constraints.sdc]
+
+create_analysis_view -name default_analysis_view_setup -constraint_mode default_constraint_mode -delay_corner default_delay_corner_max
+
+create_analysis_view -name default_analysis_view_hold -constraint_mode default_constraint_mode -delay_corner default_delay_corner_min
+
+
+create_analysis_view -name typical_analysis_view_setup -constraint_mode default_constraint_mode -delay_corner default_delay_corner_ocv
+create_analysis_view -name typical_analysis_view_hold -constraint_mode default_constraint_mode -delay_corner default_delay_corner_ocv
+
+
+set_analysis_view -setup [list default_analysis_view_setup] -hold [list default_analysis_view_hold]

@@ -1,0 +1,137 @@
+#-----------------------------------------------------------------------------
+# NanoSoC FPGA Flow Makefile 
+# A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+#
+# Contributors
+#
+# David Mapstone (d.a.mapstone@soton.ac.uk)
+#
+# Copyright (C) 2021-3, SoC Labs (www.soclabs.org)
+#-----------------------------------------------------------------------------
+
+# Get properties for FPGA Boards
+include $(SOCLABS_NANOSOC_TECH_DIR)/fpga/makefile.targets
+
+# Vivado Options
+VIVIADO_VERSION  ?= 2021_1
+
+# NanoSoC Synthesis Properties
+NANOSOC_VENDOR   ?= soclabs.org
+NANOSOC_CORE_REV ?= 2
+
+# Top-level of RTL design to Implement
+COMPONENT_TOP    ?= nanosoc_chip
+
+# Name of Implemented Chip Design (Including Socket IP)
+DESIGN_NAME      ?= nanosoc_design
+
+# Location to build FPGA files
+IMPLEMENTATION_DIR   ?= $(SOCLABS_PROJECT_DIR)/imp/fpga
+RUN_DIR              := $(IMPLEMENTATION_DIR)/run
+IMP_NANOSOC_DIR      := $(IMPLEMENTATION_DIR)/nanosoc
+IMP_SOCKET_DIR       := $(IMPLEMENTATION_DIR)/socket
+PROJECT_DIR          := $(IMPLEMENTATION_DIR)/targets/$(BOARD_NAME)
+
+# Location of Defines File
+DEFINES_DIR          := $(SOCLABS_PROJECT_DIR)/system/src/defines/
+DEFINES_FILE         := $(DEFINES_DIR)/gen_defines.v
+
+# Name of generated filelist by python script
+TCL_FLIST_DIR        := $(IMP_NANOSOC_DIR)/flist
+TCL_OUTPUT_FILELIST  := $(TCL_FLIST_DIR)/gen_flist.tcl
+GENUS_OUTPUT_FILELIST := $(TCL_FLIST_DIR)/genus_flist.tcl
+
+# NanoSoC Tech Flow Dependencies
+NANOSOC_FPGA_FLOW_DIR := $(SOCLABS_NANOSOC_TECH_DIR)/fpga
+
+# Directory to look for FPGA specific implementation files
+TARGET_DIR            ?= $(NANOSOC_FPGA_FLOW_DIR)/targets/$(BOARD_NAME)
+TARGET_TCL_DIR        := $(TARGET_DIR)/vivado_script/$(VIVIADO_VERSION)
+PINMAP_FILE           ?= $(TARGET_DIR)/fpga_pinmap.xdc
+
+# NanoSoC Tech Socket Design Dependencies
+RTL_SOCKET_DIR        := $(SOCLABS_SOCDEBUG_TECH_DIR)/socket/vivado_packages
+
+# Define Bitfile Output Directory depending on Platform
+ifeq ($(PLATFORM), bare)
+	OUTPUT_DIR ?=  $(IMPLEMENTATION_DIR)/output/$(BOARD_NAME)
+else ifeq ($(PLATFORM), pynq)
+	OUTPUT_DIR ?=  $(IMPLEMENTATION_DIR)/output/$(BOARD_NAME)/overlays
+endif
+
+# Compile Testcodes and Bootrom
+code:
+	@echo Compiling Firmware
+	@$(MAKE) -C $(SOCLABS_NANOSOC_TECH_DIR) bootrom
+
+# Generate TCL filelist from flists
+flist_tcl_nanosoc: gen_defs
+	@mkdir -p $(TCL_FLIST_DIR)
+	@(cd $(TCL_FLIST_DIR); \
+	$(SOCLABS_SOCTOOLS_FLOW_DIR)/bin/filelist_compile.py -t -f $(DESIGN_VC) -o $(TCL_OUTPUT_FILELIST) -i $(FLIST_INCLUDES) -r $(IMP_NANOSOC_DIR)/src -d $(NANOSOC_DEFINES);)
+
+# Package NanoSoC Socket Components
+package_socket:
+	@$(MAKE) -C $(SOCLABS_SOCDEBUG_TECH_DIR)/fpga package_socket IMP_SOCKET_DIR=$(IMP_SOCKET_DIR) RTL_SOCKET_DIR=$(RTL_SOCKET_DIR)
+
+# Environment Variables for Packaging NanoSoC
+package_nanosoc: export FPGA_COMPONENT_FILELIST = $(TCL_OUTPUT_FILELIST)
+package_nanosoc: export FPGA_COMPONENT_LIB      = $(IMP_NANOSOC_DIR)
+package_nanosoc: export FPGA_ACCELERATOR        = $(ACCELERATOR_SUBSYSTEM)
+package_nanosoc: export FPGA_COMPONENT_TOP      = $(COMPONENT_TOP)
+package_nanosoc: export FPGA_VENDOR             = $(NANOSOC_VENDOR)
+package_nanosoc: export FPGA_CORE_REV           = $(NANOSOC_CORE_REV)
+
+# Package NanoSoC IP
+package_nanosoc: code flist_tcl_nanosoc
+	@echo Packaging NanoSoC
+	@mkdir -p $(RUN_DIR)
+	@cd $(RUN_DIR); vivado -mode batch -source $(SOCLABS_SOCTOOLS_FLOW_DIR)/resources/fpga/package_component.tcl
+	@mkdir -p $(IMP_NANOSOC_DIR)/logs
+	@cp $(RUN_DIR)/vivado.log $(IMP_NANOSOC_DIR)/logs
+	@echo NanoSoC Packaged
+
+# Environment Variables for Build NanoSoC Design
+build_nanosoc_design: export FPGA_NAME               = $(BOARD_NAME)
+build_nanosoc_design: export FPGA_PART               = $(XILINX_PART)
+build_nanosoc_design: export FPGA_PROJECT_DIR        = $(PROJECT_DIR)
+build_nanosoc_design: export FPGA_TARGET             = $(TARGET_DIR)
+build_nanosoc_design: export FPGA_TARGET_TCL         = $(TARGET_TCL_DIR)
+build_nanosoc_design: export FPGA_DESIGN_NAME        = $(DESIGN_NAME)
+build_nanosoc_design: export FPGA_WRAPPER_NAME       = $(DESIGN_NAME)_wrapper
+build_nanosoc_design: export FPGA_OUTPUT_DIR         = $(OUTPUT_DIR)
+build_nanosoc_design: export FPGA_PINMAP             = $(PINMAP_FILE)
+build_nanosoc_design: export FPGA_IMP_DIR            = $(IMPLEMENTATION_DIR)
+
+# Synthesise and Implement an FPGA Bitfile
+build_nanosoc_design:
+	@echo Building NanoSoC Design
+	@mkdir -p $(RUN_DIR)
+	@cd $(RUN_DIR); vivado -mode batch -source $(SOCLABS_SOCTOOLS_FLOW_DIR)/resources/fpga/build_design.tcl
+	@cp $(RUN_DIR)/vivado.log $(TARGET_DIR)
+	@echo Built NanoSoC Design
+
+# Move Output Files 
+output_nanosoc_design:
+	@echo Moving NanoSoC Design Files
+	@unzip -u -o $(PROJECT_DIR)/$(DESIGN_NAME).xsa -d $(PROJECT_DIR)/export
+	@mkdir -p $(OUTPUT_DIR)
+	@cp -p $(PROJECT_DIR)/export/$(DESIGN_NAME).bit $(OUTPUT_DIR)
+	@cp -p $(PROJECT_DIR)/export/$(DESIGN_NAME).hwh $(OUTPUT_DIR)
+	
+# Build NanoSoC Design Flow
+build_fpga: clean_fpga package_socket package_nanosoc build_nanosoc_design output_nanosoc_design
+	@echo NanoSOC Design Complete
+
+# Clean FPGA Run
+clean_fpga:
+	@echo Cleaning Previous Runs of $(BOARD_NAME)
+	@rm -rf $(PROJECT_DIR)
+	@rm -rf $(RUN_DIR)
+
+# Clean ALL FPGA Implementation Directory
+clean_fpga_all:
+	@echo Cleaning FPGA Implementation Directory
+	@rm -rf $(IMPLEMENTATION_DIR)
+	@echo Cleaning Firmware
+	@$(MAKE) -C $(SOCLABS_NANOSOC_TECH_DIR) clean_all_code
