@@ -1,0 +1,39 @@
+#-----------------------------------------------------------------------------
+# NanoSoC FPGA Targets Declaration Makefile 
+# A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+#
+# Contributors
+#
+# David Mapstone (d.a.mapstone@soton.ac.uk)
+#
+# Copyright (C) 2021-3, SoC Labs (www.soclabs.org)
+#-----------------------------------------------------------------------------
+
+# FPGA Specific Options - More can be added later
+ifeq ($(FPGA),mps3)
+	XILINX_PART  := xcku115-flvb1760-1-c
+	BOARD_NAME   := arm_mps3
+	PLATFORM     := bare
+else ifeq ($(FPGA),zcu104)
+	XILINX_PART  := xczu7ev-ffvc1156-2-e
+	BOARD_NAME   := pynq_zcu104
+	PLATFORM     := pynq
+else ifeq ($(FPGA),kr260)
+#	XILINX_PART  := xck26-sfvc784-2LV-c
+	XILINX_PART  := xczu5cg-sfvc784-2LV-e
+	BOARD_NAME   := pynq_kr260
+	PLATFORM     := pynq
+else ifeq ($(FPGA),kv260)
+#	XILINX_PART  := xck26-sfvc784-2LV-c
+	XILINX_PART  := xczu5cg-sfvc784-2LV-e
+	BOARD_NAME   := pynq_kv260
+	PLATFORM     := pynq
+else ifeq ($(FPGA),z2)
+	XILINX_PART  := xc7z020clg400-1
+	BOARD_NAME   := pynq_z2
+	PLATFORM     := pynq
+else # Default to z2
+	XILINX_PART  := xc7z020clg400-1
+	BOARD_NAME   := pynq_z2
+	PLATFORM     := pynq
+endif

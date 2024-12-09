@@ -1,0 +1,17 @@
+*drcRulesFile: /home/dwn1c21/SoC-Labs/phys_ip/TSMC/65/CMOS/util/MAIN_DECK/CALIBRE_FLOW/nonUTM/DFM_LVS_RC_CAL_N65_ALRDL_noU_v16a.9m
+*drcRulesFileLastLoad: 1708424374
+*drcRunDir: ${SOCLABS_PROJECT_DIR}/imp/ASIC/nanosoc/DRC
+*drcLayoutPaths: ${SOCLABS_PROJECT_DIR}/imp/ASIC/nanosoc/nanosoc_fanis_20_02_24.gds
+*drcLayoutPrimary: nanosoc_chip_pads
+*drcResultsFile: DRC_RES.db
+*drcResultsCheckText: 1
+*drcResultsCheckTextValue: ALL
+*drcCellName: 0
+*drcDRCMaxResultsAll: 1
+*drcSummaryFile: DRC.rep
+*drcActiveRecipe: Checks selected in the rules file (Modified)
+*drcUserRecipes: {{Checks selected in the rules file (Modified)} {{group_unselect[1]} all {group_select[1]} rule_file}}
+*cmnResolution: 5
+*cmnSlaveHosts: {use {}} {hostName {}} {cpuCount {}} {a32a64 {}} {rsh {}} {maxMem {}} {workingDir {}} {layerDir {}} {mgcLibPath {}} {launchName {}}
+*cmnLSFSlaveTbl: {use 1} {totalCpus 1} {minCpus 1} {architecture {{}}} {minMemory {{}}} {resourceOptions {{}}} {submitOptions {{}}}
+*cmnGridSlaveTbl: {use 1} {totalCpus 1} {minCpus 1} {architecture {{}}} {minMemory {{}}} {resourceOptions {{}}} {submitOptions {{}}}

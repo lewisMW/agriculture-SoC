@@ -1,0 +1,13 @@
+#-----------------------------------------------------------------------------
+# SoC Labs Sub repository branch setup
+# A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+#
+# Contributors
+#
+# David Mapstone (d.a.mapstone@soton.ac.uk)
+#
+# Copyright  2023, SoC Labs (www.soclabs.org)
+#-----------------------------------------------------------------------------
+# Each Repo needs to have its branch set manually in here - they will defaultly be checked out to main
+
+socket/uart_axi_master/core_dbg_bridge: master

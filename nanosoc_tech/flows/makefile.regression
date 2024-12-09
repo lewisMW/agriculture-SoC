@@ -1,0 +1,98 @@
+#-----------------------------------------------------------------------------
+# NanoSoC Regression Makefile 
+# A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+#
+# Contributors
+#
+# David Mapstone (d.a.mapstone@soton.ac.uk)
+#
+# Copyright (C) 2021-3, SoC Labs (www.soclabs.org)
+#-----------------------------------------------------------------------------
+
+# How many tests to Run In Parallel in a Regression
+PARALLEL_TESTS = 4
+
+# Regression Simulation Timeout
+TIMEOUT = 40m
+
+# Create a Directory to Run a Regression in
+$(eval REGRESSION_NAME =$(shell date +%Y_%m_%d_%H_%M_%S))
+$(eval REGRESSION_DIR =  $(SIM_TOP_DIR)/regression_$(REGRESSION_NAME))
+
+# Create List of Make Targets
+TEST_LIST_MTI = $(shell cat $(TEST_LIST_FILE) | while read line || [ -n "$$line" ]; do if ! grep -Fxq "$$line" $(EXCLUDE_LIST_FLIE); then echo mti_$$line; fi; done)
+TEST_LIST_XM  = $(shell cat $(TEST_LIST_FILE) | while read line || [ -n "$$line" ]; do if ! grep -Fxq "$$line" $(EXCLUDE_LIST_FLIE); then echo xm_$$line; fi; done)
+TEST_LIST_VCS = $(shell cat $(TEST_LIST_FILE) | while read line || [ -n "$$line" ]; do if ! grep -Fxq "$$line" $(EXCLUDE_LIST_FLIE); then echo vcs_$$line; fi; done)
+
+# Create Make templates for Make Targets
+define mti_template
+.PHONY: mti_$(1)
+mti_$(1):
+	@echo Starting Test $(1)
+	@$$(MAKE) regression_test_mti TESTNAME=$(1) >> /dev/null 2>&1 
+	@if cat $$(REGRESSION)/$(1).log | grep " TEST PASSED "; then echo "$(1): PASSED" >> $$(REGRESSION)/RESULTS.log; elif cat $$(REGRESSION)/$(1).log | grep " TEST SKIPPED "; then echo "$(1): SKIPPED" >> $$(REGRESSION)/RESULTS.log; else echo "$(1): FAILED" >> $$(REGRESSION)/RESULTS.log; fi > /dev/null
+	@echo Finished Test $(1)
+endef
+
+define xm_template
+.PHONY: xm_$(1)
+xm_$(1):
+	@echo Starting Test $(1)
+	@$$(MAKE) regression_test_xm TESTNAME=$(1) >> /dev/null 2>&1
+	@if cat $$(REGRESSION)/$(1).log | grep " TEST PASSED "; then echo "$(1): PASSED" >> $$(REGRESSION)/RESULTS.log; elif cat $$(REGRESSION)/$(1).log | grep " TEST SKIPPED "; then echo "$(1): SKIPPED" >> $$(REGRESSION)/RESULTS.log; else echo "$(1): FAILED" >> $$(REGRESSION)/RESULTS.log; fi > /dev/null
+	@echo Finished Test $(1)
+endef
+
+define vcs_template
+.PHONY: vcs_$(1)
+vcs_$(1):
+	@echo Starting Test $(1)
+	@$$(MAKE) regression_test_vcs TESTNAME=$(1) >> /dev/null 2>&1
+	@if cat $$(REGRESSION)/$(1).log | grep " TEST PASSED "; then echo "$(1): PASSED" >> $$(REGRESSION)/RESULTS.log; elif cat $$(REGRESSION)/$(1).log | grep " TEST SKIPPED "; then echo "$(1): SKIPPED" >> $$(REGRESSION)/RESULTS.log; else echo "$(1): FAILED" >> $$(REGRESSION)/RESULTS.log; fi > /dev/null
+	@echo Finished Test $(1)
+endef
+
+# Generate Targets from Templates using Test List
+$(foreach TESTNAME,$(TEST_LIST), $(eval $(call mti_template,$(TESTNAME))))
+$(foreach TESTNAME,$(TEST_LIST), $(eval $(call xm_template,$(TESTNAME))))
+$(foreach TESTNAME,$(TEST_LIST), $(eval $(call vcs_template,$(TESTNAME))))
+
+# Make Simulate Targets with Timeouts and Error Handling
+regression_test_mti:
+	@timeout $(TIMEOUT) $(MAKE) run_mti TESTNAME=$(TESTNAME) > $(REGRESSION)/$(TESTNAME).log || true
+	
+regression_test_xm:
+	@timeout $(TIMEOUT) $(MAKE) run_xm TESTNAME=$(TESTNAME) > $(REGRESSION)/$(TESTNAME).log || true
+	
+regression_test_vcs:
+	@timeout $(TIMEOUT) $(MAKE) run_vxs TESTNAME=$(TESTNAME) > $(REGRESSION)/$(TESTNAME).log || true
+
+# Target to Display Regression Results on Command Line
+regression_results:
+	@echo --------------------------------------------
+	@echo Results:
+	@echo --------------------------------------------
+	@python $(SOCLABS_SOCTOOLS_FLOW_DIR)/tools/regression_result.py $(REGRESSION)/RESULTS.log
+
+# Regression Simulator Redirect
+regression: regression_$(SIMULATOR)
+
+# Create a Target for Running Simulation Regressions
+regression_$(SIMULATOR): compile_$(SIMULATOR) bootrom debugtester 
+	@mkdir -p $(REGRESSION_DIR)
+	@echo 
+	@echo 
+	@echo 
+	@echo 
+	@echo --------------------------------------------
+	@echo Running Regression: $(REGRESSION_NAME)
+	@echo --------------------------------------------
+	@echo Simulator: $(SIMULATOR)
+	@echo --------------------------------------------
+	@$(MAKE) -j$(PARALLEL_TESTS) all_tests_$(SIMULATOR) REGRESSION=$(REGRESSION_DIR)
+	@$(MAKE) -j1 regression_results REGRESSION=$(REGRESSION_DIR)
+
+# Create Targets with dependencies for all tests for simulator
+all_tests_mti : $(TEST_LIST_MTI)
+all_tests_vcs : $(TEST_LIST_VCS)
+all_tests_xm  : $(TEST_LIST_XM)

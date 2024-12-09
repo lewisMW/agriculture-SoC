@@ -1,0 +1,261 @@
+# This file is a template, and might need editing before it works on your project.
+# This is a sample GitLab CI/CD configuration file that should run without any modifications.
+# It demonstrates a basic 3 stage CI/CD pipeline. Instead of real tests or scripts,
+# it uses echo commands to simulate the pipeline execution.
+#
+# A pipeline is composed of independent jobs that run scripts, grouped into stages.
+# Stages run in sequential order, but jobs within stages run in parallel.
+#
+# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
+#
+# You can copy and paste this template into a new `.gitlab-ci.yml` file.
+# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
+#
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
+
+stages:          # List of stages for jobs, and their order of execution
+  - compile
+  - simulate
+  - simulate_qs
+  - build
+  - deploy
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_SUBMODULE_FORCE_HTTPS: "true"
+
+compile-software:
+  stage: compile
+  script:
+    - echo "Compilation phase started"
+    - git submodule foreach --recursive git submodule init
+    - git fetch --recurse-submodules
+    - source set_env.sh
+    - socpull
+    - cd $SOCLABS_NANOSOC_TECH_DIR
+    - make compile_all_code
+  artifacts:
+    paths:
+      - ./nanosoc_tech/testcodes/*/*.hex
+  tags:
+    - ds5
+
+simulate-hello:
+  stage: simulate
+  script:
+    - echo "Simulation phase started"
+    - source set_env.sh
+    - socsim test_nanosoc TESTNAME=hello
+  tags:
+    - VLAB-ZCU
+    
+simulate_regression:
+  stage: simulate
+  script:
+    - echo "Simulation phase started"
+    - source set_env.sh
+    - socpull
+    - socsim clean all
+    - socsim regression_nanosoc
+  tags:
+    - VLAB-ZCU
+    
+simulate_quickstart-hello:
+  stage: simulate_qs
+  script:
+    - echo "Simulation phase started"
+    - source set_env.sh
+    - socpull
+    - socsim clean all
+    - socsim test_nanosoc TESTNAME=hello QUICKSTART=yes
+  tags:
+    - VLAB-ZCU
+    
+simulate_quickstart-regression:
+  stage: simulate_qs
+  script:
+    - echo "Simulation phase started"
+    - source set_env.sh
+    - socsim clean all
+    - socsim regression_nanosoc QUICKSTART=yes
+  tags:
+    - VLAB-ZCU
+
+
+build-job-Z2:       # This job runs in the build stage, which runs first.
+  stage: build
+  script:
+    # move to fpga_imp directory and run the fpga build script for pynq z2
+    - git submodule foreach --recursive git submodule init
+    - git fetch --recurse-submodules
+    - source set_env.sh
+    - socpull
+    - cd $SOCLABS_NANOSOC_TECH_DIR
+    - make build_fpga FPGA=z2 ACCELERATOR=no
+    - FILE=$SOCLABS_DESIGN_ROOT/imp/fpga/output/pynq_z2/overlays/nanosoc_design.bit 
+    - if test -f "$FILE"; then
+    -   echo "Build successful"
+    - else
+    -   echo "Build failed"
+    -   exit 1
+    - fi
+  artifacts:
+    paths:
+      # Keep the generated bit and hwh file from fpga build script
+      - ./imp/fpga/output/pynq_z2/overlays/nanosoc_design.bit 
+      - ./imp/fpga/output/pynq_z2/overlays/nanosoc_design.hwh
+  tags:
+    - Vivado2021.1
+
+build-job-ZCU104:       # This job runs in the build stage, which runs first.
+  stage: build
+  script:
+   # move to fpga_imp directory and run the fpga build script for pynq z2 
+    - git submodule foreach --recursive git submodule init
+    - git fetch --recurse-submodules
+    - source set_env.sh
+    - socpull
+    - cd $SOCLABS_NANOSOC_TECH_DIR
+    - make build_fpga FPGA=zcu104 ACCELERATOR=no
+    - FILE=$SOCLABS_DESIGN_ROOT/imp/fpga/output/pynq_zcu104/overlays/nanosoc_design.bit 
+    - if test -f "$FILE"; then
+    -   echo "Build successful"
+    - else
+    -   echo "Build failed"
+    -   exit 1
+    - fi
+  artifacts:
+    paths:
+    # Keep the generated bit and hwh file from fpga build script
+      - ./imp/fpga/output/pynq_zcu104/overlays/nanosoc_design.bit 
+      - ./imp/fpga/output/pynq_zcu104/overlays/nanosoc_design.hwh 
+  tags:
+    - Vivado2021.1
+
+#deploy-job-Z2:      # This job runs in the deploy stage.
+#  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+#  environment: production
+#  script:
+#    - echo "Deploying application to Z2"
+#    # use smbclient to transfer accross the bit, hwh and python script files to the z2 xilinx board
+#    # could probably set this up as scp with RSA keys in future
+#    - smbclient //192.168.2.99/xilinx -m SMB3 -U xilinx%xilinx -c 'cd ./pynq/overlays/soclabs/ ; put ./nanosoc/fpga_imp/pynq_export/pz2/pynq/overlays/#soclabs/design_1.bit ./design_1.bit' -E 2>errorlog
+#    - if (grep -r "Connection to 192.168.2.99 failed" ./errorlog)
+#    - then
+#    -   echo "Connection to Z2 Board Failed"
+#    -   exit 1
+#    - else
+#    -   echo "Connection to Z2 Board successful"
+#    - fi
+#    - rm errorlog
+#    - smbclient //192.168.2.99/xilinx -m SMB3 -U xilinx%xilinx -c 'cd ./pynq/overlays/soclabs/ ; put ./nanosoc/fpga_imp/pynq_export/pz2/pynq/overlays/#soclabs/design_1.hwh ./design_1.hwh' -E 2>errorlog
+#    - if (grep -r "Connection to 192.168.2.99 failed" ./errorlog)
+#    - then
+#    -   echo "Connection to Z2 Board Failed"
+#    -   exit 1
+#    - else
+#    -   echo "Connection to Z2 Board successful"
+#    - fi
+#    - rm errorlog
+#    - cd ./nanosoc/fpga_imp/CI_verification
+#    - smbclient //192.168.2.99/xilinx -m SMB3 -U xilinx%xilinx -c 'put ./load_bitfile.py ./load_bitfile.py' -E 2>errorlog
+#    - if (grep -r "Connection to 192.168.2.99 failed" ./errorlog)
+#    - then
+#    -   echo "Connection to Z2 Board Failed"
+#    -   exit 1
+#    - else
+#    -   echo "Connection to Z2 Board successful"
+#    - fi
+#    - rm errorlog
+#    # get root access on host machine, this was found to be needed because other screen would not work
+#    # however a more elegant solution would be better
+#    - echo gitrunner1 | sudo -S su
+#    # open detatched terminal with connection to the Xilinx Z2 board
+#    - sudo screen -S zynq -dm /dev/ttyUSB1 115200
+#    # get root access on xilinx board, this is needed because the python script won't run without
+#    # being root. 
+#    - sudo screen -r zynq -X stuff "sudo -S su \n"
+#    # setup pynq environment 
+#    - sudo screen -r zynq -X stuff "source /etc/profile.d/pynq_venv.sh \n"
+#    - sudo screen -r zynq -X stuff "source /etc/profile.d/xrt_setup.sh \n"
+#    - sudo screen -r zynq -X stuff "source /etc/profile.d/boardname.sh \n"
+#    # run load_bitfile: this loads the overlay and checks that it has been loaded
+#    # script will output "Overlay Loaded" if successful
+#    - sudo screen -r zynq -X stuff "python3 load_bitfile.py > tmp \n"
+#    # sleep 1 minute: this is needed as currently the terminal running the CI/CD script will not wait
+#    # for the python script to finish. A more elegant solution should be implemented in future
+#    - sleep 60
+#    # copy over the tmp file back to host machine and check if "Overlay Loaded" has been outputed f
+#    - smbclient //192.168.2.99/xilinx -m SMB3 -U xilinx%xilinx -c 'get tmp'
+#    - if (grep -r "Overlay Loaded" ./tmp)
+#    - then
+#    -   echo "Bit file loaded successfully"
+#    - else
+#    -   echo "Bit file load failed"
+#    -   exit 1
+#    - fi
+#  after_script:
+#    # cleanup: remove detached terminal screen
+#    - echo gitrunner1 | sudo -S su
+#    - sudo screen -X -S zynq quit
+#  tags:
+#    - Z2
+
+deploy-job-ZCU104:      # This job runs in the deploy stage.
+  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+  environment: production
+  script:
+    - echo "Deploying application to ZCU104"
+    - source set_env.sh
+    - socpull
+    # list all tests and write list to fpga_tests file
+    - find nanosoc_tech/testcodes/*/*.hex > fpga_tests
+    # start a detached terminal so that the xilinx environment can be opened without interferring w
+    - screen -dmS zynq -L -Logfile screenlog
+    - sleep 5
+    # copy over vlab.py and vkey and then connect to ZCU104 board
+    # FUTURE Work: need to add error handling for if the board does not connect, 
+    # could grep from screenlog to see if successfully connected
+    - screen -r zynq -X stuff "cp -r /home/dwn1c21/FPGA/. ./ \n"
+    - screen -r zynq -X stuff "./ZCU104_connect.sh\n"
+    - sleep 10
+    # use scp to copy over bit files and python script
+    - screen -r zynq -X stuff "scp -rp -i ~/.ssh/id_rsa dwn1c21@soclabs.soton.ac.uk:~/builds/wzndG1mA/0/soclabs/accelerator-project/nanosoc_tech/fpga/ci_tools/* ./ \n"
+    - sleep 2
+    - screen -r zynq -X stuff "scp -i ~/.ssh/id_rsa dwn1c21@soclabs.soton.ac.uk:~/builds/wzndG1mA/0/soclabs/accelerator-project/imp/fpga/output/pynq_zcu104/overlays/nanosoc_design.* ./pynq/overlays/soclabs/ \n"
+    - sleep 2
+    - screen -r zynq -X stuff "scp -i ~/.ssh/id_rsa dwn1c21@soclabs.soton.ac.uk:~/builds/wzndG1mA/0/soclabs/accelerator-project/fpga_tests ./ \n"
+    - sleep 2
+    - screen -r zynq -X stuff "mkdir binaries\n"
+    - screen -r zynq -X stuff "scp -i ~/.ssh/id_rsa dwn1c21@soclabs.soton.ac.uk:~/builds/wzndG1mA/0/soclabs/accelerator-project/nanosoc_tech/testcodes/*/*.hex ./binaries/ \n"
+    - sleep 10
+    # Need root access to load the overlay onto the FPGA
+    - screen -r zynq -X stuff "sudo su\n"
+    - sleep 1
+    - screen -r zynq -X stuff "xilinx\n"
+    - screen -r zynq -X stuff "source /etc/profile.d/pynq_venv.sh \n"
+    - screen -r zynq -X stuff "source /etc/profile.d/xrt_setup.sh \n"
+    - screen -r zynq -X stuff "source /etc/profile.d/boardname.sh \n"
+    - sleep 5
+    # run run_full_verification: this loads the overlay and checks that it has been loaded
+    # script will output "Overlay Loaded" if successful
+    - screen -r zynq -X stuff "python run_full_verification.py \n"
+    - while ! grep -q "ALL TESTS FINISHED" screenlog; do sleep 10; done
+    - screen -r zynq -X stuff "scp -i ~/.ssh/id_rsa verification_log dwn1c21@soclabs.soton.ac.uk:~/builds/wzndG1mA/0/soclabs/accelerator-project/ \n"
+    # deactivate the pynq virtual environment and exit root access
+    - screen -r zynq -X stuff "deactivate \n"
+    - screen -r zynq -X stuff "exit \n"
+    - sleep 20
+    # Display test results
+    - cat verification_log
+  after_script:
+    # cleanup xilinx directories and quit screen
+    - screen -r zynq -X stuff "rm load_bitfile.py \n"
+    - screen -X -S zynq quit
+  tags:
+    - ZCU104
+    
+

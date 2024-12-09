@@ -1,0 +1,1425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:component xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <spirit:vendor>soclabs.org</spirit:vendor>
+  <spirit:library>user</spirit:library>
+  <spirit:name>ADPcontrol</spirit:name>
+  <spirit:version>1.0</spirit:version>
+  <spirit:busInterfaces>
+    <spirit:busInterface>
+      <spirit:name>com_rx</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TDATA</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>com_rx_tdata</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TVALID</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>com_rx_tvalid</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TREADY</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>com_rx_tready</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>WIZ_DATA_WIDTH</spirit:name>
+          <spirit:value spirit:format="long" spirit:id="BUSIFPARAM_VALUE.COM_RX.WIZ_DATA_WIDTH" spirit:choiceRef="choice_list_6fc15197">32</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>com_tx</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_rtl" spirit:version="1.0"/>
+      <spirit:master/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TDATA</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>com_tx_tdata</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TVALID</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>com_tx_tvalid</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TREADY</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>com_tx_tready</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>WIZ_DATA_WIDTH</spirit:name>
+          <spirit:value spirit:format="long" spirit:id="BUSIFPARAM_VALUE.COM_TX.WIZ_DATA_WIDTH" spirit:choiceRef="choice_list_6fc15197">32</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>stdio_rx</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TDATA</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>stdio_rx_tdata</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TVALID</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>stdio_rx_tvalid</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TREADY</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>stdio_rx_tready</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>WIZ_DATA_WIDTH</spirit:name>
+          <spirit:value spirit:format="long" spirit:id="BUSIFPARAM_VALUE.STDIO_RX.WIZ_DATA_WIDTH" spirit:choiceRef="choice_list_6fc15197">32</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>stdio_tx</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_rtl" spirit:version="1.0"/>
+      <spirit:master/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TDATA</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>stdio_tx_tdata</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TVALID</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>stdio_tx_tvalid</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TREADY</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>stdio_tx_tready</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>WIZ_DATA_WIDTH</spirit:name>
+          <spirit:value spirit:format="long" spirit:id="BUSIFPARAM_VALUE.STDIO_TX.WIZ_DATA_WIDTH" spirit:choiceRef="choice_list_6fc15197">32</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>ahb</spirit:name>
+      <spirit:displayName>AHB_M</spirit:displayName>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="ahblite" spirit:version="2.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="ahblite_rtl" spirit:version="2.0"/>
+      <spirit:master>
+        <spirit:addressSpaceRef spirit:addressSpaceRef="ahb"/>
+      </spirit:master>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>HTRANS</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_htrans</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>HPROT</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_hprot</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>HSIZE</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_hsize</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>HRDATA</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_hrdata</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>HRESP</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_hresp</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>HWRITE</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_hwrite</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>HREADY</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_hready</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>HADDR</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_haddr</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>HMASTLOCK</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_hmastlock</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>HBURST</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_hburst</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>HWDATA</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_hwdata</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>ahb_hclk</spirit:name>
+      <spirit:displayName>hclk</spirit:displayName>
+      <spirit:description>rising-edge clock</spirit:description>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>CLK</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_hclk</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>FREQ_HZ</spirit:name>
+          <spirit:description>100000000</spirit:description>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.AHB_HCLK.FREQ_HZ"/>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>ASSOCIATED_BUSIF</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.AHB_HCLK.ASSOCIATED_BUSIF">com_rx:com_tx:stdio_rx:stdio_tx:ahb</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>ASSOCIATED_RESET</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.AHB_HCLK.ASSOCIATED_RESET">ahb_hresetn</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>FREQ_TOLERANCE_HZ</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.AHB_HCLK.FREQ_TOLERANCE_HZ">-1</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>ahb_hresetn</spirit:name>
+      <spirit:displayName>hresetn</spirit:displayName>
+      <spirit:description>active low reset</spirit:description>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="reset" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="reset_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>RST</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>ahb_hresetn</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>POLARITY</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.AHB_HRESETN.POLARITY" spirit:choiceRef="choice_list_9d8b0d81">ACTIVE_LOW</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+  </spirit:busInterfaces>
+  <spirit:addressSpaces>
+    <spirit:addressSpace>
+      <spirit:name>ahb</spirit:name>
+      <spirit:range spirit:format="bitString" spirit:resolve="user">0x100000000</spirit:range>
+      <spirit:width spirit:format="long" spirit:resolve="user">32</spirit:width>
+      <spirit:vendorExtensions>
+        <xilinx:addressSpaceInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:resolve="user" xilinx:id="ADDRSPACE_ENABLEMENT.ahb">true</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:addressSpaceInfo>
+      </spirit:vendorExtensions>
+    </spirit:addressSpace>
+  </spirit:addressSpaces>
+  <spirit:model>
+    <spirit:views>
+      <spirit:view>
+        <spirit:name>xilinx_verilogsynthesis</spirit:name>
+        <spirit:displayName>Verilog Synthesis</spirit:displayName>
+        <spirit:envIdentifier>verilogSource:vivado.xilinx.com:synthesis</spirit:envIdentifier>
+        <spirit:language>verilog</spirit:language>
+        <spirit:modelName>ADPcontrol_v1_0</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_verilogsynthesis_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>e4d9de63</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_verilogbehavioralsimulation</spirit:name>
+        <spirit:displayName>Verilog Simulation</spirit:displayName>
+        <spirit:envIdentifier>verilogSource:vivado.xilinx.com:simulation</spirit:envIdentifier>
+        <spirit:language>verilog</spirit:language>
+        <spirit:modelName>ADPcontrol_v1_0</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_verilogbehavioralsimulation_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>e4d9de63</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_xpgui</spirit:name>
+        <spirit:displayName>UI Layout</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:xgui.ui</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_xpgui_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>936ced64</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>bd_tcl</spirit:name>
+        <spirit:displayName>Block Diagram</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:block.diagram</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>bd_tcl_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>16328387</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+    </spirit:views>
+    <spirit:ports>
+      <spirit:port>
+        <spirit:name>ahb_hclk</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ahb_hresetn</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>com_rx_tready</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>com_rx_tdata</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">7</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>com_rx_tvalid</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>com_tx_tvalid</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>com_tx_tdata</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">7</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>com_tx_tready</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>stdio_rx_tready</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>stdio_rx_tdata</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">7</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>stdio_rx_tvalid</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>stdio_tx_tvalid</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>stdio_tx_tdata</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">7</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>stdio_tx_tready</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>gpo8</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">7</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>gpi8</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">7</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ahb_haddr</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">31</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ahb_hburst</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">2</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ahb_hmastlock</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ahb_hprot</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">3</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ahb_hsize</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">2</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ahb_htrans</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">1</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ahb_hwdata</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">31</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ahb_hwrite</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ahb_hrdata</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">31</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ahb_hready</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ahb_hresp</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+    </spirit:ports>
+    <spirit:modelParameters>
+      <spirit:modelParameter xsi:type="spirit:nameValueTypeType" spirit:dataType="string">
+        <spirit:name>PROMPT_CHAR</spirit:name>
+        <spirit:displayName>Prompt Char</spirit:displayName>
+        <spirit:value spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.PROMPT_CHAR">]</spirit:value>
+      </spirit:modelParameter>
+    </spirit:modelParameters>
+  </spirit:model>
+  <spirit:choices>
+    <spirit:choice>
+      <spirit:name>choice_list_6fc15197</spirit:name>
+      <spirit:enumeration>32</spirit:enumeration>
+    </spirit:choice>
+    <spirit:choice>
+      <spirit:name>choice_list_9d8b0d81</spirit:name>
+      <spirit:enumeration>ACTIVE_HIGH</spirit:enumeration>
+      <spirit:enumeration>ACTIVE_LOW</spirit:enumeration>
+    </spirit:choice>
+  </spirit:choices>
+  <spirit:fileSets>
+    <spirit:fileSet>
+      <spirit:name>xilinx_verilogsynthesis_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>src/ADPmanager.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>src/ADPcontrol_v1_0.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_4c40ce83</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_verilogbehavioralsimulation_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>src/ADPmanager.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>src/ADPcontrol_v1_0.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_xpgui_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xgui/ADPcontrol_v1_0.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_936ced64</spirit:userFileType>
+        <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>bd_tcl_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>bd/bd.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+      </spirit:file>
+    </spirit:fileSet>
+  </spirit:fileSets>
+  <spirit:description>ADP AHB controller</spirit:description>
+  <spirit:parameters>
+    <spirit:parameter>
+      <spirit:name>Component_Name</spirit:name>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">ADPcontrol_v1_0</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>PROMPT_CHAR</spirit:name>
+      <spirit:displayName>Prompt Char</spirit:displayName>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.PROMPT_CHAR">]</spirit:value>
+    </spirit:parameter>
+  </spirit:parameters>
+  <spirit:vendorExtensions>
+    <xilinx:coreExtensions>
+      <xilinx:supportedFamilies>
+        <xilinx:family xilinx:lifeCycle="Pre-Production">zynq</xilinx:family>
+      </xilinx:supportedFamilies>
+      <xilinx:taxonomies>
+        <xilinx:taxonomy>AXI_Peripheral</xilinx:taxonomy>
+      </xilinx:taxonomies>
+      <xilinx:displayName>ADPcontrol_v1.0</xilinx:displayName>
+      <xilinx:autoFamilySupportLevel>level_1</xilinx:autoFamilySupportLevel>
+      <xilinx:coreRevision>28</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2023-03-17T11:11:19Z</xilinx:coreCreationDateTime>
+      <xilinx:tags>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1d457846_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@37c19d7d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4d9c63f5_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3486ae33_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@16991627_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@21280f5b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2a6297f7_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@d359ebf_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@585c5d69_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@13554121_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5cc15ddd_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@47f5cea9_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2797f52a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2d4db012_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4d5ff66d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@160f397b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@9eedd13_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@383df36f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5b29af4a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6a844f8f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@dd3613f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@465ab221_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2c2a723e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7769a864_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2b6e7c2b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@348806c9_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@543e517b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@23a5fd27_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5acc4197_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1b0672e6_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1fcd885_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3b8348bf_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7a2cf9c9_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@266167bd_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@75fc528d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@571f957b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@205b72be_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@18af816d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@76808038_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@12b6bb23_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@571354b0_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@49208c72_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@96cf3b7_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@160b7175_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@733792a3_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6741cc7c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@21688aa5_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@15d88077_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3dedcd2d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@109e8ade_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@66efa591_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@33406c6a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1295e34_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@23a10fd2_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@46b3edc3_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@79223f91_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@25bf4cbd_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3bf95837_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2d5a6e80_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@23cef462_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7701c845_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@d900de2_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1b614769_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2a1ab09c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5a71cfc7_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7737ed39_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3417e460_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5dcd78cc_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@87e31dd_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5878b3d1_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@414f7e53_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@448f5b33_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5f4942b4_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@68082003_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@67b73b35_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@63825d52_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@59bce76e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@511d4c77_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1c74144d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4e4c1934_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@378bcf30_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4e795a88_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5ad7045c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6ae82c3f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4ac8e1b1_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@72e7dc1b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@36456a91_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3994cf09_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6c751ad6_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@44a8e456_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@58f80386_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@60462d25_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@19c41859_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3a040f48_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7d1e622a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5592457_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7aa4d1b7_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5b291a28_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1cad021e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7376878e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4870a6f7_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2fc3ca30_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@77cf444c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1a9a0814_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1424fd5e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3453af13_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@27e0072f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@f46a21a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@18d268d4_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5c1b0b80_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2973e675_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@604ab08f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3ba14fe4_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@223f211e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@15bffbbe_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@dc2fd1e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@54866dfc_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@49d29cb3_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6317da2d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2dea1246_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@22205824_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@71fb215a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3f69f943_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@10598249_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@69cc5be9_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@30744b50_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@77c27106_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@17c7c0e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6b1dc1ba_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@13c92119_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@433c97e8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@dfaa30_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@498e3871_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@68ef63bf_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@cabff58_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6329d1ac_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3d41686b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@17b94c6_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@73c60546_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1efb46d6_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1c3fd36_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@94a143_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@27fa8005_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@62074f67_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3c35c7f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@23404941_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1ca68904_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3bf56a5a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1af8595a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7883ae7_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3a942794_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@148bd7e5_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@73d73a56_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3a2205ee_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1349a24a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5d4275c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@657d1d9b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@77dc74cf_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7b2335ea_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@60cfbf2f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3b5bc7f8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3952de2e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4ea52573_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@58fdb158_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6a3ec25b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@38e01d1_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@41312d17_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4960f858_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4fc1a608_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@50a7b242_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3ba5a927_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4577effb_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@24950516_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3f566912_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@ce5ccb_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1868af0c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1e5676a1_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@482c6c08_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@439d1ccd_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4d18b880_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1cb34d37_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@35956167_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@edc52ba_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5ca21f6a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@30cea3b8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@72dd0545_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3385e4b5_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1a7f120d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@64e52226_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3642d1a2_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2f597e54_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@51e8ab9d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@72b9d5e6_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7a4741c0_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4bb7f6f8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@634fe21a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4aa4e91b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@30ad75d5_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4911c113_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4080a163_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@77494d4e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1bdef9f8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4385cd7_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@64412115_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6f2eee8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3c61cfc8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@21768440_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4b355e7a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@65d604b5_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1d52befe_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7cf526e5_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@551c331c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@646f2bcc_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6d01a5a8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5d95b5ff_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@27b779c7_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1434a4fe_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5e7326d8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2fd42eaf_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2a035f8e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@761ebb79_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2edf9f01_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@c5189a6_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@11b06564_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@f5f8ce8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@751af23d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@57380db3_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@f3d75f1_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@626de2e1_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@65166b70_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1b007a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3f3b6415_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@444d9f3b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@58fe3b2b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@22c722fb_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@143ea435_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5a42ad29_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@c5b8ec0_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1a4e16b4_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@42ffb207_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@714e55e4_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@46a7eaba_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@17b1cd6_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@43ddb8ba_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@46813502_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@20ebdb6c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3b2bcf03_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@573cb596_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@67a1e45e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@e85625c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6b0d7ccd_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2f5cda36_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@51ba8691_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@782de323_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@570b95ae_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5b826b52_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@37cc7d57_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1fead495_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@395f4c4c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@77419e7a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5b4eb32d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@50a26523_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2129e8aa_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4c1b9123_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2bd2e4a6_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@441d0859_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7f39f4dd_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@179c6e39_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1de9114f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@50d3b1e8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@129ac90_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1a081ede_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@46ad3f41_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6a67c8c3_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@77c6b087_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6941d063_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@31d57680_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5ad3812d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5053bd97_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4950b18d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@71973c4b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@f73ae96_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@aa60d05_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4b98b40c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@767f6dd3_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3d62773e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4932ca24_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@499b78e6_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@570037c0_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6c5b2a33_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@72a04750_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5c95f5d6_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@13e93f4b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@26f6a801_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@69443224_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3df62b6f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@67368a6e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7cc83605_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1507eb2e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@135a41e4_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@64e63246_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4f49185c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5593e965_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@225ff805_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4beed390_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@106a0c22_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@384214bd_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@593ef9fb_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@37cdc023_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@13a1d788_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@524f74f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4bf9a62b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@55a122c7_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7c2fdaa9_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@518b1cda_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@51e91952_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1278d0d9_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@33a9e1f0_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5761a78_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@57c6694d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6f6e2a4c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@651527ba_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@20634131_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4a5fc5ae_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1ea744d8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@41ac8c35_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@544fed3e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@352cd72_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@25a30a08_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3a049463_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@50f12b6f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@598f48b2_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6449a017_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4fc6d831_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6b83cae5_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3ceb3464_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1a761ed2_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@25804f95_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@47f1862a_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@551336b0_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2943bdfb_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4a3f2f83_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@52f9db4e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@66396587_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4382e037_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@41949965_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1a8a1eeb_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5189684d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@76bfc522_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4c88cfbd_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2cbbaeda_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@77ee719d_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5d7b2699_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@73ba8e8b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1f047a95_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@22689605_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6b1c0e75_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3c70f3ac_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3d414ec0_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@30a4d75_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@52a783ab_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6706deea_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6124d7d8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@59e9e696_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@202e94c8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@b6ee7ad_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@11bbdbd2_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@53acccb5_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1bcb5b05_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6c1a5b1c_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4fa63c3e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@64e4590_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@43599237_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@784e427e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@251afaad_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@326b33d4_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2b2571dc_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2fed8cc_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@509a0566_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@193895f6_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@725ff575_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6f25ab56_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1e921ec3_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@ac8c699_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@53f24856_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1724f6e4_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@610a3da7_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3b846fd8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@645d5f2e_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@14d3680_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@75fea7b9_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@49e97fec_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6cbcafe8_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@e9f64d3_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6b46d36f_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7ed1f96b_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@27f5c251_ARCHIVE_LOCATION">c:/Users/dflynn/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@472752f8_ARCHIVE_LOCATION">/home/dwf1m12/soclabs/fpga/vivado/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@17bc87a_ARCHIVE_LOCATION">/home/dwf1m12/soclabs/fpga/vivado/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@31dc304_ARCHIVE_LOCATION">/home/dwf1m12/soclabs/fpga/vivado/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@352d492d_ARCHIVE_LOCATION">/home/dwf1m12/soclabs/fpga/vivado/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6e8cf4c8_ARCHIVE_LOCATION">/home/dwf1m12/soclabs/fpga/vivado/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3f9ad2c5_ARCHIVE_LOCATION">/home/dwf1m12/soclabs/fpga/vivado/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@32f89c42_ARCHIVE_LOCATION">/home/dwf1m12/soclabs/fpga/vivado/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3778bb78_ARCHIVE_LOCATION">/home/dwf1m12/soclabs/fpga/vivado/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@510d9d71_ARCHIVE_LOCATION">/home/dwf1m12/soclabs/fpga/vivado/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5634a7b8_ARCHIVE_LOCATION">/home/dwf1m12/soclabs/fpga/vivado/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@8cbb07a_ARCHIVE_LOCATION">/home/dwf1m12/soclabs/fpga/vivado/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2bd39894_ARCHIVE_LOCATION">/home/dwf1m12/soclabs/fpga/vivado/pynq/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@49f0884e_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@47766a99_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@72bfa014_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6ceae5a1_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@f97815f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2ab1af41_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@736d5c8f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@28ad60d2_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@280a47e1_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3f6f7e0d_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@73674571_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2bc75aea_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4648f64d_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@44e851d7_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3596d0fb_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@25a1a065_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3a73112f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6ff5037d_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3b679be2_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@343f5854_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1f0e5159_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@672205c4_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5eaf4a2f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4294b19b_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4a77deab_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@48460505_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@186d05f2_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@77227d65_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@bf3434b_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@70fe8b50_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6ea74e9c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@94baf8f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2c237466_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7477dd9e_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@59c3564f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@230c6865_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@73dd3fa0_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@38c0e7a6_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@361aa0bf_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@693cd002_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@90cf9bd_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@56759d72_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@76489f89_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@23cddfea_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@61951253_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2ef492f8_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@11384e6_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@43229f8c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@560889a6_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7b9e8239_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@77274317_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7fede95d_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7adf648c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6f2d3a75_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6b8943f6_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@46de7d7d_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1064cd98_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@55fee084_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4f4a40b1_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@246290e0_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4c03aa24_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6a5175be_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@243298c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4d32cec8_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@26e6b9dc_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@71f2c9c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@766d3322_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@53d9d8f3_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1bc31527_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@a7d1a87_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@554e8355_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@f387ef1_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2d26d3c1_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4a493133_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2ed57f64_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@33917459_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@256b8cbb_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@ef978f7_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@854b85c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@15a5cb4c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5e7bf60a_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@75ba979_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2550dd2_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5bb22db_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6a777a31_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@13fd8c0e_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5ab5d13a_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@a6d43c7_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2de47456_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1fd6a6_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@41e4b0cb_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@70b02a59_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@366f8d4f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@76029335_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@70b9dabf_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@49a7f7e5_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5d4805a4_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@11351177_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5bfb7bd1_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@18e46c62_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2cc869b1_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@33f4180_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3afeb273_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@9c5e63_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4a35a7c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@cd72db6_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@28cdf041_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@eb4cd13_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5f536198_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@59f8726d_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3a228f4c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ADPcontrol_1.0</xilinx:tag>
+      </xilinx:tags>
+    </xilinx:coreExtensions>
+    <xilinx:packagingInfo>
+      <xilinx:xilinxVersion>2021.1</xilinx:xilinxVersion>
+      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="cf8749a1"/>
+      <xilinx:checksum xilinx:scope="addressSpaces" xilinx:value="2ed9224a"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="6203a1ee"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="2212c402"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="cd165264"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="35656c35"/>
+      <xilinx:targetDRCs>
+        <xilinx:targetDRC xilinx:tool="ipi">
+          <xilinx:targetDRCOption xilinx:name="ignore_freq_hz" xilinx:value="true"/>
+        </xilinx:targetDRC>
+      </xilinx:targetDRCs>
+    </xilinx:packagingInfo>
+  </spirit:vendorExtensions>
+</spirit:component>
