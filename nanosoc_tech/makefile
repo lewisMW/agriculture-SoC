@@ -24,7 +24,7 @@ SIMULATOR   = mti
 ACCELERATOR ?= yes
 
 # Is the Arm QuickStart being used?
-QUICKSTART ?= no
+QUICKSTART ?= yes
 
 # IS this for an ASIC Flow?
 ASIC ?= no
