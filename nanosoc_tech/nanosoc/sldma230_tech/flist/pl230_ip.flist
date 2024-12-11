@@ -1,0 +1,27 @@
+//-----------------------------------------------------------------------------
+// NanoSoC DMA-230 Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+// David Flynn    (d.w.flynn@soton.ac.uk)
+//
+// Copyright (C) 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for Arm DMA-230
+//-----------------------------------------------------------------------------
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+// =============    DMA-230 search path    =============
++incdir+$(SOCLABS_SLDMA230_TECH_DIR)/src/defines
+
+//$(ARM_IP_LIBRARY_PATH)/latest/DMA-230/logical/pl230_ahb_ctrl.v
+$(SOCLABS_SLDMA230_TECH_DIR)/src/verilog/sldma230_ahb_ctrl.v
+$(ARM_IP_LIBRARY_PATH)/latest/DMA-230/logical/pl230_apb_regs.v
+$(ARM_IP_LIBRARY_PATH)/latest/DMA-230/logical/pl230_dma_data.v
+//$(ARM_IP_LIBRARY_PATH)/latest/DMA-230/logical/pl230_udma.v
+$(SOCLABS_SLDMA230_TECH_DIR)/src/verilog/sldma230_udma.v

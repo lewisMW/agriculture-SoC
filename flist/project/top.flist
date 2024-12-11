@@ -1,0 +1,35 @@
+//-----------------------------------------------------------------------------
+// Project Top-level Filelist System Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for Top-level Accelerator System
+//-----------------------------------------------------------------------------
+
+// DESIGN_TOP nanosoc_chip
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+// =============    System Filelist      =========================
+// - Defines RTL
++incdir+$(SOCLABS_PROJECT_DIR)/system/src/defines
+
+-f $(SOCLABS_PROJECT_DIR)/flist/project/system.flist
+
+// NanoSoC Testbench
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/nanosoc_tb.flist
+
+// =============    Arm-IP Specific Filelists      =========================
+// - NanoSoC Chip IP
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/nanosoc.flist
+
+// - CMSDK IP
+-f $(SOCLABS_PROJECT_DIR)/flist/ahb/ahb_ip.flist
+-f $(SOCLABS_PROJECT_DIR)/flist/apb/apb_ip.flist

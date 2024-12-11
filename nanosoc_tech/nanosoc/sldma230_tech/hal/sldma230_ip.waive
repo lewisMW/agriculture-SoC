@@ -1,0 +1,31 @@
+//-----------------------------------------------------------------------------
+// SLDMA-230 Lint Waivers 
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : HAL Wavier file for SLDMA230
+//-----------------------------------------------------------------------------
+
+lint_checking designunit = sldma230
+{
+    // Clock and Reset Naming drops SYS and CORE prefix in Instantiated Modules
+    DIFCLK {"SYS_|CORE_"} off;
+    
+    // Glue Logic when linting as top-level
+    ATLGLC off;
+    
+    // Expeting Registers on outputs when linting as top-level
+    TPOUNR off;
+    
+    // DMA Active Signal Not Wired in
+    UNCONN {"dma_active"} off;
+    UNCONO {"dma_active"} off;
+    
+}
+

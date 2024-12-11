@@ -1,0 +1,41 @@
+//-----------------------------------------------------------------------------
+// MegaSoC DMA-350 Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// Daniel Newbrook (d.newbrook@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for Arm DMA-350
+//-----------------------------------------------------------------------------
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+-f $(SOCLABS_SLDMA350_TECH_DIR)/flist/dma350_ahb_ip.flist
+
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/models/cells/generic/xhb500_or.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/models/cells/generic/xhb500_xor.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/models/cells/generic/xhb500_flop.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/models/cells/generic/xhb500_sync.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/shared/verilog/xhb500_regd_slice/verilog/xhb500_bypass_regd_slice_empty.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/shared/verilog/xhb500_regd_slice/verilog/xhb500_forward_regd_slice.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/shared/verilog/xhb500_regd_slice/verilog/xhb500_forward_regd_slice_empty.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/xhb500_axi_to_ahb_bridge_sldma350/verilog/xhb500_axi_to_ahb_bridge_sldma350_pkg.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/xhb500_axi_to_ahb_bridge_sldma350/verilog/xhb500_axi_to_ahb_bridge_sldma350.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/xhb500_axi_to_ahb_bridge_sldma350/verilog/xhb500_axi_to_ahb_bridge_sldma350_core.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/xhb500_axi_to_ahb_bridge_sldma350/verilog/xhb500_axi_to_ahb_bridge_sldma350_core_xin.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/xhb500_axi_to_ahb_bridge_sldma350/verilog/xhb500_axi_to_ahb_bridge_sldma350_core_h_xout.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/xhb500_axi_to_ahb_bridge_sldma350/verilog/xhb500_axi_to_ahb_bridge_sldma350_xreg.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/xhb500_axi_to_ahb_bridge_sldma350/verilog/xhb500_axi_to_ahb_bridge_sldma350_hreg.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/xhb500_axi_to_ahb_bridge_sldma350/verilog/xhb500_axi_to_ahb_bridge_sldma350_respreg_r.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/xhb500_axi_to_ahb_bridge_sldma350/verilog/xhb500_axi_to_ahb_bridge_sldma350_respreg_b.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/xhb500_axi_to_ahb_bridge_sldma350/verilog/xhb500_axi_to_ahb_bridge_sldma350_lpi.sv
+$(SOCLABS_SLDMA350_TECH_DIR)/src/logical/xhb500_axi_to_ahb_bridge_sldma350/verilog/xhb500_axi_to_ahb_bridge_sldma350_strbgen.sv
+
+
+$(SOCLABS_SLDMA350_TECH_DIR)/wrapper/logical/sldma350_ahb.v
+$(SOCLABS_SLDMA350_TECH_DIR)/wrapper/logical/sldma350_trig_converter.v

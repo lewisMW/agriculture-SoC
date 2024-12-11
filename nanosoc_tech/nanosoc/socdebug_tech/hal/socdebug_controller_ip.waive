@@ -1,0 +1,52 @@
+
+lint_checking designunit = socdebug_adp_control
+{    
+    // Not Top-level in design_info
+    TPOUNR off;
+    
+    // waivers for some legacy FT245 stream handshake signals
+    URDWIR off;
+    INFNOT off;
+    
+    // Multi-statement per line permitted for ease of maintenance
+    SEPLIN off;
+    
+    // specifically support task global vaariable assignments to reuse tasks
+    TSETGV off;
+    
+    // excuse FSM multiple non-blocking assigns (priority design)
+    MULNBA off;
+    
+    // support async FSM registers
+    FFASRT off;
+    
+    // coding allow multi-bit changes in next-state transitions
+    TRNMBT off;
+    
+    // FSM coding waivers - explicitly coded, >40 states with non-standard state assignment
+    SYNASN off;
+    DNSTIF off;
+    LMTSTS off;
+    FSMIDN off;
+    BADFSM off;
+    EXTFSM off;
+
+    // Allow specific AHB controller outputs to be driven as constants
+    TIELOG off;
+    
+    // clock domain crossing handled explicitly - HCLK and PCLK balanced
+    CLKDMN off;
+    FLSYNC off;
+    INSYNC off;
+    
+}
+
+lint_checking designunit = socdebug_ft1248_control
+{    
+    // Not Top-level in design_info
+    TPOUNR off;
+    
+    // single bit bus configuration permitted
+    ONPNSG off;
+    
+}

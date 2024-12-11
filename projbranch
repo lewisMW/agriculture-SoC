@@ -1,0 +1,21 @@
+#-----------------------------------------------------------------------------
+# SoC Labs Sub repository branch setup
+# A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+#
+# Contributors
+#
+# David Mapstone (d.a.mapstone@soton.ac.uk)
+#
+# Copyright  2023, SoC Labs (www.soclabs.org)
+#-----------------------------------------------------------------------------
+# Each Repo needs to have its branch set manually in here - they will defaultly be checked out to main
+# Project Repository Subrepository Branch Index
+# Add your Accelerator Repository here
+
+nanosoc_tech: main
+accelerator_wrapper_tech: main
+fpga_lib_tech: main
+generic_lib_tech: main
+rtl_primitives_tech: main
+soctools_flow: main
+asic_lib_tech: main

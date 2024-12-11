@@ -1,0 +1,134 @@
+#//-----------------------------------------------------------------------------
+#// NanoSoC Software Build Defs Makefile
+#// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+#//
+#// Contributors
+#//
+#// David Mapstone (d.a.mapstone@soton.ac.uk)
+#//
+#// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+#//-----------------------------------------------------------------------------
+
+# Program file
+SOFTWARE_NAME    ?= bootloader
+
+include $(SOFTWARE_NAME)/$(SOFTWARE_NAME)_defs.makefile
+
+# Choose the core instantiated, can be
+#  - CORTEX_M0
+CPU_PRODUCT = CORTEX_M0
+
+TARGET = arm-none-eabi
+
+# Tool chain : ds6 / ds5 / gcc / keil
+TOOL_CHAIN     ?= ds5
+
+# Shared software directory
+SOFTWARE_DIR = $(SOCLABS_NANOSOC_TECH_DIR)/software
+CMSIS_DIR    = $(SOFTWARE_DIR)/cmsis
+CORE_DIR     = $(CMSIS_DIR)/CMSIS/Include
+
+DEVICE_DIR    = $(CMSIS_DIR)/Device/ARM/CMSDK_CM0
+USER_DEFINE   = -DCORTEX_M0
+
+ifeq ($(TOOL_CHAIN),ds5)
+  CPU_TYPE      = --cpu Cortex-M0
+endif
+
+ifeq ($(TOOL_CHAIN),ds6)
+  CPU_TYPE        = -mcpu=Cortex-M0
+endif
+
+ifeq ($(TOOL_CHAIN),gcc)
+  CPU_TYPE        = -mcpu=cortex-m0
+endif
+
+
+# Endian Option
+COMPILE_BIGEND = 0
+
+DEPS_LIST       = makefile
+
+# Startup code directory for Development Studio
+ifeq ($(TOOL_CHAIN),ds5)
+ STARTUP_DIR  = $(DEVICE_DIR)/Source/ARM
+endif
+
+ifeq ($(TOOL_CHAIN),ds6)
+ STARTUP_DIR  = $(DEVICE_DIR)/Source/ARM
+endif
+
+# Startup code directory for gcc
+ifeq ($(TOOL_CHAIN),gcc)
+ STARTUP_DIR  = $(DEVICE_DIR)/Source/GCC
+endif
+
+STARTUP_FILE = startup_CMSDK_CM0
+SYSTEM_FILE  = system_CMSDK_CM0
+
+# ---------------------------------------------------------------------------------------
+# Development Studio options
+
+# MicroLIB option
+COMPILE_MICROLIB = 0
+
+# Small Multiply (Cortex-M0/M0+ has small multiplier option)
+COMPILE_SMALLMUL = 0
+
+# C and ASM Compiler Tool Setup - use armcc and armasm for ds-5 and armclang for ds-6
+ifeq ($(TOOL_CHAIN),ds5)
+  CC_TOOL   = armcc
+  ASM_TOOL = armasm
+  ARM_TARGET = -Otime
+endif
+
+ifeq ($(TOOL_CHAIN),ds6)
+  ARM_TARGET = --target=arm-$(TARGET)
+  CC_TOOL   = armclang
+  ASM_TOOL = armclang -masm=armasm $(ARM_TARGET) -c
+endif
+
+ARM_CC_OPTIONS   = $(ARM_TARGET) -c -O3 -g -I $(DEVICE_DIR)/Include -I $(CORE_DIR) $(USER_DEFINE)
+
+ARM_ASM_OPTIONS  = -g
+ARM_LINK_OPTIONS = "--keep=$(STARTUP_FILE).o(RESET)" "--first=$(STARTUP_FILE).o(RESET)" \
+		--rw_base 0x30000000 --ro_base 0x10000000 --map
+
+ifeq ($(COMPILE_BIGEND),1)
+ # Big Endian
+ ARM_CC_OPTIONS   += --bigend
+ ARM_ASM_OPTIONS  += --bigend
+ ARM_LINK_OPTIONS += --be8
+endif
+
+ifeq ($(COMPILE_MICROLIB),1)
+ # MicroLIB
+ ARM_CC_OPTIONS   += --library_type=microlib
+ ARM_ASM_OPTIONS  += --library_type=microlib --pd "__MICROLIB SETA 1"
+ ARM_LINK_OPTIONS += --library_type=microlib
+endif
+
+ifeq ($(COMPILE_SMALLMUL),1)
+ # In Cortex-M0, small multiply takes 32 cycles
+ ARM_CC_OPTIONS  += --multiply_latency=32
+endif
+
+# ---------------------------------------------------------------------------------------
+# gcc options
+
+GNG_CC      = $(TARGET)-gcc
+GNU_OBJDUMP = $(TARGET)-objdump
+GNU_OBJCOPY = $(TARGET)-objcopy
+
+LINKER_NAME        ?= cmsdk_cm0
+LINKER_SCRIPT_PATH  = $(SOFTWARE_DIR)/common/scripts
+LINKER_SCRIPT       = $(LINKER_SCRIPT_PATH)/$(LINKER_NAME).ld
+
+GNU_CC_FLAGS = -g -O3 -mthumb $(CPU_TYPE)
+
+ifeq ($(COMPILE_BIGEND),1)
+ # Big Endian
+ GNU_CC_FLAGS   += -mbig-endian
+endif
+# ---------------------------------------------------------------------------------------
+

@@ -1,0 +1,18 @@
+//-----------------------------------------------------------------------------
+// SoCDebug F232H FT1248 to AXI Stream Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for SoCLabs F232H FT1248 to AXI Stream IP
+//-----------------------------------------------------------------------------
+
+$(SOCLABS_SOCDEBUG_TECH_DIR)/socket/ft232h_ft1248_stream/verilog/ft232h_ft1248_stream.v
+$(SOCLABS_SOCDEBUG_TECH_DIR)/socket/ft232h_ft1248_stream/verilog/ft232h_ft1248_stream_rxd8.v
+$(SOCLABS_SOCDEBUG_TECH_DIR)/socket/ft232h_ft1248_stream/verilog/ft232h_ft1248_stream_txd8.v
+$(SOCLABS_SOCDEBUG_TECH_DIR)/socket/ft232h_ft1248_stream/verilog/SYNCHRONIZER_EDGES.v

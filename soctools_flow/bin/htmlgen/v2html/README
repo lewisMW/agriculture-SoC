@@ -1,0 +1,43 @@
+
+v2html - verilog to html converter
+----------------------------------
+
+See LICENCE.TXT for details of licencing.
+
+See http://www.burbleland.com/v2html for more information.
+
+Files included:
+
+README		- this file
+v2html 		- v2html perl script
+v2html-cgi	- CGI helper script (for collapsible hierarchy)
+LICENCE.TXT	- licence
+v2html.man.html - man page in html format
+v2html.1	- man page in nroff format
+
+- Make sure you have perl version 5.004 or later (perl -v tells you
+  the version).
+
+Unix Installation
+-----------------
+
+- Copy v2html to somewhere like /usr/local/bin.
+- If you are using the CGI script then see your web-server's documentation
+  on where to put CGI scripts.
+- Copy v2html.1 to somewhere like /usr/local/man.
+
+If your copy of perl is not in /usr/bin then you will have to edit the
+first line of v2html and v2html-cgi to refer to where your copy of
+perl in installed. Alternatively you could install a link from 
+/usr/bin/perl to your copy of perl.
+
+Windows Installation
+--------------------
+
+- Put the v2html script somewhere (eg C:\v2html)
+- Then, assuming you have Perl installed as c:\perl\bin\perl.exe, you should
+ be able to run v2html from a DOS box with a command like this:
+
+  c:\perl\bin\perl.exe c:\v2html\v2html -f my_cmd_file.vc
+
+

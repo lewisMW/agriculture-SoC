@@ -1,0 +1,74 @@
+//-----------------------------------------------------------------------------
+// SLCore M0 Lint Waivers 
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : HAL Wavier file for SLCoreM0
+//-----------------------------------------------------------------------------
+
+lint_checking designunit = slcorem0
+{
+    // Clock and Reset Naming drops SYS and CORE prefix in Instantiated Modules
+    DIFCLK {"SYS_|CORE_"} off;
+    DIFRST {"SYS_|CORE_"} off;
+    
+    // System HCLK is Alias of System FClk
+    IOCOMB {"SYS_HCLK"} off;
+    
+    // Acts as a wrapper - some outputs are not registered (registered at lower levels)
+    TPOUNR off;
+    
+    // Following Intergation Output Signals are Unused
+    UNCONN {"HMASTER|TDO|nTDOEN|DBGRESTARTED|HALTED|WICSENSE|CODEHINTDE|SPECHTRANS|CODENSEQ"} off;
+    UNCONO {"HMASTER|TDO|nTDOEN|DBGRESTARTED|HALTED|WICSENSE|CODEHINTDE|SPECHTRANS|CODENSEQ"} off;
+}
+
+lint_checking designunit = slcorem0_integration
+{
+    // Constant Conditional for Debug Configuration
+    CONSTC {"cfg_dbg"} off;
+    
+    // lowercase n used to represent negation in signal name
+    UCCONN {"n"} off;
+}
+
+lint_checking designunit = slcorem0_prmu
+{
+    // Constant Conditional for Clock Gating
+    CONSTC {"CLKGATE"} off;
+    
+    // With Clock Gating Disabled, Clocks may be aliased and Some Output may not be used
+    DALIAS {"CLK"} off;
+    DIFCLK {"CLKGATE"} off;
+    // Some PMU Output Signals are Unused
+    UNCONO {"HCLK|DCLK|SCLK|SYSISOLATEn|SYSRETAINn|DBGISOLATEn"} off;
+    // System HClock is generated from FClock and needs to be always on
+    FDTHRU {"CLKGATE|SYS_HCLK"} off;
+    
+    // Output Signals SYSISOLATEn, SYSRETAINn, DBGISOLATEn are Unused
+    UNCONN {"SYSISOLATEn|SYSRETAINn|DBGISOLATEn"} off;
+}
+
+lint_checking designunit = slcorem0_stclkctrl
+{
+    // Bit-wise Inversion for Reset (Arm implemented)
+    LOGNEG {"RESET"} off;
+    
+    // Arm Don't Like to use begin and end in if statements (not going to change their IP)
+    NBGEND off;
+    
+    // STCALIB output is Assigned to a Constant Value
+    TIELOG {"STCALIB"} off;
+    
+    // Asynchronous System Reset
+    ACNCPI {"SYSRESETn"} off;
+    
+    // Clock Dividing of FCLK for STCLK using gating
+    GTDCLK {"reg_stclken|reg_clk_divider"} off;
+}

@@ -1,0 +1,39 @@
+//-----------------------------------------------------------------------------
+// NanoSoC Top-level Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+// Daniel Newbrook (d.newbrook@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for NanoSoC IP
+//-----------------------------------------------------------------------------
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+// =============    NanoSoC IP search path    =============
+
+$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_axis_initiator.v
+$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_ifsm.v
+$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_sync.v
+
+// Include NanoSoC IP
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/nanosoc_ip.flist
+
+// Include Corstone IP
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/corstone101_ip.flist
+
+// SLCore Files
+-f $(SOCLABS_SLCOREM0_TECH_DIR)/flist/slcorem0.flist
+
+// Debug IP
+-f $(SOCLABS_SOCDEBUG_TECH_DIR)/flist/socdebug.flist
+
+// DMAC IP (better included at top level configuration)
+//-f $(SOCLABS_SLDMA350_TECH_DIR)/flist/sldma350_ahb.flist
+//-f $(SOCLABS_SLDMA230_TECH_DIR)/flist/sldma230_ip.flist

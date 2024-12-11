@@ -1,0 +1,15 @@
+#-----------------------------------------------------------------------------
+# SoC Labs SoCPull Script 
+# - Pull latest updates to all Repositories in a project
+# A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+#
+# Contributors
+#
+# David Mapstone (d.a.mapstone@soton.ac.uk)
+#
+# Copyright  2023, SoC Labs (www.soclabs.org)
+#-----------------------------------------------------------------------------
+#!/bin/bash
+
+# Update all Submodules to latest commit
+cd $SOCLABS_DESIGN_ROOT; git pull; git submodule foreach --recursive git pull

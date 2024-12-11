@@ -1,0 +1,30 @@
+//-----------------------------------------------------------------------------
+// NanoSoC Testbench Filelist - QUICKSTART
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for NanoSoC Testbench
+//-----------------------------------------------------------------------------
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+
+// =============    NanoSoC Testbench search path    =============
+
+// - Top-level testbench - QUICKSTART
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/tb/verilog/nanosoc_tb_qs.v
+$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_axis_target.v
+$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_tfsm.v
+
+// Include NanoSoC Testbench Components
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/nanosoc_vip.flist
+
+// Include Corstone VIP Components - QUICKSTART
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/corstone101_vip_qs.flist

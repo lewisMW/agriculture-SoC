@@ -1,0 +1,21 @@
+//-----------------------------------------------------------------------------
+// SoCDebug Socket IP Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for NanoSoC Chip Test Interface IP
+//-----------------------------------------------------------------------------
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+// =============    NanoSoC Chip Test Interface IP Filelists   =============
+$(SOCLABS_SOCDEBUG_TECH_DIR)/socket/verilog/axi_stream_io_v1_0_axi_s.v
+$(SOCLABS_SOCDEBUG_TECH_DIR)/socket/verilog/axi_stream_io_v1_0.v
+$(SOCLABS_SOCDEBUG_TECH_DIR)/socket/verilog/ft232h_ft1248_x1.v
