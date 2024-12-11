@@ -57,13 +57,13 @@ wire [DATA_WIDTH - 1 : 0] measurement_wire;
 //TODO: change these addresses 
 
 // ADC Reads
-localparam STATUS_REG_ADDR          = 0x000;
-localparam MEASUREMENT_ADDR         = 0x001;
+localparam STATUS_REG_ADDR          = 1'h0;
+localparam MEASUREMENT_ADDR         = 1'h1;
 
 // ADC Writes
-localparam PLL_CONTROL_ADDR         = 0x000;
-localparam AMUX_ADDR                = 0x001;
-localparam ADC_TRIGGER_ADDR         = 0x002;
+localparam PLL_CONTROL_ADDR         = 1'h2;
+localparam AMUX_ADDR                = 1'h3;
+localparam ADC_TRIGGER_ADDR         = 1'h4;
 
 // --------------------------------------------------------------------------
 // Internal wires
@@ -150,7 +150,7 @@ always @ ( posedge PCLK, negedge PRESETn )
 // INSERT ADC module here.
 // --------------------------------------------------------------------------
 
-dummy_adc(
+adc dummy_adc(
     .STATUS_REG_ADDR(status_wire),
     .MEASUREMENT(measurement_wire),
     .PLL_CONTROL(pll_reg),
