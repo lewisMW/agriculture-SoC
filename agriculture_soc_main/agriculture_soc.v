@@ -344,4 +344,24 @@ cmsdk_ahb_gpio #(
  
 // );
 
+adc_apb_wrapper #(
+   .ADDR_WIDTH(12),
+   .DATA_WIDTH(32)
+) adc_wrapper (
+   // Clock and Reset
+   .PCLK(fclk),
+   .PRESETn(hresetn),
+   // Address and Control
+   .PSEL(hsel_nomap),
+   .PADDR(haddr_soc),
+   .PENABLE(htrans_soc),
+   .PWRITE(hwrite_soc),
+   // Data
+   .PWDATA(hwdata_soc),
+   // Handshake
+   .PRDATA(hrdata_nomap),
+   .PREADY(hready_nomap),
+   .PSLVERR()
+);
+
 endmodule

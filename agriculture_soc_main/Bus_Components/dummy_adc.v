@@ -1,4 +1,7 @@
 module dummy_adc
+#(
+parameter DATA_WIDTH = 32
+)
 (
 input wire [DATA_WIDTH-1 : 0] STATUS_REG_ADDR,
 input wire [DATA_WIDTH-1 : 0] MEASUREMENT,

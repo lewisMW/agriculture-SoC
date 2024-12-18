@@ -73,6 +73,9 @@ reg  [DATA_WIDTH - 1 : 0] read_mux;     // stores read data
 wire read_enable;
 wire write_enable;
 
+reg write_pll;
+reg write_amux;
+reg write_trig;
 
 // --------------------------------------------------------------------------
 // Read
@@ -99,8 +102,6 @@ assign PRDATA = read_mux;
 assign write_enable = PSEL & PWRITE & PENABLE;
 
 always @* begin
-    write_enable = 1'b0;
-
     if ( write_enable )
         case ( PADDR[ADDR_WIDTH - 1 : 2] )
             PLL_CONTROL_ADDR : write_pll = 1'b1;
@@ -147,10 +148,20 @@ always @ ( posedge PCLK, negedge PRESETn )
 
 
 // --------------------------------------------------------------------------
+// Debug Output
+// --------------------------------------------------------------------------
+
+always @(posedge PCLK) begin
+    if (write_pll) $display("PLL_CONTROL: %h", pll_reg);
+    if (write_amux) $display("AMUX: %h", amux_reg);
+    if (write_trig) $display("ADC_TRIGGER: %h", trig_reg);
+end
+
+// --------------------------------------------------------------------------
 // INSERT ADC module here.
 // --------------------------------------------------------------------------
 
-adc dummy_adc(
+dummy_adc adc(
     .STATUS_REG_ADDR(status_wire),
     .MEASUREMENT(measurement_wire),
     .PLL_CONTROL(pll_reg),
