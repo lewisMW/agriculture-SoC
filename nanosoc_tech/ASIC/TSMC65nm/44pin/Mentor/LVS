@@ -1,8 +1,0 @@
-*lvsRulesFile: /home/dwn1c21/SoC-Labs/phys_ip/TSMC/65/CMOS/LP/pdk/Calibre/lvs/calibre.lvs
-*lvsRunDir: ${SOCLABS_PROJECT_DIR}/imp/ASIC/nanosoc/LVS
-*lvsLayoutPaths: ${SOCLABS_PROJECT_DIR}/imp/ASIC/nanosoc/nanosoc.gds
-*lvsLayoutPrimary: nanosoc_chip_pads
-*lvsSourcePath: ${SOCLABS_PROJECT_DIR}/imp/ASIC/nanosoc/netlist/nanosoc_chip_pads_44pin.vp /research/AAA/phys_ip_library/arm/tsmc/cln65lp/sc12_base_lvt/r0p0/verilog/sc12_cln65lp_base_lvt.v
-*lvsSourceSystem: VERILOG
-*lvsSourcePrimary: nanosoc_chip_pads
-*cmnV2LVS_LastTranslation: 1708338090

@@ -1,5 +1,0 @@
-rtx_demo
-gpio_tests
-dma350_stream_tests
-uart_tests
-uart_driver_tests
