@@ -161,12 +161,19 @@ end
 // INSERT ADC module here.
 // --------------------------------------------------------------------------
 
+wire analog_passthrough;
+
 dummy_adc adc(
     .STATUS_REG_ADDR(status_wire),
     .MEASUREMENT(measurement_wire),
     .PLL_CONTROL(pll_reg),
-    .AMUX(amux_reg),
     .ADC_TRIGGER(trig_reg)
+    .ANALOG_IN(analog_passthrough),
+);
+
+dummy_amux amux(
+    .INPUT_SEL(amux_reg),
+    .ANALOG_PASSTHROUGH(analog_passthrough)
 );
 
 endmodule
