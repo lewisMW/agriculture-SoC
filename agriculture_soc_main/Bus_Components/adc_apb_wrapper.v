@@ -167,8 +167,8 @@ dummy_adc adc(
     .STATUS_REG_ADDR(status_wire),
     .MEASUREMENT(measurement_wire),
     .PLL_CONTROL(pll_reg),
-    .ADC_TRIGGER(trig_reg)
-    .ANALOG_IN(analog_passthrough),
+    .ADC_TRIGGER(trig_reg),
+    .ANALOG_IN(analog_passthrough)
 );
 
 dummy_amux amux(
