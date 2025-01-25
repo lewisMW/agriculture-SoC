@@ -54,16 +54,17 @@ wire [DATA_WIDTH - 1 : 0] measurement_wire;
 // --------------------------------------------------------------------------
 // APB addresses for various ADC functionality
 // --------------------------------------------------------------------------
-//TODO: change these addresses 
+// These are address offsets (base + offset)
 
 // ADC Reads
-localparam STATUS_REG_ADDR          = 1'h0;
-localparam MEASUREMENT_ADDR         = 1'h1;
+localparam STATUS_REG_ADDR          = 12'h001;
+localparam MEASUREMENT_HI_ADDR      = 12'h002;
+localparam MEASUREMENT_LO_ADDR      = 12'h003;
 
 // ADC Writes
-localparam PLL_CONTROL_ADDR         = 1'h2;
-localparam AMUX_ADDR                = 1'h3;
-localparam ADC_TRIGGER_ADDR         = 1'h4;
+localparam PLL_CONTROL_ADDR         = 12'h100;
+localparam AMUX_ADDR                = 12'h101;
+localparam ADC_TRIGGER_ADDR         = 12'h102;
 
 // --------------------------------------------------------------------------
 // Internal wires
@@ -85,9 +86,10 @@ assign read_enable = PSEL & ~PWRITE;
 always @(posedge PCLK) begin
     if (read_enable) begin
         case( PADDR )
-            STATUS_REG_ADDR  : read_mux = status_wire;
-            MEASUREMENT_ADDR : read_mux = measurement_wire;
-            default          : read_mux = {DATA_WIDTH{1'b0}};
+            STATUS_REG_ADDR     : read_mux = status_wire;
+            MEASUREMENT_HI_ADDR : read_mux = measurement_wire;
+            MEASUREMENT_LO_ADDR : read_mux = measurement_wire;
+            default             : read_mux = {DATA_WIDTH{1'b0}};
         endcase
     end else begin
         read_mux = {DATA_WIDTH{1'b0}};
