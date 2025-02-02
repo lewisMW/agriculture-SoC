@@ -178,4 +178,8 @@ dummy_amux amux(
     .ANALOG_PASSTHROUGH(analog_passthrough)
 );
 
+dummy_pll pll(
+    .PLL_CONTROL(pll_reg)
+);
+
 endmodule
