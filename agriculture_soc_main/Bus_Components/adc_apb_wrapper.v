@@ -54,16 +54,17 @@ wire [DATA_WIDTH - 1 : 0] measurement_wire;
 // --------------------------------------------------------------------------
 // APB addresses for various ADC functionality
 // --------------------------------------------------------------------------
-//TODO: change these addresses 
+// These are address offsets (base + offset)
 
 // ADC Reads
-localparam STATUS_REG_ADDR          = 0x000;
-localparam MEASUREMENT_ADDR         = 0x001;
+localparam STATUS_REG_ADDR          = 12'h001;
+localparam MEASUREMENT_HI_ADDR      = 12'h002;
+localparam MEASUREMENT_LO_ADDR      = 12'h003;
 
 // ADC Writes
-localparam PLL_CONTROL_ADDR         = 0x000;
-localparam AMUX_ADDR                = 0x001;
-localparam ADC_TRIGGER_ADDR         = 0x002;
+localparam PLL_CONTROL_ADDR         = 12'h100;
+localparam AMUX_ADDR                = 12'h101;
+localparam ADC_TRIGGER_ADDR         = 12'h102;
 
 // --------------------------------------------------------------------------
 // Internal wires
@@ -73,6 +74,9 @@ reg  [DATA_WIDTH - 1 : 0] read_mux;     // stores read data
 wire read_enable;
 wire write_enable;
 
+reg write_pll;
+reg write_amux;
+reg write_trig;
 
 // --------------------------------------------------------------------------
 // Read
@@ -82,9 +86,10 @@ assign read_enable = PSEL & ~PWRITE;
 always @(posedge PCLK) begin
     if (read_enable) begin
         case( PADDR )
-            STATUS_REG_ADDR  : read_mux = status_wire;
-            MEASUREMENT_ADDR : read_mux = measurement_wire;
-            default          : read_mux = {DATA_WIDTH{1'b0}};
+            STATUS_REG_ADDR     : read_mux = status_wire;
+            MEASUREMENT_HI_ADDR : read_mux = measurement_wire;
+            MEASUREMENT_LO_ADDR : read_mux = measurement_wire;
+            default             : read_mux = {DATA_WIDTH{1'b0}};
         endcase
     end else begin
         read_mux = {DATA_WIDTH{1'b0}};
@@ -99,8 +104,6 @@ assign PRDATA = read_mux;
 assign write_enable = PSEL & PWRITE & PENABLE;
 
 always @* begin
-    write_enable = 1'b0;
-
     if ( write_enable )
         case ( PADDR[ADDR_WIDTH - 1 : 2] )
             PLL_CONTROL_ADDR : write_pll = 1'b1;
@@ -147,15 +150,41 @@ always @ ( posedge PCLK, negedge PRESETn )
 
 
 // --------------------------------------------------------------------------
+// Debug Output
+// --------------------------------------------------------------------------
+
+always @(posedge PCLK) begin
+    if (write_pll) $display("PLL_CONTROL: %h", pll_reg);
+    if (write_amux) $display("AMUX: %h", amux_reg);
+    if (write_trig) $display("ADC_TRIGGER: %h", trig_reg);
+end
+
+// --------------------------------------------------------------------------
 // INSERT ADC module here.
 // --------------------------------------------------------------------------
 
-dummy_adc(
+wire analog_passthrough;
+
+dummy_adc adc(
     .STATUS_REG_ADDR(status_wire),
     .MEASUREMENT(measurement_wire),
+    .ADC_TRIGGER(trig_reg),
+    .ANALOG_IN(analog_passthrough),
+    .clk(PCLK),
+    .reset(PRESETn)
+);
+
+dummy_amux amux(
+    .INPUT_SEL(amux_reg),
+    .ANALOG_PASSTHROUGH(analog_passthrough),
+    .clk(PCLK),
+    .reset(PRESETn)
+);
+
+dummy_pll pll(
     .PLL_CONTROL(pll_reg),
-    .AMUX(amux_reg),
-    .ADC_TRIGGER(trig_reg)
+    .clk(PCLK),
+    .reset(PRESETn)
 );
 
 endmodule
