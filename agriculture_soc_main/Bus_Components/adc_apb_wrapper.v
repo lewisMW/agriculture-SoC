@@ -170,17 +170,21 @@ dummy_adc adc(
     .MEASUREMENT(measurement_wire),
     .ADC_TRIGGER(trig_reg),
     .ANALOG_IN(analog_passthrough),
-    .clk(PCLK)
+    .clk(PCLK),
+    .reset(PRESETn)
 );
 
 dummy_amux amux(
     .INPUT_SEL(amux_reg),
-    .ANALOG_PASSTHROUGH(analog_passthrough)
+    .ANALOG_PASSTHROUGH(analog_passthrough),
+    .clk(PCLK),
+    .reset(PRESETn)
 );
 
 dummy_pll pll(
     .PLL_CONTROL(pll_reg),
-    .clk(PCLK)
+    .clk(PCLK),
+    .reset(PRESETn)
 );
 
 endmodule

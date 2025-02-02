@@ -7,7 +7,8 @@ input wire [DATA_WIDTH-1 : 0] STATUS_REG_ADDR,
 input wire [DATA_WIDTH-1 : 0] MEASUREMENT,
 input wire [DATA_WIDTH-1 : 0] ADC_TRIGGER,
 input wire ANALOG_IN,   // This is an analog wire
-input wire clk
+input wire clk,
+input wire reset
 );
 
 reg [DATA_WIDTH-1 : 0] STATUS_REG_ADDR_PREV;
@@ -15,7 +16,7 @@ reg [DATA_WIDTH-1 : 0] MEASUREMENT_PREV;
 reg [DATA_WIDTH-1 : 0] ADC_TRIGGER_PREV;
 reg ANALOG_IN_PREV;
 
-always @(posedge clk) begin
+always @(posedge clk or posedge reset) begin
     if (STATUS_REG_ADDR != STATUS_REG_ADDR_PREV) begin
         $display("STATUS_REG_ADDR = %h", STATUS_REG_ADDR);
         STATUS_REG_ADDR_PREV <= STATUS_REG_ADDR;
