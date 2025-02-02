@@ -17,10 +17,6 @@ always @(MEASUREMENT) begin
     $display("MEASUREMENT = %h", MEASUREMENT);
 end
 
-always @(PLL_CONTROL) begin
-    $display("PLL_CONTROL = %h", PLL_CONTROL);
-end
-
 always @(ADC_TRIGGER) begin
     $display("ADC_TRIGGER = %h", ADC_TRIGGER);
 end
