@@ -169,7 +169,8 @@ dummy_adc adc(
     .STATUS_REG_ADDR(status_wire),
     .MEASUREMENT(measurement_wire),
     .ADC_TRIGGER(trig_reg),
-    .ANALOG_IN(analog_passthrough)
+    .ANALOG_IN(analog_passthrough),
+    .clk(PCLK)
 );
 
 dummy_amux amux(
@@ -178,7 +179,8 @@ dummy_amux amux(
 );
 
 dummy_pll pll(
-    .PLL_CONTROL(pll_reg)
+    .PLL_CONTROL(pll_reg),
+    .clk(PCLK)
 );
 
 endmodule
