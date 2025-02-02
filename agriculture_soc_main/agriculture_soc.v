@@ -7,7 +7,7 @@
 
 module agriculture_soc #(
    parameter W = 32,
-   paramater W_APB_ADDR = 16
+   parameter W_APB_ADDR = 16
    )
    (
    // Global Clock and Reset 
@@ -15,13 +15,13 @@ module agriculture_soc #(
    input wire reset, 
 
    // LED Out 
-   output wire [3:0] LED, 
+   output wire [3:0] LED
 
    // Debug 
-   input wire  TDI, 
-   input wire  TCK, 
-   inout wire  TMS, 
-   inout wire TDO
+   // input wire  TDI, 
+   // input wire  TCK, 
+   // inout wire  TMS, 
+   // inout wire TDO
 );
 
 // Clocking 
