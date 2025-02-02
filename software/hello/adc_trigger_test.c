@@ -50,8 +50,8 @@ int main (void)
 
     // Read the status register.
     volatile unsigned int *STATUS_REG_ADDR = APB_BUS + 0x1;
-    unsigned int status_reg_value = *STATUS_REG_ADDR;
-    unsigned int adc_status = status_reg_value & ADC_STATUS_MASK;
+    volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
+    volatile unsigned int adc_status = status_reg_value & ADC_STATUS_MASK;
     adc_status = adc_status >> 2;
 
     //Trigger the ADC
@@ -59,15 +59,15 @@ int main (void)
     *ADC_TRIGGER_ADDR = (unsigned int) 1;
 
     unsigned int wait_counter = 128;
-    int i = 0;
+    unsigned int i = 0;
     while (adc_status != 1 && i < wait_counter) {
         volatile unsigned int *STATUS_REG_ADDR = APB_BUS + 0x1;
-        unsigned int status_reg_value = *STATUS_REG_ADDR;
+        volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
         adc_status = status_reg_value & ADC_STATUS_MASK;
         adc_status = adc_status >> 2;
     }
 
-    //TODO MAKE THIS A PROPER ASSERTION.g
+    //TODO MAKE THIS A PROPER ASSERTION.gs
     if (wait_counter >= 128) {
         printf("DID NOT UPDATE count\n");
     }

@@ -61,7 +61,7 @@ int main (void)
     //Setting LSB to 1 should start ADC conversion.
     *ANALOG_MUX_ADDR = 0x1;
 
-    while (1);
+    // while (1);
 
     return 0;
 }
