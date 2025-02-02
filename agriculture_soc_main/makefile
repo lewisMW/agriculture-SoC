@@ -12,7 +12,8 @@ simulation_defs = -DSIMULATION
 
 TB_MODULE = agriculture_soc_tb
 
-ROM_FILE = ../software/hello/hello.hex
+# ROM_FILE = ../software/hello/write_test.hex
+ROM_FILE = ../software/hello/adc_trigger_test.hex
 
 VERILOG_FILES = $(shell find . -type f -name "*.v")
 
