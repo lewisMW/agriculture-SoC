@@ -37,7 +37,7 @@ CORE_DIR     = $(CMSIS_DIR)/CMSIS/Include
 DEVICE_DIR   = $(CMSIS_DIR)/Device/ARM/CMSDK_CM0
 
 # Program file
-TESTNAME     = hello
+TESTNAME     = adc_trigger_test
 
 # Endian Option
 COMPILE_BIGEND = 0
