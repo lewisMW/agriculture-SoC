@@ -1,0 +1,27 @@
+diff --git a/bin/project_setup.sh b/bin/project_setup.sh
+index 1b073e5..93303cf 100755
+--- a/bin/project_setup.sh
++++ b/bin/project_setup.sh
+@@ -53,16 +53,22 @@ else
+     # "TECH_DIR"
+     while read line; do 
+         eval PATH="$PATH:\$${line}/flow"
++        # Fix: Might need to replace the above with this for WSL:
++        #PATH="$PATH:${!line}/flow"
+     done <<< "$(awk 'BEGIN{for(v in ENVIRON) print v}' | grep TECH_DIR)"
+ 
+     # "FLOW_DIR"
+     while read line; do 
+         eval PATH="$PATH:\$${line}/tools"
++        # Fix: Might need to replace the above with this for WSL:
++        #PATH="$PATH:${!line}/flow"
+     done <<< "$(awk 'BEGIN{for(v in ENVIRON) print v}' | grep FLOW_DIR)"
+ 
+     # "SOCLABS_PROJECT_DIR"
+     while read line; do 
+         eval PATH="$PATH:\$${line}/flow"
++        # Fix: Might need to replace the above with this for WSL:
++        #PATH="$PATH:${!line}/flow"
+     done <<< "$(awk 'BEGIN{for(v in ENVIRON) print v}' | grep SOCLABS_PROJECT_DIR)"
+ 
+     export PATH
