@@ -24,7 +24,7 @@ cd $SOCLABS_PROJECT_DIR/simulate/sim/$SIM_NAME
 # Compile Simulation
 # Call makefile in NanoSoC Repo with options
 echo ${2}
-make -C $SOCLABS_NANOSOC_TECH_DIR run_mti \
+make -C $SOCLABS_NANOSOC_TECH_DIR run_iverilog \
     SIM_DIR=$SIM_DIR \
     ACCELERATOR=no \
     ${@:2}
