@@ -25,6 +25,3 @@ imp/fpga/*
 imp/ASIC/*
 memories/*
 html
-
-# Ignore IP library path
-nanosoc.config

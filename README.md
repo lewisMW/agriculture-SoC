@@ -26,6 +26,8 @@ At this point you may also like to edit the /env/dependency_env.sh to include yo
 ## Setting up the Project Environment
 ---
 
+@(lewisMW): First, export an environment variable for your ARM IP parent directory path in /env/dependency_env.sh. This should be the ARM_IP_LIBRARY_PATH variable. E.g. `export ARM_IP_LIBRARY_PATH="/Users/lewismw/Documents/SoCs"`, with IP such as "/Users/lewismw/Documents/SoCs/latest/Corstone-101/logical" available, etc.
+
 In order to checkout all the sub-repositories in your project to their branches and set up your local environment variables, from the top-level of this project run:
 
 `source set_env.sh`
