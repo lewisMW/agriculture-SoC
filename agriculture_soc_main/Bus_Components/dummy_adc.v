@@ -1,10 +1,11 @@
 module dummy_adc
 #(
-parameter DATA_WIDTH = 32
+parameter DATA_WIDTH = 32,
+parameter RAND_SEED = 1
 )
 (
 input wire [DATA_WIDTH-1 : 0] STATUS_REG_ADDR,
-input wire [DATA_WIDTH-1 : 0] MEASUREMENT,
+output wire [DATA_WIDTH-1 : 0] MEASUREMENT,
 input wire [DATA_WIDTH-1 : 0] ADC_TRIGGER,
 input wire ANALOG_IN,   // This is an analog wire
 input wire clk,
@@ -33,6 +34,8 @@ always @(posedge clk or posedge reset) begin
         $display("ANALOG_IN = %h", ANALOG_IN);
         ANALOG_IN_PREV <= ANALOG_IN;
     end
+
+    MEASUREMENT <= $random; // TODO: set random seed
 end
 
 endmodule
