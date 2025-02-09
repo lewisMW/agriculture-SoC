@@ -35,7 +35,7 @@ always @(posedge clk or posedge reset) begin
         ANALOG_IN_PREV <= ANALOG_IN;
     end
 
-    MEASUREMENT <= $random; // TODO: set random seed
+    MEASUREMENT <= $random(RAND_SEED);
 end
 
 endmodule
