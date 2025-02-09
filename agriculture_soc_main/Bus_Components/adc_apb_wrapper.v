@@ -156,9 +156,9 @@ always @ ( posedge PCLK, negedge PRESETn )
 // always @(posedge PCLK) begin
 //     if (write_pll) $display("PLL_CONTROL: %h", pll_reg);
 //     if (write_amux) $display("AMUX: %h", amux_reg);
-    // if (write_trig) $display("ADC_TRIGGER: %h", trig_reg);
+//     if (write_trig) $display("ADC_TRIGGER: %h", trig_reg);
 // end
-// 
+// // 
 // --------------------------------------------------------------------------
 // INSERT ADC module here.
 // --------------------------------------------------------------------------
