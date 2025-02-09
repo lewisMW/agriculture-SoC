@@ -5,7 +5,7 @@ parameter RAND_SEED = 1
 )
 (
 input wire [DATA_WIDTH-1 : 0] STATUS_REG_ADDR,
-output wire [DATA_WIDTH-1 : 0] MEASUREMENT,
+output reg [DATA_WIDTH-1 : 0] MEASUREMENT,
 input wire [DATA_WIDTH-1 : 0] ADC_TRIGGER,
 input wire ANALOG_IN,   // This is an analog wire
 input wire clk,
