@@ -12,3 +12,4 @@ module dummy_amux
         $display("INPUT_SEL = %h", INPUT_SEL);
     end
 endmodule
+

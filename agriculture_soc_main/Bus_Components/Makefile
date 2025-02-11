@@ -22,17 +22,17 @@
 # 	rm -rf obj_dir waveform.vcd
 # Verilator 仿真配置
 VERILATOR = verilator
-VFLAGS = --cc --exe --trace --build --timing --main --top-module adc_apb_wrapper_tb
+VFLAGS = -Wno-fatal --cc --exe --trace --build --timing --main --top-module adc_apb_fifo_wrapper_tb 
 
-TB_MODULE = adc_apb_wrapper_tb
+TB_MODULE = adc_apb_fifo_wrapper_tb
 OBJ_DIR = obj_dir
 
 VERILOG_FILES = \
-    ./adc_apb_wrapper.v \
+    ./adc_apb_fifo_wrapper.v \
     ../FIFO/fifo_apb_adc.v \
     ./dummy_adc.v \
     ./dummy_amux.v \
-    ./adc_apb_wrapper_tb.v
+    ./adc_apb_fifo_wrapper_tb.v
 
 all:
 	$(VERILATOR) $(VFLAGS) $(VERILOG_FILES)

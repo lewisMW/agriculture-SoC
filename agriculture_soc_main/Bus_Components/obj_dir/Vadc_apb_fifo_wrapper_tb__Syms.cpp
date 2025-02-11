@@ -1,24 +1,24 @@
 // Verilated -*- C++ -*-
 // DESCRIPTION: Verilator output: Symbol table implementation internals
 
-#include "Vadc_apb_wrapper_tb__pch.h"
-#include "Vadc_apb_wrapper_tb.h"
-#include "Vadc_apb_wrapper_tb___024root.h"
+#include "Vadc_apb_fifo_wrapper_tb__pch.h"
+#include "Vadc_apb_fifo_wrapper_tb.h"
+#include "Vadc_apb_fifo_wrapper_tb___024root.h"
 
 // FUNCTIONS
-Vadc_apb_wrapper_tb__Syms::~Vadc_apb_wrapper_tb__Syms()
+Vadc_apb_fifo_wrapper_tb__Syms::~Vadc_apb_fifo_wrapper_tb__Syms()
 {
 #ifdef VM_TRACE
     if (__Vm_dumping) _traceDumpClose();
 #endif  // VM_TRACE
 }
 
-void Vadc_apb_wrapper_tb__Syms::_traceDump() {
+void Vadc_apb_fifo_wrapper_tb__Syms::_traceDump() {
     const VerilatedLockGuard lock(__Vm_dumperMutex);
     __Vm_dumperp->dump(VL_TIME_Q());
 }
 
-void Vadc_apb_wrapper_tb__Syms::_traceDumpOpen() {
+void Vadc_apb_fifo_wrapper_tb__Syms::_traceDumpOpen() {
     const VerilatedLockGuard lock(__Vm_dumperMutex);
     if (VL_UNLIKELY(!__Vm_dumperp)) {
         __Vm_dumperp = new VerilatedVcdC();
@@ -29,13 +29,13 @@ void Vadc_apb_wrapper_tb__Syms::_traceDumpOpen() {
     }
 }
 
-void Vadc_apb_wrapper_tb__Syms::_traceDumpClose() {
+void Vadc_apb_fifo_wrapper_tb__Syms::_traceDumpClose() {
     const VerilatedLockGuard lock(__Vm_dumperMutex);
     __Vm_dumping = false;
     VL_DO_CLEAR(delete __Vm_dumperp, __Vm_dumperp = nullptr);
 }
 
-Vadc_apb_wrapper_tb__Syms::Vadc_apb_wrapper_tb__Syms(VerilatedContext* contextp, const char* namep, Vadc_apb_wrapper_tb* modelp)
+Vadc_apb_fifo_wrapper_tb__Syms::Vadc_apb_fifo_wrapper_tb__Syms(VerilatedContext* contextp, const char* namep, Vadc_apb_fifo_wrapper_tb* modelp)
     : VerilatedSyms{contextp}
     // Setup internal state of the Syms class
     , __Vm_modelp{modelp}
@@ -43,11 +43,13 @@ Vadc_apb_wrapper_tb__Syms::Vadc_apb_wrapper_tb__Syms(VerilatedContext* contextp,
     , TOP{this, namep}
 {
         // Check resources
-        Verilated::stackCheck(68);
+        Verilated::stackCheck(96);
     // Configure time unit / time precision
     _vm_contextp__->timeunit(-9);
     _vm_contextp__->timeprecision(-12);
     // Setup each module's pointers to their submodules
     // Setup each module's pointer back to symbol table (for public functions)
     TOP.__Vconfigure(true);
+    // Setup scopes
+    __Vscope_adc_apb_fifo_wrapper_tb.configure(this, name(), "adc_apb_fifo_wrapper_tb", "adc_apb_fifo_wrapper_tb", "<null>", -9, VerilatedScope::SCOPE_OTHER);
 }

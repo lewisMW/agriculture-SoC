@@ -2,9 +2,9 @@
 # DESCRIPTION: Verilator output: Makefile for building Verilated archive or executable
 #
 # Execute this makefile from the object directory:
-#    make -f Vadc_apb_wrapper_tb.mk
+#    make -f Vadc_apb_fifo_wrapper_tb.mk
 
-default: Vadc_apb_wrapper_tb
+default: Vadc_apb_fifo_wrapper_tb
 
 ### Constants...
 # Perl executable (from $PERL, defaults to 'perl' if not set)
@@ -32,9 +32,9 @@ VM_SC_TARGET_ARCH = linux
 
 ### Vars...
 # Design prefix (from --prefix)
-VM_PREFIX = Vadc_apb_wrapper_tb
+VM_PREFIX = Vadc_apb_fifo_wrapper_tb
 # Module prefix (from --prefix)
-VM_MODPREFIX = Vadc_apb_wrapper_tb
+VM_MODPREFIX = Vadc_apb_fifo_wrapper_tb
 # User CFLAGS (from -CFLAGS on Verilator command line)
 VM_USER_CFLAGS = \
 	-DVL_TIME_CONTEXT \
@@ -52,7 +52,7 @@ VM_USER_DIR = \
 
 ### Default rules...
 # Include list of all generated classes
-include Vadc_apb_wrapper_tb_classes.mk
+include Vadc_apb_fifo_wrapper_tb_classes.mk
 # Include global rules
 include $(VERILATOR_ROOT)/include/verilated.mk
 
@@ -61,7 +61,7 @@ VPATH += $(VM_USER_DIR)
 
 
 ### Link rules... (from --exe)
-Vadc_apb_wrapper_tb: $(VK_USER_OBJS) $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a $(VM_HIER_LIBS)
+Vadc_apb_fifo_wrapper_tb: $(VK_USER_OBJS) $(VK_GLOBAL_OBJS) $(VM_PREFIX)__ALL.a $(VM_HIER_LIBS)
 	$(LINK) $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS) $(LIBS) $(SC_LIBS) -o $@
 
 

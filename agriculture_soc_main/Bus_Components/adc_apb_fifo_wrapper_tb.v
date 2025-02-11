@@ -1,8 +1,8 @@
 // ===================================================================
 // Testbench: adc_apb_wrapper_tb
 // ===================================================================
-
-module adc_apb_wrapper_tb;
+`timescale 1ns/1ps
+module adc_apb_fifo_wrapper_tb;
     parameter ADDR_WIDTH = 12;
     parameter DATA_WIDTH = 32;
 
@@ -18,11 +18,8 @@ module adc_apb_wrapper_tb;
     wire PREADY;
     wire PSLVERR;
 
-    reg [55:0] adc_data;
-    reg adc_data_valid;
-
     // Instantiate DUT
-    adc_apb_wrapper #(
+    adc_apb_fifo_wrapper #(
         .ADDR_WIDTH(ADDR_WIDTH),
         .DATA_WIDTH(DATA_WIDTH)
     ) uut (
@@ -35,9 +32,7 @@ module adc_apb_wrapper_tb;
         .PWDATA(PWDATA),
         .PRDATA(PRDATA),
         .PREADY(PREADY),
-        .PSLVERR(PSLVERR),
-        .adc_data(adc_data),
-        .adc_data_valid(adc_data_valid)
+        .PSLVERR(PSLVERR)
     );
 
     // Clock generation (10ns period)
@@ -78,52 +73,50 @@ module adc_apb_wrapper_tb;
     endtask
 
     initial begin
-        // Waveform Output
         $dumpfile("waveform.vcd");
-        $dumpvars(0, adc_apb_wrapper_tb);
+        $dumpvars(0, adc_apb_fifo_wrapper_tb);
 
         // Initialize all signals
         PRESETn = 0;
-        PSEL = 0;
-        PADDR = 0;
+        PSEL    = 0;
+        PADDR   = 0;
         PENABLE = 0;
-        PWRITE = 0;
-        PWDATA = 0;
-        adc_data = 56'b0;
-        adc_data_valid = 0;
+        PWRITE  = 0;
+        PWDATA  = 0;
 
         // Reset Sequence
         #20;
         PRESETn = 1;
         $display("System Reset Completed at time %0t", $time);
 
-        // 1. Read initial status (FIFO should be empty, the lower two bits of the status register should be 00)
-        apb_read(12'h001);
+        // 1. Read initial status (FIFO should be empty)
+        apb_read(uut.STATUS_REG_ADDR);
 
-        // 2. Send ADC data into FIFO
-        @(posedge PCLK);
-        adc_data = 56'h0123456789ABCDE;
-        adc_data_valid = 1;
-        @(posedge PCLK);
-        adc_data_valid = 0;
+        // 2. Trigger ADC conversion by writing to ADC trigger register.
+        //    This should cause dummy_adc to generate one new ADC data.
+        apb_write(uut.ADC_TRIGGER_ADDR, 32'h00000001);
+        
         @(posedge PCLK);
 
-        // 3. Read status (now FIFO is not empty, the lower two bits of the status register are not 00)
-        apb_read(12'h001);
+        // 3. Read status (now FIFO should contain one entry)
+        apb_read(uut.STATUS_REG_ADDR);
 
         // 4. Read FIFO high 32 bits
-        apb_read(12'h002);
+        apb_read(uut.MEASUREMENT_HI_ADDR);
 
         // 5. Read FIFO low 24 bits (this operation should trigger FIFO dequeue)
-        apb_read(12'h003);
+        apb_read(uut.MEASUREMENT_LO_ADDR);
 
-        // Wait for one clock cycle to let fifo_rd_en_d propagate to status update
         @(posedge PCLK);
 
-        // 6. Read status again (FIFO should be empty, the lower two bits of the status register should be 00)
-        apb_read(12'h001);
+        // 6. Read status again (FIFO should be empty now)
+        apb_read(uut.STATUS_REG_ADDR);
 
-        // End Simulation
+        // Add assertion check: if FIFO status (lower 2 bits) is not 00, error out.
+        if (uut.status_reg[1:0] !== 2'b00) begin
+            $error("Assertion failed! FIFO is not empty.");
+        end
+
         #50;
         $display("Simulation Completed at time %0t", $time);
         $finish;
