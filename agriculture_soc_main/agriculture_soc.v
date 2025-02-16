@@ -7,7 +7,7 @@
 
 module agriculture_soc #(
    parameter W = 32,
-   parameter BE = 0 // 1: Big endian 0: little endian
+   parameter W_APB_ADDR = 16
    )
    (
    // Global Clock and Reset 
@@ -15,13 +15,13 @@ module agriculture_soc #(
    input wire reset, 
 
    // LED Out 
-   output wire [3:0] LED, 
+   output wire [3:0] LED
 
    // Debug 
-   input wire  TDI, 
-   input wire  TCK, 
-   inout wire  TMS, 
-   inout wire TDO
+   // input wire  TDI, 
+   // input wire  TCK, 
+   // inout wire  TMS, 
+   // inout wire TDO
 );
 
 // Clocking 
@@ -41,18 +41,18 @@ wire [1:0] muxsel;
 wire hsel_memory; 
 wire hsel_gpio; 
 wire hsel_nomap;
-wire hsel_array; 
+wire hsel_ahb_apb_bridge; 
 
 // Peripheral HREADY 
 wire hready_memory; 
 wire hready_gpio; 
-wire hready_array; 
+wire hready_ahb_apb_bridge; 
 wire hready_nomap; 
 
 // Peripheral Data Connections 
 wire [W - 1  : 0] hrdata_memory; 
 wire [W - 1  : 0] hrdata_gpio; 
-wire [W - 1  : 0] hrdata_array; 
+wire [W - 1  : 0] hrdata_ahb_apb_bridge; 
 wire [W - 1  : 0] hrdata_nomap; 
 
 // Side Bank Signals 
@@ -208,7 +208,7 @@ AHBDCD Peripheral_Decoder (
     // Peripheral Select 
    .hsel_s0(hsel_memory), 
    .hsel_s1(hsel_gpio), 
-   .hsel_s2(hsel_array), 
+   .hsel_s2(hsel_ahb_apb_bridge), 
    .hsel_s3(),
    .hsel_nomap(hsel_nomap),
     // Mux Select  
@@ -225,13 +225,13 @@ AHBMUX Peripheral_MUX(
   // HRDATA Slaves 
   .hrdata_s0(hrdata_memory), 
   .hrdata_s1(hrdata_gpio), 
-  .hrdata_s2(hrdata_array), 
+  .hrdata_s2(hrdata_ahb_apb_bridge), 
   .hrdata_s3(), 
   .hrdata_nomap(hrdata_nomap), 
   // HREADY Slaves 
   . hready_s0(hready_memory), 
   . hready_s1(hready_gpio), 
-  . hready_s2(hready_array), 
+  . hready_s2(hready_ahb_apb_bridge), 
   . hready_s3(), 
   . hready_nomap(hready_nomap), 
   // To Master 
@@ -291,7 +291,7 @@ cmsdk_fpga_sram #(.MEMFILE("code.hex")) SRAM_Bank0 (
 cmsdk_ahb_gpio #(
    .ALTERNATE_FUNC_MASK     (16'h0000), // No pin muxing for Port #0
    .ALTERNATE_FUNC_DEFAULT  (16'h0000), // All pins default to GPIO
-   .BE                      (BE)
+   .BE                      (1)         // 1: Big endian 0: little endian
    )
    u_ahb_to_gpio  (
    // AHB Inputs
@@ -323,44 +323,64 @@ cmsdk_ahb_gpio #(
    .COMBINT      ()
 );
 
-// // Accelerator - Device2
-// AHB_Soc_Interface MMA0 (
-//     // Global Clock and Reset
-//     .HCLK(fclk), 
-//     .HRESETn(hresetn), 
-//     // Control Signals 
-//     .HSEL(hsel_array), 
-//     .HWRITE(hwrite_soc), 
-//     .HMASTLOCK(hmastlock_soc),  
-//     .HTRANS(htrans_soc), 
-//     .HBURST(hburst_soc), 
-//     .HSIZE(hsize_soc), 
-//     // Address and Data  
-//     .HWDATA(hwdata_soc), 
-//     // Response
-//     .HRDATA(hrdata_array), // Done
-//     .HREADYOUT(hready_array),    // Done
-//     .HRESP()   // Done
- 
-// );
+cmsdk_ahb_to_apb  #(
+  .ADDRWIDTH(W_APB_ADDR),
+  .REGISTER_RDATA(1),
+  .REGISTER_WDATA(1)
+) ahb_to_apb_bridge (
+  /*input  wire*/.HCLK(fclk),       // Main Clock
+  /*input  wire*/.HRESETn(hresetn), // Reset
+  /*input  wire*/.PCLKEN(1),        // APB clock enable signal - If PCLK is same as HCLK, set PCLKEN to 1
+  /*input  wire*/.HSEL(hsel_ahb_apb_bridge),   // Device select
+  /*input  wire*/.HADDR(haddr_soc),            // Address
+  /*input  wire*/.HTRANS(htrans_soc),          // Transfer control
+  /*input  wire*/.HSIZE(hsize_soc),            // Transfer size
+  /*input  wire*/.HPROT(hprot_soc),            // Protection control
+  /*input  wire*/.HWRITE(hwrite_soc),          // Write control
+  /*input  wire*/.HREADY(mux2cpu_hready),      // Transfer phase done
+  /*input  wire*/.HWDATA(hwdata_soc),    // Write data
+  /*output reg*/ .HREADYOUT(hready_ahb_apb_bridge),  // Device ready
+  /*output wire*/.HRDATA(hrdata_ahb_apb_bridge),    // Read data output
+  /*output wire*/.HRESP(),     // Device response
+// APB Output:
+  /*output wire*/.PADDR(apb_addr),     // APB Address
+  /*output wire*/.PENABLE(apb_wrapper_en),   // APB Enable
+  /*output wire*/.PWRITE(apb_wen),    // APB Write
+  /*output wire*/.PSTRB(),     // APB Byte Strobe
+  /*output wire*/.PPROT(),     // APB Prot
+  /*output wire*/.PWDATA(apb_wdata),    // APB write data
+  /*output wire*/.PSEL(apb_wrapper_sel),      // APB Select
+  /*output wire*/.APBACTIVE(), // APB bus is active, for clock gating of APB bus
+// APB Input:
+  /*input  wire*/.PRDATA(apb_rdata),    // Read data for each APB slave
+  /*input  wire*/.PREADY(apb_wrapper_ready),    // Ready for each APB slave
+  /*input  wire*/.PSLVERR());  // Error state for each APB slave
+
+wire [W-1:0] apb_wdata;
+wire apb_wen;
+wire [W-1:0] apb_rdata;
+wire [W_APB_ADDR-1:0] apb_addr;
+wire apb_wrapper_ready;
+wire apb_wrapper_sel;
+wire apb_wrapper_en;
 
 adc_apb_wrapper #(
-   .ADDR_WIDTH(12),
-   .DATA_WIDTH(32)
-) adc_wrapper (
+   .ADDR_WIDTH(W_APB_ADDR),
+   .DATA_WIDTH(W)
+) sensor_wrapper (
    // Clock and Reset
    .PCLK(fclk),
    .PRESETn(hresetn),
    // Address and Control
-   .PSEL(hsel_nomap),
-   .PADDR(haddr_soc),
-   .PENABLE(htrans_soc),
-   .PWRITE(hwrite_soc),
+   .PSEL(apb_wrapper_sel),
+   .PADDR(apb_addr),
+   .PENABLE(apb_wrapper_en),
+   .PWRITE(apb_wen),
    // Data
-   .PWDATA(hwdata_soc),
+   .PWDATA(apb_wdata),
    // Handshake
-   .PRDATA(hrdata_nomap),
-   .PREADY(hready_nomap),
+   .PRDATA(apb_rdata),
+   .PREADY(apb_wrapper_ready),
    .PSLVERR()
 );
 
