@@ -78,6 +78,19 @@ reg write_pll;
 reg write_amux;
 reg write_trig;
 
+wire CLK1HZ;
+wire nRTCRST;
+wire nPOR;
+
+assign nRTCRST = PRESETn;
+assign nPOR = PRESETn;
+
+// --------------------------------------------------------------------------
+// Interrupts
+// --------------------------------------------------------------------------
+
+wire RTCINTR;
+
 // --------------------------------------------------------------------------
 // Read
 // --------------------------------------------------------------------------
@@ -148,7 +161,6 @@ always @ ( posedge PCLK, negedge PRESETn )
         if ( write_trig )
             trig_reg <= PWDATA;
 
-
 // --------------------------------------------------------------------------
 // Debug Output
 // --------------------------------------------------------------------------
@@ -185,6 +197,31 @@ dummy_pll pll(
     .PLL_CONTROL(pll_reg),
     .clk(PCLK),
     .reset(PRESETn)
+);
+
+Rtc rtc(
+    // Inputs
+    .PCLK(PCLK),
+    .PRESETn(PRESETn),
+    .PSEL(PSEL),
+    .PENABLE(PENABLE),
+    .PWRITE(PWRITE),
+    .PADDR(PADDR),
+    .PWDATA(PWDATA),
+    .CLK1HZ(CLK1HZ),
+    .nRTCRST(nRTCRST),
+    .nPOR(nPOR),
+    
+    // Outputs
+    .PRDATA(PRDATA),
+    .RTCINTR(RTCINTR),
+    
+    // Testing
+    .SCANENABLE(),
+    .SCANINPCLK(),
+    .SCANINCLK1HZ(),
+    .SCANOUTPCLK(),
+    .SCANOUTCLK1HZ()
 );
 
 endmodule
