@@ -57,9 +57,10 @@ int main (void)
     *ANALOG_MUX_ADDR = 0x4a;
 
     // Set ADC Trigger
-    volatile unsigned int *ADC_TRIGGER_ADDRE = APB_BUS + 0x102;
+    volatile unsigned int *ADC_TRIGGER_ADDR = APB_BUS + 0x102;
     //Setting LSB to 1 should start ADC conversion.
-    *ANALOG_MUX_ADDR = 0x1;
+    // *ADC_TRIGGER_ADDR = 0x1;
+    // *ADC_TRIGGER_ADDR = 0x0;
 
     // while (1);
 
