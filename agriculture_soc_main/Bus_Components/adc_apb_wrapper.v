@@ -199,29 +199,4 @@ dummy_pll pll(
     .reset(PRESETn)
 );
 
-Rtc rtc(
-    // Inputs
-    .PCLK(PCLK),
-    .PRESETn(PRESETn),
-    .PSEL(PSEL),
-    .PENABLE(PENABLE),
-    .PWRITE(PWRITE),
-    .PADDR(PADDR),
-    .PWDATA(PWDATA),
-    .CLK1HZ(CLK1HZ),
-    .nRTCRST(nRTCRST),
-    .nPOR(nPOR),
-    
-    // Outputs
-    .PRDATA(PRDATA),
-    .RTCINTR(RTCINTR),
-    
-    // Testing
-    .SCANENABLE(),
-    .SCANINPCLK(),
-    .SCANINCLK1HZ(),
-    .SCANOUTPCLK(),
-    .SCANOUTCLK1HZ()
-);
-
 endmodule
