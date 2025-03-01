@@ -4,7 +4,7 @@
 `define ADC_WARMUP 5'd3
 `define MEASUREMENT_START 5'd4
 `define POST_CHECK_FIFO 5'd5
-`define SIGNAL_FIFO FULL 5'd6
+`define SIGNAL_FIFO_FULL 5'd6
 `define ERR_FIFO_PRE_CHECK_FAIL 5'd7
 
 module wrapper_control(
@@ -14,14 +14,14 @@ module wrapper_control(
     input wire rtc_trig,
 
     input wire fifo_full,
-    output wire fifo_write_en,
+    output reg fifo_write_en,
 
-    output wire adc_enable,
+    output reg adc_enable,
     input wire adc_ready,
-    output wire adc_start,
+    output reg adc_start,
     input wire adc_done,
 
-    output wire apb_fifo_ready,
+    output reg apb_fifo_ready
 );
 
 reg [4:0] current_state, next_state;

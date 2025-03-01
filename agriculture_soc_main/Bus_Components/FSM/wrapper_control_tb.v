@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module test_wrapper_control_tb;
+module wrapper_control_tb;
 
     // Inputs
     reg clk;
