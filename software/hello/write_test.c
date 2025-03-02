@@ -35,6 +35,7 @@
 
 
 #include <stdio.h>
+#include <inttypes.h>
 
 // This test checks you can write to the relevant wrapper writes.
 // Consider splitting into several tests.
@@ -53,14 +54,14 @@ int main (void)
 
     // Set Analog Mux Cntrol
     //Check if adding int to unsigned int behaviour.
-   volatile unsigned int *ANALOG_MUX_ADDR = APB_BUS + 0x101;
+   volatile unsigned int *ANALOG_MUX_ADDR = (uint8_t*) APB_BUS + 0x104;
     *ANALOG_MUX_ADDR = 0x4a;
 
     // Set ADC Trigger
-    volatile unsigned int *ADC_TRIGGER_ADDR = APB_BUS + 0x102;
+    volatile unsigned int *ADC_TRIGGER_ADDR = (uint8_t*) APB_BUS + 0x108;
     //Setting LSB to 1 should start ADC conversion.
-    // *ADC_TRIGGER_ADDR = 0x1;
-    // *ADC_TRIGGER_ADDR = 0x0;
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x0;
 
     // while (1);
 
