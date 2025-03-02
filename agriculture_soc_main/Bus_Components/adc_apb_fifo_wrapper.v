@@ -38,7 +38,7 @@ module adc_apb_fifo_wrapper #(
     // --------------------------------------------------------------------------
     reg [DATA_WIDTH-1:0] pll_reg;
     reg [DATA_WIDTH-1:0] amux_reg;
-    reg [DATA_WIDTH-1:0] trig_reg;
+    // reg [DATA_WIDTH-1:0] trig_reg;
     // status_reg is used to reflect the FIFO status and ADC data validity.
     reg [DATA_WIDTH-1:0] status_reg;
 
@@ -66,13 +66,13 @@ module adc_apb_fifo_wrapper #(
     // --------------------------------------------------------------------------
     // These are address offsets (base + offset)
     // ADC Reads
-    localparam STATUS_REG_ADDR     = 12'h001;
-    localparam MEASUREMENT_HI_ADDR = 12'h002;
-    localparam MEASUREMENT_LO_ADDR = 12'h003;
+    localparam STATUS_REG_ADDR     = 12'h004;
+    localparam MEASUREMENT_HI_ADDR = 12'h008;
+    localparam MEASUREMENT_LO_ADDR = 12'h00C;
     // ADC Writes
     localparam PLL_CONTROL_ADDR    = 12'h100;
-    localparam AMUX_ADDR           = 12'h101;
-    localparam ADC_TRIGGER_ADDR    = 12'h102;
+    localparam AMUX_ADDR           = 12'h104;
+    localparam ADC_TRIGGER_ADDR    = 12'h108;
 
     // --------------------------------------------------------------------------
     // APB control signals
@@ -94,8 +94,9 @@ module adc_apb_fifo_wrapper #(
         .apb_rd_en    (fifo_rd_en),
         .apb_rd_data  (fifo_data_out),
         .fifo_empty   (fifo_empty),
-        .fifo_clear   (adc_trig)
+        .fifo_clear   ()
     );
+    //TODO: FIFO CLEAR
 
     // --------------------------------------------------------------------------
     // APB Read Logic
@@ -182,11 +183,11 @@ module adc_apb_fifo_wrapper #(
     // update the trigger register and generate a FIFO clear pulse.
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) begin
-            trig_reg <= {DATA_WIDTH{1'b0}};
+            // trig_reg <= {DATA_WIDTH{1'b0}};
             adc_trig <= 1'b0;
         end else begin
             if (write_enable && (PADDR == ADC_TRIGGER_ADDR)) begin
-                trig_reg <= PWDATA;
+                // trig_reg <= PWDATA;
                 adc_trig <= PWDATA[0]; // Use the lowest bit as the trigger signal
             end else begin
                 adc_trig <= 1'b0;
@@ -224,7 +225,7 @@ module adc_apb_fifo_wrapper #(
     ) adc_inst (
         .STATUS_REG_ADDR(status_reg),
         .MEASUREMENT    (adc_data_generated), // ADC data output.
-        .ADC_TRIGGER    (trig_reg),
+        .ADC_TRIGGER    (adc_trig),
         .ANALOG_IN      (analog_passthrough),
         .clk            (PCLK),
         .reset          (~PRESETn),         // Note: dummy_adc reset is active high.

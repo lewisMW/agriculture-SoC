@@ -1,5 +1,5 @@
 module fifo_apb_adc #(
-    parameter DATA_WIDTH = 56,
+    parameter DATA_WIDTH = 64,
     parameter DEPTH = 16
 )(
     input wire clk,                     // Clock

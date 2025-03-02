@@ -177,7 +177,7 @@ dummy_adc adc(
 dummy_amux amux(
     .INPUT_SEL(amux_reg),
     .ANALOG_PASSTHROUGH(analog_passthrough),
-    // .clk(PCLK),
+    .clk(PCLK),
     .reset(PRESETn)
 );
 
