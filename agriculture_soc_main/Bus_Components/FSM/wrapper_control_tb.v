@@ -48,21 +48,21 @@ module wrapper_control_tb;
 
         // Test Case 1: Normal operation
         #10;
-        rtc_trig = 1;
+        rtc_trig = 1;   // mock RTC trigger
         #10;
-        rtc_trig = 0;
-        #20;
-        if (adc_enable !== 1) begin
+        rtc_trig = 0; 
+        #10;
+        if (adc_enable !== 1) begin // ADC enable signal should be high
             $display("Test Case 1 Failed");
         end
-        adc_ready = 1;
-        #10;
+        adc_ready = 1;  // mock ADC ready signal
+        #20;
         adc_ready = 0;
-        #20;
-        if (adc_start !== 1 || fifo_write_en != 1) begin
+        #10;
+        if (adc_start !== 1 || fifo_write_en != 1) begin    // ADC start and FIFO write enable signals should be high
             $display("Test Case 1 Failed");
         end
-        adc_done = 1;
+        adc_done = 1;   // mock ADC done signal
         #10;
         adc_done = 0;
 
@@ -120,10 +120,10 @@ module wrapper_control_tb;
 
         // // Finish simulation
         // #100;
-        // $finish;
+        $finish;
     end
 
-    initial begin
+    always @(posedge clk) begin
         $monitor("Time=%0d, rst=%b, rtc_trig=%b, fifo_full=%b, adc_ready=%b, adc_done=%b, fifo_write_en=%b, adc_enable=%b, adc_start=%b, apb_fifo_ready=%b",
                  $time, rst, rtc_trig, fifo_full, adc_ready, adc_done, fifo_write_en, adc_enable, adc_start, apb_fifo_ready);
     end
