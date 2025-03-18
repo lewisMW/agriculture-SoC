@@ -1,10 +1,8 @@
 module rtc_control(
-    input  wire PCLK,
-    input  wire PRESETn,
-    input wire PSEL,
-    input wire [ADDR_WIDTH -1 : 0] PADDR,
-    input wire PENABLE,
-    input wire PWRITE,
+    input wire PCLK,
+    input wire PRESETn,
+
+
     input wire [DATA_WIDTH-1 : 0]  PWDATA,
     input wire CLK1HZ,
     input wire nRTCRST,
@@ -15,6 +13,14 @@ module rtc_control(
     output wire RTCINTR,
     output wire rtc_trig
 );
+
+wire [ADDR_WIDTH -1 : 0] PADDR;
+wire PWRITE;
+wire PSEL;
+wire PENABLE;
+
+assign nRTCRST = PRESETn;
+assign nPOR = PRESETn;
 
 Rtc rtc(
     // Inputs
@@ -42,6 +48,8 @@ Rtc rtc(
 );
 
 assign rtc_trig = RTCINTR;
+
+// TODO: create FSM using array indexing to reflect the FSM diagram on draw.io
 
 always @(posedge PCLK or negedge PRESETn) begin
     if (!PRESETn)
