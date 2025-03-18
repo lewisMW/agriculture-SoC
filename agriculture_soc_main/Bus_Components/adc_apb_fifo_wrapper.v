@@ -78,7 +78,7 @@ module adc_apb_fifo_wrapper #(
     // APB control signals
     // --------------------------------------------------------------------------
     wire read_enable;
-    assign read_enable = PSEL & ~PWRITE;
+    assign read_enable = PSEL & ~PWRITE & PENABLE;
     wire write_enable;
     assign write_enable = PSEL & PWRITE & PENABLE;
 
