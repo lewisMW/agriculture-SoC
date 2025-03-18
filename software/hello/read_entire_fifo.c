@@ -64,21 +64,96 @@ int main (void)
  
     int i = 0;
     //Wait until fifo is full or at the least has some measurements.
-    while (i < 20) {
-        volatile unsigned int *ADC_TRIGGER_ADDR = (uint8_t*) APB_BUS + 0x108;
+    volatile unsigned int *ADC_TRIGGER_ADDR = (uint8_t*) APB_BUS + 0x108;
         //Setting LSB to 1 should start ADC conversion.
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
         *ADC_TRIGGER_ADDR = 0x1;
-        i = i+1;
-    }
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+        
+    // while (i < 3) {
+    //     volatile unsigned int *ADC_TRIGGER_ADDR = (uint8_t*) APB_BUS + 0x108;
+    //     //Setting LSB to 1 should start ADC conversion.
+    //     *ADC_TRIGGER_ADDR = 0x1;
+    //     i = i+1;
+    // }
     // //Was giving an error, commented it out and added back in and it worked?
     // // Keep going until fifo becomes empty. 
     // // Could add some sort of timeout check if required.
-    // while(get_fifo_status(APB_BUS) != 0b00) {
-    //     uint64_t fifo_value = get_FIFO_value(FIFO_MEASUREMENT_ADDR);
+    volatile uint32_t low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    volatile uint32_t high_value = *FIFO_MEASUREMENT_ADDR;
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    *ANALOG_MUX_ADDR = 0x4a;
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+      low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+      low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+      low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+      low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    
+
+    status_reg_value = *STATUS_REG_ADDR;
+    // while(status_reg_value & FIFO_STATUS_MASK != 0b00) {
+    //     volatile uint32_t high_value = *FIFO_MEASUREMENT_ADDR;
+    //     volatile uint32_t low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    // //TODO verify this operation is valid.
+    //     volatile uint64_t combined_value = (((uint64_t)high_value )<< 32) | low_value;
+    //     // uint64_t fifo_value = get_FIFO_value(FIFO_MEASUREMENT_ADDR);
     //     // printf("%d\n", fifo_value);
     //     // i = i+1;
+    //       status_reg_value = *STATUS_REG_ADDR;
     // }
-    // return 0;
+    return 0;
 
 }
 
