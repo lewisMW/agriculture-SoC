@@ -78,6 +78,19 @@ reg write_pll;
 reg write_amux;
 reg write_trig;
 
+wire CLK1HZ;
+wire nRTCRST;
+wire nPOR;
+
+assign nRTCRST = PRESETn;
+assign nPOR = PRESETn;
+
+// --------------------------------------------------------------------------
+// Interrupts
+// --------------------------------------------------------------------------
+
+wire RTCINTR;
+
 // --------------------------------------------------------------------------
 // Read
 // --------------------------------------------------------------------------
@@ -148,17 +161,16 @@ always @ ( posedge PCLK, negedge PRESETn )
         if ( write_trig )
             trig_reg <= PWDATA;
 
-
 // --------------------------------------------------------------------------
 // Debug Output
 // --------------------------------------------------------------------------
 
-always @(posedge PCLK) begin
-    if (write_pll) $display("PLL_CONTROL: %h", pll_reg);
-    if (write_amux) $display("AMUX: %h", amux_reg);
-    if (write_trig) $display("ADC_TRIGGER: %h", trig_reg);
-end
-
+// always @(posedge PCLK) begin
+//     if (write_pll) $display("PLL_CONTROL: %h", pll_reg);
+//     if (write_amux) $display("AMUX: %h", amux_reg);
+//     if (write_trig) $display("ADC_TRIGGER: %h", trig_reg);
+// end
+// // 
 // --------------------------------------------------------------------------
 // INSERT ADC module here.
 // --------------------------------------------------------------------------

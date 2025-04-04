@@ -38,8 +38,6 @@
 
 #define ADC_STATUS_MASK 0b00000000000000000000000000001100
 
-// This test checks you can write to the relevant wrapper writes.
-// Consider splitting into several tests.
 int main (void)
 {
     // Pointer to GPIO register from memory map
@@ -55,7 +53,8 @@ int main (void)
     adc_status = adc_status >> 2;
 
     //Trigger the ADC
-    volatile unsigned int *ADC_TRIGGER_ADDR = APB_BUS + 0x102;
+    volatile unsigned int *ADC_TRIGGER_ADDR =  (uint8_t*) APB_BUS + 0x108;
+    //?volatile unsigned int *ADC_TRIGGER_ADDR = APB_BUS + 0x102;
     *ADC_TRIGGER_ADDR = (unsigned int) 1;
 
     unsigned int wait_counter = 128;
@@ -71,7 +70,6 @@ int main (void)
     if (wait_counter >= 128) {
         printf("DID NOT UPDATE count\n");
     }
-
 
     while (1);
 

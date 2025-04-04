@@ -57,6 +57,7 @@ int main (void)
     uint32_t low_value = *(FIFO_MEASUREMENT_ADDR+1);
     //TODO verify this operation is valid.
     uint64_t combined_value = (((uint64_t)high_value )<< 32) | low_value;
+    printf("yes\n");
 
     while (1);
 
