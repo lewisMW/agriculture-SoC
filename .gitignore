@@ -5,4 +5,5 @@ agriculture_soc_main/obj_dir/**
 *.o
 *.fst
 AT510-MN-80001-r2p0-00rel0
+**/obj_dir/**
 paths.mk
