@@ -364,7 +364,7 @@ wire apb_wrapper_ready;
 wire apb_wrapper_sel;
 wire apb_wrapper_en;
 
-adc_apb_wrapper #(
+adc_apb_fifo_wrapper #(
    .ADDR_WIDTH(W_APB_ADDR),
    .DATA_WIDTH(W)
 ) sensor_wrapper (

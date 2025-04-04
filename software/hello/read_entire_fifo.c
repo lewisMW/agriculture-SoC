@@ -36,7 +36,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-#define FIFO_STATUS_MASK 0b00000000000000000000000000000011
+#define FIFO_STATUS_MASK 0b11
 
 volatile unsigned int get_fifo_status(volatile unsigned int *APB_BUS_ADDR);
 uint64_t get_FIFO_value(volatile unsigned int* FIFO_MEASUREMENT_ADDR);
@@ -53,23 +53,106 @@ int main (void)
     // Read the status register.
     volatile unsigned int *STATUS_REG_ADDR = APB_BUS + 0x1;
     volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
+
+    // Do a write to make waveforms more obvious.
+    volatile unsigned int *ANALOG_MUX_ADDR = (uint8_t*) APB_BUS + 0x104;
+    *ANALOG_MUX_ADDR = 0x4a;
+
     
     //FIFO measurement address
     volatile unsigned int *FIFO_MEASUREMENT_ADDR = APB_BUS + 0x002;
  
     int i = 0;
     //Wait until fifo is full or at the least has some measurements.
-    while (i < 1e8 && get_fifo_status(APB_BUS) != 0b10) {
-        i = i+1;
-    }
-    //Was giving an error, commented it out and added back in and it worked?
-    // Keep going until fifo becomes empty. 
-    // Could add some sort of timeout check if required.
-    while(get_fifo_status(APB_BUS) != 0b00) {
-        uint64_t fifo_value = get_FIFO_value(FIFO_MEASUREMENT_ADDR);
-        // printf("%d\n", fifo_value);
-        // i = i+1;
-    }
+    volatile unsigned int *ADC_TRIGGER_ADDR = (uint8_t*) APB_BUS + 0x108;
+        //Setting LSB to 1 should start ADC conversion.
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+        *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+     *ADC_TRIGGER_ADDR = 0x1;
+    *ADC_TRIGGER_ADDR = 0x1;
+        
+    // while (i < 3) {
+    //     volatile unsigned int *ADC_TRIGGER_ADDR = (uint8_t*) APB_BUS + 0x108;
+    //     //Setting LSB to 1 should start ADC conversion.
+    //     *ADC_TRIGGER_ADDR = 0x1;
+    //     i = i+1;
+    // }
+    // //Was giving an error, commented it out and added back in and it worked?
+    // // Keep going until fifo becomes empty. 
+    // // Could add some sort of timeout check if required.
+    volatile uint32_t low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    volatile uint32_t high_value = *FIFO_MEASUREMENT_ADDR;
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    *ANALOG_MUX_ADDR = 0x4a;
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+      low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+      low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+      low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+      low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    
+
+    status_reg_value = *STATUS_REG_ADDR;
+    // while(status_reg_value & FIFO_STATUS_MASK != 0b00) {
+    //     volatile uint32_t high_value = *FIFO_MEASUREMENT_ADDR;
+    //     volatile uint32_t low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    // //TODO verify this operation is valid.
+    //     volatile uint64_t combined_value = (((uint64_t)high_value )<< 32) | low_value;
+    //     // uint64_t fifo_value = get_FIFO_value(FIFO_MEASUREMENT_ADDR);
+    //     // printf("%d\n", fifo_value);
+    //     // i = i+1;
+    //       status_reg_value = *STATUS_REG_ADDR;
+    // }
     return 0;
 
 }
