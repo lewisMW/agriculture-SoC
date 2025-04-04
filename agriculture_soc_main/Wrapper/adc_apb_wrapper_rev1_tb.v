@@ -2,7 +2,7 @@
 // Testbench: adc_apb_wrapper_tb
 // ===================================================================
 `timescale 1ns/1ps
-module adc_apb_fifo_wrapper_tb;
+module adc_apb_wrapper_rev1_tb;
     parameter ADDR_WIDTH = 12;
     parameter DATA_WIDTH = 32;
 

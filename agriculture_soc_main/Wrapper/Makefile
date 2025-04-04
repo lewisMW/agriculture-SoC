@@ -30,8 +30,8 @@ OBJ_DIR = obj_dir
 VERILOG_FILES = \
     ./adc_apb_fifo_wrapper.v \
     ../FIFO/fifo_apb_adc.v \
-    ./dummy_adc.v \
-    ./dummy_amux.v \
+    ../Dummy/dummy_adc.v \
+    ../Dummy/dummy_amux.v \
     ./adc_apb_fifo_wrapper_tb.v
 
 all:

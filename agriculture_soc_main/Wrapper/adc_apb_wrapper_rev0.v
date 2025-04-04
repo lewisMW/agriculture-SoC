@@ -1,6 +1,6 @@
 // Module inspired by fpu_apb_wrapper.v
 
-module adc_apb_wrapper #(
+module adc_apb_wrapper_rev0 #(
     parameter ADDR_WIDTH = 12,
     parameter DATA_WIDTH = 32
 )
