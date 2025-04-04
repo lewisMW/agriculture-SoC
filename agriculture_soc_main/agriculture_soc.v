@@ -326,7 +326,7 @@ cmsdk_ahb_gpio #(
 cmsdk_ahb_to_apb  #(
   .ADDRWIDTH(W_APB_ADDR),
   .REGISTER_RDATA(1),
-  .REGISTER_WDATA(0)
+  .REGISTER_WDATA(1)
 ) ahb_to_apb_bridge (
   /*input  wire*/.HCLK(fclk),       // Main Clock
   /*input  wire*/.HRESETn(hresetn), // Reset

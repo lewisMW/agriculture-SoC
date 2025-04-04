@@ -36,12 +36,16 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-// This test checks you can write to the relevant wrapper writes.
-// Consider splitting into several tests.
+#define FIFO_STATUS_MASK 0b00000000000000000000000000000011
+
+volatile unsigned int get_fifo_status(volatile unsigned int *APB_BUS_ADDR);
+uint64_t get_FIFO_value(volatile unsigned int* FIFO_MEASUREMENT_ADDR);
+
+// This test is complicated: It has function calls and tests repeatedly reading from a full fifo.
 int main (void)
 {
     // Pointer to GPIO register from memory map
-    volatile unsigned int *GPIO_DATA = (unsigned int *)0x50000000;
+    // volatile unsigned int *GPIO_DATA = (unsigned int *)0x50000000;
     //Pointer to APB Bus from memory map 
     // TODO Check where it is.
     volatile unsigned int *APB_BUS = (unsigned int *)0x51000000;
@@ -50,18 +54,37 @@ int main (void)
     volatile unsigned int *STATUS_REG_ADDR = APB_BUS + 0x1;
     volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
     
-    //Read the measured value.
+    //FIFO measurement address
     volatile unsigned int *FIFO_MEASUREMENT_ADDR = APB_BUS + 0x002;
-    // 64 bit value on FIFO but read 32 bits at a time. To guarantee size should probably change to uint32 etc...
-    uint32_t high_value = *FIFO_MEASUREMENT_ADDR;
+ 
+    int i = 0;
+    //Wait until fifo is full or at the least has some measurements.
+    while (i < 1e8 && get_fifo_status(APB_BUS) != 0b10) {
+        i = i+1;
+    }
+    //Was giving an error, commented it out and added back in and it worked?
+    // Keep going until fifo becomes empty. 
+    // Could add some sort of timeout check if required.
+    while(get_fifo_status(APB_BUS) != 0b00) {
+        uint64_t fifo_value = get_FIFO_value(FIFO_MEASUREMENT_ADDR);
+        // printf("%d\n", fifo_value);
+        // i = i+1;
+    }
+    return 0;
+
+}
+
+//NOTE: If ever change map this function has to be rewritten. Magic number isn't great.
+volatile unsigned int get_fifo_status(volatile unsigned int *APB_BUS_ADDR) {
+    volatile unsigned int *STATUS_REG_ADDR = APB_BUS_ADDR + 0x1;
+    volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
+    return status_reg_value & FIFO_STATUS_MASK;
+}
+
+uint64_t get_FIFO_value(volatile unsigned int* FIFO_MEASUREMENT_ADDR) {
+        uint32_t high_value = *FIFO_MEASUREMENT_ADDR;
     uint32_t low_value = *(FIFO_MEASUREMENT_ADDR+1);
     //TODO verify this operation is valid.
     uint64_t combined_value = (((uint64_t)high_value )<< 32) | low_value;
-    printf("yes\n");
-
-    while (1);
-
-    return 0;
 }
-
 

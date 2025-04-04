@@ -38,8 +38,6 @@
 
 #define ADC_STATUS_MASK 0b00000000000000000000000000001100
 
-// This test checks you can write to the relevant wrapper writes.
-// Consider splitting into several tests.
 int main (void)
 {
     // Pointer to GPIO register from memory map
@@ -71,7 +69,6 @@ int main (void)
     if (wait_counter >= 128) {
         printf("DID NOT UPDATE count\n");
     }
-
 
     while (1);
 
