@@ -1,0 +1,37 @@
+//-----------------------------------------------------------------------------
+// Accelerator System Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for Top-level Accelerator System
+//-----------------------------------------------------------------------------
+
+// =============    Accelerator Module search path    =============
+// ! Point this to your accelerator subsystem filelist
+
+// =============    System Component Filelist      ================
+// - Custom Accelerator Filelist
+-f $(SOCLABS_PROJECT_DIR)/flist/project/accelerator.flist
+
+// - Primitives IP
+-f $(SOCLABS_PRIMITIVES_TECH_DIR)/flist/rtl_primitives_ip.flist
+
+// - Generic Pad Library
+-f $(SOCLABS_GENERIC_LIB_TECH_DIR)/flist/generic_lib_ip.flist
+
+// - FPGA sram
+-f $(SOCLABS_FPGA_LIB_TECH_DIR)/flist/fpga_lib_mem_ip.flist
+
+// - Accelerator Wrapper IP
+-f $(SOCLABS_WRAPPER_TECH_DIR)/flist/accelerator_wrapper_ip.flist
+
+// - Bootrom Code RTL
+$(SOCLABS_PROJECT_DIR)/system/src/bootrom/verilog/bootrom.v
+
+

@@ -54,6 +54,7 @@ int main (void)
 
     //Trigger the ADC
     volatile unsigned int *ADC_TRIGGER_ADDR =  (uint8_t*) APB_BUS + 0x108;
+    //?volatile unsigned int *ADC_TRIGGER_ADDR = APB_BUS + 0x102;
     *ADC_TRIGGER_ADDR = (unsigned int) 1;
 
     unsigned int wait_counter = 128;

@@ -1,0 +1,22 @@
+//-----------------------------------------------------------------------------
+// CMSDK APB IP Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for Accelerator CMSDK AHB IP
+//-----------------------------------------------------------------------------
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+// =============    CMSDK APB IP search path    =============
+//$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_ahb_to_apb/verilog/cmsdk_ahb_to_apb.v
+//$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb3_eg_slave/verilog/cmsdk_apb3_eg_slave_interface.v
+//$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb3_eg_slave/verilog/cmsdk_apb3_eg_slave_reg.v
+//$(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0-QS/Corstone-101-logical/cmsdk_apb3_eg_slave/verilog/cmsdk_apb3_eg_slave.v

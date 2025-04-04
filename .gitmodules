@@ -1,0 +1,28 @@
+[submodule "accelerator_wrapper_tech"]
+	path = nanosoc/accelerator_wrapper_tech
+	url = https://git.soton.ac.uk/soclabs/accelerator_wrapper_tech.git
+	branch = main
+[submodule "nanosoc_tech"]
+	path = nanosoc/nanosoc_tech
+	url = https://git.soton.ac.uk/soclabs/nanosoc_tech.git
+	branch = main
+[submodule "soctools_flow"]
+	path = nanosoc/soctools_flow
+	url = https://git.soton.ac.uk/soclabs/soctools_flow.git
+	branch = main
+[submodule "generic_lib_tech"]
+	path = nanosoc/generic_lib_tech
+	url = https://git.soton.ac.uk/soclabs/generic_lib_tech.git
+	branch = main
+[submodule "fpga_lib_tech"]
+	path = nanosoc/fpga_lib_tech
+	url = https://git.soton.ac.uk/soclabs/fpga_lib_tech.git
+	branch = main
+[submodule "rtl_primitives_tech"]
+	path = nanosoc/rtl_primitives_tech
+	url = https://git.soton.ac.uk/soclabs/rtl_primitives_tech.git
+	branch = main
+[submodule "asic_lib_tech"]
+	path = nanosoc/asic_lib_tech
+	url = https://git.soton.ac.uk/soclabs/asic_library_tech.git
+	branch = main
