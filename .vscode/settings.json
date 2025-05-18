@@ -1,5 +1,9 @@
 {
     "files.associations": {
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "cmsdk_cm0.h": "c",
+        "dma_pl230_driver.h": "c",
+        "sensing_ip.h": "c",
+        "inttypes.h": "c"
     }
 }

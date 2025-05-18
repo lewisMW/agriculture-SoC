@@ -14,9 +14,15 @@
 // =============    Accelerator Module search path    =============
 
 // ! Point this to your Accelerator RTL
-+incdir+$(ACCELERATOR_DIR)/src/rtl
++incdir+$(ACCELERATOR_DIR)/AHB
++incdir+$(ACCELERATOR_DIR)/Dummy
++incdir+$(ACCELERATOR_DIR)/FIFO
++incdir+$(ACCELERATOR_DIR)/FSM
++incdir+$(ACCELERATOR_DIR)/RTC
++incdir+$(ACCELERATOR_DIR)/Wrapper
 
 // ! Point this to your Wrapper RTL
+// (Not Needed, we are not using wrappers like this)
 //$(SOCLABS_PROJECT_DIR)/wrapper/src/soclabs_ahb_aes128_ctrl.v
 
 // ! Point this to your Subsystem RTL

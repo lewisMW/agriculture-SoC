@@ -18,7 +18,7 @@ export ARM_IP_LIBRARY_PATH="/Users/lewismw/Documents/SoCs"
 # MAKE SURE to not have a forward slash or space at the end of the above line!!!
 
 # Accelerator Engine -- Add Your Accelerator Environment Variable HERE!
-export ACCELERATOR_DIR="$SOCLABS_PROJECT_DIR/secworks-aes"
+export ACCELERATOR_DIR="$SOCLABS_PROJECT_DIR/../agriculture_soc_main"
 
 # Accelerator Wrapper
 export SOCLABS_WRAPPER_TECH_DIR="$SOCLABS_PROJECT_DIR/accelerator_wrapper_tech"

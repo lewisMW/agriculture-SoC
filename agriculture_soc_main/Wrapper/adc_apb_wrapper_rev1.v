@@ -21,6 +21,11 @@ module adc_apb_wrapper_rev1 #(
     // Indicates direction of data transfer. High is a write, low is read.
     input  wire                  PWRITE,
 
+    // Other signals
+    input wire                   APBACTIVE, //TODO
+    input wire [2:0]             PPROT,     //TODO
+    input wire [3:0]             PSTRB,     //TODO
+
     // Data Signals
     // Write data bus. Carries data from master to peripheral during write transaction.
     input  wire [DATA_WIDTH-1:0] PWDATA,
