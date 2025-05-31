@@ -1,0 +1,311 @@
+#!/usr/local/bin/perl -w
+###############################################################################
+# 
+# File:         v2html-cgi
+# RCS:          $Header: v2html-cgi,v 3.1 1999/09/21 18:38:43 cc Exp $
+# Description:  CGI script for helping v2html generated html
+# Author:       Costas Calamvokis
+# Created:      Wed Sep  3 08:52:08 1997
+# Modified:     Tue Sep 21 11:34:21 1999 (Costas Calamvokis) v2html@burbleland.com
+# Language:     Perl
+#
+# Copyright 1998 Costas Calamvokis
+# Copyright 1997 Hewlett-Packard Company
+#
+#  This file nay be copied, modified and distributed only in accordance
+#  with the terms of the limited licence contained in the accompanying
+#  file LICENCE.TXT.
+#
+###############################################################################
+
+#
+# Currently does:
+#  Expanding/compressing hierarchies:
+#   - Takes a query like ?k=9437645&x=XXXXCCXC&in=hierarchy.html
+#    and generates html of the hierarchy in in accoring to the string
+#    x, each character in the string x represents one list in the .html
+#    file which can either be eXpanded or Compressed.
+#   - After each module it also generates a [X] or [C] link which when
+#      clicked causes this script to be called again with a new string
+#      which results in that module being expanded or compressed.
+#   - This is made much easier by v2html which marks each list that is
+#       with a candidate for expansion/compression with a 
+#       number when it generates the html code.
+#
+
+# only have one file error message to avoid leaking information
+#  through errors (uncomment the helpful error during debugging)
+$file_error_message= "v2html-cgi error.<P>\n";
+
+print "Content-Type: text/html\n\n";
+
+# environment variables that should be set by the web server
+&check_input('QUERY_STRING',%ENV);
+&check_input('SCRIPT_NAME',%ENV);
+&check_input('PATH_INFO',%ENV);
+&check_input('PATH_TRANSLATED',%ENV);
+
+# Get the arguements specified in the URL
+%args= getcgivars();
+
+# query variables that should be set in the URL 
+#  (eg .. ?k=9999x=CXCX&in=hierarchy.html
+&check_input('x',%args);
+&check_input('f',%args);
+&check_input('in',%args);
+&check_input('k',%args);
+
+$k             = $args{'k'};
+$expand_string =$args{'x'};
+$infile        = $args{'in'};
+$framed        = $args{'f'};
+
+# remove the / from script name if it is there
+$ENV{'SCRIPT_NAME'} =~ s#^/## ; 
+
+# set up the cgi script and path info that we'll put in the expand/compress
+#  links
+$cgi_script_and_path_info= "/" . $ENV{'SCRIPT_NAME'} . $ENV{'PATH_INFO'};
+
+
+$marker = "  <!-- v2html_handle --> ";
+$printing=1; # start out printing the file
+$ul_id=0;
+
+# Work out the hierarchy file to read
+$file=$ENV{'PATH_TRANSLATED'} . $infile;
+
+# Remove any .. in the file name so people can't look at files
+#  that are not under the web root
+$file=~ s/\.\.//g;
+
+# open the hierarchy file
+unless (open(F,"<$file")) { 
+    print $file_error_message;
+    # this less cryptic message could give intruders clues about your files
+    #print "Couldn't open $ENV{'PATH_TRANSLATED'}$infile\n";
+    exit;
+}
+
+
+# check that the hierarchy file starts with "<!- v2html hierarchy" comment
+#  and that the key is correct
+$_ = <F>;
+&security_check_hierarchy($_);
+
+
+# Have a look for the briefcase icons - if they don't exist
+#  use [C] and [X]
+&find_icons;
+
+# set up the extra infomation needed to do framed output
+if ($framed eq "1") {     $target='target="upper"'; }
+else                {     $target='';               }
+
+#
+# main loop
+#
+while (<F>) {
+    # print the place to find the .v.html files at the bottom of the
+    #  header - if we don't do this then it'll look for them under
+    #  the cgi-bin directory
+    if (m&</head>&) {
+	print "<base href=\"http://$ENV{'SERVER_NAME'}" .
+	    ":$ENV{'SERVER_PORT'}$ENV{'PATH_INFO'}\">\n";    
+    }
+
+    if ($printing) {
+	if (m&<ul> <!-- ul_id=([0-9]+) -->&) {
+	    if (&check_expand_string($1)) {
+		# This is expanded now, so print compressor
+		print $marker .
+		    "<A name=\"ul_id_$1\"></A>\n";
+		print $marker .
+		    "<A $target href=\"$cgi_script_and_path_info?k=$k&x=" . 
+			&new_expand_string($1,"C") . 
+			    "&in=$infile&f=$framed#ul_id_$1\"> $icon_c</A>\n";
+		# keep printing
+		print $_;
+	    }
+	    else {
+		$ul_id=$1;
+		# This is compressed now, so print expander
+		print $marker .
+		    "<A name=\"ul_id_$ul_id\"></A>\n";
+		print $marker .
+		    "<A $target href=\"$cgi_script_and_path_info?k=$k&x=" . 
+			&new_expand_string($ul_id,"X") . 
+			    "&in=$infile&f=$framed#ul_id_$1\"> $icon_x</A>\n";
+		# stop printing
+		$printing=0;
+	    }
+	}
+	else {
+	    # print everything else except compressors and expanders
+	    #  which are generated fresh each time
+	    if (! m/$marker/) {
+		print $_;
+	    }
+	}
+    }
+    else {
+	# not printing, look for the end of the ul_id which stopped the
+	#  print.
+	if (m&</ul> <!-- ul_id=$ul_id -->&) {
+	    $printing=1;
+	}
+    }
+
+    
+
+}
+
+exit;
+
+###########################################################################
+# Subroutines
+###########################################################################
+
+#
+# Takes one arguement - the number in the character string to
+#  look at.
+# Returns 1 if the list is expanded and 0 if it is compressed
+#  if the number is off the end of the expand string then it
+#  returns 1
+#
+sub check_expand_string {
+    local($u) = @_;
+    local($c);
+
+    if ($expand_string eq 'A') {
+	return 1;
+    }
+    elsif (length($expand_string)>$u) {
+	$c = substr($expand_string,$u,1);
+	if ($c eq 'X'){ 
+	    return 1;
+	}
+	else {
+	    return 0;
+	}
+    }
+    else {
+	return 0;
+    }
+
+}
+
+#
+# Generate a new expand_string for a compressor or an expander link
+#  Takes two arguments, the number of the list and the new character
+#  to put in ('C' for compressor, 'X' for expander)
+#
+sub new_expand_string {
+    local($u,$c) = @_;
+    local($new_string,$l);
+
+    $l = length($expand_string);
+    if ($l > $u) {
+	$new_string = $expand_string;
+	substr($new_string,$u,1) = $c;
+    }
+    else {
+	if ($expand_string eq "A") {
+	    $new_string = "X" . "X" x ($u-$l) . $c;
+	}
+	else {
+	    $new_string = $expand_string . "C" x ($u-$l) . $c;
+	}
+    }
+
+    return $new_string;
+}
+
+#
+# check that the input array %a has an element $s
+#
+sub check_input {
+    local($s,%a) = @_;
+    if (!exists($a{$s})) {
+	print "v2html-cgi: fatal error, didn't get required parameter $s.<P>\n";
+	if ($s eq 'k') {
+	    print " This may be because the hierarchy was generated\n" .
+	     " by v2html 2.0. If so regenerate using a newer version<P>\n";
+	}
+	exit;
+    }
+}
+
+#
+# Read all CGI vars into an associative array.
+# If multiple input fields have the same name, they are concatenated into
+#   one array element and delimited with the \0 character.
+# This is a simple version, that assumes a request method of GET.
+#
+sub getcgivars {
+    local(%in) ;
+    local($name, $value) ;
+
+    # Resolve and unencode name/value pairs into %in
+    foreach (split('&', $ENV{'QUERY_STRING'})) {
+        s/\+/ /g ;
+        ($name, $value)= split('=', $_, 2) ;
+        $name=~ s/%(..)/sprintf("%c",hex($1))/ge ;
+        $value=~ s/%(..)/sprintf("%c",hex($1))/ge ;
+        $in{$name}.= "\0" if defined($in{$name}) ;  # concatenate multiple vars
+        $in{$name}.= $value ;
+    }
+
+    return %in ;
+
+}
+
+#
+# Do security checks on the hierarchy file
+#  make sure we don't:
+#   serve files that are not v2html hierarchies
+#   serve files that users can't get access to through the http demon
+#    (by checking that the key is right)
+#
+sub security_check_hierarchy {
+    my ($first_line) = @_;
+
+    if ($first_line =~ /^<!-- v2html hierarchy/) {
+	if ($first_line =~ /^<!-- v2html hierarchy K=$k /) {
+	    print $first_line;
+	}
+	else {
+	    print $file_error_message;
+	    # this less cryptic message could give intruders clues about your files
+	    #print "$ENV{'PATH_TRANSLATED'}$infile: bad key<P>\n";
+	    exit;
+	}
+    }
+    else {
+	print $file_error_message;
+	# this less cryptic message could give intruders clues about your files
+	#print "$ENV{'PATH_TRANSLATED'}$infile is not a v2html hierarchy file\n";
+	exit;
+    }
+}
+
+#
+# Look for the briefcase icons - if they don't exist use [C] and [X]
+#
+sub find_icons {
+    
+ if (( -r "$ENV{'PATH_TRANSLATED'}/v2html-c.gif" ) &&
+     ( -r "$ENV{'PATH_TRANSLATED'}/v2html-x.gif" )) {
+     $icon_c = "<IMG align=bottom border=0 SRC=\"v2html-c.gif\">";
+     $icon_x = "<IMG align=bottom border=0 SRC=\"v2html-x.gif\">";
+ }
+ else {
+     $icon_c = " [C]";
+     $icon_x = " [X]";
+ }
+
+
+}
+
+
+
