@@ -1,0 +1,35 @@
+//-----------------------------------------------------------------------------
+// NanoSoC Corstone-101 VIP Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for Arm Corstone-101 VIP
+//-----------------------------------------------------------------------------
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+// =============    DMA-230 search path    =============
++incdir+$(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/cmsdk_debug_tester/verilog
++incdir+$(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/models/protocol_checkers/AhbLitePC/verilog
++incdir+$(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/models/protocol_checkers/ApbPC/verilog
+
+// CMSDK Debug Tester VIP
+-y $(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/cmsdk_debug_tester/verilog
+//$(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/cmsdk_debug_tester/verilog/cmsdk_debug_tester_ahb_interconnect.v
+//$(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/cmsdk_debug_tester/verilog/cmsdk_debug_tester_trace_capture.v
+//$(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/cmsdk_debug_tester/verilog/cmsdk_debug_tester.v
+
+// CMSDK AHB Lite Protocol Checker VIP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/models/protocol_checkers/AhbLitePC/verilog
+//$(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/models/protocol_checkers/AhbLitePC/verilog/AhbLitePC.v
+
+// CMSDK APB Protocol Checker VIP
+//-y $(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/models/protocol_checkers/ApbPC/verilog
+// $(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/models/protocol_checkers/ApbPC/verilog/ApbPC.v

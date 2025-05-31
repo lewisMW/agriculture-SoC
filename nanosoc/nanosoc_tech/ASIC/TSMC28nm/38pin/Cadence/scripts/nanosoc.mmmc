@@ -1,0 +1,112 @@
+set cln28ht_tech_path           /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/arm_tech/r1p0
+set standard_cell_base_path     /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc12mcpp140z_base_svt_c35/r2p0
+set tech_path /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/arm_tech/r1p0/cadence_captable/1p8m_5x2z_utalrdl
+
+set standard_cell_setup_lib   ${standard_cell_base_path}/lib-ccs-tn/sc12mcpp140z_cln28ht_base_svt_c35_ssg_cworstt_max_0p81v_0c.lib_ccs_tn
+set standard_cell_typ_lib     ${standard_cell_base_path}/lib-ccs-tn/sc12mcpp140z_cln28ht_base_svt_c35_tt_ctypical_max_0p90v_85c.lib_ccs_tn
+set standard_cell_hold_lib    ${standard_cell_base_path}/lib-ccs-tn/sc12mcpp140z_cln28ht_base_svt_c35_ffg_cbestt_min_0p99v_125c.lib_ccs_tn
+
+set TSMC_28NM_PDK_PATH          /home/dwn1c21/SoC-Labs/phys_ip/TSMC/28
+set tphn28hpcpgv18_lef_file     ${TSMC_28NM_PDK_PATH}/CMOS/HPC+/IO1.8V/iolib/STAGGERED/tphn28hpcpgv18_170d_FE/TSMCHOME/digital/Back_End/lef/tphn28hpcpgv18_110a/mt_2/9lm/lef/tphn28hpcpgv18_9lm.lef
+set tphn28hpcpgv18_lib_path     ${TSMC_28NM_PDK_PATH}/CMOS/HPC+/IO1.8V/iolib/STAGGERED/tphn28hpcpgv18_170d_FE/TSMCHOME/digital/Front_End/timing_power_noise/NLDM/tphn28hpcpgv18_170a
+set IO_typ_lib                  ${tphn28hpcpgv18_lib_path}/tphn28hpcpgv18tt0p9v1p8v85c.lib
+set IO_hold_lib                 ${tphn28hpcpgv18_lib_path}/tphn28hpcpgv18ffg0p99v1p98v125c.lib
+set IO_setup_lib                ${tphn28hpcpgv18_lib_path}/tphn28hpcpgv18ssg0p81v1p62v0c.lib
+
+set SOCLABS_PROJECT_DIR /home/dwn1c21/SoC-Labs/TAPEOUT/feb2025/28nm/accelerator-project/
+
+set sram_16k_path             ${SOCLABS_PROJECT_DIR}/memories/sram_16k
+set sram_16k_lef_file         ${sram_16k_path}/sram_16k.lef
+set sram_16k_gds_file         ${sram_16k_path}/sram_16k.gds2
+set sram_16k_setup_lib        ${sram_16k_path}/sram_16k_ssg_cworstt_0p81v_0p81v_0c.lib
+set sram_16k_typ_lib          ${sram_16k_path}/sram_16k_tt_ctypical_0p90v_0p90v_85c.lib
+set sram_16k_lib_hold_lib     ${sram_16k_path}/sram_16k_ffg_cbestt_0p99v_0p99v_125c.lib
+
+set rom_path            ${SOCLABS_PROJECT_DIR}/memories/bootrom
+set rom_via_lef_file    ${rom_path}/rom_via.lef       
+set rom_via_gds_file    ${rom_path}/rom_via.gds2
+set rom_via_setup_lib   ${rom_path}/rom_via_ssg_cworstt_0p81v_0p81v_m40c.lib
+set rom_via_typ_lib     ${rom_path}/rom_via_tt_ctypical_0p90v_0p90v_25c.lib
+set rom_via_hold_lib    ${rom_path}/rom_via_ffg_cbestt_0p99v_0p99v_125c.lib
+
+
+create_library_set -name default_libset_max\
+   -timing\
+    [list ${standard_cell_setup_lib} ${rom_via_setup_lib} ${sram_16k_setup_lib} \
+    ${IO_setup_lib} ] 
+
+create_library_set -name default_libset_min\
+   -timing\
+    [list ${rom_via_hold_lib} ${sram_16k_lib_hold_lib} ${IO_hold_lib}\
+    ${standard_cell_hold_lib}] 
+
+create_library_set -name typical_libset\
+   -timing\
+    [list ${rom_via_typ_lib} ${sram_16k_typ_lib} ${IO_typ_lib}\
+    ${standard_cell_typ_lib}] 
+
+
+create_rc_corner -name default_rc_corner_worst\
+   -pre_route_res 1\
+   -post_route_res 1\
+   -pre_route_cap 1\
+   -post_route_cap 1\
+   -post_route_cross_cap 1\
+   -pre_route_clock_res 0\
+   -pre_route_clock_cap 0\
+   -cap_table ${tech_path}/rcworst_T.captbl
+
+create_rc_corner -name default_rc_corner_best\
+   -pre_route_res 1\
+   -post_route_res 1\
+   -pre_route_cap 1\
+   -post_route_cap 1\
+   -post_route_cross_cap 1\
+   -pre_route_clock_res 0\
+   -pre_route_clock_cap 0\
+   -cap_table ${tech_path}/rcbest.captbl
+
+create_rc_corner -name default_rc_corner_typical\
+   -pre_route_res 1\
+   -post_route_res 1\
+   -pre_route_cap 1\
+   -post_route_cap 1\
+   -post_route_cross_cap 1\
+   -pre_route_clock_res 0\
+   -pre_route_clock_cap 0\
+   -cap_table ${tech_path}/typical.captbl
+
+
+
+create_delay_corner -name default_delay_corner_max\
+   -library_set {default_libset_max}\
+   -rc_corner default_rc_corner_worst
+
+create_delay_corner -name default_delay_corner_ocv\
+   -early_library_set {default_libset_min}\
+   -late_library_set {default_libset_max}\
+   -rc_corner default_rc_corner_typical
+
+create_delay_corner -name default_delay_corner_min\
+   -library_set default_libset_min\
+   -rc_corner default_rc_corner_best
+
+create_delay_corner -name typical_delay_corner\
+   -library_set typical_libset\
+   -rc_corner default_rc_corner_typical
+
+create_constraint_mode -name default_constraint_mode\
+   -sdc_files\
+    [list ../../../constraints.sdc]
+
+create_analysis_view -name default_analysis_view_setup -constraint_mode default_constraint_mode -delay_corner default_delay_corner_max
+
+create_analysis_view -name default_analysis_view_hold -constraint_mode default_constraint_mode -delay_corner default_delay_corner_min
+
+
+create_analysis_view -name typical_analysis_view_setup -constraint_mode default_constraint_mode -delay_corner default_delay_corner_ocv
+create_analysis_view -name typical_analysis_view_hold -constraint_mode default_constraint_mode -delay_corner default_delay_corner_ocv
+
+create_analysis_view -name typical_analysis_view -constraint_mode default_constraint_mode -delay_corner typical_delay_corner
+
+set_analysis_view -setup [list default_analysis_view_setup] -hold [list default_analysis_view_hold]
