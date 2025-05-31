@@ -107,18 +107,15 @@ module adc_apb_wrapper_rev1 #(
     // APB Read Logic
     // --------------------------------------------------------------------------
     // When read enabled, return status register or FIFO data based on address
-    always @(posedge PCLK or negedge PRESETn) begin
-        if (!PRESETn)
-            PRDATA <= 32'b0;
-        else if (read_enable) begin
+    always @(*) begin
+        PRDATA = 32'b0; // Default value
+        if (read_enable) begin
             case (PADDR)
-                STATUS_REG_ADDR:     PRDATA <= status_reg;
-                MEASUREMENT_HI_ADDR: PRDATA <= {fifo_data_out[63:32]}; 
-                MEASUREMENT_LO_ADDR: PRDATA <= fifo_data_out[31:0];
-                default:             PRDATA <= 32'b0;
+                STATUS_REG_ADDR:     PRDATA = status_reg;
+                MEASUREMENT_HI_ADDR: PRDATA = {fifo_data_out[63:32]}; 
+                MEASUREMENT_LO_ADDR: PRDATA = fifo_data_out[31:0];
             endcase
-        end else
-            PRDATA <= 32'b0;
+        end
     end
 
     // --------------------------------------------------------------------------
