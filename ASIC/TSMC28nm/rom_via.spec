@@ -1,0 +1,31 @@
+# user spec file, compiler rom_via_hdd_2_svt_mvt, version r0p0
+
+activity_factor = 5
+back_biasing = off
+bits = 32
+bmux = on
+bus_notation = on
+check_instname = off
+code_file = $SOCLABS_NANOSOC_TECH_DIR/testcodes/bootloader/bootloader.bin
+corners = ffg_cbestt_0p77v_0p77v_0c,ffg_cbestt_0p77v_0p77v_125c,ffg_cbestt_0p77v_0p77v_m40c,ffg_cbestt_0p88v_0p88v_0c,ffg_cbestt_0p88v_0p88v_125c,ffg_cbestt_0p88v_0p88v_m40c,ffg_cbestt_0p99v_0p99v_0c,ffg_cbestt_0p99v_0p99v_125c,ffg_cbestt_0p99v_0p99v_m40c,ffg_cbestt_1p05v_1p05v_0c,ffg_cbestt_1p05v_1p05v_125c,ffg_cbestt_1p05v_1p05v_m40c,ffg_ctypical_0p70v_0p70v_85c,ffg_ctypical_0p90v_0p90v_85c,ffg_ctypical_0p99v_0p99v_125c,ffg_ctypical_1p00v_1p00v_85c,ffg_ctypical_1p05v_1p05v_125c,ssg_cworstt_0p63v_0p63v_0c,ssg_cworstt_0p63v_0p63v_125c,ssg_cworstt_0p63v_0p63v_m40c,ssg_cworstt_0p72v_0p72v_0c,ssg_cworstt_0p72v_0p72v_125c,ssg_cworstt_0p72v_0p72v_m40c,ssg_cworstt_0p81v_0p81v_0c,ssg_cworstt_0p81v_0p81v_125c,ssg_cworstt_0p81v_0p81v_m40c,ssg_cworstt_0p90v_0p90v_0c,ssg_cworstt_0p90v_0p90v_125c,ssg_cworstt_0p90v_0p90v_m40c,tt_ctypical_0p63v_0p63v_0c,tt_ctypical_0p70v_0p70v_85c,tt_ctypical_0p72v_0p72v_0c,tt_ctypical_0p80v_0p80v_85c,tt_ctypical_0p81v_0p81v_0c,tt_ctypical_0p90v_0p90v_0c,tt_ctypical_0p90v_0p90v_125c,tt_ctypical_0p90v_0p90v_25c,tt_ctypical_0p90v_0p90v_85c,tt_ctypical_1p00v_1p00v_125c,tt_ctypical_1p00v_1p00v_85c,tt_ctypical_1p05v_1p05v_85c
+cust_comment = This\ is\ a\ memory\ instance
+diodes = on
+drive = 6
+ema = on
+frequency = 400
+instname = rom_via
+left_bus_delim = [
+libertyviewstyle = nldm
+libname = rom_via
+mode = ones
+mux = 8
+mvt = LL
+name_case = upper
+pipeline = off
+power_type = otc
+pwr_gnd_rename = vdde:VDD,vsse:VSS
+right_bus_delim = ]
+ser = none
+site_def = off
+top_layer = m5-m10
+words = 256

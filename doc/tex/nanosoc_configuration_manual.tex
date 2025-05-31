@@ -1,0 +1,286 @@
+\documentclass{report}
+\usepackage{hyperref}
+\usepackage{tcolorbox,float}
+\usepackage{listings}
+
+\makeatletter
+\newfloat{info@box}{tbp}{loi}[section]% 1: Name of float environment. 2: Default placement (top, bottom, ...). 3: File extension if written to an aux-file (like toc, lof, lot, loa, ...). 4: Numbering within <section/subsection/...>.
+\makeatother
+\floatname{info@box}{Infobox}% Adapt caption.
+\newenvironment{infobox}[1][]{% Create new environment using info@box and tcolorbox
+   \begin{info@box}%
+      \begin{tcolorbox}[colback=red!15!white,%                    background color
+            colframe=red!75!black,%                               frame color
+            title=Additional information\ifstrempty{#1}{}{: #1}.% title
+         ]%
+}{%
+      \end{tcolorbox}%
+   \end{info@box}%
+}
+
+\title{nanoSoC Configuration Manual}
+\author{\href{http://www.soclabs.org}{SoC Labs}}
+\begin{document}
+\maketitle
+\input{preamble.tex}
+\begin{infobox}
+    You must run 'source set\_env.sh' from the accelerator-project directory every time you open a new terminal!
+\end{infobox} \par
+ 
+\tableofcontents
+\clearpage
+\chapter{Introduction}
+
+
+\section{Summary}
+
+\section{Repository Structure}
+The nanosoc-tech repository should be included as part of the accelerator-project repository. To use nanosoc please make sure you have cloned the accelerator-project
+repository as this contains IP that nanosoc needs in order to run correctly.
+
+You can clone the accelerator-project using the command:
+
+\begin{lstlisting}[language=bash]
+git clone --recurse-submodules \
+https://git.soton.ac.uk/soclabs/accelerator-project.git 
+\end{lstlisting}
+
+Below is the repository structure showing all the dependancies from the top level accelerator-project.
+
+\begin{itemize}
+    \item accelerator-project (top level)
+    \begin{itemize}
+        \item \href{https://git.soton.ac.uk/soclabs/accelerator_wrapper_tech}{accelerator-wrapper-tech}
+        \item \href{https://git.soton.ac.uk/soclabs/asic_library_tech}{asic-lib-tech}
+        \item \href{https://git.soton.ac.uk/soclabs/fpga_lib_tech}{fpga-lib-tech}
+        \item \href{https://git.soton.ac.uk/soclabs/generic_lib_tech}{generic-lib-tech}
+        \item \href{https://git.soton.ac.uk/soclabs/nanosoc_tech}{nanosoc-tech}
+        \begin{itemize} 
+            \item \href{https://git.soton.ac.uk/soclabs/sl_ams_tech}{sl-ams-tech}
+            \item \href{https://git.soton.ac.uk/soclabs/slcorem0_tech}{slcorem0-tech}
+            \item \href{https://git.soton.ac.uk/soclabs/sldma230_tech}{sldma230-tech}
+            \item \href{https://git.soton.ac.uk/soclabs/sldma350_tech}{sldm350-tech}
+            \item \href{https://git.soton.ac.uk/soclabs/socdebug_tech}{socdebug-tech}
+            \item \href{https://git.soton.ac.uk/soclabs/synopsys_28nm_slm_integration}{synopsys-28nm-slm-integration}
+        \end{itemize}
+        \item \href{https://git.soton.ac.uk/soclabs/rtl_primitives_tech}{rtl-primitives-tech}
+        \item \href{https://git.soton.ac.uk/soclabs/soctools_flow}{soctools-flow}
+    \end{itemize}
+\end{itemize}
+
+
+\section{IP}
+The nanoSoC reusable SoC platform relies on IP's from certain vendors. In order to build the system you will need the following IP.
+\subsection{Arm(R)}
+Arm IP should be downloaded from Arm and placed into the recommended IP directories.
+\begin{itemize}
+    \item Cortex-M0
+    \item Corstone-101
+    \item (Optional) PL230
+    \item (Optional) DMA-350
+\end{itemize}
+\subsection{SoCLabs}
+SoCLabs IP is all open domain and the repositories for these are automatically cloned into the nanosoc tech directories when you run a git clone.
+\begin{itemize}
+    \item ASCII Debug Protocol Controller (\href{https://git.soton.ac.uk/soclabs/socdebug_tech}{SoCDebugTech Git})
+    \item FT1248 Controller (\href{https://git.soton.ac.uk/soclabs/socdebug_tech}{SoCDebugTech Git})
+    \item EXTIO Controller (\href{https://git.soton.ac.uk/soclabs/extio8x4-axis}{ EXTIO8x4-axis Git})
+    \item (Optional) PLL (for TSMC 65nm)
+    \item (Optional) ADC (for TSMC 65nm)
+    \item (Optional) DAC (for TSMC 65nm)
+\end{itemize}
+\subsection{Synopsys} \label{synopsys_ip}
+Synopsys IP is only used for chips that are taped out on a TSMC 28nm HPC+ node.
+\begin{itemize}
+    \item (Optional) 3 GHz PLL
+    \item (Optional) Silicon Lifetime Management 
+\end{itemize}
+
+\section{Environment Variables}\label{env_var}
+
+\begin{infobox}
+    You must run 'source set\_env.sh' from the accelerator-project directory every time you open a new terminal!
+\end{infobox} \par
+
+When you run 'source set\_env.sh' it sets up environment variables that are used by the tools (simulators, fpga, synthesis etc.). 
+The main ones that are important for developing your IP are:
+
+\$SOCLABS\_PROJECT\_DIR - points to the accelerator-project directory
+
+\$ACCELERATOR\_DIR - points to your accelerator directory \\
+
+
+\$ACCELERATOR\_DIR can be set up in the accelerator-project/env/dependency\_env.sh file using:
+
+\begin{lstlisting}[language=bash]
+export ACCELERATOR\_DIR="$SOCLABS\_PROJECT\_DIR/**Your-IP-directory**"
+\end{lstlisting}
+
+\chapter{Adding your IP}
+In order to add the files for your IP there are 2 options. Either as a local version of your project or
+as a remote version.
+
+\begin{enumerate}
+    \item Local version: you can just place your IP files into a new directory or in the system/src directory
+    \item Remote version: you can fork the accelerator-project git to your own git account, this allows you to add your IP either in the system/src directory or as a git submodule.
+\end{enumerate}
+
+\section{Integrating your IP}
+There are 2 steps to integrating your IP in nanosoc 
+\begin{enumerate}
+    \item Include your IP in the file list
+    \item Instantiate your IP in the system/src/accelerator\_subsystem.v file
+\end{enumerate}
+
+For step 1. you can add paths to your files in the flist/project/accelerator.flist file. We recommend that you use the environment variables as mentioned
+in section \ref{env_var}. In order for fpga and asic flows to work properly you should split verilog and system verilog files into seperate .flist files.
+We suggest adding an accelerator\_sv.flist to the accelerator-project/flist/project directory and adding the following to accelerator.flist \\
+
+-f \$\(SOCLABS\_PROJECT\_DIR\)/flist/project/accelerator\_sv.flist \\
+
+For step 2. you need to edit the accelerator\_subsystem.v file (found in accelerator-project/system/src/). The ports of this file are an AHB-lite 
+port, 2x EXP\_DRQ (data request from accelerator to DMA), 2x EXP\_DLAST (last signal from DMA to accelerator), 
+4x EXP\_IRQ (Interrupts from accelerator to CPU), and some AXI stream interfaces (these are only there if the DMA350 is configured 
+with stream interfaces)
+
+\begin{infobox}
+    Add the option ACCELERATOR=yes to to include your accelerator when you run make commands!
+\end{infobox} \par
+
+
+\section{Configuring nanoSoC}
+The nanoSoC reference design allows for some configuration flexibility. Most of these configuration options are in the 
+accelerator-project/nanosoc.config file. In order to change this configuration, put a 'yes' next to the relevant options 
+to include these options, otherwise leave it blank.
+\subsection{DMA config}
+The DMA options are fundamentally:
+\begin{itemize}
+    \item 1x PL230
+    \item 2x PL230
+    \item 1x DMA350
+\end{itemize}
+More details on these DMA IP's are available from the Arm website. 
+
+The DMA-350 also has some extra configuration options
+\begin{itemize}
+    \item DMA350\_SMALL - Small configuration of DMA, 2 channels, no stream interface, no extended features
+    \item DMA350\_DEFAULT - Default configuration of DMA, 2 channels, stream interface, extended features
+    \item DMA350\_BIG - Big configuration of DMA, 3 channels, stream interface, extended features
+\end{itemize}
+
+If you use either the SMALL or BIG options for this, you must reconfigure the DMA-350. Follow the below steps:
+\begin{enumerate}
+    \item cd to accelerator-project/nanosoc\_tech/nanosoc/sldma350\_tech
+    \item run 'make clean\_ip'
+    \item run 'make config\_dma\_ahb\_small' or 'make config\_dma\_ahb\_big'
+\end{enumerate}
+
+\section{Mixed signal IP}
+! Still under development !\\
+You can also include mixed signal IP in this design. In order to do this you must also have the relevant IP for this 
+
+\section{Synopsys IP}
+! Still under development !\\
+If you are taping out with a TSMC 28nm node, and also have access to the Synopsys IP mentioned in section \ref{synopsys_ip} 
+
+\chapter{Simulating nanoSoC}
+\section{Supported Simulators}
+\begin{itemize}
+    \item Mentor Graphics: QuestaSim
+    \item Synopsys: VCS
+    \item Cadence: Xcelium
+    \item Icarus Verilog
+\end{itemize}
+
+\section{Running Simulations}
+You can run make commands from the nanosoc\_tech directory to run the simulation. 
+
+\begin{lstlisting}
+    make run SIM=x TESTNAME=y ACCELERATOR=yes
+\end{lstlisting}
+
+Where x=mti, vcs, xm, or iverilog for QuestaSim, VCS, Xcelium, or Icarus Verilog respectively.
+And y is the name of the test, the default test is hello (a hello world example).
+
+Or to run the simulation in the GUI you can use:
+
+\begin{lstlisting}
+    make sim SIM=x TESTNAME=y ACCELERATOR=yes
+\end{lstlisting}
+
+Whilst the simulation is running, you should see the output from the UART std out channel in the console/terminal.
+
+
+\section{Adding Tests}
+To add your own testcodes to run on nanosoc in the simulation environment, you can add these to the accelerator-project/system/testcodes directory.
+
+\begin{enumerate}
+    \item Create a new directory for your testcode 
+    \item Create a .c source file with the same name as the directory
+    \item Copy the makefile from one of the example testcodes to your test code directory
+    \item Edit the TESTNAME variable in the new makefile to the name of your test
+    \item If you want to run any ADP code before your test, add an adp.cmp file (example in the adp\_v4\_cmd\_tests)
+    \item If you want to preload expansion memories, add an expram\_l.hex and/or expram\_h.hex
+    \item Add the name of your test to the accelerator-project/system/software\_list.txt file 
+\end{enumerate}
+
+\subsection{Creating your C code}
+The below code is a basic layout for your C code. It initialises the standard out channel over UART. You can then use printf
+statements that will output over UART, which will be printed on the console output.
+
+The UartEndSimulation() function sends an escape character over UART, which the testbench will use to end the simulation.
+
+\begin{lstlisting}[language=C, caption=Basic Template]
+    #include "CMSDK_CM0.h"
+    #include "uart_stdout.h"
+    #include <stdio.h>
+    
+    int main(void) {
+        // Initialise the UART standard out channel
+        UartStdOutInit(); 
+
+        printf("Foo\n"); // Print over UART stdout
+
+        /* Insert your code here */
+
+        // End simulation by sending escape char 
+        UartEndSimulation();
+        return 0;
+    }
+\end{lstlisting}
+
+For more detailed C code templates, please see the firmware in the 
+accelerator-project/nanosoc\_tech/software/common/validation.
+These are also the testcodes used for validating nanoSoC.
+
+\subsection{Preloading expansion memories}
+You may want to load test vectors directly into the expansion memories to run your tests. Doing this can save space in the 
+instruction memory space as you then don't have to load data in as arrays or vectors in your testcode. Instead you can use the simulator
+to automatically load these memories at the start of simulation.
+
+To do this, simply add an "expram\_l.hex" file and/or "expram\_h.hex" file to your testcode directory. These files will then 
+be loaded to the EXPRAM\_L or EXPRAM\_H region repectively. These can then be addressed in your testcode from 0x80000000 for EXPRAM\_L 
+and 0x90000000 for EXPRAM\_H. 
+
+The expram\_l.hex files must be ASCII text files with a single byte per line. They will look very similar to the .hex files that are used
+to preload the instruction memory.
+
+
+\chapter{FPGA Flow}
+\section{Summary}
+
+\section{Building the FPGA image}
+To build the FPGA image, run the below command from the nanosoc\_tech directory:
+\begin{lstlisting}
+    make build_fpga ACCELERATOR=yes FPGA=x
+\end{lstlisting}
+
+Where x is either zcu104, mps3, kr260, kv260, z2. If you would like another FPGA target to be included
+please contact the soclabs team or raise an issue on the accelerator-project git.
+
+\section{Running test code on the FPGA}
+
+
+\chapter{ASIC Flow}
+
+\end{document}
