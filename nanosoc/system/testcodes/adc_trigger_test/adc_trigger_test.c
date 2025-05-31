@@ -36,11 +36,14 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "uart_stdout.h"
+
 // #define ADC_STATUS_MASK 0b00000000000000000000000000001100
 #include "sensing_ip.h"
 
 int main (void)
 {
+    UartStdOutInit();
     //Pointer to APB Bus from memory map 
     // volatile unsigned int *APB_BUS = (unsigned int *)0x51000000;
 
@@ -49,30 +52,37 @@ int main (void)
     // volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
     // volatile unsigned int adc_status = status_reg_value & ADC_STATUS_MASK;
     // adc_status = adc_status >> 2;
-
+    
+    if (GET_FIFO_STATUS(SENSING_IP_REGS->status_reg) != STATUS_FIFO_EMPTY) {
+        printf("FIFO is not empty before ADC trigger!\n");
+    }
+    
     //Trigger the ADC
     // volatile unsigned int *ADC_TRIGGER_ADDR =  (uint8_t*) APB_BUS + 0x108;
     //?volatile unsigned int *ADC_TRIGGER_ADDR = APB_BUS + 0x102;
     SENSING_IP_REGS->adc_trigger = 1;
 
-    uint8_t wait_counter = 128;
-    uint8_t i = 0;
-    while (i < wait_counter) {
+    const uint32_t TIMEOUT = 128;
+
+    uint32_t i = 0;
+    while (i < TIMEOUT) {
         // volatile unsigned int *STATUS_REG_ADDR = APB_BUS + 0x1;
         // volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
         // adc_status = status_reg_value & ADC_STATUS_MASK;
         // adc_status = adc_status >> 2;
-        uint32_t adc_status = GET_ADC_STATUS(SENSING_IP_REGS->status_reg);
-        if (adc_status == STATUS_ADC_RUNNING) {
+        if (GET_FIFO_STATUS(SENSING_IP_REGS->status_reg) == STATUS_FIFO_READY) {
             break;
         }
         i += 1;
     }
 
     //TODO MAKE THIS A PROPER ASSERTION.gs
-    if (wait_counter >= 128) {
-        printf("DID NOT UPDATE count\n");
+    if (i >= TIMEOUT) {
+        printf("FIFO did not acquire a new measurement!\n");
+    } else {
+        printf("Test Passed!\Fn");
     }
+    UartEndSimulation();
 
     // while (1);
 
