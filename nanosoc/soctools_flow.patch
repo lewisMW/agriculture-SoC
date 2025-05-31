@@ -1,25 +1,37 @@
 diff --git a/bin/project_setup.sh b/bin/project_setup.sh
-index 1b073e5..93303cf 100755
+index 1b073e5..d7ed0e0 100755
 --- a/bin/project_setup.sh
 +++ b/bin/project_setup.sh
-@@ -53,16 +53,22 @@ else
+@@ -22,6 +22,7 @@ if [ -z $SOCLABS_DESIGN_ROOT ]; then
+     fi
+ 
+     # Source Top-Level Sourceme
++    SOCLABS_DESIGN_ROOT=${SOCLABS_DESIGN_ROOT}/nanosoc
+     source $SOCLABS_DESIGN_ROOT/set_env.sh
+ else
+     # Set Environment Variable for Project Dir
+@@ -52,17 +53,23 @@ else
+     # Add Scripts to Path
      # "TECH_DIR"
      while read line; do 
-         eval PATH="$PATH:\$${line}/flow"
+-        eval PATH="$PATH:\$${line}/flow"
++        eval PATH="\"$PATH:\${${line}}/flow\""
 +        # Fix: Might need to replace the above with this for WSL:
 +        #PATH="$PATH:${!line}/flow"
      done <<< "$(awk 'BEGIN{for(v in ENVIRON) print v}' | grep TECH_DIR)"
  
      # "FLOW_DIR"
      while read line; do 
-         eval PATH="$PATH:\$${line}/tools"
+-        eval PATH="$PATH:\$${line}/tools"
++        eval PATH="\"$PATH:\$${line}/tools\""
 +        # Fix: Might need to replace the above with this for WSL:
 +        #PATH="$PATH:${!line}/flow"
      done <<< "$(awk 'BEGIN{for(v in ENVIRON) print v}' | grep FLOW_DIR)"
  
      # "SOCLABS_PROJECT_DIR"
      while read line; do 
-         eval PATH="$PATH:\$${line}/flow"
+-        eval PATH="$PATH:\$${line}/flow"
++        eval PATH="\"$PATH:\$${line}/flow\""
 +        # Fix: Might need to replace the above with this for WSL:
 +        #PATH="$PATH:${!line}/flow"
      done <<< "$(awk 'BEGIN{for(v in ENVIRON) print v}' | grep SOCLABS_PROJECT_DIR)"
