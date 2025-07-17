@@ -1,0 +1,7 @@
+
+
+VERILOG_SOURCES += $(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/cmsdk_ahb_to_apb/verilog/cmsdk_ahb_to_apb.v
+VERILOG_SOURCES += $(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/cmsdk_apb4_eg_slave/verilog/cmsdk_apb4_eg_slave_interface.v
+VERILOG_SOURCES += $(SOCLABS_SNPS_28NM_IP_DIR)/IP_wrappers/synopsys_VM_sensor_integration.v 
+VERILOG_SOURCES += /home/dwn1c21/SoC-Labs/Synopsys_ip/IP/Southampton_28hpcp_pd_vm_ts_vmps_pvtc/dwc_sensors_vm_shrink_tsmc28hpcp_1.00a/synopsys/dwc_sensors_vm_shrink_tsmc28hpcp/1.00a/model/verilog/mr74140.v
+EXTRA_ARGS += +incdir+/home/dwn1c21/SoC-Labs/Synopsys_ip/IP/Southampton_28hpcp_pd_vm_ts_vmps_pvtc/dwc_sensors_vm_shrink_tsmc28hpcp_1.00a/synopsys/dwc_sensors_vm_shrink_tsmc28hpcp/1.00a/model/verilog/
