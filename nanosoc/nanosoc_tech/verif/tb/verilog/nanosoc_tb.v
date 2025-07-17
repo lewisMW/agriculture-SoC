@@ -926,8 +926,9 @@ nanosoc_ft1248x1_track
   initial    $timeformat(-9, 0, " ns", 0);
 
   // Preload EXP rams
-  localparam aw_expram_l = u_nanosoc_chip_pads.u_nanosoc_chip.u_system.EXPRAM_L_RAM_ADDR_W;
-  localparam aw_expram_h = u_nanosoc_chip_pads.u_nanosoc_chip.u_system.EXPRAM_H_RAM_ADDR_W;
+  // Icarus Verilog Fix: hierarchical assignment not supported for localparams.
+  localparam aw_expram_l = 14; //u_nanosoc_chip_pads.u_nanosoc_chip.u_system.EXPRAM_L_RAM_ADDR_W;
+  localparam aw_expram_h = 14; //u_nanosoc_chip_pads.u_nanosoc_chip.u_system.EXPRAM_H_RAM_ADDR_W;
 
   localparam awt_expram_l = ((1<<(aw_expram_l-2))-1);
   localparam awt_expram_h = ((1<<(aw_expram_h-2))-1);
