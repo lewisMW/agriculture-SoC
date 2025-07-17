@@ -1,0 +1,643 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:component xmlns:xilinx="http://www.xilinx.com" xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1685-2009" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <spirit:vendor>soclabs.org</spirit:vendor>
+  <spirit:library>user</spirit:library>
+  <spirit:name>ft1248x1_to_axi_streamio</spirit:name>
+  <spirit:version>1.0</spirit:version>
+  <spirit:busInterfaces>
+    <spirit:busInterface>
+      <spirit:name>aresetn</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="reset" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="reset_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>RST</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>aresetn</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>POLARITY</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.ARESETN.POLARITY" spirit:choiceRef="choice_list_9d8b0d81">ACTIVE_LOW</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>aclk</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="signal" spirit:name="clock_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>CLK</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>aclk</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+      <spirit:parameters>
+        <spirit:parameter>
+          <spirit:name>ASSOCIATED_RESET</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.ACLK.ASSOCIATED_RESET">aresetn</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>ASSOCIATED_BUSIF</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.ACLK.ASSOCIATED_BUSIF">txd8:rxd8</spirit:value>
+        </spirit:parameter>
+        <spirit:parameter>
+          <spirit:name>FREQ_TOLERANCE_HZ</spirit:name>
+          <spirit:value spirit:id="BUSIFPARAM_VALUE.ACLK.FREQ_TOLERANCE_HZ">-1</spirit:value>
+        </spirit:parameter>
+      </spirit:parameters>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>txd8</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_rtl" spirit:version="1.0"/>
+      <spirit:master/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TDATA</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>txd_tdata8_o</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TVALID</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>txd_tvalid_o</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TREADY</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>txd_tready_i</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+    </spirit:busInterface>
+    <spirit:busInterface>
+      <spirit:name>rxd8</spirit:name>
+      <spirit:busType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis" spirit:version="1.0"/>
+      <spirit:abstractionType spirit:vendor="xilinx.com" spirit:library="interface" spirit:name="axis_rtl" spirit:version="1.0"/>
+      <spirit:slave/>
+      <spirit:portMaps>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TDATA</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>rxd_tdata8_i</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TVALID</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>rxd_tvalid_i</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+        <spirit:portMap>
+          <spirit:logicalPort>
+            <spirit:name>TREADY</spirit:name>
+          </spirit:logicalPort>
+          <spirit:physicalPort>
+            <spirit:name>rxd_tready_o</spirit:name>
+          </spirit:physicalPort>
+        </spirit:portMap>
+      </spirit:portMaps>
+    </spirit:busInterface>
+  </spirit:busInterfaces>
+  <spirit:model>
+    <spirit:views>
+      <spirit:view>
+        <spirit:name>xilinx_verilogsynthesis</spirit:name>
+        <spirit:displayName>Verilog Synthesis</spirit:displayName>
+        <spirit:envIdentifier>verilogSource:vivado.xilinx.com:synthesis</spirit:envIdentifier>
+        <spirit:language>verilog</spirit:language>
+        <spirit:modelName>ft1248x1_to_axi_streamio_v1_0</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_verilogsynthesis_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>07d8b26e</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_verilogbehavioralsimulation</spirit:name>
+        <spirit:displayName>Verilog Simulation</spirit:displayName>
+        <spirit:envIdentifier>verilogSource:vivado.xilinx.com:simulation</spirit:envIdentifier>
+        <spirit:language>verilog</spirit:language>
+        <spirit:modelName>ft1248x1_to_axi_streamio_v1_0</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_verilogbehavioralsimulation_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>07d8b26e</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_xpgui</spirit:name>
+        <spirit:displayName>UI Layout</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:xgui.ui</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_xpgui_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>6f142aff</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>bd_tcl</spirit:name>
+        <spirit:displayName>Block Diagram</spirit:displayName>
+        <spirit:envIdentifier>:vivado.xilinx.com:block.diagram</spirit:envIdentifier>
+        <spirit:fileSetRef>
+          <spirit:localName>bd_tcl_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>45a2f450</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+    </spirit:views>
+    <spirit:ports>
+      <spirit:port>
+        <spirit:name>ft_clk_i</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ft_ssn_i</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ft_miso_o</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ft_miosio_i</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ft_miosio_o</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>ft_miosio_z</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>aclk</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>aresetn</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>txd_tvalid_o</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>txd_tdata8_o</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">7</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>txd_tready_i</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+          <spirit:driver>
+            <spirit:defaultValue spirit:format="long">1</spirit:defaultValue>
+          </spirit:driver>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>rxd_tready_o</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>rxd_tdata8_i</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long">7</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+          <spirit:driver>
+            <spirit:defaultValue spirit:format="long">0</spirit:defaultValue>
+          </spirit:driver>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>rxd_tvalid_i</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+    </spirit:ports>
+    <spirit:modelParameters>
+      <spirit:modelParameter xsi:type="spirit:nameValueTypeType" spirit:dataType="integer">
+        <spirit:name>C_rxd8_TDATA_WIDTH</spirit:name>
+        <spirit:displayName>C rxd8 TDATA WIDTH</spirit:displayName>
+        <spirit:description>AXI4Stream sink: Data Width</spirit:description>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_rxd8_TDATA_WIDTH" spirit:order="3" spirit:rangeType="long">8</spirit:value>
+      </spirit:modelParameter>
+      <spirit:modelParameter spirit:dataType="integer">
+        <spirit:name>C_txd8_TDATA_WIDTH</spirit:name>
+        <spirit:displayName>C txd8 TDATA WIDTH</spirit:displayName>
+        <spirit:description>Width of S_AXIS address bus. The slave accepts the read and write addresses of width C_M_AXIS_TDATA_WIDTH.</spirit:description>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_txd8_TDATA_WIDTH" spirit:order="4" spirit:rangeType="long">8</spirit:value>
+      </spirit:modelParameter>
+    </spirit:modelParameters>
+  </spirit:model>
+  <spirit:choices>
+    <spirit:choice>
+      <spirit:name>choice_list_9d8b0d81</spirit:name>
+      <spirit:enumeration>ACTIVE_HIGH</spirit:enumeration>
+      <spirit:enumeration>ACTIVE_LOW</spirit:enumeration>
+    </spirit:choice>
+    <spirit:choice>
+      <spirit:name>choice_list_d8920bdd</spirit:name>
+      <spirit:enumeration>8</spirit:enumeration>
+    </spirit:choice>
+  </spirit:choices>
+  <spirit:fileSets>
+    <spirit:fileSet>
+      <spirit:name>xilinx_verilogsynthesis_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>hdl/SYNCHRONIZER_EDGES.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>hdl/ft1248x1_to_axi_streamio_v1_0.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_1d919ea1</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_verilogbehavioralsimulation_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>hdl/SYNCHRONIZER_EDGES.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>hdl/ft1248x1_to_axi_streamio_v1_0.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_xpgui_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>xgui/ft1248x1_to_axi_streamio_v1_0.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_6f142aff</spirit:userFileType>
+        <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>bd_tcl_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>bd/bd.tcl</spirit:name>
+        <spirit:fileType>tclSource</spirit:fileType>
+      </spirit:file>
+    </spirit:fileSet>
+  </spirit:fileSets>
+  <spirit:description>FTDI FT1248 single bit serial to AXI 8-bit stream IO</spirit:description>
+  <spirit:parameters>
+    <spirit:parameter>
+      <spirit:name>C_rxd8_TDATA_WIDTH</spirit:name>
+      <spirit:displayName>C rxd8 TDATA WIDTH</spirit:displayName>
+      <spirit:description>AXI4Stream sink: Data Width</spirit:description>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.C_rxd8_TDATA_WIDTH" spirit:choiceRef="choice_list_d8920bdd" spirit:order="3">8</spirit:value>
+      <spirit:vendorExtensions>
+        <xilinx:parameterInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:id="PARAM_ENABLEMENT.C_rxd8_TDATA_WIDTH">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:parameterInfo>
+      </spirit:vendorExtensions>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>C_txd8_TDATA_WIDTH</spirit:name>
+      <spirit:displayName>C txd8 TDATA WIDTH</spirit:displayName>
+      <spirit:description>Width of S_AXIS address bus. The slave accepts the read and write addresses of width C_M_AXIS_TDATA_WIDTH.</spirit:description>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.C_txd8_TDATA_WIDTH" spirit:choiceRef="choice_list_d8920bdd" spirit:order="4">8</spirit:value>
+      <spirit:vendorExtensions>
+        <xilinx:parameterInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:id="PARAM_ENABLEMENT.C_txd8_TDATA_WIDTH">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:parameterInfo>
+      </spirit:vendorExtensions>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>Component_Name</spirit:name>
+      <spirit:value spirit:resolve="user" spirit:id="PARAM_VALUE.Component_Name" spirit:order="1">ft1248x1_to_axi_streamio_v1_0</spirit:value>
+    </spirit:parameter>
+  </spirit:parameters>
+  <spirit:vendorExtensions>
+    <xilinx:coreExtensions>
+      <xilinx:supportedFamilies>
+        <xilinx:family xilinx:lifeCycle="Pre-Production">zynq</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Beta">zynquplus</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Beta">kintexu</xilinx:family>
+        <xilinx:family xilinx:lifeCycle="Beta">kintex7</xilinx:family>
+      </xilinx:supportedFamilies>
+      <xilinx:taxonomies>
+        <xilinx:taxonomy>AXI_Peripheral</xilinx:taxonomy>
+      </xilinx:taxonomies>
+      <xilinx:displayName>ft1248x1_to_axi_streamio_v1.0</xilinx:displayName>
+      <xilinx:coreRevision>9</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2023-06-01T10:11:18Z</xilinx:coreCreationDateTime>
+      <xilinx:tags>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@428bf478_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@77d2a63f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@401fae27_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@799f76c6_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@543230e4_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@860c575_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@13b2b016_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1b16e880_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@b115448_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@35f4f12f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@96c629_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@289d8498_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5e6ca2b9_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@34c6c438_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2f1c92e2_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6bc27418_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6470d1df_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@666070f1_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4795032_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@214e5d0f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@72c6aa50_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@310b0085_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7057424_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6cf947f0_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2241eee6_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@64c33679_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@f32e78b_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@524b62d8_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@25a5c540_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5b694545_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1756c2fa_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5e55a1f4_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6e825144_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@29f61c2_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5d96e1e9_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@608fee64_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@12bb2394_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@319424cf_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3aac7e77_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@511ec980_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@330b1dd3_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@529e8eab_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@dd60893_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@c8742b2_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7621d7af_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@24f3db95_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@22c484f4_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1866e24c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5571345d_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@46ac3e68_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@56b1d9f1_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@529ff48f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@757ac0cc_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1fcd0999_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@90370b5_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@28c4e1ce_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git/soclabs-cortexm0-mcu/Cortex-M0/soclabs_demo/systems/cortex_m0_mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@a3c2c51_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@33cb581b_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@36560694_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5a029744_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@649708f3_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@40b4275d_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2c2b1fd9_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2c951206_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@60f53ba_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@62ce2736_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4869df7e_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@366d857f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3143c41e_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@a3a24e5_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@f50a86e_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@16f76b78_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@784ca772_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@266cf8b0_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5985e9a7_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5b0f2afb_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@261184f5_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1ff5947b_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@439de9f5_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3103f8a1_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@43ce0b7f_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@63f6aeb9_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@654e1a72_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@428ff7a8_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2747214_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@165165da_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@14b2bd29_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@11bb99fa_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@45d547c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@992911c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6f68f972_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@33ec70d0_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@77c4c6ca_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@3eaae7a_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7e143239_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1ddc7b40_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@302a1c3e_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4fa27fd6_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@1117ca64_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@35cb4ee9_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4a5d8467_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4c4463a4_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@56eee029_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@333fc4de_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6e8d2e2a_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@70ab23aa_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@203963e1_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@509005d0_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4916ee78_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@9b5c2aa_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@58902ddb_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@5744b6c1_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@51d00cf6_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@4910d90c_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@52ca7ed0_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7a2f2ef_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@13049cbf_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2c4fe533_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@19907224_ARCHIVE_LOCATION">/home/dwf1m12/soclabs_git_new/nanosoc/Cortex-M0/nanosoc/systems/mcu/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@23d3f1b7_ARCHIVE_LOCATION">/home/dwn1c21/SoC-Labs/nanosoc_tech/system/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@22807dd0_ARCHIVE_LOCATION">/home/dwn1c21/SoC-Labs/nanosoc_tech/system/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@2fc76256_ARCHIVE_LOCATION">/home/dwn1c21/SoC-Labs/nanosoc_tech/system/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@7a60836b_ARCHIVE_LOCATION">/home/dwn1c21/SoC-Labs/nanosoc_tech/system/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@74c04a33_ARCHIVE_LOCATION">/home/dwn1c21/SoC-Labs/nanosoc_tech/system/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@e41b2f9_ARCHIVE_LOCATION">/home/dwn1c21/SoC-Labs/nanosoc_tech/system/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.df@6be6a0c9_ARCHIVE_LOCATION">/home/dwn1c21/SoC-Labs/nanosoc_tech/system/fpga_imp/ip_repo/ft1248x1_to_axi_streamio_1.0</xilinx:tag>
+      </xilinx:tags>
+    </xilinx:coreExtensions>
+    <xilinx:packagingInfo>
+      <xilinx:xilinxVersion>2021.1</xilinx:xilinxVersion>
+      <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="90504787"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="5194cd85"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="95a87e81"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="1be3ccaa"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="6bebc0ed"/>
+      <xilinx:targetDRCs>
+        <xilinx:targetDRC xilinx:tool="ipi">
+          <xilinx:targetDRCOption xilinx:name="ignore_freq_hz" xilinx:value="true"/>
+        </xilinx:targetDRC>
+      </xilinx:targetDRCs>
+    </xilinx:packagingInfo>
+  </spirit:vendorExtensions>
+</spirit:component>
