@@ -1,0 +1,19 @@
+//-----------------------------------------------------------------------------
+// SLDMA230 IP Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for SoCLabs DMA230 IP
+//-----------------------------------------------------------------------------
+
+// Include DMA-230 IP
+-f $(SOCLABS_SLDMA230_TECH_DIR)/flist/pl230_ip.flist
+
+//+incdir+$(SOCLABS_SLDMA230_TECH_DIR)/src/defines
+$(SOCLABS_SLDMA230_TECH_DIR)/src/verilog/sldma230.v
