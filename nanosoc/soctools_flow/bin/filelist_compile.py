@@ -148,7 +148,7 @@ def read_list(filelist, first, incdirs, args):
                             if args.genus == True:
                                 compiled_filelist.append("set_db init_hdl_search_path " + str(env_var_substitute(line_list[0].lstrip("+incdir+"), tcl=True)).replace("$","$env"))
                             elif args.dc == True | args.formality ==True:
-                                compiled_filelist.append("set search_path [concat $search_path " + str(env_var_substitute(line_list[0].lstrip("+incdir+"), tcl=True)).replace("$","$env") + " ]")
+                                compiled_filelist.append("set search_path [concat $search_path " + str(env_var_substitute(line_list[0].lstrip("+incdir+"), tcl=False)).replace("$","$env") + " ]")
                             else:
                                 compiled_filelist.append("set search_path " + str(env_var_substitute(line_list[0].lstrip("+incdir+"), tcl=True)).replace("$","$env"))
                             first = False
@@ -156,7 +156,7 @@ def read_list(filelist, first, incdirs, args):
                             if args.genus == True:
                                 compiled_filelist.append("set_db init_hdl_search_path " + str(env_var_substitute(line_list[0].lstrip("+incdir+"), tcl=True)).replace("$","$env"))
                             elif args.dc == True | args.formality ==True:
-                                compiled_filelist.append("set search_path [concat $search_path " + str(env_var_substitute(line_list[0].lstrip("+incdir+"), tcl=True)).replace("$","$env") + " ]")
+                                compiled_filelist.append("set search_path [concat $search_path " + str(env_var_substitute(line_list[0].lstrip("+incdir+"), tcl=False)).replace("$","$env") + " ]")
                             else:
                                 compiled_filelist.append("set search_path [ concat $search_path " + str(env_var_substitute(line_list[0].lstrip("+incdir+"), tcl=True)).replace("$","$env") + " ]")
                     else:
@@ -204,7 +204,7 @@ def read_list(filelist, first, incdirs, args):
                 if args.tcl == True:
                     if args.absolute == True:
                         if args.dc == True:
-                            hdl_files.append(str(env_var_substitute(line_list[0], tcl=True)).replace("$","$env"))
+                            hdl_files.append(str(env_var_substitute(line_list[0], tcl=False)).replace("$","$env"))
                         else:   
                             hdl_files.append(str(env_var_substitute(line_list[0], tcl=True)).replace("$","$env"))
                     else:
