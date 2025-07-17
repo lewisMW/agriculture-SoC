@@ -7,3 +7,8 @@ git subtree pull --prefix=nanosoc/rtl_primitives_tech https://git.soton.ac.uk/so
 git subtree pull --prefix=nanosoc/soctools_flow https://git.soton.ac.uk/soclabs/soctools_flow.git main --squash
 
 git subtree pull --prefix=nanosoc/nanosoc_tech/nanosoc/slcorem0_tech https://git.soton.ac.uk/soclabs/slcorem0_tech.git main --squash
+git subtree pull --prefix=nanosoc/nanosoc_tech/nanosoc/socdebug_tech https://git.soton.ac.uk/soclabs/socdebug_tech.git main --squash
+git subtree pull --prefix=nanosoc/nanosoc_tech/nanosoc/sldma230_tech https://git.soton.ac.uk/soclabs/sldma230_tech.git main --squash
+git subtree pull --prefix=nanosoc/nanosoc_tech/nanosoc/sldma350_tech https://git.soton.ac.uk/soclabs/sldma350_tech.git main --squash
+git subtree pull --prefix=nanosoc/nanosoc_tech/nanosoc/sl_ams_tech https://git.soton.ac.uk/soclabs/sl_ams_tech.git main --squash
+git subtree pull --prefix=nanosoc/nanosoc_tech/nanosoc/synopsys_28nm_slm_integration https://git.soton.ac.uk/soclabs/synopsys_28nm_slm_integration.git main --squash
