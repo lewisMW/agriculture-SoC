@@ -52,7 +52,11 @@ else
     # Add Scripts to Path
     # "TECH_DIR"
     while read line; do 
-        eval PATH="$PATH:\$${line}/flow"
+        #TODO finish applying this patch!!!!
+        # eval PATH="$PATH:\$${line}/flow"
+        eval PATH="\"$PATH:\${${line}}/flow\""
+        # Fix: Might need to replace the above with this for WSL:
+        #PATH="$PATH:${!line}/flow"
     done <<< "$(awk 'BEGIN{for(v in ENVIRON) print v}' | grep TECH_DIR)"
 
     # "FLOW_DIR"
