@@ -1,0 +1,3 @@
+[submodule "core_dbg_bridge"]
+	path = socket/uart_axi_master/core_dbg_bridge
+	url = https://github.com/ultraembedded/core_dbg_bridge.git
