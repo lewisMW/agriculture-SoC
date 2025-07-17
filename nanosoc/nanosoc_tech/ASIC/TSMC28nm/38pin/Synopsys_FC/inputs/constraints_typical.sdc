@@ -9,7 +9,7 @@
 # Copyright (C) 2021-3, SoC Labs (www.soclabs.org)
 #-----------------------------------------------------------------------------
 
-set max_transition_factor           0.181;
-set clock_max_transition_factor     0.181;
+set max_transition_factor           0.215;
+set clock_max_transition_factor     0.215;
 
-source ../../../constraints.sdc
+source ../inputs/constraints.sdc

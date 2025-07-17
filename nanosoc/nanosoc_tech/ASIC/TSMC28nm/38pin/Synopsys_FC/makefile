@@ -30,6 +30,12 @@ fusion_clock_opt:
 fusion_route:
 	cd $(WORK_DIR); fc_shell -f ../scripts/4_route.tcl;
 
+fusion_signoff:
+#cd $(WORK_DIR); fc_shell -f ../scripts/5_signoff.tcl;
+	mkdir -p $(SOCLABS_PROJECT_DIR)/imp/ASIC/nanosoc/netlist
+	cp $(OUT_DIR)/nanosoc_chip_pads_gate.v $(SOCLABS_PROJECT_DIR)/imp/ASIC/nanosoc/netlist/
+	cp $(OUT_DIR)/nanosoc_chip_pads_gate_power.v $(SOCLABS_PROJECT_DIR)/imp/ASIC/nanosoc/netlist/
+
 fusion_full_flow: fusion_init_design fusion_synthesis fusion_clock_opt fusion_route
 
 all: generate_libs fusion_full_flow

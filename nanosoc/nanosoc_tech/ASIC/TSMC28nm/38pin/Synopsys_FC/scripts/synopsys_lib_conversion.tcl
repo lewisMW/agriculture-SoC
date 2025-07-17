@@ -4,9 +4,10 @@ set standard_cell_base_path     /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/
 set pmk_base_path               /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc7mcpp140z_pmk_svt_c30/r0p0
 set ret_base_path               /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc12mcpp140z_rklo_lvt_svt_c30_c35/r1p0
 set hpc_base_path               /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc7mcpp140z_hpk_svt_c30/r0p0
+set TSMC_28_base_path           /home/dwn1c21/SoC-Labs/phys_ip/TSMC/28
 # Technology files
-set cln28ht_tech_file                       $cln28ht_tech_path/milkyway/1p8m_5x2z_utalrdl/sc7mcpp140z_tech.tf
-set cln28ht_lef_file                        $cln28ht_tech_path/lef/1p8m_5x2z_utalrdl/sc7mcpp140z_tech.lef
+set cln28ht_tech_file                       $TSMC_28_base_path/CMOS/util/PRTF_ICC_28nm_Syn_V19_1a/tsmcn28_9lm5X1Y1Z1UUTRDL.tf
+
 # Standard Cell libraries
 set standard_cell_lef_file                      $standard_cell_base_path/lef/sc7mcpp140z_cln28ht_base_svt_c30.lef
 set standard_cell_gds_file                      $standard_cell_base_path/gds2/sc7mcpp140z_cln28ht_base_svt_c30.gds2

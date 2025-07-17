@@ -12,4 +12,4 @@
 set max_transition_factor           0.273;
 set clock_max_transition_factor     0.273;
 
-source ../../../constraints.sdc
+source ../inputs/constraints.sdc

@@ -1,4 +1,16 @@
-initialize_floorplan -control_type die -use_site_row -side_length {1111.111111 1666.666666} -core_offset {135}
+set_attribute -objects [get_layers M1] -name routing_direction -value vertical 
+set_attribute -objects [get_layers M2] -name routing_direction -value horizontal 
+set_attribute -objects [get_layers M3] -name routing_direction -value vertical 
+set_attribute -objects [get_layers M4] -name routing_direction -value horizontal 
+set_attribute -objects [get_layers M5] -name routing_direction -value vertical 
+set_attribute -objects [get_layers M6] -name routing_direction -value horizontal 
+set_attribute -objects [get_layers M7] -name routing_direction -value vertical 
+set_attribute -objects [get_layers M8] -name routing_direction -value horizontal 
+set_attribute -objects [get_layers M9] -name routing_direction -value vertical 
+set_attribute -objects [get_layers AP] -name routing_direction -value horizontal 
+
+initialize_floorplan -control_type die -side_length {1111.111111 1666.666666} -core_offset {135} -site_def unit 
+# -use_site_row
 source ../floorplan/floorplan.tcl
 
 remove_io_guides -all 

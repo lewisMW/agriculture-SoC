@@ -12,6 +12,15 @@ create_power_domain ACCEL  -elements {u_nanosoc_chip/u_system/u_ss_expansion/u_r
 # Create and logically connect power ports and nets
 ################################################################################
 
+# IO supply 
+create_supply_port VDDIO
+create_supply_net  VDDIO -domain TOP
+connect_supply_net VDDIO -ports VDDIO
+
+create_supply_port VSSIO
+create_supply_net  VSSIO -domain TOP
+connect_supply_net VSSIO -ports VSSIO
+
 # Always on VDD
 create_supply_port VDD
 create_supply_net  VDD -domain TOP

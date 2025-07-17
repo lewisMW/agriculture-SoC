@@ -1,14 +1,14 @@
 # Import verilog and setup libraries
 set_host_options -max_cores 16 -num_processes 16
 
-source ../scripts/setup.tcl
-
 # Set paths !!! Please edit for your system !!!
-set cln28ht_tech_path /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/arm_tech/r1p0
+set TSMC_28_base_path           /home/dwn1c21/SoC-Labs/phys_ip/TSMC/28
+# Technology files
+set cln28ht_tech_file                       $TSMC_28_base_path/CMOS/util/PRTF_ICC_28nm_Syn_V19_1a/tsmcn28_9lm5X1Y1Z1UUTRDL.tf
 
 #Create the design library 
 create_lib nanosoc_chip_pads.dlib \
-    -technology $cln28ht_tech_path/milkyway/1p8m_5x2z_utalrdl/sc7mcpp140z_tech.tf \
+    -technology $cln28ht_tech_file \
     -ref_libs {../libs/cln28ht/ ../libs/cln28ht_pmk/ ../libs/cln28ht_hpk  ../libs/sram_16k/  ../libs/rom_via/ ../libs/io_lib/ ../libs/pad_lib/}
 
 # Removed ../libs/cln28ht_ret/ from lib for now
@@ -36,6 +36,8 @@ saif_map -start
 
 source ../scripts/floorplan.tcl
  
+source ../scripts/setup.tcl
+
 
 source ../scripts/power_plan.tcl
 
@@ -77,10 +79,9 @@ set_message_info -id ATTR-11 -limit  5
 get_lib_cells cln28ht/* -filter "valid_purposes(block) =~ *hold*"
 
 current_scenario typical_scenario
-read_saif ./waves.saif
+read_saif -report ./waves.saif -strip_path nanosoc_tb.u_nanosoc_chip_pads 
+
 redirect -tee -file $REPORT_DIR/initial_power_plan.rep {analyze_power_plan -nets [get_nets -design [current_block] {VDD VDDACC VSS}] -power_budget 10 -voltage 0.9}
-
-
 
 redirect -tee -file ../logs/precompile_checks.log {compile_fusion -check_only}
 

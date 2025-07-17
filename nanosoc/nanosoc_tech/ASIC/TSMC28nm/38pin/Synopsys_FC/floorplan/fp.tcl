@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Created by fc write_floorplan on Fri May 23 13:50:47 2025
+# Created by fc write_floorplan on Mon Jun 16 16:08:36 2025
 #
 ################################################################################
 
@@ -20,9 +20,9 @@ read_def  ${_dirName__0}/floorplan.def
 set cellInst [get_cells { \
     u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom \
     }]
-set_attribute -quiet -objects $cellInst -name orientation -value R90
-set_attribute -quiet -objects $cellInst -name origin -value { 230.0500 \
-    1504.9350 }
+set_attribute -quiet -objects $cellInst -name orientation -value R180
+set_attribute -quiet -objects $cellInst -name origin -value { 161.5650 \
+    1531.5000 }
 set_attribute -quiet -objects $cellInst -name status -value placed
 create_keepout_margin -type hard -outer { 2.0000 2.0000 2.0000 2.0000 } { \
     u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom \
@@ -41,9 +41,9 @@ create_keepout_margin -type routing_blockage -outer { 2.0000 2.0000 2.0000 \
 set cellInst [get_cells { \
     u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_sram \
     }]
-set_attribute -quiet -objects $cellInst -name orientation -value R90
-set_attribute -quiet -objects $cellInst -name origin -value { 631.6200 \
-    1341.9650 }
+set_attribute -quiet -objects $cellInst -name orientation -value R0
+set_attribute -quiet -objects $cellInst -name origin -value { 522.8000 \
+    1187.1050 }
 set_attribute -quiet -objects $cellInst -name status -value placed
 create_keepout_margin -type hard -outer { 2.0000 2.0000 2.0000 2.0000 } { \
     u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_sram \
@@ -62,9 +62,9 @@ create_keepout_margin -type routing_blockage -outer { 2.0000 2.0000 2.0000 \
 set cellInst [get_cells { \
     u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_sram \
     }]
-set_attribute -quiet -objects $cellInst -name orientation -value R90
-set_attribute -quiet -objects $cellInst -name origin -value { 459.4400 \
-    1341.9650 }
+set_attribute -quiet -objects $cellInst -name orientation -value R0
+set_attribute -quiet -objects $cellInst -name origin -value { 522.8000 \
+    1359.2850 }
 set_attribute -quiet -objects $cellInst -name status -value placed
 create_keepout_margin -type hard -outer { 2.0000 2.0000 2.0000 2.0000 } { \
     u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_sram \
@@ -83,9 +83,9 @@ create_keepout_margin -type routing_blockage -outer { 2.0000 2.0000 2.0000 \
 set cellInst [get_cells { \
     u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_sram \
     }]
-set_attribute -quiet -objects $cellInst -name orientation -value R90
-set_attribute -quiet -objects $cellInst -name origin -value { 803.8000 \
-    1341.9650 }
+set_attribute -quiet -objects $cellInst -name orientation -value R0
+set_attribute -quiet -objects $cellInst -name origin -value { 786.4450 \
+    1359.3200 }
 set_attribute -quiet -objects $cellInst -name status -value placed
 create_keepout_margin -type hard -outer { 2.0000 2.0000 2.0000 2.0000 } { \
     u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_sram \
@@ -104,9 +104,9 @@ create_keepout_margin -type routing_blockage -outer { 2.0000 2.0000 2.0000 \
 set cellInst [get_cells { \
     u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_sram \
     }]
-set_attribute -quiet -objects $cellInst -name orientation -value R90
-set_attribute -quiet -objects $cellInst -name origin -value { 975.9800 \
-    1341.9650 }
+set_attribute -quiet -objects $cellInst -name orientation -value R0
+set_attribute -quiet -objects $cellInst -name origin -value { 786.4450 \
+    1187.1400 }
 set_attribute -quiet -objects $cellInst -name status -value placed
 create_keepout_margin -type hard -outer { 2.0000 2.0000 2.0000 2.0000 } { \
     u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_sram \
@@ -141,14 +141,6 @@ remove_bounds -all
 
 
 ################################################################################
-# Route guides and their user attributes
-################################################################################
-
-remove_routing_guides -all
-
-
-
-################################################################################
 # Blockages
 ################################################################################
 
@@ -173,6 +165,43 @@ if [sizeof_collection $hbCells] {
    set_cell_hierarchy_type -type normal $hbCells
 }
 
+
+################################################################################
+# Bundles
+################################################################################
+
+set _bundles [get_bundles * -quiet]
+if [sizeof_collection $_bundles] {
+remove_bundles $_bundles
+}
+
+
+################################################################################
+# User attributes of bundles
+################################################################################
+
+
+################################################################################
+# Routing corridors
+################################################################################
+
+remove_routing_corridors -all
+
+
+################################################################################
+# Routing directions
+################################################################################
+
+set_attribute -objects [get_layers M1] -name routing_direction -value vertical
+set_attribute -objects [get_layers M2] -name routing_direction -value horizontal
+set_attribute -objects [get_layers M3] -name routing_direction -value vertical
+set_attribute -objects [get_layers M4] -name routing_direction -value horizontal
+set_attribute -objects [get_layers M5] -name routing_direction -value vertical
+set_attribute -objects [get_layers M6] -name routing_direction -value horizontal
+set_attribute -objects [get_layers M7] -name routing_direction -value vertical
+set_attribute -objects [get_layers M8] -name routing_direction -value horizontal
+set_attribute -objects [get_layers M9] -name routing_direction -value vertical
+set_attribute -objects [get_layers AP] -name routing_direction -value horizontal
 
 ################################################################################
 # User attributes of current block
