@@ -52,7 +52,6 @@ else
     # Add Scripts to Path
     # "TECH_DIR"
     while read line; do 
-        #TODO finish applying this patch!!!!
         # eval PATH="$PATH:\$${line}/flow"
         eval PATH="\"$PATH:\${${line}}/flow\""
         # Fix: Might need to replace the above with this for WSL:
@@ -61,12 +60,12 @@ else
 
     # "FLOW_DIR"
     while read line; do 
-        eval PATH="$PATH:\$${line}/tools"
+        eval PATH="\"$PATH:\$${line}/tools\""
     done <<< "$(awk 'BEGIN{for(v in ENVIRON) print v}' | grep FLOW_DIR)"
 
     # "SOCLABS_PROJECT_DIR"
     while read line; do 
-        eval PATH="$PATH:\$${line}/flow"
+        eval PATH="\"$PATH:\$${line}/flow\""
     done <<< "$(awk 'BEGIN{for(v in ENVIRON) print v}' | grep SOCLABS_PROJECT_DIR)"
 
     export PATH
