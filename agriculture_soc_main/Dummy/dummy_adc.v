@@ -63,7 +63,7 @@ module dummy_adc
             if (ADC_TRIGGER && !ADC_TRIGGER_PREV) begin
                 MEASUREMENT    <= $urandom(); // Generate new data only on a rising edge
                 DATA_VALID_OUT <= 1;  // Generate a one-clock-cycle high pulse
-                $display("ADC_TRIGGER rising edge detected. New MEASUREMENT = %h", MEASUREMENT);
+                $display("ADC_TRIGGER rising edge detected. Measured %h", MEASUREMENT);
             end else begin
                 DATA_VALID_OUT <= 0; // Keep DATA_VALID_OUT low after one cycle
             end

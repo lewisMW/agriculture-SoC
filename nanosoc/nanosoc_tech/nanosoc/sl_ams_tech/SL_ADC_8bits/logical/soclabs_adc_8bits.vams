@@ -1,0 +1,75 @@
+`include "constants.vams"
+`include "disciplines.vams"
+
+`default_discipline logic
+module soclabs_adc_8bits (          
+    input  wire             adc_clk,
+	input  wire  			resetn,
+    output wire  [7:0]      DATA,
+	output wire 			READY,
+	input  wire 			CLR_READY,
+    input                   EXTIN,    
+    output wire             ADCINT
+	);
+parameter integer bits = 8;// from [1:24];	// resolution (bits)
+parameter real fullscale = 1.2;		// input range is from 0 to fullscale (V)
+parameter real td = 0.01;			// delay from clock to output (ns)
+electrical EXTIN;
+real sample, midpoint, cmp;
+integer i;
+reg [bits-1:0] buffer;
+reg [bits-1:0] out;
+reg READY_reg;
+assign READY=READY_reg;
+
+assign DATA=out;
+assign midpoint = fullscale/2.0;
+
+real int_in;
+assign int_in = 0.6*sin(2*3.14159265358979323846*100*$abstime)+0.6;
+electrical n1;
+parameter real gain = 0.6, freq = 1000.0;
+localparam real omegac = 2.0 * 3.14159 * freq;
+analog V(n1) <+ gain * sin(idt(omegac,0.0))+0.6;
+
+assign cmp = buffer[7]*(fullscale/2.0) + buffer[6]*(fullscale/4.0) + buffer[5]*(fullscale/8.0) + buffer[4]*(fullscale/16.0)
+	 + buffer[3]*(fullscale/32.0) + buffer[2]*(fullscale/64.0) + buffer[1]*(fullscale/128.0) + buffer[0]*(fullscale/256.0);
+always @(posedge adc_clk or negedge resetn) begin
+	if(~resetn) begin
+		i <= 7;
+		buffer <= 8'h80;
+		out <= 8'h00;
+		READY_reg <= 0;
+	end else begin
+		if (CLR_READY)
+			READY_reg<=1'b0;
+		if(i==0) begin
+			if (sample>cmp) 
+				out <= {buffer[7:1], 1'b1};
+			else
+				out <= {buffer[7:1], 1'b0};
+			buffer <= 8'h80;
+			i <= 7;
+			sample = V(n1);
+			READY_reg <= 1'b1;
+		end else begin
+			if (sample>cmp) 
+				buffer[i]<=1'b1;
+			else
+				buffer[i]<=1'b0;
+			if(i!=0)
+				buffer[i-1]<=1'b1;
+			i <= i-1;
+		end
+	end
+end
+
+always @(posedge adc_clk or posedge CLR_READY) begin
+	if(CLR_READY)
+		READY_reg <= 1'b0;
+	else
+		if(i==0)
+			READY_reg <= 1'b1;
+end
+
+endmodule

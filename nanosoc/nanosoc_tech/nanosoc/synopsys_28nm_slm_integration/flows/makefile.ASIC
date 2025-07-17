@@ -1,0 +1,29 @@
+#-----------------------------------------------------------------------------
+# Synopsys 28nm integration asic synthesis Makefile 
+# A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+#
+# Contributors
+#
+# Daniel Newbrook (d.newbrook@soton.ac.uk)
+#
+# Copyright (C) 2021-5, SoC Labs (www.soclabs.org)
+#-----------------------------------------------------------------------------
+
+syn_PD:
+	@mkdir -p ./imp/PD
+	@cd asic/PD;  dc_shell -f dc_synthesis.tcl
+
+syn_PLL:
+	@mkdir -p ./imp/PLL
+	@cd asic/PLL;  dc_shell -f dc_synthesis.tcl
+
+syn_TS:
+	@mkdir -p ./imp/TS
+	@cd asic/TS;  dc_shell -f dc_synthesis.tcl
+
+syn_VM:
+	@mkdir -p ./imp/VM
+	@cd asic/VM;  dc_shell -f dc_synthesis.tcl
+
+clean_all_syn:
+	rm -rf ./imp

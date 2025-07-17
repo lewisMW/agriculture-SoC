@@ -1,0 +1,18 @@
+//-----------------------------------------------------------------------------
+// SoCDebug UART to AXI Master Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for Ultraembedded UART to AXI Master IP
+//-----------------------------------------------------------------------------
+
+$(SOCLABS_SOCDEBUG_TECH_DIR)/socket/uart_axi_master/core_dbg_bridge/src_v/dbg_bridge_fifo.v
+$(SOCLABS_SOCDEBUG_TECH_DIR)/socket/uart_axi_master/core_dbg_bridge/src_v/dbg_bridge_uart.v
+$(SOCLABS_SOCDEBUG_TECH_DIR)/socket/uart_axi_master/core_dbg_bridge/src_v/dbg_bridge.v
+$(SOCLABS_SOCDEBUG_TECH_DIR)/socket/uart_axi_master/wrapper/verilog/uart_axi_master.v

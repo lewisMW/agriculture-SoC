@@ -90,6 +90,79 @@ module accelerator_subsystem #(
   //-------------------------------------------
   // Instantiate your accelerator/wrapper here
   //-------------------------------------------
+  cmsdk_ahb_to_apb  #(
+  .ADDRWIDTH(SYS_ADDR_W),
+  .REGISTER_RDATA(1),
+  .REGISTER_WDATA(1)
+) ahb_to_apb_bridge (
+  /*input  wire*/.HCLK(HCLK),       // Main Clock
+  /*input  wire*/.HRESETn(HRESETn), // Reset
+  /*input  wire*/.PCLKEN(1),        // APB clock enable signal - If PCLK is same as HCLK, set PCLKEN to 1
+// AHB Input
+  /*input  wire*/.HSEL(HSEL),   // Device select
+  /*input  wire*/.HADDR(HADDR),            // Address
+  /*input  wire*/.HTRANS(HTRANS),          // Transfer control
+  /*input  wire*/.HSIZE(HSIZE),            // Transfer size
+  /*input  wire*/.HPROT(HPROT),            // Protection control
+  /*input  wire*/.HWRITE(HWRITE),          // Write control
+  /*input  wire*/.HREADY(HREADY),      // Transfer phase done
+  /*input  wire*/.HWDATA(HWDATA),    // Write data
+// AHB Output:
+  /*output reg*/ .HREADYOUT(HREADYOUT),  // Device ready
+  /*output wire*/.HRESP(HRESP),     // Device response
+  /*output wire*/.HRDATA(HRDATA),    // Read data output
+
+// APB Output:
+  /*output wire*/.PADDR(PADDR),     // APB Address
+  /*output wire*/.PENABLE(PENABLE),   // APB Enable
+  /*output wire*/.PWRITE(PWRITE),    // APB Write
+  /*output wire*/.PSTRB(PSTRB),     // APB Byte Strobe
+  /*output wire*/.PPROT(PPROT),     // APB Prot
+  /*output wire*/.PWDATA(PWDATA),    // APB write data
+  /*output wire*/.PSEL(PSEL),      // APB Select
+  /*output wire*/.APBACTIVE(APBACTIVE), // APB bus is active, for clock gating of APB bus
+// APB Input:
+  /*input  wire*/.PRDATA(PRDATA),    // Read data for each APB slave
+  /*input  wire*/.PREADY(PREADY),    // Ready for each APB slave
+  /*input  wire*/.PSLVERR(PSLVERR));  // Error state for each APB slave
+
+wire [SYS_DATA_W-1:0] PWDATA;
+wire PWRITE;
+wire [SYS_DATA_W-1:0] PRDATA;
+wire [ACC_ADDR_W-1:0] PADDR;
+wire PREADY;
+wire PSEL;
+wire PENABLE;
+wire PSLVERR;
+wire [3:0] PSTRB;
+wire [2:0] PPROT;
+wire APBACTIVE;
+
+adc_apb_wrapper_rev1 #(
+   .ADDR_WIDTH(ACC_ADDR_W),
+   .DATA_WIDTH(SYS_DATA_W)
+) sensor_wrapper (
+   // Clock and Reset
+   .PCLK(HCLK),
+   .PRESETn(HRESETn),
+   // Address and Control
+   .PSEL(PSEL),
+   .PADDR(PADDR),
+   .PENABLE(PENABLE),
+   .PWRITE(PWRITE),
+   // Data
+   .PWDATA(PWDATA),
+   // Other
+   .APBACTIVE(APBACTIVE),
+   .PPROT(PPROT),
+   .PSTRB(PSTRB),
+   // Handshake
+   .PRDATA(PRDATA),
+   .PREADY(PREADY),
+   .PSLVERR(PSLVERR)
+);
+
+
 
 // Default IRQ and DMA REQ
 assign EXP_IRQ = 2'b00;

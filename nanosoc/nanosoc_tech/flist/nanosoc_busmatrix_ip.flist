@@ -1,0 +1,42 @@
+//-----------------------------------------------------------------------------
+// NanoSoC BusMatrix IP Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for NanoSoC IP
+//-----------------------------------------------------------------------------
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+// =============    NanoSoC BusMatrix IP search path    =============
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_BOOTROM_0.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_DMEM_0.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_EXPRAM_H.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_EXPRAM_L.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_EXP.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_IMEM_0.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_SYSIO.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_SYSTABLE.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_busmatrix_default_slave.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_busmatrix_lite.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_busmatrix.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_inititator_input.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_matrix_decode_CPU_0.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_matrix_decode_DEBUG.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_matrix_decode_DMAC_0.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_matrix_decode_DMAC_1.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_BOOTROM_0.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_DMEM_0.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_EXPRAM_H.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_EXPRAM_L.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_EXP.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_IMEM_0.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_SYSIO.v
+$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_SYSTABLE.v

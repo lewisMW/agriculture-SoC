@@ -1,0 +1,52 @@
+#-----------------------------------------------------------------------------
+# Synopsys 28nm integration simulation Makefile 
+# A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+#
+# Contributors
+#
+# David Mapstone (d.a.mapstone@soton.ac.uk)
+# Daniel Newbrook (d.newbrook@soton.ac.uk)
+#
+# Copyright (C) 2021-5, SoC Labs (www.soclabs.org)
+#-----------------------------------------------------------------------------
+
+# ------- Cocotb Variables -----------
+# Convert Simulator Name for Cocotb
+COCOTB_SIMULATOR ?= questa
+
+ifeq ($(SIMULATOR),mti)
+	COCOTB_SIMULATOR := questa
+else ifeq ($(SIMULATOR),xm)
+	COCOTB_SIMULATOR := xcelium
+else ifeq ($(SIMULATOR),vcs)
+	COCOTB_SIMULATOR := vcs
+else ifeq ($(SIMULATOR), icarus)
+	COCOTB_SIMULATOR := icarus
+endif
+
+# Cocotb GUI Variable
+GUI ?= 0
+
+# Cocotb Test Location
+COCOTB_TEST_DIR := $(SOCLABS_SNPS_28NM_IP_DIR)/verif/
+
+# Cocotb Scratch Directory
+COCOTB_DIR := $(SIM_TOP_DIR)/cocotb
+COCOTB_SCRATCH_DIR := $(COCOTB_DIR)/scratch
+
+# Filelist for Cocotb 
+MAKEFILE_FILELIST     := $(COCOTB_DIR)/makefile.flist
+
+# Generate Make filelist from flists
+flist_makefile_cocotb: 
+	@mkdir -p $(COCOTB_DIR)
+	@(cd $(COCOTB_DIR); \
+	cp $(DESIGN_VC) $(MAKEFILE_FILELIST);)
+
+run_cocotb: flist_makefile_cocotb
+	@mkdir -p $(SIM_DIR)
+	@cd $(SIM_DIR); $(MAKE) -C $(COCOTB_TEST_DIR)/$(COCOTB_IP_DIR) clean SIM_BUILD=$(COCOTB_SCRATCH_DIR)
+	@cd $(SIM_DIR); $(MAKE) -C $(COCOTB_TEST_DIR)/$(COCOTB_IP_DIR) sim SIM=$(COCOTB_SIMULATOR) GUI=$(GUI) SIM_BUILD=$(COCOTB_SCRATCH_DIR) TESTCASE=$(TESTCASE)
+
+sim_cocotb: GUI=1
+sim_cocotb: run_cocotb

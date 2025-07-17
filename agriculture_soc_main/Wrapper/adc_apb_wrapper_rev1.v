@@ -21,6 +21,11 @@ module adc_apb_wrapper_rev1 #(
     // Indicates direction of data transfer. High is a write, low is read.
     input  wire                  PWRITE,
 
+    // Other signals
+    input wire                   APBACTIVE, //TODO
+    input wire [2:0]             PPROT,     //TODO
+    input wire [3:0]             PSTRB,     //TODO
+
     // Data Signals
     // Write data bus. Carries data from master to peripheral during write transaction.
     input  wire [DATA_WIDTH-1:0] PWDATA,
@@ -102,18 +107,15 @@ module adc_apb_wrapper_rev1 #(
     // APB Read Logic
     // --------------------------------------------------------------------------
     // When read enabled, return status register or FIFO data based on address
-    always @(posedge PCLK or negedge PRESETn) begin
-        if (!PRESETn)
-            PRDATA <= 32'b0;
-        else if (read_enable) begin
+    always @(*) begin
+        PRDATA = 32'b0; // Default value
+        if (read_enable) begin
             case (PADDR)
-                STATUS_REG_ADDR:     PRDATA <= status_reg;
-                MEASUREMENT_HI_ADDR: PRDATA <= {fifo_data_out[63:32]}; 
-                MEASUREMENT_LO_ADDR: PRDATA <= fifo_data_out[31:0];
-                default:             PRDATA <= 32'b0;
+                STATUS_REG_ADDR:     PRDATA = status_reg;
+                MEASUREMENT_HI_ADDR: PRDATA = {fifo_data_out[63:32]}; 
+                MEASUREMENT_LO_ADDR: PRDATA = fifo_data_out[31:0];
             endcase
-        end else
-            PRDATA <= 32'b0;
+        end
     end
 
     // --------------------------------------------------------------------------

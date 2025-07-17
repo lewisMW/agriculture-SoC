@@ -1,0 +1,1 @@
+export SOCLABS_SNPS_28NM_IP_DIR=$(pwd)

@@ -116,6 +116,13 @@ You can also run `sim_%SIMULATOR%` and this will run the simulation from the GUI
 
 When using the makefile, you must include the `ACCELERATOR=yes` directive to include your accelerator
 
+### Example: `adc_trigger_test`
+
+Run the ADC trigger test with:
+```
+socsim test_accelerator TESTNAME=adc_trigger_test TOOL_CHAIN=gcc
+```
+
 ## FPGA Builds
 
 We currently have build files for the ARM MPS3, PYNQ ZCU104, PYNQ Z2, KRIA KR260 and KRIA KV260. To build the bitfiles you can run the `make build_fpga FPGA=%target% ACCELERATOR=yes` from the `/nanosoc_tech/` directory. 

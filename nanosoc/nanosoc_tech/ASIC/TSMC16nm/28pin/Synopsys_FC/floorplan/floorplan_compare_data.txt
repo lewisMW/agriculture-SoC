@@ -1,0 +1,32 @@
+################################################################################
+#
+# Created by fc compare_floorplans on Fri Apr  4 11:36:26 2025
+#
+# DO NOT EDIT - automatically generated file
+#
+################################################################################
+
+START nanosoc_chip_pads
+ MACROS
+  u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom { {99.9840 849.3600} {117.7140 920.2080} }
+  u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_sram { {703.0950 472.8000} {920.4000 621.9360} }
+  u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_sram { {703.0950 323.6640} {920.4000 472.8000} }
+  u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_sram { {703.0950 771.0720} {920.4000 920.2080} }
+  u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_sram { {703.0950 621.9360} {920.4000 771.0720} }
+ PINS
+  VDDIO { {510.1920 510.0960} {510.1921 510.0961} }
+  VDDACC { {510.1920 510.0960} {510.1921 510.0961} }
+  CLK { {-16.5300 17.1090} {-8.4300 26.1090} }
+  TEST { {-16.5300 17.1090} {-8.4300 26.1090} }
+  NRST { {-16.5300 17.1090} {-8.4300 26.1090} }
+  P0[3] { {-16.5300 17.1090} {-8.4300 26.1090} }
+  P0[2] { {-16.5300 17.1090} {-8.4300 26.1090} }
+  P0[1] { {-16.5300 17.1090} {-8.4300 26.1090} }
+  P0[0] { {-16.5300 17.1090} {-8.4300 26.1090} }
+  P1[3] { {-16.5300 17.1090} {-8.4300 26.1090} }
+  P1[2] { {-16.5300 17.1090} {-8.4300 26.1090} }
+  P1[1] { {-16.5300 17.1090} {-8.4300 26.1090} }
+  P1[0] { {-16.5300 17.1090} {-8.4300 26.1090} }
+  SWDIO { {-16.5300 17.1090} {-8.4300 26.1090} }
+  SWDCK { {-16.5300 17.1090} {-8.4300 26.1090} }
+END nanosoc_chip_pads

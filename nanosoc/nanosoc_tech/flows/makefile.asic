@@ -1,0 +1,231 @@
+#-----------------------------------------------------------------------------
+# NanoSoC FPGA Flow Makefile 
+# A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+#
+# Contributors
+#
+# David Mapstone (d.a.mapstone@soton.ac.uk)
+#
+# Copyright (C) 2021-3, SoC Labs (www.soclabs.org)
+#-----------------------------------------------------------------------------
+
+# NanoSoC Synthesis Properties
+NANOSOC_VENDOR   ?= soclabs.org
+NANOSOC_CORE_REV ?= 2
+
+# Top-level of RTL design to Implement
+COMPONENT_TOP    ?= nanosoc_chip_pads
+
+# Name of Implemented Chip Design (Including Socket IP)
+DESIGN_NAME      ?= nanosoc_design
+
+# Location to build ASIC files
+IMP_NANOSOC_ASIC_DIR := $(SOCLABS_PROJECT_DIR)/imp/ASIC/nanosoc
+
+# Location of Defines File
+DEFINES_DIR          := $(SOCLABS_PROJECT_DIR)/system/src/defines/
+DEFINES_FILE         := $(DEFINES_DIR)/gen_defines.v
+
+# Name of generated filelist by python script
+TCL_ASIC_FLIST_DIR        := $(IMP_NANOSOC_ASIC_DIR)/flist
+TCL_ASIC_OUTPUT_FILELIST  := $(TCL_ASIC_FLIST_DIR)/gen_flist.tcl
+GENUS_OUTPUT_FILELIST := $(TCL_ASIC_FLIST_DIR)/genus_flist.tcl
+FORMALITY_OUTPUT_FILELIST := $(TCL_ASIC_FLIST_DIR)/formality_flist.tcl
+DC_OUTPUT_FILELIST := $(TCL_ASIC_FLIST_DIR)/dc_flist.tcl
+
+# Location of outputs from synthesis
+MEMORIES_DIR			:= $(SOCLABS_PROJECT_DIR)/memories
+RF_16K_65nm_SPEC_FILE	:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC65nm/rf_16k.spec
+RF_08K_65nm_SPEC_FILE	:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC65nm/rf_08k.spec
+ROM_65nm_SPEC_FILE		:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC65nm/rom_via.spec
+SRAM_16K_28nm_SPEC_FILE	:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/sram_16k.spec
+ROM_28nm_SPEC_FILE		:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/rom_via.spec
+BOOTROM_BIN_FILE_IN 	:= $(SOCLABS_PROJECT_DIR)/system/src/bootrom/bintxt/bootrom.bintxt
+BOOTROM_BIN_FILE		:= $(SOCLABS_PROJECT_DIR)/system/src/bootrom/bintxt/bootrom.rcf
+RF_16K_DIR				:= $(MEMORIES_DIR)/rf_16k
+RF_08K_DIR				:= $(MEMORIES_DIR)/rf_08k
+ROM_DIR 				:= $(MEMORIES_DIR)/bootrom
+SRAM_16K_DIR			:= $(MEMORIES_DIR)/sram_16k 
+SRAM_32K_DIR 			:= $(MEMORIES_DIR)/sram_32k
+
+REPORTS_FOLDER			:= $(IMP_NANOSOC_ASIC_DIR)/reports
+SYN_LOGS				:= $(IMP_NANOSOC_ASIC_DIR)/logs
+NETLIST_FOLDER			:= $(IMP_NANOSOC_ASIC_DIR)/netlist/
+ASIC_OUTPUT_DIR 	    := $(IMP_NANOSOC_ASIC_DIR)/outputs
+ASIC_WORK_DIR 			:= $(IMP_NANOSOC_ASIC_DIR)/work
+ASIC_LIBS_DIR 			:= $(IMP_NANOSOC_ASIC_DIR)/libs
+
+NODE ?= 65
+
+ifeq ($(NODE),65)
+	NANOSOC_SYNTH_DIR	:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC65nm
+else
+	NANOSOC_SYNTH_DIR 			:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm
+	NANOSOC_FC_SCRIPTS_DIR 		:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/scripts
+	NANOSOC_FC_FLOORPLAN_DIR 	:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/floorplan
+	NANOSOC_FC_INPUTS_DIR 		:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/inputs
+endif
+
+# NanoSoC Tech Flow Dependencies
+NANOSOC_FPGA_FLOW_DIR := $(SOCLABS_NANOSOC_TECH_DIR)/fpga
+
+# Directory to look for FPGA specific implementation files
+TARGET_DIR            ?= $(NANOSOC_FPGA_FLOW_DIR)/targets/$(BOARD_NAME)
+TARGET_TCL_DIR        := $(TARGET_DIR)/vivado_script/$(VIVIADO_VERSION)
+PINMAP_FILE           ?= $(TARGET_DIR)/fpga_pinmap.xdc
+
+# NanoSoC Tech Socket Design Dependencies
+RTL_SOCKET_DIR        := $(SOCLABS_SOCDEBUG_TECH_DIR)/socket/vivado_packages
+
+flist_dc_nanosoc: gen_defs
+	@mkdir -p $(TCL_ASIC_FLIST_DIR)
+	@(cd $(TCL_ASIC_FLIST_DIR); \
+    $(SOCLABS_SOCTOOLS_FLOW_DIR)/bin/filelist_compile.py -t -s -a -f $(DESIGN_VC) -o $(DC_OUTPUT_FILELIST) -i $(FLIST_INCLUDES) -r $(IMP_NANOSOC_ASIC_DIR)/src;)
+
+flist_genus_nanosoc: gen_defs
+	@mkdir -p $(TCL_ASIC_FLIST_DIR)
+	@(cd $(TCL_ASIC_FLIST_DIR); \
+	$(SOCLABS_SOCTOOLS_FLOW_DIR)/bin/filelist_compile.py -t -g -f $(DESIGN_VC) -o $(GENUS_OUTPUT_FILELIST) -i $(FLIST_INCLUDES) -r $(IMP_NANOSOC_DIR)/synthesis/src -d $(NANOSOC_DEFINES);)
+
+flist_formality_nanosoc: gen_defs
+	@(cd $(TCL_ASIC_FLIST_DIR); \
+	$(SOCLABS_SOCTOOLS_FLOW_DIR)/bin/filelist_compile.py -t -F -a -f $(DESIGN_VC) -o $(FORMALITY_OUTPUT_FILELIST) -i $(FLIST_INCLUDES) -r $(IMP_NANOSOC_DIR)/synthesis/src;)
+
+gen_memories: bootrom
+	@mkdir -p $(MEMORIES_DIR)
+	@mkdir -p $(RF_16K_DIR)
+	@mkdir -p $(RF_08K_DIR)
+	@mkdir -p $(ROM_DIR)
+	cp $(BOOTROM_BIN_FILE_IN) $(BOOTROM_BIN_FILE)
+	echo "Generating register file memory libraries"
+	echo "16K RF"
+	cd $(RF_16K_DIR); $(PHYS_IP)/arm/tsmc/cln65lp/rf_sp_hdf_hvt_rvt/r0p0/bin/rf_sp_hdf_hvt_rvt all -spec $(RF_16K_65nm_SPEC_FILE);
+	cd $(RF_16K_DIR); $(PHYS_IP)/arm/tsmc/cln65lp/rf_sp_hdf_hvt_rvt/r0p0/bin/rf_sp_hdf_hvt_rvt liberty -spec $(RF_16K_65nm_SPEC_FILE);
+	echo "8K RF"
+	cd $(RF_08K_DIR); $(PHYS_IP)/arm/tsmc/cln65lp/rf_sp_hdf_hvt_rvt/r0p0/bin/rf_sp_hdf_hvt_rvt all -spec $(RF_08K_65nm_SPEC_FILE);
+	cd $(RF_08K_DIR); $(PHYS_IP)/arm/tsmc/cln65lp/rf_sp_hdf_hvt_rvt/r0p0/bin/rf_sp_hdf_hvt_rvt liberty -spec $(RF_08K_65nm_SPEC_FILE);
+	cd $(ROM_DIR)
+	echo "Generating ROM Libraries"
+	cd $(ROM_DIR); $(PHYS_IP)/arm/tsmc/cln65lp/rom_via_hdd_rvt_rvt/r0p0/bin/rom_via_hdd_rvt_rvt liberty -spec $(ROM_65nm_SPEC_FILE) -code_file $(BOOTROM_BIN_FILE);
+	cd $(ROM_DIR); $(PHYS_IP)/arm/tsmc/cln65lp/rom_via_hdd_rvt_rvt/r0p0/bin/rom_via_hdd_rvt_rvt all -spec $(ROM_65nm_SPEC_FILE) -code_file $(BOOTROM_BIN_FILE);
+	echo "Finished generating memory libraries"
+
+gen_memories_frontend_28nm: bootrom
+	@mkdir -p $(MEMORIES_DIR)
+	@mkdir -p $(SRAM_16K_DIR)
+	@mkdir -p $(ROM_DIR)
+	cp $(BOOTROM_BIN_FILE_IN) $(BOOTROM_BIN_FILE)
+	echo "Generating 16K SRAM Memory"
+	cd $(SRAM_16K_DIR); $(PHYS_IP)/arm/tsmc/cln28ht/sram_sp_hde_hvt_mvt/r0p0/bin/sram_sp_hde_hvt_mvt ascii -spec $(SRAM_16K_28nm_SPEC_FILE)
+	cd $(SRAM_16K_DIR); $(PHYS_IP)/arm/tsmc/cln28ht/sram_sp_hde_hvt_mvt/r0p0/bin/sram_sp_hde_hvt_mvt emulation -spec $(SRAM_16K_28nm_SPEC_FILE)
+	cd $(SRAM_16K_DIR); $(PHYS_IP)/arm/tsmc/cln28ht/sram_sp_hde_hvt_mvt/r0p0/bin/sram_sp_hde_hvt_mvt verilog -spec $(SRAM_16K_28nm_SPEC_FILE)
+	cd $(SRAM_16K_DIR); $(PHYS_IP)/arm/tsmc/cln28ht/sram_sp_hde_hvt_mvt/r0p0/bin/sram_sp_hde_hvt_mvt liberty -spec $(SRAM_16K_28nm_SPEC_FILE)
+	echo "Generating ROM Libraries"
+	cd $(ROM_DIR); $(PHYS_IP)/arm/tsmc/cln28ht//rom_via_hdd_2_svt_mvt/r0p0/bin/rom_via_hdd_2_svt_mvt ascii -spec $(ROM_28nm_SPEC_FILE) -code_file $(BOOTROM_BIN_FILE);
+	cd $(ROM_DIR); $(PHYS_IP)/arm/tsmc/cln28ht//rom_via_hdd_2_svt_mvt/r0p0/bin/rom_via_hdd_2_svt_mvt emulation -spec $(ROM_28nm_SPEC_FILE) -code_file $(BOOTROM_BIN_FILE);
+	cd $(ROM_DIR); $(PHYS_IP)/arm/tsmc/cln28ht//rom_via_hdd_2_svt_mvt/r0p0/bin/rom_via_hdd_2_svt_mvt verilog -spec $(ROM_28nm_SPEC_FILE) -code_file $(BOOTROM_BIN_FILE);
+	cd $(ROM_DIR); $(PHYS_IP)/arm/tsmc/cln28ht//rom_via_hdd_2_svt_mvt/r0p0/bin/rom_via_hdd_2_svt_mvt liberty -spec $(ROM_28nm_SPEC_FILE) -code_file $(BOOTROM_BIN_FILE);
+
+gen_memories_backend_28nm: bootrom
+	@mkdir -p $(MEMORIES_DIR)
+	@mkdir -p $(SRAM_16K_DIR)
+	@mkdir -p $(ROM_DIR)
+	cp $(BOOTROM_BIN_FILE_IN) $(BOOTROM_BIN_FILE)
+	echo "Generating 16K RF Memory"
+	cd $(SRAM_16K_DIR); $(PHYS_IP)/arm/tsmc/cln28ht/sram_sp_hde_2_svt_mvt/r0p0/bin/sram_sp_hde_2_svt_mvt lef-fp -spec $(SRAM_16K_28nm_SPEC_FILE)
+	cd $(SRAM_16K_DIR); $(PHYS_IP)/arm/tsmc/cln28ht/sram_sp_hde_2_svt_mvt/r0p0/bin/sram_sp_hde_2_svt_mvt gds2 -spec $(SRAM_16K_28nm_SPEC_FILE)
+	echo "Generating ROM Libraries"
+	cd $(ROM_DIR); $(PHYS_IP)/arm/tsmc/cln28ht//rom_via_hdd_2_svt_mvt/r0p0/bin/rom_via_hdd_2_svt_mvt lef-fp -spec $(ROM_28nm_SPEC_FILE) -code_file $(BOOTROM_BIN_FILE);
+	cd $(ROM_DIR); $(PHYS_IP)/arm/tsmc/cln28ht//rom_via_hdd_2_svt_mvt/r0p0/bin/rom_via_hdd_2_svt_mvt gds2 -spec $(ROM_28nm_SPEC_FILE) -code_file $(BOOTROM_BIN_FILE);
+
+gen_memories_28nm: gen_memories_frontend_28nm gen_memories_backend_28nm
+
+gen_memories_16nm:
+	@mkdir -p $(MEMORIES_DIR)
+	@mkdir -p $(SRAM_32K_DIR)
+	@mkdir -p $(ROM_DIR)
+
+
+convert_mem_to_db: 
+	lc_shell -no_log -f  $(NANOSOC_SYNTH_DIR)/synopsys_lib_conversion.tcl
+
+syn_genus_44pin: 
+	@mkdir -p $(REPORTS_FOLDER)
+	@mkdir -p $(NETLIST_FOLDER)
+	@mkdir -p $(SYN_LOGS)
+	cd $(NANOSOC_SYNTH_DIR)/44pin/Cadence/scripts; genus -f $(NANOSOC_SYNTH_DIR)/44pin/Cadence/scripts/genus.tcl -log $(SYN_LOGS)/nanosoc_synth_genus.log
+
+syn_genus_44pin_noDFT: 
+	@mkdir -p $(REPORTS_FOLDER)
+	@mkdir -p $(NETLIST_FOLDER)
+	@mkdir -p $(SYN_LOGS)
+	cd $(NANOSOC_SYNTH_DIR)/44pin/Cadence/scripts; genus -f $(NANOSOC_SYNTH_DIR)/44pin/Cadence/scripts/genus_nodft.tcl -log $(SYN_LOGS)/nanosoc_synth_genus_noDFT.log
+
+syn_dc:
+	@mkdir -p $(REPORTS_FOLDER)
+	@mkdir -p $(NETLIST_FOLDER)/Synopsys
+	@mkdir -p $(SYN_LOGS)
+	@make flist_dc_nanosoc ASIC=yes
+	cd $(NANOSOC_SYNTH_DIR); dc_shell -f $(NANOSOC_SYNTH_DIR)/Synopsys/DC/synopsys.tcl -output_log_file $(SYN_LOGS)/nanosoc_synth_dc.log
+
+# Synopsys Fusion Compiler 28nm Flows
+fusion_setup_dirs:
+	@mkdir -p $(REPORTS_FOLDER)
+	@mkdir -p $(SYN_LOGS)	
+	@mkdir -p $(NETLIST_FOLDER)
+	@mkdir -p $(ASIC_OUTPUT_DIR) 	 
+	@mkdir -p $(ASIC_WORK_DIR) 
+	@mkdir -p $(ASIC_LIBS_DIR) 
+	cp -rf $(NANOSOC_FC_SCRIPTS_DIR) $(IMP_NANOSOC_ASIC_DIR)/
+	cp -rf $(NANOSOC_FC_FLOORPLAN_DIR) $(IMP_NANOSOC_ASIC_DIR)/
+	cp -rf $(NANOSOC_FC_INPUTS_DIR) $(IMP_NANOSOC_ASIC_DIR)/
+
+fusion_setup_libs: fusion_setup_dirs
+	@if [ ! -d $(ASIC_LIBS_DIR)/cln28ht ] ; then \
+		cd $(ASIC_LIBS_DIR); lc_shell -f ../scripts/synopsys_lib_conversion.tcl; \
+	fi
+
+fusion_setup_saif:
+	cp $(SOCLABS_PROJECT_DIR)/simulate/sim/dhry/waves.vcd $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/inputs/waves.vcd
+	cd $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/inputs;  vcd2saif -verilog_instance u_nanosoc_chip_pads -input ./waves.vcd -output ./waves.saif 
+
+fusion_init: fusion_setup_saif
+	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/1_design_setup.tcl
+
+fusion_synthesis: 
+	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/2_synthesis.tcl
+
+fusion_clock_opt:
+	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/3_clock.tcl
+
+fusion_route:
+	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/4_route.tcl
+
+fusion_signoff:
+	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/5_signoff.tcl
+
+fusion_fm_signoff:
+	cd $(ASIC_WORK_DIR); fm_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/6_formality_signoff.tcl
+
+
+fusion_clean_work: 
+	rm -rf $(ASIC_WORK_DIR) 
+
+fusion_clean_libs:
+	rm -rf $(ASIC_LIBS_DIR)
+
+fusion_clean_all: fusion_clean_work fusion_clean_libs
+
+# Clean FPGA Run
+clean_synthesis:
+	@echo Cleaning Previous Runs of $(BOARD_NAME)
+	@rm -rf $(PROJECT_DIR)
+	@rm -rf $(RUN_DIR)
+
+# Clean ALL FPGA Implementation Directory
+clean_synthesis_all:
+	@echo Cleaning FPGA Implementation Directory
+	@rm -rf $(IMP_NANOSOC_ASIC_DIR)
+	@rm -rf 
+	@echo Cleaning Firmware
+	@$(MAKE) -C $(SOCLABS_NANOSOC_TECH_DIR) clean_all_code
