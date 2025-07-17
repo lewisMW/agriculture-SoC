@@ -11,7 +11,7 @@ set TLU_rcbest $TLU_dir/rcbest.tluplus
 set TLU_rcworst_T $TLU_dir/rcworst_T.tluplus
 set TLU_rcworst $TLU_dir/rcworst.tluplus
 set TLU_typical $TLU_dir/typical.tluplus
-set TLU_map $TLU_dir/tluplus.map
+set TLU_map /home/dwn1c21/SoC-Labs/phys_ip/TSMC/28/CMOS/HPC+/util/ULL/Reference/MAP/star.map_icc_crn28hpc+_1p9m_5x1y1z1u_ut-alrdl
 
 read_parasitic_tech -name cbest -tlup $TLU_cbest -layermap $TLU_map -sanity_check advanced
 read_parasitic_tech -name cbest_T -tlup $TLU_cbest_T -layermap $TLU_map -sanity_check advanced
@@ -32,7 +32,7 @@ create_scenario -name hold_scenario_ffgnp -mode hold_mode_ffgnp -corner hold_cor
 set_scenario_status hold_scenario_ffgnp -none -setup false -hold true -leakage_power true -dynamic_power false -max_transition true -max_capacitance false -min_capacitance true -active true
 
 current_corner hold_corner_ffgnp
-read_sdc ../../../constraints_hold_ffg.sdc
+read_sdc ../inputs/constraints_hold_ffg.sdc
 
 create_mode hold_mode_ssgnp
 create_corner hold_corner_ssgnp
@@ -40,7 +40,7 @@ create_scenario -name hold_scenario_ssgnp -mode hold_mode_ssgnp -corner hold_cor
 set_scenario_status hold_scenario_ssgnp -none -setup false -hold true -leakage_power true -dynamic_power false -max_transition true -max_capacitance false -min_capacitance true -active true
 
 current_corner hold_corner_ssgnp
-read_sdc ../../../constraints_hold_ssg.sdc
+read_sdc ../inputs/constraints_hold_ssg.sdc
 
 
 create_mode setup_mode
@@ -49,7 +49,7 @@ create_scenario -name setup_scenario -mode setup_mode -corner setup_corner
 set_scenario_status setup_scenario -none -setup true -hold false -leakage_power true -dynamic_power true -max_transition true -max_capacitance true -min_capacitance false -active true
 
 current_corner setup_corner 
-read_sdc ../../../constraints_setup.sdc
+read_sdc ../inputs/constraints_setup.sdc
 
 create_mode em_mode
 create_corner em_corner
@@ -57,7 +57,7 @@ create_scenario -name em_scenario -mode em_mode -corner em_corner
 set_scenario_status em_scenario -none -setup false -hold false -leakage_power false -dynamic_power false -max_transition false -max_capacitance false -min_capacitance false -cell_em false -signal_em true -active true 
 
 current_corner em_corner 
-read_sdc ../../../constraints_hold_ffg.sdc
+read_sdc ../inputs/constraints_hold_ffg.sdc
 
 create_mode max_tran_mode
 create_corner max_tran_corner
@@ -65,7 +65,7 @@ create_scenario -name max_tran_scenario -mode max_tran_mode -corner max_tran_cor
 set_scenario_status max_tran_scenario -none -setup false -hold false -leakage_power false -dynamic_power false -max_transition true -max_capacitance false -min_capacitance false -active true 
 
 current_corner max_tran_corner 
-read_sdc ../../../constraints_setup.sdc
+read_sdc ../inputs/constraints_setup.sdc
 
 create_mode typical_mode
 create_corner typical_corner
@@ -73,7 +73,7 @@ create_scenario -name typical_scenario -mode typical_mode -corner typical_corner
 set_scenario_status typical_scenario -none -setup true -hold true -leakage_power true -dynamic_power true -max_transition false -max_capacitance false -min_capacitance false -active true
 
 current_corner typical_corner
-read_sdc ../../../constraints_typical.sdc
+read_sdc ../inputs/constraints_typical.sdc
 
 ## hold - FFGNP V=+10% T=-40 and 125, parasitics cworst cbest rcworst rcbest
 #         SSSGNP V=-10%, T=-40 and 125, parasitics cworst and rcworst
@@ -95,6 +95,8 @@ set_voltage -corners hold_corner_ffgnp -object_list [get_supply_nets {AVDDHV}] 1
 set_voltage -corners hold_corner_ffgnp -object_list [get_supply_nets {AVDD}] 0.99
 set_voltage -corners hold_corner_ffgnp -object_list [get_supply_nets {VSS}] 0.0
 set_voltage -corners hold_corner_ffgnp -object_list [get_supply_nets {AGND}] 0.0
+set_voltage -corners hold_corner_ffgnp -object_list [get_supply_nets {VSSIO}] 0.0
+set_voltage -corners hold_corner_ffgnp -object_list [get_supply_nets {VDDIO}] 1.98
 
 
 current_corner hold_corner_ssgnp
@@ -115,6 +117,8 @@ set_voltage -corners hold_corner_ssgnp -object_list [get_supply_nets {AVDDHV}] 1
 set_voltage -corners hold_corner_ssgnp -object_list [get_supply_nets {AVDD}] 0.81
 set_voltage -corners hold_corner_ssgnp -object_list [get_supply_nets {VSS}] 0.0
 set_voltage -corners hold_corner_ssgnp -object_list [get_supply_nets {AGND}] 0.0
+set_voltage -corners hold_corner_ssgnp -object_list [get_supply_nets {VSSIO}] 0.0
+set_voltage -corners hold_corner_ssgnp -object_list [get_supply_nets {VDDIO}] 1.62
 
 
 ## setup SSGNP V=-10%, T=-40 parasitics cworst_t rcworst_t
@@ -142,6 +146,9 @@ set_voltage -corners setup_corner -object_list [get_supply_nets {AVDDHV}] 1.62
 set_voltage -corners setup_corner -object_list [get_supply_nets {AVDD}] 0.81
 set_voltage -corners setup_corner -object_list [get_supply_nets {VSS}] 0.0
 set_voltage -corners setup_corner -object_list [get_supply_nets {AGND}] 0.0
+set_voltage -corners setup_corner -object_list [get_supply_nets {VSSIO}] 0.0
+set_voltage -corners setup_corner -object_list [get_supply_nets {VDDIO}] 1.62
+
 
 ## max transition - SSGNP V=-10% T=-40 P=cworst_t rcworst_t
 current_corner max_tran_corner 
@@ -162,6 +169,8 @@ set_voltage -corners max_tran_corner -object_list [get_supply_nets {AVDDHV}] 1.6
 set_voltage -corners max_tran_corner -object_list [get_supply_nets {AVDD}] 0.81
 set_voltage -corners max_tran_corner -object_list [get_supply_nets {VSS}] 0.0
 set_voltage -corners max_tran_corner -object_list [get_supply_nets {AGND}] 0.0
+set_voltage -corners max_tran_corner -object_list [get_supply_nets {VSSIO}] 0.0
+set_voltage -corners max_tran_corner -object_list [get_supply_nets {VDDIO}] 1.62
 
 ## typical power - TT V=V T=85C P=ctypical
 current_corner typical_corner
@@ -182,6 +191,8 @@ set_voltage -corners typical_corner -object_list [get_supply_nets {AVDDHV}] 1.8
 set_voltage -corners typical_corner -object_list [get_supply_nets {AVDD}] 0.9
 set_voltage -corners typical_corner -object_list [get_supply_nets {VSS}] 0.0
 set_voltage -corners typical_corner -object_list [get_supply_nets {AGND}] 0.0
+set_voltage -corners typical_corner -object_list [get_supply_nets {VSSIO}] 0.0
+set_voltage -corners typical_corner -object_list [get_supply_nets {VDDIO}] 1.8
 
 # Max IR drop - FFG V=V T=125 P=cworst
 
@@ -204,6 +215,8 @@ set_voltage -corners em_corner -object_list [get_supply_nets {AVDDHV}] 1.8
 set_voltage -corners em_corner -object_list [get_supply_nets {AVDD}] 0.9
 set_voltage -corners em_corner -object_list [get_supply_nets {VSS}] 0.0
 set_voltage -corners em_corner -object_list [get_supply_nets {AGND}] 0.0
+set_voltage -corners em_corner -object_list [get_supply_nets {VSSIO}] 0.0
+set_voltage -corners em_corner -object_list [get_supply_nets {VDDIO}] 1.8
 
 redirect -file ../reports/design_setup.report_scenarios.rpt {report_scenarios} 
 redirect -file ../reports/design_setup.report_pvt.rpt {report_pvt} 

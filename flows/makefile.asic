@@ -51,13 +51,19 @@ SRAM_32K_DIR 			:= $(MEMORIES_DIR)/sram_32k
 REPORTS_FOLDER			:= $(IMP_NANOSOC_ASIC_DIR)/reports
 SYN_LOGS				:= $(IMP_NANOSOC_ASIC_DIR)/logs
 NETLIST_FOLDER			:= $(IMP_NANOSOC_ASIC_DIR)/netlist/
+ASIC_OUTPUT_DIR 	    := $(IMP_NANOSOC_ASIC_DIR)/outputs
+ASIC_WORK_DIR 			:= $(IMP_NANOSOC_ASIC_DIR)/work
+ASIC_LIBS_DIR 			:= $(IMP_NANOSOC_ASIC_DIR)/libs
 
 NODE ?= 65
 
 ifeq ($(NODE),65)
 	NANOSOC_SYNTH_DIR	:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC65nm
 else
-	NANOSOC_SYNTH_DIR 	:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm
+	NANOSOC_SYNTH_DIR 			:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm
+	NANOSOC_FC_SCRIPTS_DIR 		:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/scripts
+	NANOSOC_FC_FLOORPLAN_DIR 	:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/floorplan
+	NANOSOC_FC_INPUTS_DIR 		:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/inputs
 endif
 
 # NanoSoC Tech Flow Dependencies
@@ -161,6 +167,54 @@ syn_dc:
 	@mkdir -p $(SYN_LOGS)
 	@make flist_dc_nanosoc ASIC=yes
 	cd $(NANOSOC_SYNTH_DIR); dc_shell -f $(NANOSOC_SYNTH_DIR)/Synopsys/DC/synopsys.tcl -output_log_file $(SYN_LOGS)/nanosoc_synth_dc.log
+
+# Synopsys Fusion Compiler 28nm Flows
+fusion_setup_dirs:
+	@mkdir -p $(REPORTS_FOLDER)
+	@mkdir -p $(SYN_LOGS)	
+	@mkdir -p $(NETLIST_FOLDER)
+	@mkdir -p $(ASIC_OUTPUT_DIR) 	 
+	@mkdir -p $(ASIC_WORK_DIR) 
+	@mkdir -p $(ASIC_LIBS_DIR) 
+	cp -rf $(NANOSOC_FC_SCRIPTS_DIR) $(IMP_NANOSOC_ASIC_DIR)/
+	cp -rf $(NANOSOC_FC_FLOORPLAN_DIR) $(IMP_NANOSOC_ASIC_DIR)/
+	cp -rf $(NANOSOC_FC_INPUTS_DIR) $(IMP_NANOSOC_ASIC_DIR)/
+
+fusion_setup_libs: fusion_setup_dirs
+	@if [ ! -d $(ASIC_LIBS_DIR)/cln28ht ] ; then \
+		cd $(ASIC_LIBS_DIR); lc_shell -f ../scripts/synopsys_lib_conversion.tcl; \
+	fi
+
+fusion_setup_saif:
+	cp $(SOCLABS_PROJECT_DIR)/simulate/sim/dhry/waves.vcd $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/inputs/waves.vcd
+	cd $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/inputs;  vcd2saif -verilog_instance u_nanosoc_chip_pads -input ./waves.vcd -output ./waves.saif 
+
+fusion_init: fusion_setup_saif
+	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/1_design_setup.tcl
+
+fusion_synthesis: 
+	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/2_synthesis.tcl
+
+fusion_clock_opt:
+	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/3_clock.tcl
+
+fusion_route:
+	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/4_route.tcl
+
+fusion_signoff:
+	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/5_signoff.tcl
+
+fusion_fm_signoff:
+	cd $(ASIC_WORK_DIR); fm_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/6_formality_signoff.tcl
+
+
+fusion_clean_work: 
+	rm -rf $(ASIC_WORK_DIR) 
+
+fusion_clean_libs:
+	rm -rf $(ASIC_LIBS_DIR)
+
+fusion_clean_all: fusion_clean_work fusion_clean_libs
 
 # Clean FPGA Run
 clean_synthesis:

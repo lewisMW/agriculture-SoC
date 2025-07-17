@@ -1,0 +1,35 @@
+//-----------------------------------------------------------------------------
+// NanoSoC Testbench Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for NanoSoC Testbench
+//-----------------------------------------------------------------------------
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+// =============    NanoSoC Testbench search path    =============
+
+// - Top-level testbench
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/tb/verilog/nanosoc_tb_GATE.v
+$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_axis_target.v
+$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_tfsm.v
+
+// Include NanoSoC Testbench Components
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/nanosoc_vip.flist
+
+// Include Corstone VIP Components
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/corstone101_vip.flist
+
+$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_sync.v
+$(SOCLABS_GENERIC_LIB_TECH_DIR)/sync/verilog/SYNCHRONIZER_EDGES.v
+-f $(SOCLABS_SLCOREM0_TECH_DIR)/flist/slcorem0.flist
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/corstone101_ip.flist
+

@@ -285,6 +285,7 @@ PRDW08SDGZ_V_G uPAD_SE_I (
     .C(pad_se_i),
     .I(tielo),
     .OEN(tiehi),
+    .REN(1'b0),
     .PAD(SE)
    );
 
@@ -293,6 +294,7 @@ PRDW08SDGZ_V_G uPAD_CLK_I (
     .C(pad_clk_i),
     .I(tielo),
     .OEN(tiehi),
+    .REN(1'b1),
     .PAD(CLK)
    );
 
@@ -300,6 +302,7 @@ PRDW08SDGZ_V_G uPAD_TEST_I (
     .C(pad_test_i),
     .I(tielo),
     .OEN(tiehi),
+    .REN(1'b0),
     .PAD(TEST)
    );
 
@@ -307,6 +310,7 @@ PRDW08SDGZ_V_G uPAD_NRST_I (
     .C(pad_nrst_i),
     .I(tielo),
     .OEN(tiehi),
+    .REN(1'b1),
     .PAD(NRST)
    );
 
@@ -314,6 +318,7 @@ PRDW08SDGZ_V_G uPAD_SWDIO_IO (
     .C(pad_swdio_i),
     .I(pad_swdio_o),
     .OEN(pad_swdio_z),
+    .REN(1'b1),
     .PAD(SWDIO)
    );
 
@@ -321,6 +326,7 @@ PRDW08SDGZ_V_G uPAD_SWDCK_I (
     .C(pad_swdclk_i),
     .I(tielo),
     .OEN(tiehi),
+    .REN(1'b1),
     .PAD(SWDCK)
    );
 
@@ -330,6 +336,7 @@ PRDW08SDGZ_V_G uPAD_P0_00 (
     .C(pad_gpio_port0_i[00]),
     .I(pad_gpio_port0_o[00]),
     .OEN(pad_gpio_port0_z[00]),
+    .REN(~(pad_gpio_port0_z[00]&pad_gpio_port0_o[00])),
     .PAD(P0[00])
    );
 
@@ -337,6 +344,7 @@ PRDW08SDGZ_V_G uPAD_P0_01 (
     .C(pad_gpio_port0_i[01]),
     .I(pad_gpio_port0_o[01]),
     .OEN(pad_gpio_port0_z[01]),
+    .REN(~(pad_gpio_port0_z[01]&pad_gpio_port0_o[01])),
     .PAD(P0[01])
    );
   
@@ -344,6 +352,7 @@ PRDW08SDGZ_V_G uPAD_P0_02 (
     .C(pad_gpio_port0_i[02]),
     .I(pad_gpio_port0_o[02]),
     .OEN(pad_gpio_port0_z[02]),
+    .REN(~(pad_gpio_port0_z[02]&pad_gpio_port0_o[02])),
     .PAD(P0[02])
    );
 
@@ -351,6 +360,7 @@ PRDW08SDGZ_V_G uPAD_P0_03 (
     .C(pad_gpio_port0_i[03]),
     .I(pad_gpio_port0_o[03]),
     .OEN(pad_gpio_port0_z[03]),
+    .REN(~(pad_gpio_port0_z[03]&pad_gpio_port0_o[03])),
     .PAD(P0[03])
    );
 
@@ -358,6 +368,7 @@ PRDW08SDGZ_V_G uPAD_P0_04 (
     .C(pad_gpio_port0_i[04]),
     .I(pad_gpio_port0_o[04]),
     .OEN(pad_gpio_port0_z[04]),
+    .REN(~(pad_gpio_port0_z[04]&pad_gpio_port0_o[04])),
     .PAD(P0[04])
    );
 
@@ -365,6 +376,7 @@ PRDW08SDGZ_V_G uPAD_P0_05 (
     .C(pad_gpio_port0_i[05]),
     .I(pad_gpio_port0_o[05]),
     .OEN(pad_gpio_port0_z[05]),
+    .REN(~(pad_gpio_port0_z[05]&pad_gpio_port0_o[05])),
     .PAD(P0[05])
    );
   
@@ -372,6 +384,7 @@ PRDW08SDGZ_V_G uPAD_P0_06 (
     .C(pad_gpio_port0_i[06]),
     .I(pad_gpio_port0_o[06]),
     .OEN(pad_gpio_port0_z[06]),
+    .REN(~(pad_gpio_port0_z[06]&pad_gpio_port0_o[06])),
     .PAD(P0[06])
    );
 
@@ -379,6 +392,7 @@ PRDW08SDGZ_V_G uPAD_P0_07 (
     .C(pad_gpio_port0_i[07]),
     .I(pad_gpio_port0_o[07]),
     .OEN(pad_gpio_port0_z[07]),
+    .REN(~(pad_gpio_port0_z[07]&pad_gpio_port0_o[07])),
     .PAD(P0[07])
    );
 // GPI.I Port 1 x 16
@@ -387,6 +401,7 @@ PRDW08SDGZ_V_G uPAD_P1_00 (
     .C(pad_gpio_port1_i[00]),
     .I(pad_gpio_port1_o[00]),
     .OEN(pad_gpio_port1_z[00]),
+    .REN(~(pad_gpio_port1_z[00]&pad_gpio_port1_o[00])),
     .PAD(P1[00])
    );
 
@@ -394,6 +409,7 @@ PRDW08SDGZ_V_G uPAD_P1_01 (
     .C(pad_gpio_port1_i[01]),
     .I(pad_gpio_port1_o[01]),
     .OEN(pad_gpio_port1_z[01]),
+    .REN(~(pad_gpio_port1_z[01]&pad_gpio_port1_o[01])),
     .PAD(P1[01])
    );
   
@@ -401,6 +417,7 @@ PRDW08SDGZ_V_G uPAD_P1_02 (
     .C(pad_gpio_port1_i[02]),
     .I(pad_gpio_port1_o[02]),
     .OEN(pad_gpio_port1_z[02]),
+    .REN(~(pad_gpio_port1_z[02]&pad_gpio_port1_o[02])),
     .PAD(P1[02])
    );
 
@@ -408,6 +425,7 @@ PRDW08SDGZ_V_G uPAD_P1_03 (
     .C(pad_gpio_port1_i[03]),
     .I(pad_gpio_port1_o[03]),
     .OEN(pad_gpio_port1_z[03]),
+    .REN(~(pad_gpio_port1_z[03]&pad_gpio_port1_o[03])),
     .PAD(P1[03])
    );
 
@@ -415,6 +433,7 @@ PRDW08SDGZ_V_G uPAD_P1_04 (
     .C(pad_gpio_port1_i[04]),
     .I(pad_gpio_port1_o[04]),
     .OEN(pad_gpio_port1_z[04]),
+    .REN(~(pad_gpio_port1_z[04]&pad_gpio_port1_o[04])),
     .PAD(P1[04])
    );
 
@@ -422,6 +441,7 @@ PRDW08SDGZ_V_G uPAD_P1_05 (
     .C(pad_gpio_port1_i[05]),
     .I(pad_gpio_port1_o[05]),
     .OEN(pad_gpio_port1_z[05]),
+    .REN(~(pad_gpio_port1_z[05]&pad_gpio_port1_o[05])),
     .PAD(P1[05])
    );
   
@@ -429,6 +449,7 @@ PRDW08SDGZ_V_G uPAD_P1_06 (
     .C(pad_gpio_port1_i[06]),
     .I(pad_gpio_port1_o[06]),
     .OEN(pad_gpio_port1_z[06]),
+    .REN(~(pad_gpio_port1_z[06]&pad_gpio_port1_o[06])),
     .PAD(P1[06])
    );
 
@@ -436,6 +457,7 @@ PRDW08SDGZ_V_G uPAD_P1_07 (
     .C(pad_gpio_port1_i[07]),
     .I(pad_gpio_port1_o[07]),
     .OEN(pad_gpio_port1_z[07]),
+    .REN(~(pad_gpio_port1_z[07]&pad_gpio_port1_o[07])),
     .PAD(P1[07])
    );
 

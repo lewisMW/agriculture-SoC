@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Created by fc compare_floorplans on Fri May 23 13:50:48 2025
+# Created by fc compare_floorplans on Mon Jun 16 16:08:36 2025
 #
 # DO NOT EDIT - automatically generated file
 #
@@ -8,17 +8,14 @@
 
 START nanosoc_chip_pads
  MACROS
-  u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom { {135.0000 1504.9350} {230.0500 1531.5000} }
-  u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_sram { {459.4400 1341.9650} {631.6200 1531.5000} }
-  u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_sram { {287.2600 1341.9650} {459.4400 1531.5000} }
-  u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_sram { {631.6200 1341.9650} {803.8000 1531.5000} }
-  u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_sram { {803.8000 1341.9650} {975.9800 1531.5000} }
+  u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom { {135.0000 1436.4500} {161.5650 1531.5000} }
+  u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_sram { {522.8000 1187.1050} {712.3350 1359.2850} }
+  u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_sram { {522.8000 1359.2850} {712.3350 1531.4650} }
+  u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_sram { {786.4450 1359.3200} {975.9800 1531.5000} }
+  u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_sram { {786.4450 1187.1400} {975.9800 1359.3200} }
  PINS
   VDDIO { {555.4900 833.2500} {555.4901 833.2501} }
   VSSIO { {555.4900 833.2500} {555.4901 833.2501} }
-  VDD { {555.4900 833.2500} {555.4901 833.2501} }
-  VSS { {555.4900 833.2500} {555.4901 833.2501} }
-  VDDACC { {555.4900 833.2500} {555.4901 833.2501} }
   SE { {433.5950 70.0500} {449.6450 73.0500} }
   CLK { {70.0500 768.8200} {73.0500 784.8700} }
   TEST { {205.8500 1593.4500} {221.9000 1596.4500} }

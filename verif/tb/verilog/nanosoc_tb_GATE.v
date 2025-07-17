@@ -111,7 +111,7 @@ SROM_Ax32
 
 `ifdef SDF_SIM
 initial
-  $sdf_annotate ( "../../../src/rtl/nanosoc_chip_pads_44pin.sdf"
+  $sdf_annotate ( "../../../imp/ASIC/nanosoc/netlist/nanosoc_chip_pads_gate.sdf"
                  , u_nanosoc_chip_pads
                  ,
                  , "sdf_annotate.log"
@@ -163,24 +163,42 @@ initial begin
   .CLK        (CLK),  // input
   .TEST       (TEST),  // input
   .NRST       (NRST),   // active low reset
-  .P0         (P0[15:0]),
-  .P1         (P1[15:0]),
+  .P0         (P0[7:0]),
+  .P1         (P1[7:0]),
   .SWDIO      (SWDIOTMS),
   .SWDCK      (SWCLKTCK)
   );
 `endif
- // --------------------------------------------------------------------------------
- // Source for clock and reset
- // --------------------------------------------------------------------------------
- `ifndef COCOTB_SIM
-  nanosoc_clkreset u_nanosoc_clkreset(
-  .CLK       (CLK),
-  .NRST      (NRST),
-  .NRST_early(NRST_early),
-  .NRST_late (NRST_late),
-  .NRST_ext  (NRST_ext )
-  );
-  `endif
+//-----------------------------------------------------------------------------
+// Abstract : Simple clock and power on reset generator
+//-----------------------------------------------------------------------------
+
+  reg osc_q;
+  reg [15:0] shifter;
+  
+  initial
+    begin
+      osc_q     <= 1'b1;
+      shifter   <= 16'h0000;
+      #(3 * CLOCK_PHASE) osc_q <= 1'b0;
+    end
+
+  always @(osc_q)
+   #CLOCK_PHASE
+       osc_q <= !osc_q;
+
+  assign CLK = osc_q;
+
+  always @(posedge osc_q or negedge TEST_NPOR)
+    if (!TEST_NPOR)
+      shifter <= 16'h0000;
+    else if (! (&shifter)) begin // until full...
+      shifter   <= {shifter[14:0], 1'b1}; // shift left, fill with 1's
+    end
+  assign NRST_early =  shifter[ 7];
+  assign NRST       =  shifter[ 8];
+  assign NRST_late  =  shifter[ 9] ;
+  assign NRST_ext   =  shifter[15];
 
   assign TEST = 1'b0;
   
@@ -608,252 +626,7 @@ nanosoc_ft1248x1_track
 // );
 `endif
 
- // --------------------------------------------------------------------------------
- // Tracking CPU with Tarmac trace support
- // --------------------------------------------------------------------------------
 
-
-`ifdef CORTEX_M0
-`ifdef USE_TARMAC
-
-`define ARM_CM0IK_PATH u_nanosoc_chip_pads.u_nanosoc_chip.u_system.u_ss_cpu.u_cpu_0.u_slcorem0_integration.u_cortexm0
-
-  CORTEXM0
-     #(.ACG(1), .AHBSLV(0), .BE(0), .BKPT(4),
-       .DBG(1), .NUMIRQ(32), .RAR(1), .SMUL(0),
-       .SYST(1), .WIC(1), .WICLINES(34), .WPT(2))
-       u_cortexm0_track
-         (
-          // Outputs
-          .HADDR                          ( ),
-          .HBURST                         ( ),
-          .HMASTLOCK                      ( ),
-          .HPROT                          ( ),
-          .HSIZE                          ( ),
-          .HTRANS                         ( ),
-          .HWDATA                         ( ),
-          .HWRITE                         ( ),
-          .HMASTER                        ( ),
-          .SLVRDATA                       ( ),
-          .SLVREADY                       ( ),
-          .SLVRESP                        ( ),
-          .DBGRESTARTED                   ( ),
-          .HALTED                         ( ),
-          .TXEV                           ( ),
-          .LOCKUP                         ( ),
-          .SYSRESETREQ                    ( ),
-          .CODENSEQ                       ( ),
-          .CODEHINTDE                     ( ),
-          .SPECHTRANS                     ( ),
-          .SLEEPING                       ( ),
-          .SLEEPDEEP                      ( ),
-          .SLEEPHOLDACKn                  ( ),
-          .WICDSACKn                      ( ),
-          .WICMASKISR                     ( ),
-          .WICMASKNMI                     ( ),
-          .WICMASKRXEV                    ( ),
-          .WICLOAD                        ( ),
-          .WICCLEAR                       ( ),
-          // Inputs
-          .SCLK                           (`ARM_CM0IK_PATH.SCLK),
-          .HCLK                           (`ARM_CM0IK_PATH.HCLK),
-          .DCLK                           (`ARM_CM0IK_PATH.DCLK),
-          .DBGRESETn                      (`ARM_CM0IK_PATH.DBGRESETn),
-          .HRESETn                        (`ARM_CM0IK_PATH.HRESETn),
-          .HRDATA                         (`ARM_CM0IK_PATH.HRDATA[31:0]),
-          .HREADY                         (`ARM_CM0IK_PATH.HREADY),
-          .HRESP                          (`ARM_CM0IK_PATH.HRESP),
-          .SLVADDR                        (`ARM_CM0IK_PATH.SLVADDR[31:0]),
-          .SLVSIZE                        (`ARM_CM0IK_PATH.SLVSIZE[1:0]),
-          .SLVTRANS                       (`ARM_CM0IK_PATH.SLVTRANS[1:0]),
-          .SLVWDATA                       (`ARM_CM0IK_PATH.SLVWDATA[31:0]),
-          .SLVWRITE                       (`ARM_CM0IK_PATH.SLVWRITE),
-          .DBGRESTART                     (`ARM_CM0IK_PATH.DBGRESTART),
-          .EDBGRQ                         (`ARM_CM0IK_PATH.EDBGRQ),
-          .NMI                            (`ARM_CM0IK_PATH.NMI),
-          .IRQ                            (`ARM_CM0IK_PATH.IRQ[31:0]),
-          .RXEV                           (`ARM_CM0IK_PATH.RXEV),
-          .STCALIB                        (`ARM_CM0IK_PATH.STCALIB[25:0]),
-          .STCLKEN                        (`ARM_CM0IK_PATH.STCLKEN),
-          .IRQLATENCY                     (`ARM_CM0IK_PATH.IRQLATENCY[7:0]),
-          .ECOREVNUM                      (`ARM_CM0IK_PATH.ECOREVNUM[19:0]),
-          .SLEEPHOLDREQn                  (`ARM_CM0IK_PATH.SLEEPHOLDREQn),
-          .WICDSREQn                      (`ARM_CM0IK_PATH.WICDSREQn),
-          .SE                             (`ARM_CM0IK_PATH.SE));
-
-`define ARM_CM0IK_TRACK u_cortexm0_track
-  cm0_tarmac #(.LOGFILENAME("logs/tarmac0.log"))
-    u_tarmac_track
-      (.enable_i      (1'b1),
-
-       .hclk_i        (`ARM_CM0IK_TRACK.HCLK),
-       .hready_i      (`ARM_CM0IK_TRACK.HREADY),
-       .haddr_i       (`ARM_CM0IK_TRACK.HADDR[31:0]),
-       .hprot_i       (`ARM_CM0IK_TRACK.HPROT[3:0]),
-       .hsize_i       (`ARM_CM0IK_TRACK.HSIZE[2:0]),
-       .hwrite_i      (`ARM_CM0IK_TRACK.HWRITE),
-       .htrans_i      (`ARM_CM0IK_TRACK.HTRANS[1:0]),
-       .hresetn_i     (`ARM_CM0IK_TRACK.HRESETn),
-       .hresp_i       (`ARM_CM0IK_TRACK.HRESP),
-       .hrdata_i      (`ARM_CM0IK_TRACK.HRDATA[31:0]),
-       .hwdata_i      (`ARM_CM0IK_TRACK.HWDATA[31:0]),
-       .lockup_i      (`ARM_CM0IK_TRACK.LOCKUP),
-       .halted_i      (`ARM_CM0IK_TRACK.HALTED),
-       .codehintde_i  (`ARM_CM0IK_TRACK.CODEHINTDE[2:0]),
-       .codenseq_i    (`ARM_CM0IK_TRACK.CODENSEQ),
-
-       .hdf_req_i     (`ARM_CM0IK_TRACK.u_top.u_sys.ctl_hdf_request),
-       .int_taken_i   (`ARM_CM0IK_TRACK.u_top.u_sys.dec_int_taken_o),
-       .int_return_i  (`ARM_CM0IK_TRACK.u_top.u_sys.dec_int_return_o),
-       .int_pend_i    (`ARM_CM0IK_TRACK.u_top.u_sys.nvm_int_pend),
-       .pend_num_i    (`ARM_CM0IK_TRACK.u_top.u_sys.nvm_int_pend_num[5:0]),
-       .ipsr_i        (`ARM_CM0IK_TRACK.u_top.u_sys.psr_ipsr[5:0]),
-
-       .ex_last_i     (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.ctl_ex_last),
-       .iaex_en_i     (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.ctl_iaex_en),
-       .reg_waddr_i   (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.ctl_wr_addr[3:0]),
-       .reg_write_i   (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.ctl_wr_en),
-       .xpsr_en_i     (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.ctl_xpsr_en),
-       .fe_addr_i     (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.pfu_fe_addr[30:0]),
-       .int_delay_i   (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.pfu_int_delay),
-       .special_i     (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.pfu_op_special),
-       .opcode_i      (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.pfu_opcode[15:0]),
-       .reg_wdata_i   (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.psr_gpr_wdata[31:0]),
-
-       .atomic_i      (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_ctl.atomic),
-       .atomic_nxt_i  (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_ctl.atomic_nxt),
-       .dabort_i      (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_ctl.data_abort),
-       .ex_last_nxt_i (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_ctl.ex_last_nxt),
-       .int_preempt_i (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_ctl.int_preempt),
-
-       .psp_sel_i     (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_gpr.psp_sel),
-       .xpsr_i        (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_gpr.xpsr[31:0]),
-
-       .iaex_i        (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_pfu.iaex[30:0]),
-       .iaex_nxt_i    (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_pfu.iaex_nxt[30:0]),
-       .opcode_nxt_i  (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_pfu.ibuf_de_nxt[15:0]),
-       .delay_count_i (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_pfu.ibuf_lo[13:6]),
-       .tbit_en_i     (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_pfu.tbit_en),
-
-       .cflag_en_i    (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_psr.cflag_ena),
-       .ipsr_en_i     (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_psr.ipsr_ena),
-       .nzflag_en_i   (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_psr.nzflag_ena),
-       .vflag_en_i    (`ARM_CM0IK_TRACK.u_top.u_sys.u_core.u_psr.vflag_ena)
-  );
-
-`endif // USE_TARMAC
-`endif // CORTEX_M0
-
- // --------------------------------------------------------------------------------
- // Tracking DMA logging support
- // - Track inputs to on-chip PL230 DMAC and replicate state and outputs in testbench
- // - log the RTL Inuts/outputs/internal-state of this traccking DMAC
- // --------------------------------------------------------------------------------
-`ifdef DMAC_0_PL230
-`define DMAC_PATH u_nanosoc_chip_pads.u_nanosoc_chip.u_system.u_ss_dma.u_dmac_0.u_pl230_udma
-
-  pl230_udma u_track_pl230_udma (
-  // Clock and Reset
-    .hclk          (`DMAC_PATH.hclk),
-    .hresetn       (`DMAC_PATH.hresetn),
-  // DMA Control
-    .dma_req       (`DMAC_PATH.dma_req),
-    .dma_sreq      (`DMAC_PATH.dma_sreq),
-    .dma_waitonreq (`DMAC_PATH.dma_waitonreq),
-    .dma_stall     (`DMAC_PATH.dma_stall),
-    .dma_active    ( ),
-    .dma_done      ( ),
-    .dma_err       ( ),
-  // AHB-Lite Master Interface
-    .hready        (`DMAC_PATH.hready),
-    .hresp         (`DMAC_PATH.hresp),
-    .hrdata        (`DMAC_PATH.hrdata),
-    .htrans        ( ),
-    .hwrite        ( ),
-    .haddr         ( ),
-    .hsize         ( ),
-    .hburst        ( ),
-    .hmastlock     ( ),
-    .hprot         ( ),
-    .hwdata        ( ),
-  // APB Slave Interface
-    .pclken        (`DMAC_PATH.pclken),
-    .psel          (`DMAC_PATH.psel),
-    .pen           (`DMAC_PATH.pen),
-    .pwrite        (`DMAC_PATH.pwrite),
-    .paddr         (`DMAC_PATH.paddr),
-    .pwdata        (`DMAC_PATH.pwdata),
-    .prdata        ( )
-  );
-
-`define DMAC_TRACK_PATH u_track_pl230_udma
-
-`ifndef COCOTB_SIM
-  nanosoc_dma_log_to_file #(.FILENAME("logs/dma230.log"),.NUM_CHNLS(4),.NUM_CHNL_BITS(2),.TIMESTAMP(1))
-    u_nanosoc_dma_log_to_file (
-    .hclk          (`DMAC_TRACK_PATH.hclk),
-    .hresetn       (`DMAC_TRACK_PATH.hresetn),
-  // AHB-Lite Master Interface
-    .hready        (`DMAC_TRACK_PATH.hready),
-    .hresp         (`DMAC_TRACK_PATH.hresp),
-    .hrdata        (`DMAC_TRACK_PATH.hrdata),
-    .htrans        (`DMAC_TRACK_PATH.htrans),
-    .hwrite        (`DMAC_TRACK_PATH.hwrite),
-    .haddr         (`DMAC_TRACK_PATH.haddr),
-    .hsize         (`DMAC_TRACK_PATH.hsize),
-    .hburst        (`DMAC_TRACK_PATH.hburst),
-    .hprot         (`DMAC_TRACK_PATH.hprot),
-    .hwdata        (`DMAC_TRACK_PATH.hwdata),
-   // APB control interface
-    .pclken        (`DMAC_TRACK_PATH.pclken),
-    .psel          (`DMAC_TRACK_PATH.psel),
-    .pen           (`DMAC_TRACK_PATH.pen),
-    .pwrite        (`DMAC_TRACK_PATH.pwrite),
-    .paddr         (`DMAC_TRACK_PATH.paddr),
-    .pwdata        (`DMAC_TRACK_PATH.pwdata),
-    .prdata        (`DMAC_TRACK_PATH.prdata),
-  // DMA Control
-    .dma_req       (`DMAC_TRACK_PATH.dma_req),
-    .dma_active    (`DMAC_TRACK_PATH.dma_active),
-    .dma_done      (`DMAC_TRACK_PATH.dma_done),
-   // DMA state from tracking RTL model
-    .dma_chnl      (`DMAC_TRACK_PATH.u_pl230_ahb_ctrl.current_chnl),
-    .dma_ctrl_state(`DMAC_TRACK_PATH.u_pl230_ahb_ctrl.ctrl_state)
-  );
-  `endif
-`endif
-
- // --------------------------------------------------------------------------------
- // Tracking Accelerator logging support
- // --------------------------------------------------------------------------------
-
- `define ACC_PATH u_nanosoc_chip_pads.u_nanosoc_chip.u_system.u_ss_expansion.u_region_exp
-
-`ifndef COCOTB_SIM
-  nanosoc_accelerator_ss_logger #(
-    .FILENAME("logs/acc_exp.log"),
-    .TIMESTAMP(1)
-  ) u_accelerator_ss_logger (
-     .HCLK            (`ACC_PATH.HCLK          ),
-     .HRESETn         (`ACC_PATH.HRESETn       ),
-     .HSEL_i          (`ACC_PATH.HSEL          ),
-     .HADDR_i         (`ACC_PATH.HADDR         ),
-     .HTRANS_i        (`ACC_PATH.HTRANS        ),
-     .HWRITE_i        (`ACC_PATH.HWRITE        ),
-     .HSIZE_i         (`ACC_PATH.HSIZE         ),
-     .HPROT_i         (`ACC_PATH.HPROT         ),
-     .HWDATA_i        (`ACC_PATH.HWDATA        ),
-     .HREADY_i        (`ACC_PATH.HREADY        ),
-     .HRDATA_o        (`ACC_PATH.HRDATA        ),
-     .HREADYOUT_o     (`ACC_PATH.HREADYOUT     ),
-     .HRESP_o         (`ACC_PATH.HRESP         ),
-     .exp_drq_ip_o    (`ACC_PATH.EXP_DRQ[0]    ),
-     .exp_dlast_ip_i  (`ACC_PATH.EXP_DLAST[0]  ),
-     .exp_drq_op_o    (`ACC_PATH.EXP_DRQ[1]    ),
-     .exp_dlast_op_i  (`ACC_PATH.EXP_DLAST[1]  ),
-     .exp_irq_o       (`ACC_PATH.EXP_IRQ       )
-   );
-`endif
 
  // --------------------------------------------------------------------------------
  // Debug tester connection -
@@ -925,30 +698,6 @@ nanosoc_ft1248x1_track
   // Format for time reporting
   initial    $timeformat(-9, 0, " ns", 0);
 
-  // Preload EXP rams
-  localparam awt_expram_l = ((1<<(14-2))-1);
-  localparam awt_expram_h = ((1<<(14-2))-1);
-
-  reg [7:0] fileimage_l [((1<<14)-1):0];
-  reg [7:0] fileimage_h [((1<<14)-1):0];
-  integer i,j;
-
-  initial begin
-    $readmemh("expram_l.hex", fileimage_l); 
-    for (i=0;i<awt_expram_l;i=i+1) begin 
-      u_nanosoc_chip_pads.u_nanosoc_chip.u_system.u_ss_expansion.u_region_expram_l.u_expram_l.u_sram.BRAM0[i] = fileimage_l[ 4*i];
-      u_nanosoc_chip_pads.u_nanosoc_chip.u_system.u_ss_expansion.u_region_expram_l.u_expram_l.u_sram.BRAM1[i] = fileimage_l[(4*i)+1];
-      u_nanosoc_chip_pads.u_nanosoc_chip.u_system.u_ss_expansion.u_region_expram_l.u_expram_l.u_sram.BRAM2[i] = fileimage_l[(4*i)+2];
-      u_nanosoc_chip_pads.u_nanosoc_chip.u_system.u_ss_expansion.u_region_expram_l.u_expram_l.u_sram.BRAM3[i] = fileimage_l[(4*i)+3];
-    end
-    $readmemh("expram_h.hex", fileimage_h); 
-    for (i=0;i<awt_expram_h;i=i+1) begin 
-      u_nanosoc_chip_pads.u_nanosoc_chip.u_system.u_ss_expansion.u_region_expram_h.u_expram_h.u_sram.BRAM0[i] = fileimage_h[ 4*i];
-      u_nanosoc_chip_pads.u_nanosoc_chip.u_system.u_ss_expansion.u_region_expram_h.u_expram_h.u_sram.BRAM1[i] = fileimage_h[(4*i)+1];
-      u_nanosoc_chip_pads.u_nanosoc_chip.u_system.u_ss_expansion.u_region_expram_h.u_expram_h.u_sram.BRAM2[i] = fileimage_h[(4*i)+2];
-      u_nanosoc_chip_pads.u_nanosoc_chip.u_system.u_ss_expansion.u_region_expram_h.u_expram_h.u_sram.BRAM3[i] = fileimage_h[(4*i)+3];
-    end
-  end
 
   // Configuration checks
   initial begin

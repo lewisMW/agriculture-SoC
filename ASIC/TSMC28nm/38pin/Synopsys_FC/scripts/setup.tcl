@@ -1,44 +1,23 @@
 ## Paths Please Edit for your system
-set cln28ht_tech_path           /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/arm_tech/r1p0
-set standard_cell_base_path     /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc7mcpp140z_base_svt_c30/r0p0
-set pmk_base_path               /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc7mcpp140z_pmk_svt_c30/r0p0
-set ret_base_path               /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc12mcpp140z_rklo_lvt_svt_c30_c35/r1p0
-set hpc_base_path               /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc7mcpp140z_hpk_svt_c30/r0p0
-#set Synopsys_PLL_dir /home/dwn1c21/SoC-Labs/Synopsys_ip/IP/PLL/synopsys/dwc_pll3ghz_tsmc28hpcp/1.10a/macro
-#set Synopsys_TS_dir /home/dwn1c21/SoC-Labs/Synopsys_ip/IP/Southampton_28hpcp_pd_vm_ts_vmps_pvtc/1.01b
-#set Synopsys_PD_dir /home/dwn1c21/SoC-Labs/Synopsys_ip/IP/Southampton_28hpcp_pd_vm_ts_vmps_pvtc/dwc_sensors_pd_tsmc28hpcp_1.00a/synopsys/dwc_sensors_pd_tsmc28hpcp/1.00a
-#set Synopsys_VM_dir /home/dwn1c21/SoC-Labs/Synopsys_ip/IP/Southampton_28hpcp_pd_vm_ts_vmps_pvtc/dwc_sensors_vm_shrink_tsmc28hpcp_1.00a/synopsys/dwc_sensors_vm_shrink_tsmc28hpcp/1.00a
-
-set TLU_dir /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/arm_tech/r1p0/synopsys_tluplus/1p8m_5x2z_utalrdl
+set via_map_file    /home/dwn1c21/SoC-Labs/phys_ip/TSMC/28/CMOS/util/PRTF_ICC_28nm_Syn_V19_1a/PR_tech/Synopsys/DFMViaSwapTcl/n28_ICC_DFMSWAP_5X1Y1Z1U_VHV.tcl
+set_app_options -list {signoff.check_drc.runset {/home/dwn1c21/SoC-Labs/phys_ip/TSMC/28/CMOS/util/LOGIC_TopMz+Mu_DRC/ICVLN28HP_9M_5X1Y1Z1U_002.22a.encrypt}}
+set_app_options -list {signoff.physical.layer_map_file {/home/dwn1c21/SoC-Labs/phys_ip/TSMC/28/CMOS/util/PRTF_ICC_28nm_Syn_V19_1a/PR_tech/Synopsys/GdsOutMap/gdsout_5X1Y1Z1U.map}}
+set_app_options -list {signoff.check_drc_live.runset {/home/dwn1c21/SoC-Labs/phys_ip/TSMC/28/CMOS/util/LOGIC_TopMz+Mu_DRC/ICVLN28HP_9M_5X1Y1Z1U_002.22a.encrypt}}
+set TLU_dir /home/dwn1c21/SoC-Labs/phys_ip/TSMC/28/CMOS/HPC+/util/ULL/TLUplus/1p9m_5x1y1z1u_ut-alrdl
 
 
+# Removed ../libs/cln28ht_ret/ from lib for now
 
-set REPORT_DIR ../reports
-set LOG_DIR ../logs
-set OUT_DIR ../outputs
+set PG_NETS [list VDD VDDACC VSS]
 
+set tie_hi_cells cln28ht/TIEHI_X1M_A7PP140ZTS_C30
+set tie_lo_cells cln28ht/TIELO_X1M_A7PP140ZTS_C30
 
-proc report_intermediate_step {name REPORT_DIR} {
-    redirect -tee -file $REPORT_DIR/timing_global_min_${name}_interclock.rep {report_global_timing -delay_type min -include inter_clock}
-    redirect -tee -file $REPORT_DIR/timing_global_min_${name}.rep {report_global_timing -delay_type min}
-    redirect -tee -file $REPORT_DIR/timing_global_max_${name}_interclock.rep {report_global_timing -delay_type max -include inter_clock}
-    redirect -tee -file $REPORT_DIR/timing_global_max_${name}.rep {report_global_timing -delay_type max}
-    redirect -tee -file $REPORT_DIR/timing_${name}_max.rep {report_timing -delay_type max}
-    redirect -tee -file $REPORT_DIR/timing_${name}_min.rep {report_timing -delay_type min}
-}
-
-proc report_end_step {name REPORT_DIR} {
-    redirect -tee -file $REPORT_DIR/timing_global_min_${name}_interclock.rep {report_global_timing -delay_type min -include inter_clock}
-    redirect -tee -file $REPORT_DIR/timing_global_min_${name}.rep {report_global_timing -delay_type min}
-    redirect -tee -file $REPORT_DIR/timing_global_max_${name}_interclock.rep {report_global_timing -delay_type max -include inter_clock}
-    redirect -tee -file $REPORT_DIR/timing_global_max_${name}.rep {report_global_timing -delay_type max}
-    redirect -tee -file $REPORT_DIR/timing_${name}_max.rep {report_timing -delay_type max}
-    redirect -tee -file $REPORT_DIR/timing_${name}_min.rep {report_timing -delay_type min}
-    redirect -tee -file $REPORT_DIR/area_${name}.rep {report_area}
-    redirect -tee -file $REPORT_DIR/qor_${name}.rep {report_qor}
-
-    current_scenario typical_scenario
-    redirect -tee -file $REPORT_DIR/power_${name}_hierarchy.rep {report_power -scenarios typical_scenario -hierarchy}
-    redirect -tee -file $REPORT_DIR/power_${name}.rep {report_power -scenarios typical_scenario}
-
-}
+set fill_cells  {FILL128_A7PP140ZTS_C30 \
+ FILL32_A7PP140ZTS_C30 \
+ FILL16_A7PP140ZTS_C30 \
+ FILL4_A7PP140ZTS_C30\
+ FILL3_A7PP140ZTS_C30 \
+ FILL2_A7PP140ZTS_C30 \
+ FILL1_A7PP140ZTS_C30 \
+ }

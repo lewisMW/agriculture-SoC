@@ -29,6 +29,9 @@ QUICKSTART ?= no
 # IS this for an ASIC Flow?
 ASIC ?= no
 
+# IS this for an Gate level simulations?
+GATE ?= no
+
 # Are simulations to be run in fast mode? (i.e. RAMs preloaded)
 FAST_SIM ?= yes
 VCD_SIM ?= no
@@ -187,14 +190,21 @@ ifeq ($(QUICKSTART),yes)
 	TB_TOP               ?= nanosoc_tb_qs
 else 
 	ifeq ($(ASIC),yes)
-		DESIGN_VC            ?= $(SOCLABS_PROJECT_DIR)/flist/project/top_ASIC.flist
-		ARM_CORSTONE_101_DIR ?= $(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical
-		ARM_CORTEX_M0_DIR    ?= $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0/logical
-		NANOSOC_DEFINES      += ASIC_TEST_PORTS POWER_PINS
+		DESIGN_VC            	?= $(SOCLABS_PROJECT_DIR)/flist/project/top_ASIC.flist
+		ARM_CORSTONE_101_DIR 	?= $(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical
+		ARM_CORTEX_M0_DIR    	?= $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0/logical
+		NANOSOC_DEFINES      	+= ASIC_TEST_PORTS POWER_PINS 
 	else
-		DESIGN_VC            ?= $(SOCLABS_PROJECT_DIR)/flist/project/top.flist
-		TBENCH_VC            ?= $(SOCLABS_PROJECT_DIR)/flist/project/top.flist
-		TB_TOP               ?= nanosoc_tb
+		ifeq ($(GATE),yes)
+			DESIGN_VC		 	?= $(SOCLABS_PROJECT_DIR)/flist/project/top_GATE.flist
+			TBENCH_VC 		 	?= $(SOCLABS_PROJECT_DIR)/flist/project/top_GATE.flist
+			TB_TOP 				?= nanosoc_tb
+			NANOSOC_DEFINES 	+= GATE_SIM ARM_UD_MODEL INITIALISE_MEMORY
+		else
+			DESIGN_VC       	?= $(SOCLABS_PROJECT_DIR)/flist/project/top.flist
+			TBENCH_VC       	?= $(SOCLABS_PROJECT_DIR)/flist/project/top.flist
+			TB_TOP          	?= nanosoc_tb
+		endif
 	endif
 endif
 
@@ -204,6 +214,7 @@ export ARM_CORTEX_M0_DIR
 export ARM_CORSTONE_101_DIR
 export FLIST_INCLUDES
 export AMS
+export GATE
 # Location of Defines File
 DEFINES_DIR   := $(SOCLABS_PROJECT_DIR)/system/src/defines/
 DEFINES_FILE  := $(DEFINES_DIR)/gen_defines.v

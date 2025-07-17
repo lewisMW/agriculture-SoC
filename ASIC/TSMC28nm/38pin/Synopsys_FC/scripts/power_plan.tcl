@@ -31,12 +31,25 @@ connect_pg_net -create_nets_only
 connect_pg_net -automatic
 connect_pg_net -net {VDDACC} [get_pins -design [current_block] -quiet -physical_context {uPAD_VDDACC_*/VDD}]
 connect_pg_net -net {VDDACC} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_expansion/u_region_exp/u_ss_accelerator/*/VDD}]
+connect_pg_net -net {VDD} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom/VDD}]
+connect_pg_net -net {VDD} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_sram/VDD}]
+connect_pg_net -net {VDD} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_sram/VDD}]
+connect_pg_net -net {VDD} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_sram/VDD}]
+connect_pg_net -net {VDD} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_sram/VDD}]
+connect_pg_net -net {VSS} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom/VSSE}]
+connect_pg_net -net {VSS} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_sram/VSS}]
+connect_pg_net -net {VSS} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_sram/VSS}]
+connect_pg_net -net {VSS} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_sram/VSS}]
+connect_pg_net -net {VSS} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_sram/VSS}]
+
+connect_pg_net -net {VDDIO} [get_pins -design [current_block] -quiet -physical_context {uPAD_VDDIO_*/VDDPST}]
+connect_pg_net -net {VSSIO} [get_pins -design [current_block] -quiet -physical_context {uPAD_VSSIO_*/VSSPST}]
 
 #----------------------------------------------------
 # 	Create Power supply Ring
 #----------------------------------------------------
-create_pg_ring_pattern ring_pattern -horizontal_layer M7 -horizontal_width {5} -horizontal_spacing {2}\
-                                    -vertical_layer M8 -vertical_width {4} -vertical_spacing {2} -nets {VDDACC VDD VSS}
+create_pg_ring_pattern ring_pattern -horizontal_layer AP -horizontal_width {5} -horizontal_spacing {2}\
+                                    -vertical_layer M9 -vertical_width {4} -vertical_spacing {2} -nets {VDDACC VDD VSS}
 
 set_pg_strategy core_ring -pattern {{name: ring_pattern} {nets: {VDD VSS VDDACC}} {offset: {3 3}}} -core 
 compile_pg -strategies core_ring
@@ -44,25 +57,25 @@ compile_pg -strategies core_ring
 #----------------------------------------------------
 # 	I/O to rings connections
 #----------------------------------------------------
-set_app_options -name plan.pgroute.hmpin_connection_target_layers -value M8
+set_app_options -name plan.pgroute.hmpin_connection_target_layers -value M9
 create_pg_macro_conn_pattern io_to_ring_h -pin_conn_type scattered_pin -nets {VDDACC VDD VSS} \
  	-layers {M2 M2} -width {1.41 1.41} -pin_layers {M2} \
 	-via_rule {{intersection : all} {via_master : NIL}}
 set_pg_strategy h_io_to_ring -macros {uPAD_VDD_0 uPAD_VDD_2 uPAD_VSS_0 uPAD_VSS_2 uPAD_VDDACC_0 uPAD_VDDACC_2} \
  	-pattern {{name: io_to_ring_h} {nets: {VDD VDDACC VSS}}} -extension {{{stop : first_target}}{{stop : pad_ring}}}
 set_pg_strategy_via_rule rule1 -via_rule { \
-   {{{strategies: h_io_to_ring}{layers: M2}} {{existing: ring}{layers: M8}} \
+   {{{strategies: h_io_to_ring}{layers: M2}} {{existing: ring}{layers: M9}} \
     {via_master: default}} {{intersection: undefined} {via_master: NIL}}}
 compile_pg -strategies h_io_to_ring -via_rule rule1
 
-set_app_options -name plan.pgroute.hmpin_connection_target_layers -value M7
+set_app_options -name plan.pgroute.hmpin_connection_target_layers -value AP
 create_pg_macro_conn_pattern io_to_ring_v -pin_conn_type scattered_pin -nets {VDDACC VDD VSS} \
  	-layers {M2 M2} -width {1.41 1.41} -pin_layers {M2} \
 	-via_rule {{intersection : all} {via_master : NIL}}
 set_pg_strategy v_io_to_ring -macros {uPAD_VDD_1 uPAD_VDD_3 uPAD_VSS_1 uPAD_VSS_3 uPAD_VDDACC_1} \
  	-pattern {{name: io_to_ring_v} {nets: {VDD VDDACC VSS}}} -extension {{{stop : first_target}}{{stop : pad_ring}}}
 set_pg_strategy_via_rule rule2 -via_rule { \
-   {{{strategies: v_io_to_ring}{layers: M2}} {{existing: ring}{layers: M7}} \
+   {{{strategies: v_io_to_ring}{layers: M2}} {{existing: ring}{layers: AP}} \
     {via_master: default}} {{intersection: undefined} {via_master: NIL}}}
 compile_pg -strategies v_io_to_ring -via_rule rule2
 
@@ -70,18 +83,18 @@ compile_pg -strategies v_io_to_ring -via_rule rule2
 #----------------------------------------------------
 # 	Top Layer M(TOP) & M(TOP-1) mesh
 #----------------------------------------------------
-create_pg_mesh_pattern mesh_pattern -layers {{{vertical_layer: M8} {width: 4} {pitch: 60} {offset: 20}} \
+create_pg_mesh_pattern mesh_pattern -layers {{{vertical_layer: M9} {width: 4} {pitch: 60} {offset: 20}} \
                                                 {{horizontal_layer: AP} {width: 4} {pitch: 60} {offset: 20}}}
-set_pg_strategy M7M8_mesh -pattern {{name: mesh_pattern} {nets: {VDD VDDACC VSS}}} -core -extension {{{stop : first_target}}}
-compile_pg -strategies M7M8_mesh
+set_pg_strategy M9AP_mesh -pattern {{name: mesh_pattern} {nets: {VDD VDDACC VSS}}} -core -extension {{{stop : first_target}}}
+compile_pg -strategies M9AP_mesh
 
 
 #----------------------------------------------------
 # 	Power supply to Macros
 #----------------------------------------------------
-create_pg_mesh_pattern macro_straps -layers {{{horizontal_layer : M5} {width : 0.21} {spacing : minimum} {offset : 5} {pitch : 10} {trim : true}}}
-#set_pg_strategy macro_mesh -macros {u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_sram u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_sram u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_sram u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_sram} -pattern {{name: macro_straps} {nets: {VDD VSS}}} -extension {{{stop : first_target}}}
-set_pg_strategy macro_mesh -polygon {{135.000 1341.965} {975.980 1531.500}} -pattern {{name: macro_straps} {nets: {VDD VSS}}} -extension {{{stop : first_target}}}
+create_pg_mesh_pattern macro_straps -layers {{{vertical_layer : M5} {width : 0.21} {spacing : minimum} {offset : 5} {pitch : 10} {trim : true}}}
+set_pg_strategy macro_mesh -macros {u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_sram u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_sram u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_sram u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_sram} -pattern {{name: macro_straps} {nets: {VDD VSS}}} -extension {{{stop : first_target}}}
+# set_pg_strategy macro_mesh -polygon {{135.000 1341.965} {975.980 1531.500}} -pattern {{name: macro_straps} {nets: {VDD VSS}}} -extension {{{stop : first_target}}}
 compile_pg -strategies macro_mesh
 
 #----------------------------------------------------
