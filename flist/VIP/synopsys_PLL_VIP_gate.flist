@@ -1,0 +1,6 @@
+
+
+VERILOG_SOURCES += $(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical/cmsdk_ahb_to_apb/verilog/cmsdk_ahb_to_apb.v
+VERILOG_SOURCES += $(SOCLABS_SNPS_28NM_IP_DIR)/imp/PLL/PLL_integration_layer_gates.v 
+VERILOG_SOURCES += /home/dwn1c21/SoC-Labs/Synopsys_ip/IP/PLL/synopsys/dwc_pll3ghz_tsmc28hpcp/1.10a/macro/behavior/dwc_z19606ts_ns_gtech.v
+VERILOG_SOURCES += /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc12mcpp140z_base_svt_c35/r2p0/verilog/sc12mcpp140z_cln28ht_base_svt_c35.v
