@@ -223,7 +223,8 @@ all_gcc:
 	# Generate binary file
 	$(GNU_OBJCOPY) -S $(BOOTLOADER).o -O binary $(BOOTLOADER).bin
 	# Generate hex file
-	$(GNU_OBJCOPY) -S $(BOOTLOADER).o --adjust-vma -0x10000000 -O verilog $(BOOTLOADER).hex
+# $(GNU_OBJCOPY) -S $(BOOTLOADER).o --adjust-vma -0x10000000 -O verilog $(BOOTLOADER).hex
+	od -v -A n -t x1 --width=1  $(BOOTLOADER).bin > $(BOOTLOADER).hex
 
 # Note:
 # Objcopy use --adjust-vma so that the Verilog hex address start at address 0 instead of actual address 0x10000000

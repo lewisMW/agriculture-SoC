@@ -80,7 +80,7 @@ int main (void)
     if (i >= TIMEOUT) {
         printf("FIFO did not acquire a new measurement!\n");
     } else {
-        printf("Test Passed!\Fn");
+        printf("Test Passed!\n");
     }
     UartEndSimulation();
 
