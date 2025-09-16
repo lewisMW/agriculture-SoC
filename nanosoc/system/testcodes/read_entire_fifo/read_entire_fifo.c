@@ -51,35 +51,35 @@ int main (void)
     SENSING_IP_REGS->pll_control = 0x0000023;
 
     // Set analog mux control
-    SENSING_IP_REG->amux = 0x4a;
+    SENSING_IP_REGS->amux = 0x4a;
 
     //SET ADC TRIGGEr
     //Setting LSB to 1 should start ADC conversion.
     SENSING_IP_REGS->adc_trigger = 0x1;
 
-    SENSING_IP_REG->amux = 0x4a;
+    SENSING_IP_REGS->amux = 0x4a;
     
-    SENSING_IP_REG->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x0;
 
     // Pointer to GPIO register from memory map
     // volatile unsigned int *GPIO_DATA = (unsigned int *)0x50000000;
     //Pointer to APB Bus from memory map 
     // TODO Check where it is.
  
-    volatile unsigned int status_reg_value = SENSING_IP_REG->status_reg;
-    printf("Status Register Value: %u\n", status_reg_value);
+    volatile unsigned int status_reg_value = SENSING_IP_REGS->status_reg;
+    // printf("Status Register Value: %u\n", status_reg_value);
 
 
     // Do a write to make waveforms more obvious.
-    SENSING_IP_REG->amux = 0x4a;
+    SENSING_IP_REGS->amux = 0x4a;
 
     
     //FIFO READ
-    uint64_t combined_value = (((uint64_t)high_value )<< 32) | low_value;
+    // uint64_t combined_value = (((uint64_t)high_value )<< 32) | low_value;
     volatile uint32_t measurement_high = SENSING_IP_REGS->measurement_high;
     volatile uint32_t measurement_low = SENSING_IP_REGS->measurement_low;
-    uint64_t  measurement_value = ((uint64_t)measurement_high << 32) | measurement_low;
-    printf("Measurement Value: %llu\n", measurement_value);
+    uint64_t  measurement_value = ((uint64_t) measurement_high << 32) | measurement_low;
+    // printf("Measurement Value: %llu\n", measurement_value);
  
     // Pointer to GPIO register from memory map
     // volatile unsigned int *GPIO_DATA = (unsigned int *)0x50000000;
@@ -89,62 +89,69 @@ int main (void)
 
     // Read the status register.
     volatile unsigned int *STATUS_REG_ADDR = APB_BUS + 0x1;
-    volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
+    // volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
 
     // Do a write to make waveforms more obvious.
-    volatile unsigned int *ANALOG_MUX_ADDR = (uint8_t*) APB_BUS + 0x104;
-    *ANALOG_MUX_ADDR = 0x4a;
-
+    // volatile unsigned int *ANALOG_MUX_ADDR = (uint8_t*) APB_BUS + 0x104;
+    // *ANALOG_MUX_ADDR = 0x4a;
+    SENSING_IP_REGS->amux = 0x4a;
     
     //FIFO measurement address
     volatile unsigned int *FIFO_MEASUREMENT_ADDR = APB_BUS + 0x002;
  
     int i = 0;
     //Wait until fifo is full or at the least has some measurements.
-    volatile unsigned int *ADC_TRIGGER_ADDR = (uint8_t*) APB_BUS + 0x108;
+    volatile unsigned int *ADC_TRIGGER_ADDR = SENSING_IP_REGS->adc_trigger;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0; 
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;   
         //Setting LSB to 1 should start ADC conversion.
-    *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-        *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
-     *ADC_TRIGGER_ADDR = 0x1;
-    *ADC_TRIGGER_ADDR = 0x1;
+  
         
     // while (i < 3) {
     //     volatile unsigned int *ADC_TRIGGER_ADDR = (uint8_t*) APB_BUS + 0x108;
@@ -155,28 +162,37 @@ int main (void)
     // //Was giving an error, commented it out and added back in and it worked?
     // // Keep going until fifo becomes empty. 
     // // Could add some sort of timeout check if required.
-    volatile uint32_t low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    volatile uint32_t high_value = *FIFO_MEASUREMENT_ADDR;
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    *ANALOG_MUX_ADDR = 0x4a;
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-      low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-      low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-      low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-      low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
-    low_value = *(FIFO_MEASUREMENT_ADDR+1);
+    measurement_high = SENSING_IP_REGS->measurement_high;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_value = ((uint64_t) measurement_high << 32) | measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    // *ANALOG_MUX_ADDR = 0x4a;
+    SENSING_IP_REGS->amux = 0x4a;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    measurement_low = SENSING_IP_REGS->measurement_low;
+    
+
     
 
     status_reg_value = *STATUS_REG_ADDR;
@@ -199,7 +215,8 @@ int main (void)
 volatile unsigned int get_fifo_status(volatile unsigned int *APB_BUS_ADDR) {
     volatile unsigned int *STATUS_REG_ADDR = APB_BUS_ADDR + 0x1;
     volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
-    return status_reg_value & FIFO_STATUS_MASK;
+    // return status_reg_value & FIFO_STATUS_MASK; //TODO Fix this
+    return status_reg_value;
 }
 
 uint64_t get_FIFO_value(volatile unsigned int* FIFO_MEASUREMENT_ADDR) {

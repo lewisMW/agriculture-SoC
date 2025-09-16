@@ -36,25 +36,36 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "uart_stdout.h"
+
 // #define ADC_STATUS_MASK 0b00000000000000000000000000001100
 #include "sensing_ip.h"
 
 int main (void)
 {
+    UartStdOutInit();
     //Pointer to APB Bus from memory map 
     //Write to PLL Control register
     SENSING_IP_REGS->pll_control = 0x0000023;
 
     // Set analog mux control
-    SENSING_IP_REG->amux = 0x4a;
+    SENSING_IP_REGS->amux = 0x4a;
 
     //SET ADC TRIGGEr
     //Setting LSB to 1 should start ADC conversion.
     SENSING_IP_REGS->adc_trigger = 0x1;
 
-    SENSING_IP_REG->amux = 0x4a;
+    SENSING_IP_REGS->amux = 0x4a;
     
-    SENSING_IP_REG->adc_trigger = 0x0;
+    SENSING_IP_REGS->adc_trigger = 0x0;
+
+        //FIFO READ
+    // uint64_t combined_value = (((uint64_t) )<< 32) | low_value;
+    volatile uint32_t measurement_high = SENSING_IP_REGS->measurement_high;
+    volatile uint32_t measurement_low = SENSING_IP_REGS->measurement_low;
+    uint64_t  measurement_value = ((uint64_t)measurement_high << 32) | measurement_low;
+    printf("Measurement Value\n");
+    UartEndSimulation();
 
     return 0;
 }
