@@ -1,0 +1,31 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-SPECTRE_ARGS
+"-ahdllibdir xcelium.d/AMSD/ahdlSimDB"
+-NOCOPYRIGHT
+-NOSTDOUT
+-NOWARN
+DLNOHV
+-NOWARN
+SPDUSD
+-MESSAGES
++EMGRLOG
+/home/hee/cadence/SoC/.cadence/dfII/TextSupport/Logs/Parser/verilogams/AMS_VERILOG_SoC/verilogams/compile0.log
+-XLSTIME
+1757302771
+-XLKEEP
+-XLMODE
+./xcelium.d/run.lnx8664.23.09.d
+-RUNMODE
+-CDSLIB
+./xcelium.d/run.lnx8664.23.09.d/cds.lib
+-HDLVAR
+./xcelium.d/run.lnx8664.23.09.d/hdl.var
+-XLNAME
+xrun
+-XLVERSION
+"TOOL:	xrun(64)	23.09-s013"
+-XLNAME
+./xcelium.d/run.lnx8664.23.09.d/MrDonothing_1312

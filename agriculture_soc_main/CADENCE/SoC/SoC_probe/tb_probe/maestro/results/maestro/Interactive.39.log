@@ -1,0 +1,14 @@
+Starting Single Run, Sweeps and Corners...
+
+Current time: Mon Mar 31 16:19:45 2025 
+Best design point: 1
+Design specs: 
+	SoC_probe_probe_1	corner	Nominal - 
+Design parameters: 
+	L		1G
+
+Interactive.39
+Number of points completed: 1
+Number of simulation errors: 0
+Interactive.39 completed. 
+Current time: Mon Mar 31 16:19:56 2025 
