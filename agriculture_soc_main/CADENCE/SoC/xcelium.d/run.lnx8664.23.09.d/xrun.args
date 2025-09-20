@@ -1,0 +1,28 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-compile
+-nocopy
+-nostdout
+-nowarn
+DLNOHV
+-nowarn
+SPDUSD
+-messages
+-update
+-log
+/home/hee/cadence/SoC/.cadence/dfII/TextSupport/Logs/Parser/verilogams/AMS_VERILOG_SoC/verilogams/compile0.log
+-incdir
+"/home/hee/cadence/SoC/"
+-ams
+-cdslib
+/home/hee/cadence/SoC/cds.lib
+-makelib
+AMS_VERILOG_SoC
+-view
+verilogams
+-SPECIFICUNIT
+SAR_ADC
+/home/hee/cadence/AMS_VERILOG_SoC/SAR_ADC/verilogams/verilog.vams
+-endlib

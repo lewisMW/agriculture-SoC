@@ -1,0 +1,46 @@
+TOOL:	xrun(64)	23.09-s013: Started on Sep 08, 2025 at 13:39:31 AEST
+xrun
+	-compile
+	-nocopy
+	-nostdout
+	-nowarn DLNOHV
+	-nowarn SPDUSD
+	-messages
+	-update
+	-log /home/hee/cadence/SoC/.cadence/dfII/TextSupport/Logs/Parser/verilogams/AMS_VERILOG_SoC/verilogams/compile0.log
+	-incdir "/home/hee/cadence/SoC/"
+	-ams
+	-cdslib /home/hee/cadence/SoC/cds.lib
+	-makelib AMS_VERILOG_SoC
+	-view verilogams
+	-SPECIFICUNIT SAR_ADC
+	/home/hee/cadence/AMS_VERILOG_SoC/SAR_ADC/verilogams/verilog.vams
+	-endlib
+xrun: *W,AMSIUSLD: The software has modified your LD_LIBRARY_PATH to add the following path first: `xmroot`/tools/lib. For the IUS 6.2 release onward, the AMS Designer simulator libraries require the C++ compiler that Cadence ships. If you are including code compiled using the native C++ compiler (for example, through VPI), you might need to recompile the code using the Cadence C++ compiler. You can restore and use the original LD_LIBRARY_PATH by using the -iusldno command-line option when you run xrun. However, using the -iusldno command-line option might result in an internal error in the AMS Designer simulator. The resulting error message indicates that the software is not loading the required shared object file or valid ELFCLASS32 library. This error message is fatal and you need to run xrun without the -iusldno command-line option to fix the problem.
+TOOL:	xrun(64)	23.09-s013: Exiting on Sep 08, 2025 at 13:39:31 AEST  (total: 00:00:00)
+
+
+
+ ========================================================================================================
+		                  HDL IMPORT QUICK STATUS REPORT
+ ========================================================================================================
+ HDL SETUP MODE	: 0 - IMPROVED LEGACY FLOW
+ ========================================================================================================
+ HDL SETUP STATUS	: SUCCESS
+ ========================================================================================================
+ cds.lib USED	: "/home/hee/cadence/SoC/cds.lib"
+ ========================================================================================================
+ COMPILER OPTIONS	: ""
+ ========================================================================================================
+ PCDB DM CHECKS	: SUCCESS
+ ========================================================================================================
+ PCDB UPDATE REQUIRED	: NO
+ ========================================================================================================
+ IMPORT CONFIGURATION	: CHECK BELOW SETTINGS
+		: generateShadow(false)
+		: enableBlackBox(false)
+		: enableSpecificUnit(true)
+		: updateCDF(false)
+ ========================================================================================================
+ OVERALL IMPORT STATUS	: SUCCESS
+ ========================================================================================================
