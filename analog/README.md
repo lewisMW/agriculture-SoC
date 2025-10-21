@@ -2,7 +2,7 @@
 
 ## High Level Requirements
 
-## 1. Quantised Error - Baseline
+### 1. Quantised Error - Baseline
 
 When the input signal is much larger than LSB, the quantised error is not significantly correlated with the signal and has approximated a uniform distribution, N(μ = 0, σ²), thus:
 
@@ -26,7 +26,7 @@ $$SNR_{dB} = 20 \log\left(\frac{V_{signal,rms}}{V_{noise,rms}}\right) = 20 \log\
 
 For an ideal 8 bits ADC and 3.3V as VCC, the ideal SNR_dB is **49.9 dB**
 
-## 2. Non-Quantised Error - Allowed SNR Loss
+### 2. Non-Quantised Error - Allowed SNR Loss
 
 The allow SNR loss is relative to the quantisation floor and added to the total noise by root-sum-square. The SNR loss makes the total noise, V_tot grow by a factor a relative to the ideal case, V_q.
 
@@ -52,7 +52,7 @@ $$V_{nonq} = V_q\sqrt{a^2 - 1} = V_q\sqrt{10^{\Delta/10} - 1}$$
 
 With an allowed Δ of 3 dB, the v_nonq is **3.71 mV**.
 
-## 3. Equivalent Noise Bandwidth (ENBW)
+### 3. Equivalent Noise Bandwidth (ENBW)
 
 It is the bandwidth equivalent of noise of a perfect rectangular filter that allows the same amount of power to pass as the cumulative bandwidth.
 
