@@ -43,7 +43,7 @@ else
 endif
 
 # Program file
-TESTNAME     = adc_trigger_test
+TESTNAME     = rtc_test
 
 # Endian Option
 COMPILE_BIGEND = 0
@@ -178,13 +178,6 @@ $(TESTNAME).lst : $(TESTNAME).ELF
 
 # ---------------------------------------------------------------------------------------
 # gcc
-
-GCC_SPEC_OPTS := --specs=nano.specs -Wl,--gl-sections
-
-GCC_TARGET_ELF = $(OBJ_DIR)/$(TESTNAME)_gcc.elf
-
-gcc_build_separate_targets: $(GCC_TARGET_ELF) gcc_ge
-
 all_gcc:
 	$(GNG_CC) $(GNU_CC_FLAGS) $(STARTUP_DIR)/$(STARTUP_FILE).s \
 		$(TESTNAME).c \

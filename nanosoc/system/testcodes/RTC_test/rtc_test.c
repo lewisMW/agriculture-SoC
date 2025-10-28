@@ -36,41 +36,30 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "uart_stdout.h"
-
 // #define ADC_STATUS_MASK 0b00000000000000000000000000001100
 #include "sensing_ip.h"
+#include "uart_stdout.h"
 
 int main (void)
 {
-    UartStdOutInit();
     //Pointer to APB Bus from memory map 
-    //Write to PLL Control register
-    SENSING_IP_REGS->pll_control = 0x0000023;
-
-    // Set analog mux control
-    SENSING_IP_REGS->amux = 0x4a;
-
-    //SET ADC TRIGGEr
-    //Setting LSB to 1 should start ADC conversion.
+    // volatile unsigned int *APB_BUS = (unsigned int *)0x51000000;
+    UartStdOutInit();
+    //Gonna start with just reading to the rtc
     SENSING_IP_REGS->adc_trigger = 0x1;
-
-    volatile unsigned int status_reg_value = SENSING_IP_REGS->status_reg;
-    status_reg_value = GET_ADC_STATUS(SENSING_IP_REGS->status_reg);
-    // printf("ADC Status: %u\n", status_reg_value);
-
-    SENSING_IP_REGS->amux = 0x4a;
-    
     SENSING_IP_REGS->adc_trigger = 0x0;
 
-        //FIFO READ
-    // uint64_t combined_value = (((uint64_t) )<< 32) | low_value;
-    volatile uint32_t measurement_high = SENSING_IP_REGS->measurement_high;
-    volatile uint32_t measurement_low = SENSING_IP_REGS->measurement_low;
-    uint64_t  measurement_value = ((uint64_t)measurement_high << 32) | measurement_low;
+    SENSING_IP_REGS->rtc_cr = 0x1;
+    volatile uint32_t current_count = SENSING_IP_REGS->rtc_dr;
+    SENSING_IP_REGS->amux = current_count;
+
+    //Todo test can set control register
+    //then test can do raw interrupt status
+    //
+    
+
     printf("Measurement Value\n");
     UartEndSimulation();
-
     return 0;
 }
 
