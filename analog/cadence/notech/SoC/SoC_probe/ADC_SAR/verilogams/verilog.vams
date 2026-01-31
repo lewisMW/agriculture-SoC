@@ -1,0 +1,73 @@
+//Verilog-AMS HDL for "AMS_VERILOG_SoC", "ADC_SAR" "verilogams"
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module ADC_SAR (
+    resetn,
+    EXTIN,
+    clk,
+    DATA,
+    data_valid
+);
+
+parameter integer 	BITS = 8;
+parameter real		VREF = 1.2;
+
+input wire resetn;
+input EXTIN;	// analog input
+input wire clk;
+output reg [BITS-1:0] DATA; // digital output
+output reg data_valid;
+
+electrical EXTIN; // errors pop up if I want to define it in a single line
+
+real sample, midpoint, cmp, denom;
+integer i;
+reg [BITS-1:0] buffer;
+reg busy;
+
+always @(*) begin
+	denom = 2.0**BITS;
+	cmp = VREF * $itor(buffer) / denom;
+	midpoint = VREF/2.0;
+end
+
+always @(posedge clk or negedge resetn) begin
+	if(~resetn) begin
+		i <= BITS-1;
+		buffer <= 1 << (BITS-1); // start trying from MSB = 1 (VREF/2)
+		DATA <= {BITS{1'b0}};
+		data_valid <= 1'b0;
+		sample <= 0.0;
+	end else begin
+		data_valid <= 1'b0;
+
+		if(i==0) begin
+			if (sample>cmp)
+				DATA <= {buffer[BITS-1:1], 1'b1};
+			else
+				DATA <= {buffer[BITS-1:1], 1'b0};
+			data_valid <= 1'b1;
+
+			// Reset values for next conversion
+			buffer <= 1 << (BITS-1);
+			i <= BITS-1;
+		end else begin
+			if (i == BITS-1) begin
+				if (V(EXTIN)<0.0) sample <= 0.0;
+				else if (V(EXTIN)>VREF) sample <= VREF;
+				else sample <= V(EXTIN); // input value
+			end
+
+			if (sample > cmp) buffer[i] <= 1'b1;
+			else buffer[i] <= 1'b0;
+
+			if(i != 0) buffer[i-1] <= 1'b1;
+			i <= i-1;
+		end
+	end
+end
+
+
+endmodule
