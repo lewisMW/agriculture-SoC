@@ -5,3 +5,22 @@ agriculture_soc_main/obj_dir/**
 *.o
 *.fst
 AT510-MN-80001-r2p0-00rel0
+
+# Cadence Virtuoso/Spectre/XCelium related
+.cadence/
+.pcdb/
+.tmp*
+xcelium.d/
+*.log
+*.log.*
+logs_*
+psf/
+psfbin/
+spectre*/
+netlist/
+run*/
+results/
+*.raw
+*.ic
+*.history
+*.cdslck
