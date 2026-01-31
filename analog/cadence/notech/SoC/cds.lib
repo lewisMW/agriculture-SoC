@@ -1,0 +1,7 @@
+
+SOFTINCLUDE $CDS_WORKDIR/cds.lib
+DEFINE analogLib              $CDSHOME/tools/dfII/etc/cdslib/artist/analogLib
+DEFINE basic                  $CDSHOME/tools/dfII/etc/cdslib/basic
+
+DEFINE SoC_probe ./SoC_probe
+
