@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agriculture SoC - Sensing for Precision Agriculture</title>
+    <style>
+        :root {
+            --green-dark: #2d5016;
+            --green-mid: #4a7c29;
+            --green-light: #6ba33e;
+            --green-pale: #e8f5e0;
+            --brown: #8b6914;
+            --brown-light: #f5f0e0;
+            --text: #1a1a1a;
+            --text-muted: #555;
+            --white: #fff;
+            --gray-light: #f7f8fa;
+            --border: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header / Hero */
+        .hero {
+            background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 50%, var(--green-light) 100%);
+            color: var(--white);
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 0.3rem 1rem;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        .hero p.description {
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            opacity: 0.92;
+        }
+
+        .hero-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .hero-links a:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: var(--white);
+            color: var(--green-dark);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.15);
+            color: var(--white);
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+
+        nav a {
+            display: block;
+            padding: 0.9rem 1rem;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: color 0.15s, border-color 0.15s;
+            white-space: nowrap;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--green-mid);
+            border-bottom-color: var(--green-mid);
+        }
+
+        /* Sections */
+        section {
+            padding: 4rem 2rem;
+        }
+
+        section:nth-child(odd) {
+            background: var(--white);
+        }
+
+        section:nth-child(even) {
+            background: var(--gray-light);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: var(--green-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-lead {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            color: var(--green-mid);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--green-mid);
+        }
+
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        /* Architecture image */
+        .arch-img-wrap {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .arch-img-wrap img {
+            max-width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .arch-img-wrap .caption {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Feature cards */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.93rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin-top: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 16px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 48px;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 8px;
+            top: 4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 3px solid var(--green-mid);
+            background: var(--white);
+        }
+
+        .timeline-dot.completed {
+            background: var(--green-mid);
+        }
+
+        .timeline-dot.in-progress {
+            background: var(--brown);
+            border-color: var(--brown);
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.2rem;
+        }
+
+        .timeline-item h3 {
+            font-size: 1.05rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-item p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .status-done {
+            background: var(--green-pale);
+            color: var(--green-dark);
+        }
+
+        .status-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-upcoming {
+            background: #e8eaf0;
+            color: #555;
+        }
+
+        /* Team */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .team-group {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .team-group h3 {
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--green-pale);
+        }
+
+        .team-group ul {
+            list-style: none;
+        }
+
+        .team-group li {
+            padding: 0.3rem 0;
+            font-size: 0.93rem;
+            color: var(--text-muted);
+        }
+
+        /* Tech stack */
+        .tech-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+
+        .tech-tag {
+            background: var(--green-pale);
+            color: var(--green-dark);
+            padding: 0.35rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .tech-tag.analog {
+            background: var(--brown-light);
+            color: var(--brown);
+        }
+
+        /* Details blocks */
+        .detail-block {
+            margin-top: 1.5rem;
+        }
+
+        .detail-block h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-block p, .detail-block ul {
+            color: var(--text-muted);
+            font-size: 0.93rem;
+        }
+
+        .detail-block ul {
+            padding-left: 1.2rem;
+            margin-top: 0.3rem;
+        }
+
+        .detail-block li {
+            margin-bottom: 0.3rem;
+        }
+
+        /* Competition info */
+        .competition-info {
+            background: var(--green-pale);
+            border-left: 4px solid var(--green-mid);
+            border-radius: 0 8px 8px 0;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .competition-info h3 {
+            color: var(--green-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .competition-info p {
+            font-size: 0.93rem;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--green-dark);
+            color: rgba(255,255,255,0.8);
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.1rem;
+            }
+
+            section {
+                padding: 2.5rem 1.2rem;
+            }
+
+            nav ul {
+                justify-content: flex-start;
+            }
+        }
+
+        /* SVG icons inline */
+        .icon {
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hero -->
+<header class="hero">
+    <div class="hero-badge">SoC Labs Design Contest 2024/25</div>
+    <h1>Agriculture SoC</h1>
+    <p class="subtitle">Sensing for Precision Agriculture</p>
+    <p class="description">
+        An innovative System-on-Chip design deploying a mesh network of sensor-based devices
+        for real-time monitoring of soil health, erosion, drought, and pest activity.
+        Engineered for energy efficiency and continuous operation throughout an entire crop season.
+    </p>
+    <div class="hero-links">
+        <a href="https://github.com/lewisMW/agriculture-SoC" class="btn-primary">
+            <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            Repository
+        </a>
+        <a href="https://github.com/users/lewisMW/projects/1/views/1" class="btn-secondary">
+            <svg class="icon" viewBox="0 0 16 16" fill="currentColor"><path d="M1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0114.25 16H1.75A1.75 1.75 0 010 14.25V1.75C0 .784.784 0 1.75 0zM1.5 1.75v12.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V1.75a.25.25 0 00-.25-.25H1.75a.25.25 0 00-.25.25zM11.75 3a.75.75 0 01.75.75v7.5a.75.75 0 01-1.5 0v-7.5a.75.75 0 01.75-.75zm-8.25.75a.75.75 0 011.5 0v5.5a.75.75 0 01-1.5 0zM8 3a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 3z"/></svg>
+            Project Board
+        </a>
+        <a href="https://soclabs.org/" class="btn-secondary">
+            SoC Labs
+        </a>
+    </div>
+</header>
+
+<!-- Navigation -->
+<nav>
+    <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#milestones">Milestones</a></li>
+        <li><a href="#team">Team</a></li>
+        <li><a href="#technology">Technology</a></li>
+    </ul>
+</nav>
+
+<!-- Overview -->
+<section id="overview">
+    <div class="container">
+        <h2>Project Overview</h2>
+        <p class="section-lead">
+            Designed for the SoC Labs "Understanding Our World" contest, our SoC addresses
+            UN Sustainable Development Goals through intelligent precision agriculture.
+        </p>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number">11</div>
+                <div class="label">Team Members</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">ARM Cortex-M0</div>
+                <div class="label">Processor Core</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">SKY130</div>
+                <div class="label">Target PDK</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">NanoSoC</div>
+                <div class="label">MCU Platform</div>
+            </div>
+        </div>
+
+        <div class="competition-info">
+            <h3>SoC Labs Design Contest 2024/25</h3>
+            <p>
+                We are competing in the <strong>Hardware Implementation</strong> track,
+                designing a mixed-signal SoC that demonstrates how compute makes use of
+                real-world sensor data for precision agriculture. Our design integrates
+                analogue front-end components with a digital processing subsystem on the
+                SoC Labs NanoSoC reusable MCU platform.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Architecture -->
+<section id="architecture">
+    <div class="container">
+        <h2>System Architecture</h2>
+        <p class="section-lead">
+            Built on the ARM CMSDK and NanoSoC platform, our SoC integrates a Cortex-M0
+            processor with custom sensor peripherals via an AHB bus interconnect.
+        </p>
+
+        <div class="arch-img-wrap">
+            <img src="system.png" alt="SoC System Architecture Diagram">
+            <div class="caption">System architecture showing the ARM Cortex-M0 core, AHB bus, and peripherals</div>
+        </div>
+
+        <div class="detail-block">
+            <h3>Digital Subsystem</h3>
+            <p>The digital subsystem is centred on the ARM Cortex-M0 processor, connected via
+               an AHB-Lite bus matrix to custom peripherals including our ADC APB wrapper,
+               FIFO controller, real-time clock, and GPIO. Firmware running on the processor
+               orchestrates sensor data acquisition, processing, and decision-making.</p>
+        </div>
+
+        <div class="detail-block">
+            <h3>Custom Peripheral: ADC APB Wrapper</h3>
+            <p>A key custom IP block providing the interface between the processor and the
+               analogue front-end. It includes:</p>
+            <ul>
+                <li>APB register interface for processor control</li>
+                <li>FIFO buffering for ADC sample data</li>
+                <li>FSM-based wrapper control for sequencing conversions</li>
+                <li>Analogue multiplexer selection for multi-channel sensing</li>
+                <li>Real-time clock for timed/periodic sampling</li>
+            </ul>
+        </div>
+
+        <div class="detail-block">
+            <h3>Analogue Front-End</h3>
+            <p>The analogue subsystem conditions real-world sensor signals for digitisation.
+               It includes filtering, amplification, and sample-and-hold stages modelled in
+               Verilog-AMS for co-simulation with the digital design.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section id="features">
+    <div class="container">
+        <h2>Key Features</h2>
+        <p class="section-lead">
+            Designed from the ground up for reliable, energy-efficient field deployment.
+        </p>
+
+        <div class="features">
+            <div class="feature-card">
+                <h3>Multi-Sensor Integration</h3>
+                <p>Supports electrochemical, temperature, and dielectric sensors through a
+                   flexible analogue multiplexer and ADC pipeline, enabling comprehensive
+                   soil health monitoring from a single device.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Mesh Network Architecture</h3>
+                <p>Devices form a self-healing mesh network, eliminating single points of
+                   failure and enabling coverage across large agricultural areas without
+                   centralised infrastructure.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Energy Efficient Design</h3>
+                <p>Engineered for ultra-low power operation to sustain continuous monitoring
+                   throughout an entire crop season on limited energy budgets, using timed
+                   wake-up and duty-cycled sampling.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Real-Time Data Acquisition</h3>
+                <p>On-chip FIFO buffering and RTC-driven sampling provide continuous,
+                   granular data directly from the field, surpassing traditional remote
+                   sensing approaches like drone mapping.</p>
+            </div>
+            <div class="feature-card">
+                <h3>NanoSoC Platform</h3>
+                <p>Built on the SoC Labs NanoSoC reusable MCU platform with ARM Cortex-M0,
+                   DMA controllers, and a proven debug interface, reducing development
+                   risk and accelerating verification.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Mixed-Signal Co-Design</h3>
+                <p>Analogue front-end modelled in Verilog-AMS alongside digital RTL,
+                   enabling full-system behavioural simulation with realistic sensor
+                   signal characteristics.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Milestones -->
+<section id="milestones">
+    <div class="container">
+        <h2>Project Milestones</h2>
+        <p class="section-lead">
+            Tracking our progress from initial research through to silicon-ready design.
+        </p>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot completed"></div>
+                <div class="timeline-date">June 2024</div>
+                <h3>Getting Started <span class="status-badge status-done">Completed</span></h3>
+                <p>Determined project scope, voted on precision agriculture application,
+                   completed ARM introductory SoC course, reviewed NanoSoC reference design.</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot completed"></div>
+                <div class="timeline-date">July 2024</div>
+                <h3>IP Selection <span class="status-badge status-done">Completed</span></h3>
+                <p>Identified required processor and peripheral features. Created draft
+                   architectural diagram and determined sensor requirements for soil monitoring.</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot completed"></div>
+                <div class="timeline-date">August 2024</div>
+                <h3>SoC Specification <span class="status-badge status-done">Completed</span></h3>
+                <p>Defined internal module layout, communication specifications (APB, AHB),
+                   and adopted ARM DesignStart IP as bare-bones starting point.</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot completed"></div>
+                <div class="timeline-date">June 2025</div>
+                <h3>RTL Generation <span class="status-badge status-done">Completed</span></h3>
+                <p>Created APB wrapper for custom peripherals, migrated to NanoSoC with AAA IP,
+                   defined memory map and address allocation. Achieved working NanoSoC +
+                   custom peripheral simulation on Icarus Verilog.</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot completed"></div>
+                <div class="timeline-date">July 2025</div>
+                <h3>Simulation <span class="status-badge status-done">Completed</span></h3>
+                <p>Completed integration test simulation of custom RTL with NanoSoC.</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot completed"></div>
+                <div class="timeline-date">September 2025</div>
+                <h3>Cadence Workflow Familiarisation <span class="status-badge status-done">Completed</span></h3>
+                <p>Gained proficiency with full Cadence Design Tools workflow for synthesis
+                   and implementation. Documented step-by-step guide for the team.</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot completed"></div>
+                <div class="timeline-date">January 2026</div>
+                <h3>Technology Selection <span class="status-badge status-done">Completed</span></h3>
+                <p>Selected SKY130 open-source PDK with Cadence MPW flow after evaluating
+                   TSMC 65nm option. Ready for physical implementation.</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot in-progress"></div>
+                <div class="timeline-date">February 2026</div>
+                <h3>Behavioural Modelling <span class="status-badge status-progress">In Progress</span></h3>
+                <p>Developing complete Verilog-AMS behavioural model of the analog subsystem
+                   including filter, amplifier, and sample-and-hold modules for integration
+                   with NanoSoC.</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">February 2026</div>
+                <h3>RTL Verification <span class="status-badge status-progress">In Progress</span></h3>
+                <p>Verifying custom RTL + NanoSoC on FPGA with mock ADC input.
+                   5 firmware tests simulated; investigating RTC bug.</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">March 2026</div>
+                <h3>Design for Test <span class="status-badge status-upcoming">Upcoming</span></h3>
+                <p>Adding debug counters and readout support to custom RTL for
+                   post-silicon diagnostics.</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">March 2026</div>
+                <h3>Synthesis <span class="status-badge status-upcoming">Upcoming</span></h3>
+                <p>Synthesising the full digital design (custom RTL + NanoSoC) using
+                   Cadence Genus with the SKY130 PDK.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team -->
+<section id="team">
+    <div class="container">
+        <h2>Team Structure</h2>
+        <p class="section-lead">
+            An 11-person team organised into analogue and digital workstreams,
+            coordinated through GitHub Projects.
+        </p>
+
+        <div class="team-grid">
+            <div class="team-group">
+                <h3>Digital Team</h3>
+                <ul>
+                    <li>Processor integration</li>
+                    <li>Custom RTL peripherals</li>
+                    <li>APB/AHB bus interfacing</li>
+                    <li>Firmware development</li>
+                    <li>FPGA verification</li>
+                    <li>Synthesis &amp; implementation</li>
+                </ul>
+            </div>
+            <div class="team-group">
+                <h3>Analogue Team</h3>
+                <ul>
+                    <li>Sensor front-end conditioning</li>
+                    <li>ADC interface design</li>
+                    <li>Verilog-AMS modelling</li>
+                    <li>Mixed-signal simulation</li>
+                    <li>Signal integrity analysis</li>
+                </ul>
+            </div>
+            <div class="team-group">
+                <h3>Project Management</h3>
+                <ul>
+                    <li>GitHub Projects board</li>
+                    <li>Milestone tracking</li>
+                    <li>PDK &amp; tool procurement</li>
+                    <li>Documentation</li>
+                    <li>Contest submission</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Technology -->
+<section id="technology">
+    <div class="container">
+        <h2>Technology Stack</h2>
+        <p class="section-lead">
+            Our design flow spans from RTL through to physical implementation, using
+            both industry and open-source tools.
+        </p>
+
+        <div class="detail-block">
+            <h3>IP &amp; Platforms</h3>
+            <div class="tech-list">
+                <span class="tech-tag">ARM Cortex-M0</span>
+                <span class="tech-tag">ARM CMSDK</span>
+                <span class="tech-tag">NanoSoC MCU</span>
+                <span class="tech-tag">ARM DesignStart</span>
+                <span class="tech-tag">PL230 DMA</span>
+                <span class="tech-tag">CMSIS</span>
+            </div>
+        </div>
+
+        <div class="detail-block">
+            <h3>HDL &amp; Simulation</h3>
+            <div class="tech-list">
+                <span class="tech-tag">Verilog</span>
+                <span class="tech-tag">SystemVerilog</span>
+                <span class="tech-tag">Verilog-AMS</span>
+                <span class="tech-tag">Verilator</span>
+                <span class="tech-tag">Icarus Verilog</span>
+                <span class="tech-tag">GTKWave</span>
+            </div>
+        </div>
+
+        <div class="detail-block">
+            <h3>EDA &amp; Physical Design</h3>
+            <div class="tech-list">
+                <span class="tech-tag">Cadence Genus</span>
+                <span class="tech-tag">Cadence Innovus</span>
+                <span class="tech-tag">Cadence Virtuoso</span>
+                <span class="tech-tag">SKY130 PDK</span>
+            </div>
+        </div>
+
+        <div class="detail-block">
+            <h3>Firmware &amp; Software</h3>
+            <div class="tech-list">
+                <span class="tech-tag">C (ARM GCC)</span>
+                <span class="tech-tag">ARM CMSIS</span>
+                <span class="tech-tag">Custom drivers</span>
+            </div>
+        </div>
+
+        <div class="detail-block">
+            <h3>FPGA Targets</h3>
+            <div class="tech-list">
+                <span class="tech-tag analog">ARM MPS3</span>
+                <span class="tech-tag analog">PYNQ ZCU104</span>
+                <span class="tech-tag analog">PYNQ Z2</span>
+                <span class="tech-tag analog">KRIA KR260</span>
+                <span class="tech-tag analog">KRIA KV260</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>
+        Agriculture SoC &mdash;
+        <a href="https://github.com/lewisMW/agriculture-SoC">GitHub</a> &middot;
+        <a href="https://github.com/users/lewisMW/projects/1/views/1">Project Board</a> &middot;
+        <a href="https://soclabs.org/">SoC Labs</a>
+    </p>
+    <p style="margin-top: 0.5rem; opacity: 0.7;">
+        SoC Labs Design Contest 2024/25: Understanding Our World
+    </p>
+</footer>
+
+<!-- Smooth scrolling & active nav -->
+<script>
+    document.querySelectorAll('nav a').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            const target = document.querySelector(link.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+
+    window.addEventListener('scroll', () => {
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('nav a');
+        let current = '';
+        sections.forEach(section => {
+            const top = section.offsetTop - 80;
+            if (window.scrollY >= top) {
+                current = section.getAttribute('id');
+            }
+        });
+        navLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+        });
+    });
+</script>
+
+</body>
+</html>
