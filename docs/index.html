@@ -470,6 +470,59 @@
             }
         }
 
+        /* Blog */
+        .blog-posts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .blog-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: box-shadow 0.15s, transform 0.15s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .blog-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .blog-card .blog-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-card .blog-meta .author {
+            color: var(--green-mid);
+            font-weight: 600;
+        }
+
+        .blog-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--green-dark);
+        }
+
+        .blog-card p {
+            color: var(--text-muted);
+            font-size: 0.93rem;
+        }
+
+        .blog-card .read-more {
+            display: inline-block;
+            margin-top: 0.8rem;
+            color: var(--green-mid);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
         /* SVG icons inline */
         .icon {
             width: 18px;
@@ -514,6 +567,7 @@
         <li><a href="#milestones">Milestones</a></li>
         <li><a href="#team">Team</a></li>
         <li><a href="#technology">Technology</a></li>
+        <li><a href="#blog">Blog</a></li>
     </ul>
 </nav>
 
@@ -858,6 +912,36 @@
                 <span class="tech-tag analog">KRIA KR260</span>
                 <span class="tech-tag analog">KRIA KV260</span>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blog -->
+<section id="blog">
+    <div class="container">
+        <h2>Blog</h2>
+        <p class="section-lead">
+            Updates from team members on their recent contributions.
+        </p>
+
+        <div class="blog-posts">
+            <a href="blog/jaime-amplifier-filter-library.html" class="blog-card">
+                <div class="blog-meta"><span class="author">Jaime Pryor</span> &middot; 31 January 2026</div>
+                <h3>Building the Amplifier &amp; Filter Library in Cadence Virtuoso</h3>
+                <p>Developing Verilog-A behavioural models for a variable-gain amplifier with
+                   integrated low-pass filtering and thermal noise, plus a reusable resistor
+                   primitive, all verified with Cadence Maestro testbenches.</p>
+                <span class="read-more">Read more &rarr;</span>
+            </a>
+
+            <a href="blog/hee-sar-adc-model.html" class="blog-card">
+                <div class="blog-meta"><span class="author">Hee Chan</span> &middot; 30 January 2026</div>
+                <h3>SAR ADC Behavioural Model &amp; Testbench in Verilog-AMS</h3>
+                <p>Implementing an 8-bit successive approximation register ADC as a
+                   Verilog-AMS behavioural model with a Cadence ADE Maestro testbench,
+                   including noise analysis and SNR calculations for the analogue front-end.</p>
+                <span class="read-more">Read more &rarr;</span>
+            </a>
         </div>
     </div>
 </section>

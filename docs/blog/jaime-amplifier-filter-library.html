@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building the Amplifier &amp; Filter Library - Agriculture SoC Blog</title>
+    <style>
+        :root {
+            --green-dark: #2d5016;
+            --green-mid: #4a7c29;
+            --green-light: #6ba33e;
+            --green-pale: #e8f5e0;
+            --brown: #8b6914;
+            --brown-light: #f5f0e0;
+            --text: #1a1a1a;
+            --text-muted: #555;
+            --white: #fff;
+            --gray-light: #f7f8fa;
+            --border: #e0e0e0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+            line-height: 1.7;
+            background: var(--gray-light);
+        }
+
+        /* Top bar */
+        .topbar {
+            background: var(--green-dark);
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .topbar a:hover { color: var(--white); }
+
+        .topbar .site-name {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* Article */
+        article {
+            max-width: 760px;
+            margin: 2rem auto;
+            background: var(--white);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            padding: 3rem;
+        }
+
+        .blog-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-meta .author {
+            color: var(--green-mid);
+            font-weight: 600;
+        }
+
+        article h1 {
+            font-size: 2rem;
+            color: var(--green-dark);
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        article h2 {
+            font-size: 1.3rem;
+            color: var(--green-dark);
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        article p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        article ul, article ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        article li {
+            margin-bottom: 0.4rem;
+        }
+
+        pre {
+            background: #1e1e2e;
+            color: #cdd6f4;
+            border-radius: 6px;
+            padding: 1.2rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        code {
+            font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+        }
+
+        p code {
+            background: var(--gray-light);
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.88em;
+            color: var(--green-dark);
+        }
+
+        .callout {
+            background: var(--green-pale);
+            border-left: 4px solid var(--green-mid);
+            border-radius: 0 6px 6px 0;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .callout p { margin-bottom: 0; color: var(--text-muted); }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--green-pale);
+            color: var(--green-dark);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            background: var(--green-mid);
+            color: var(--white);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        footer a { color: var(--green-mid); text-decoration: none; }
+
+        @media (max-width: 600px) {
+            article { margin: 1rem; padding: 1.5rem; }
+            article h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <a href="../" class="site-name">Agriculture SoC</a>
+    <a href="../#blog">&larr; All Posts</a>
+</div>
+
+<article>
+    <div class="blog-meta"><span class="author">Jaime Pryor</span> &middot; 31 January 2026</div>
+    <h1>Building the Amplifier &amp; Filter Library in Cadence Virtuoso</h1>
+
+    <p>
+        As part of our analogue front-end development, I've been working on creating
+        reusable Verilog-A behavioural models for the signal conditioning stage that sits
+        between our soil sensors and the ADC. The goal is to have a library of components
+        that can be composed, simulated, and eventually replaced with transistor-level
+        implementations as we move towards tape-out.
+    </p>
+
+    <h2>Why Verilog-A Behavioural Models?</h2>
+    <p>
+        At this stage in the project, we need to verify the overall analogue signal chain
+        behaviour without getting bogged down in transistor-level design. Verilog-A models
+        let us capture the key analogue properties &mdash; gain, bandwidth, slew rate,
+        noise &mdash; and co-simulate them with the digital RTL in the NanoSoC environment.
+        Once the system-level behaviour is validated, we can swap in transistor-level
+        schematics one block at a time.
+    </p>
+
+    <h2>Variable-Gain Amplifier with Low-Pass Filter</h2>
+    <p>
+        The main component in the library is a variable-gain amplifier (<code>var_amp_va</code>)
+        that also integrates first-order low-pass filtering. This block models the analogue
+        conditioning needed before the ADC &mdash; amplifying weak sensor signals while
+        rejecting high-frequency noise above the Nyquist frequency.
+    </p>
+
+    <p>Key parameters of the model:</p>
+    <ul>
+        <li><strong>Gain:</strong> configurable (default 10x), set to 1 to use as a pure filter</li>
+        <li><strong>3 dB bandwidth:</strong> 50 kHz (Nyquist-matched for our 100 kHz sampling rate)</li>
+        <li><strong>Input impedance:</strong> 1 k&Omega; (finite, modelling real amplifier behaviour)</li>
+        <li><strong>Output impedance:</strong> 10 &Omega; with thermal noise contribution</li>
+        <li><strong>Slew rate:</strong> &plusmn;70 kV/s (modelling amplifier output rate limiting)</li>
+    </ul>
+
+    <p>Here's the core of the Verilog-A implementation:</p>
+
+<pre><code>// Calculate time constant from 3 dB cutoff frequency
+tau = 1/(2*`M_PI*f3db);
+
+// Build Laplace transfer function arrays
+num[0] = gain;     // numerator: [gain]
+den[0] = 1.0;     // denominator: [1, tau]
+den[1] = tau;
+
+// Slew rate limiting on input
+V(m_internal) &lt;+ slew(V(in), 0.7e5, -0.7e5);
+
+// Amplifier + filter via Laplace transform
+V(n_internal) &lt;+ laplace_nd(V(m_internal), num, den);
+
+// Output impedance with thermal noise
+I(n_internal, out) &lt;+ V(n_internal, out)/Rout
+    + white_noise(4*`P_K*$temperature*Rout, "thermal");</code></pre>
+
+    <div class="callout">
+        <p>
+            The <code>laplace_nd</code> function applies a continuous-time transfer function
+            (gain / (1 + s&middot;&tau;)), giving us a proper first-order low-pass response.
+            Combined with the <code>slew()</code> function for rate limiting and
+            <code>white_noise()</code> for thermal noise, this captures the key non-ideal
+            behaviours we need to validate at the system level.
+        </p>
+    </div>
+
+    <h2>Reusable Resistor Primitive</h2>
+    <p>
+        I also added a simple resistor Verilog-A primitive (<code>resistor_va</code>) to the library.
+        While basic, having a parameterised Verilog-A resistor is useful for building
+        more complex analogue networks in the testbench without depending on a specific PDK:
+    </p>
+
+<pre><code>module resistor_va(p, n);
+  inout p, n;
+  electrical p, n;
+  parameter real R = 1k from (0:inf);
+
+  analog begin
+    I(p, n) &lt;+ V(p, n) / R;  // Ohm's law
+  end
+endmodule</code></pre>
+
+    <h2>Verification with Cadence Maestro</h2>
+    <p>
+        Both components have testbenches set up in Cadence Virtuoso with ADE Maestro
+        for simulation orchestration. The <code>var_amp_tb</code> testbench verifies:
+    </p>
+    <ul>
+        <li>Gain accuracy across the passband</li>
+        <li>3 dB roll-off at the specified cutoff frequency</li>
+        <li>Slew rate limiting behaviour on fast transients</li>
+        <li>Noise floor contribution from the output stage</li>
+    </ul>
+    <p>
+        The <code>resistor_tb</code> testbench validates basic I-V characteristics.
+        Both testbenches include Maestro simulation history for reproducibility.
+    </p>
+
+    <h2>Next Steps</h2>
+    <p>
+        This library is part of the broader Behavioural Modelling milestone. The next
+        steps are to integrate these blocks with Hee's SAR ADC model to form a complete
+        analogue signal chain, and to co-simulate the full path from sensor input
+        through to digital readout on the NanoSoC processor.
+    </p>
+
+    <a href="../#blog" class="back-link">&larr; Back to all posts</a>
+</article>
+
+<footer>
+    <a href="https://github.com/lewisMW/agriculture-SoC">Agriculture SoC</a> &middot;
+    SoC Labs Design Contest 2024/25
+</footer>
+
+</body>
+</html>
