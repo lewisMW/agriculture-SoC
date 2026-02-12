@@ -10,7 +10,7 @@
 #-----------------------------------------------------------------------------
 
 #!/usr/bin/env bash
-
+set -x
 # Get simulation name from name of script
 SIM_NAME=`basename -s .sh "$0"`
 

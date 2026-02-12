@@ -9,6 +9,7 @@
 # Copyright  2023, SoC Labs (www.soclabs.org)
 #-----------------------------------------------------------------------------
 #!/bin/bash
+set -x
 # Source set_env script from soctools_flow
 source soctools_flow/bin/project_setup.sh $@
 if [ ! -f .dma350_configured ]; then
@@ -18,3 +19,4 @@ if [ ! -f .dma350_configured ]; then
     make -C nanosoc_tech/nanosoc/sldma350_tech/ config_dma_ahb
     touch .dma350_configured
 fi
+
