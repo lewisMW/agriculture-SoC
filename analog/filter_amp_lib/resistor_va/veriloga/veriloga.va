@@ -1,0 +1,15 @@
+// VerilogA for my_va_lib, resistor_va, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module resistor_va(p, n);
+  inout p, n;
+  electrical p, n;
+
+  parameter real R = 1k from (0:inf);
+
+  analog begin
+    I(p, n) <+ V(p, n) / R;  // Ohm?s law
+  end
+endmodule

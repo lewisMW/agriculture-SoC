@@ -1,0 +1,55 @@
+// VerilogA for my_va_lib, var_amp_va, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module var_amp_va(in, out);
+
+	inout in, out;
+	electrical in, out, m_internal, n_internal, gnd;
+	ground gnd; 
+
+// Parameters 
+// parameter real ctrlin 
+	parameter real Rin = 1e3; // Finite input impedance 
+	parameter real Rout = 10.0; //  
+	parameter real gain = 10.0; // setting this to 1 retains filter properties 
+	parameter real f3db = 50e3; // Nyquist 
+	
+
+  // Internal variables 
+	real num[0:0]; 
+	real den[0:1]; 
+	real tau; 
+ 	
+
+  analog begin
+
+	// Set current based on input impedance (override assumption of infinite input impedance) 
+	I(in) <+ V(in, gnd)/Rin; 
+
+	// calculate time constant based on 3dB
+	tau = 1/(2*`M_PI*f3db);
+
+    // build arrays for laplace_nd
+    num[0] = gain;     // numerator: [gain]
+    den[0] = 1.0;   // denominator: [1, tau]
+    den[1] = tau;
+
+	// Slew rate slew produces an output waveform that is the same as the input 
+	// waveform except that it has bounded slope. 
+	// unit seems to be 0.1volts/sec, i.e. for a limiting value of 0.7 V/s put in 0.07V/s
+	V(m_internal) <+ slew(V(in), 0.7e5, -0.7e5); 
+
+    // Amplifier and filter behavior 
+    V(n_internal) <+  laplace_nd(V(m_internal), num, den);
+
+	// Set current based on output impedance 
+	// Add white noise - assign to current to retain the correct behaviour\
+	// (have to set a finite current to make output resistance)
+	I(n_internal, out) <+ V(n_internal, out)/Rout + white_noise(4*`P_K*$temperature*Rout, "thermal");
+
+
+ end
+
+endmodule
