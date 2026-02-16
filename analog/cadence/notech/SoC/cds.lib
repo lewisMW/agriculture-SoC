@@ -3,6 +3,5 @@ SOFTINCLUDE $CDS_WORKDIR/cds.lib
 DEFINE analogLib              $CDSHOME/tools/dfII/etc/cdslib/artist/analogLib
 DEFINE basic                  $CDSHOME/tools/dfII/etc/cdslib/basic
 
-#Removed by ddDeleteObj: DEFINE SoC_probe ./SoC_probe
+DEFINE SoC_probe ./SoC_probe
 
-DEFINE SoC_AFE /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE
