@@ -1,0 +1,16 @@
+[
+  {
+    "slug": "jaime-amplifier-filter-library",
+    "title": "Building the Amplifier & Filter Library in Cadence Virtuoso",
+    "author": "Jaime Pryor",
+    "date": "31 January 2026",
+    "summary": "Developing Verilog-A behavioural models for a variable-gain amplifier with integrated low-pass filtering and thermal noise, plus a reusable resistor primitive, all verified with Cadence Maestro testbenches."
+  },
+  {
+    "slug": "hee-sar-adc-model",
+    "title": "SAR ADC Behavioural Model & Testbench in Verilog-AMS",
+    "author": "Hee Chan",
+    "date": "30 January 2026",
+    "summary": "Implementing an 8-bit successive approximation register ADC as a Verilog-AMS behavioural model with a Cadence ADE Maestro testbench, including noise analysis and SNR calculations for the analogue front-end."
+  }
+]

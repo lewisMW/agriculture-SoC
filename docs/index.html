@@ -924,25 +924,25 @@
             Updates from team members on their recent contributions.
         </p>
 
-        <div class="blog-posts">
-            <a href="blog/jaime-amplifier-filter-library.html" class="blog-card">
-                <div class="blog-meta"><span class="author">Jaime Pryor</span> &middot; 31 January 2026</div>
-                <h3>Building the Amplifier &amp; Filter Library in Cadence Virtuoso</h3>
-                <p>Developing Verilog-A behavioural models for a variable-gain amplifier with
-                   integrated low-pass filtering and thermal noise, plus a reusable resistor
-                   primitive, all verified with Cadence Maestro testbenches.</p>
-                <span class="read-more">Read more &rarr;</span>
-            </a>
+        <div class="blog-posts" id="blog-posts"></div>
 
-            <a href="blog/hee-sar-adc-model.html" class="blog-card">
-                <div class="blog-meta"><span class="author">Hee Chan</span> &middot; 30 January 2026</div>
-                <h3>SAR ADC Behavioural Model &amp; Testbench in Verilog-AMS</h3>
-                <p>Implementing an 8-bit successive approximation register ADC as a
-                   Verilog-AMS behavioural model with a Cadence ADE Maestro testbench,
-                   including noise analysis and SNR calculations for the analogue front-end.</p>
-                <span class="read-more">Read more &rarr;</span>
-            </a>
-        </div>
+        <script>
+            fetch('blog/posts.json')
+                .then(res => res.json())
+                .then(posts => {
+                    const container = document.getElementById('blog-posts');
+                    posts.forEach(post => {
+                        const card = document.createElement('a');
+                        card.href = 'blog/post.html?post=' + post.slug;
+                        card.className = 'blog-card';
+                        card.innerHTML = '<div class="blog-meta"><span class="author">' + post.author + '</span> &middot; ' + post.date + '</div>'
+                            + '<h3>' + post.title + '</h3>'
+                            + '<p>' + post.summary + '</p>'
+                            + '<span class="read-more">Read more &rarr;</span>';
+                        container.appendChild(card);
+                    });
+                });
+        </script>
     </div>
 </section>
 
