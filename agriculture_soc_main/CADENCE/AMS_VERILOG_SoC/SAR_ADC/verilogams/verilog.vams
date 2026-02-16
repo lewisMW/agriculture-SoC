@@ -1,0 +1,74 @@
+//Verilog-AMS HDL for "AMS_VERILOG_SoC", "SAR_ADC" "verilogams"
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module SAR_ADC (
+    resetn,
+    EXTIN,
+    DATA,
+    data_valid,
+	clk
+);
+
+parameter integer 	BITS = 8;
+parameter real		VREF = 1.2;
+
+input EXTIN; // analog input
+input wire resetn;
+output DATA [BITS-1:0]; // digital Output
+output reg data_valid;
+input wire clk;
+
+electrical EXTIN;
+real sample, midpoint, cmp, denom;
+integer i;
+wire [BITS-1:0] DATA;
+reg [BITS-1:0] buffer;
+reg [BITS-1:0] out;
+
+assign DATA = out;
+always @(*) begin
+	denom = 2.0**BITS;
+	cmp = VREF * $itor(buffer) / denom;
+	midpoint = VREF/2.0;
+end
+
+always @(posedge clk or negedge resetn) begin
+	if(~resetn) begin
+		i <= BITS-1;
+		buffer <= 1 << (BITS-1); // start trying from MSB = 1 (VREF/2)
+		out <= {BITS{1'b0}};
+		data_valid <= 1'b0;
+		sample <= 0.0;
+	end else begin
+		data_valid <= 1'b0;
+
+		if(i==0) begin
+			if (sample>cmp)
+				out <= {buffer[BITS-1:1], 1'b1};
+			else
+				out <= {buffer[BITS-1:1], 1'b0};
+			data_valid <= 1'b1;
+
+			// Reset values for next conversion
+			buffer <= 1 << (BITS-1);
+			i <= BITS-1;
+		end else begin
+			if (i == BITS-1) begin
+				if (V(EXTIN)<0.0) sample <= 0.0;
+				else if (V(EXTIN)>VREF) sample <= VREF;
+				else sample <= V(EXTIN); // input value
+			end
+
+			if (sample > cmp) buffer[i] <= 1'b1;
+			else buffer[i] <= 1'b0;
+
+			if(i != 0) buffer[i-1] <= 1'b1;
+			i <= i-1;
+		end
+	end
+end
+
+
+endmodule

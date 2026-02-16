@@ -1,0 +1,55 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Mon Mar 31 13:27:08 2025
+[*]
+[dumpfile] "/root/agriculture-SoC-2/agriculture_soc_main/Bus_Components/RTC/waveform.vcd"
+[dumpfile_mtime] "Mon Mar 31 13:13:16 2025"
+[dumpfile_size] 42629
+[savefile] "/root/agriculture-SoC-2/agriculture_soc_main/Bus_Components/RTC/rtc_waveform.gtkw"
+[timestart] 2218800
+[size] 3428 1359
+[pos] 3555 32
+*-16.000000 2517300 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] rtc_control_tb.
+[sst_width] 526
+[signals_width] 198
+[sst_expanded] 1
+[sst_vpaned_height] 419
+@28
+rtc_control_tb.dut.PCLK
+@22
+rtc_control_tb.dut.ctrl_time_value[31:0]
+@28
+rtc_control_tb.dut.PSEL
+rtc_control_tb.dut.PENABLE
+rtc_control_tb.dut.PWRITE
+@22
+rtc_control_tb.dut.PADDR[11:0]
+rtc_control_tb.dut.PWDATA[31:0]
+rtc_control_tb.dut.PRDATA[31:0]
+@28
+rtc_control_tb.dut.PREADY
+rtc_control_tb.dut.CLK1HZ
+rtc_control_tb.dut.test_mask_enable
+rtc_control_tb.dut.RTCCR_enable
+rtc_control_tb.dut.load_req_1hz
+@22
+rtc_control_tb.dut.RTCLR_reg[31:0]
+@28
+rtc_control_tb.dut.ctrl_read_time_en
+@22
+rtc_control_tb.dut.ctrl_time_value[31:0]
+rtc_control_tb.dut.counter_sync[31:0]
+rtc_control_tb.dut.counter_sync_ff[31:0]
+rtc_control_tb.dut.RTCMR_reg[31:0]
+@28
+rtc_control_tb.dut.ctrl_intr_flag
+rtc_control_tb.dut.intr_flag
+rtc_control_tb.dut.RTCIMSC_reg
+rtc_control_tb.dut.RTCINTR
+rtc_control_tb.dut.ctrl_clear_intr
+rtc_control_tb.dut.state[2:0]
+@29
+rtc_control_tb.dut.next_state[2:0]
+[pattern_trace] 1
+[pattern_trace] 0

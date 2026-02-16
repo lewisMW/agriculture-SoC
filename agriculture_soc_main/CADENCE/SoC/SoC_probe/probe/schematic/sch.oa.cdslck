@@ -1,0 +1,16 @@
+#
+# Edit Lock-Stake file. CAUTION: Please do not change.
+#
+# Information about current Edit Lock Owner.
+#
+LockStakeVersion               1.1
+LoginName                      hee
+HostName                       MrDonothing.
+ProcessIdentifier              34
+ProcessCreationTime_UTC        1757302545
+ProcessCreationTime_Readable   Mon Sep  8 13:35:45 2025 AEST
+AppIdentifier                  OA File System Design Manager
+OSType                         unix
+ReasonForPlacingEditLock       OpenAccess edit lock
+FilePathUsedToEditLock         /home/hee/cadence/SoC/SoC_probe/probe/schematic/sch.oa.cdslck.dirlck
+TimeEditLocked                 Mon Sep  8 13:40:45 2025 AEST

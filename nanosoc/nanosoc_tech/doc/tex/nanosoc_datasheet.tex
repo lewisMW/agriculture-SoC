@@ -1,0 +1,93 @@
+\documentclass{report}
+\usepackage{hyperref}
+
+\title{nanoSoC Datasheet}
+\author{\href{http://www.soclabs.org}{SoC Labs}}
+\begin{document}
+\maketitle
+\input{preamble.tex}
+
+\tableofcontents
+\clearpage
+\chapter{Introduction}
+
+\section{Summary}
+
+
+
+\chapter{System}
+
+\section{Bus Interconnect}
+
+\section{Address Map}
+\subsection{Summary}
+
+\begin{center}
+    \begin{tabular}{||c | c | c ||}
+        \hline
+        Region & Start Address & End Address \\ 
+        \hline\hline
+        Boot-Rom & 0x00000000 & 0x0FFFFFFF \\
+        \hline
+        Instruction Memory (SRAM) & 0x20000000 & 0x2FFFFFFF \\
+        \hline
+        Data Memory (SRAM) & 0x30000000 & 0x3FFFFFFF \\
+        \hline
+        System IO & 0x40000000 & 0x5FFFFFFF \\
+        \hline
+        Expansion IO & 0x60000000 & 0x7FFFFFFF \\
+        \hline
+        Expansion Memory Lo (SRAM) & 0x80000000 & 0x8FFFFFFF \\
+        \hline
+        Expansion Memory Hi (SRAM) & 0x90000000 & 0x9FFFFFFF \\
+        \hline
+        Expansion IO & 0xA0000000 & 0xDFFFFFFF \\
+        \hline
+        System Table ROM & 0xF0000000 & 0xF0003FFF \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\subsection{System IO Region}
+Below are the address regions for the System IO/Peripherals, detailed address maps for each peripheral are in chapter \ref{peripherals}
+\begin{center}
+    \begin{tabular}{||c | c | c ||}
+        \hline
+        Region & Start Address & End Address \\ 
+        \hline\hline
+        Timer 0 & 0x40000000 & 0x40000FFF \\
+        \hline
+        Timer 1 & 0x40001000 & 0x40001FFF \\
+        \hline
+        Dual Timer & 0x40002000 & 0x40003FFF \\
+        \hline
+        UART 0 & 0x40004000 & 0x40004FFF \\
+        \hline
+        UART 1 & 0x40005000 & 0x40005FFF \\
+        \hline
+        UART 2 & 0x40006000 & 0x40007FFF \\
+        \hline
+        Watchdog Timer & 0x40008000 & 0x40008FFF \\
+        \hline
+        USRT 2  & 0x4000E000 & 0x4000EFFF \\
+        \hline
+        DMA 0 Base & 0x4000F000 & 0x4000EFFF \\
+        \hline
+        GPIO 0 & 0x40010000 & 0x40010FFF \\
+        \hline
+        GPIO 1 & 0x40011000 & 0x40011FFF \\
+        \hline
+        System Control & 0x4001F000 & 0x4001FFFF \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\section{}
+
+
+\chapter{Peripherals} \label{peripherals} 
+
+\chapter{Recommended Testboard}
+
+
+\end{document}

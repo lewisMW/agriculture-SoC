@@ -1,0 +1,13 @@
+# 
+# Fusion Compiler write_def
+# Release      : U-2022.12
+# User Name    : dwn1c21
+# Date         : Mon Jun 16 16:08:36 2025
+# 
+VERSION 5.8 ;
+DIVIDERCHAR "/" ;
+BUSBITCHARS "[]" ;
+DESIGN nanosoc_chip_pads ;
+UNITS DISTANCE MICRONS 1000 ;
+DIEAREA ( 0 0 ) ( 0 1666500 ) ( 1110980 1666500 ) ( 1110980 0 ) ;
+END DESIGN

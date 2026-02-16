@@ -1,0 +1,37 @@
+# user spec file, compiler rom_via_hdd_lvt_mvt, version r1p1
+
+EOL_guardband = 0
+activity_factor = 10
+back_biasing = off
+bits = 32
+bmux = on
+bus_notation = on
+check_instname = on
+code_file = bootrom.rcf
+corners = ffgnp_0p88v_0p88v_125c,ffgnp_0p88v_0p88v_m40c,ssgnp_0p72v_0p72v_125c,ssgnp_0p72v_0p72v_m40c,tt_0p80v_0p80v_25c,tt_0p80v_0p80v_85c
+cust_comment = 
+diodes = on
+drive = 6
+ema = on
+fci_type = not_fci
+frequency = 500
+instname = rom_via
+irem_gds2_by_phyvtools = 0
+left_bus_delim = [
+libertyviewstyle = nldm
+libname = rom_via
+metal_stack = 2Xa1Xd
+mode = addr
+mux = 8
+mvt = LP
+name_case = upper
+pipeline = off
+power_gating = on
+power_type = otc
+prefix = 
+pwr_gnd_rename = vdde:VDDE,vsse:VSSE
+right_bus_delim = ]
+rows_p_bl = 128
+site_def = on
+top_layer = m5-m10
+words = 256

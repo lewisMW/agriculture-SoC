@@ -24,3 +24,5 @@ results/
 *.ic
 *.history
 *.cdslck
+**/obj_dir/**
+paths.mk

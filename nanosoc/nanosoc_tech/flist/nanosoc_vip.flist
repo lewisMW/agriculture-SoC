@@ -1,0 +1,31 @@
+//-----------------------------------------------------------------------------
+// NanoSoC VIP Components Filelist
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//
+// Copyright � 2021-3, SoC Labs (www.soclabs.org)
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : Verilog Command File for NanoSoC Testbench Components
+//-----------------------------------------------------------------------------
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+// =============    NanoSoC Testbench search path    =============
+// - Testbench components
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/control/verilog/nanosoc_clkreset.v
+
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/trace/verilog/nanosoc_uart_capture.v
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/trace/verilog/soclabs_axis8_capture.v
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/trace/verilog/nanosoc_axi_stream_io_8_txd_from_file.v
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/trace/verilog/nanosoc_ft1248x1_to_axi_streamio_v1_0.v
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/trace/verilog/nanosoc_axi_stream_io_8_rxd_to_file.v
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/trace/verilog/nanosoc_track_tb_iostream.v
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/trace/verilog/nanosoc_ft1248x1_track.v
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/trace/verilog/nanosoc_dma_log_to_file.v
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/trace/verilog/nanosoc_accelerator_ss_logger.v
+$(SOCLABS_NANOSOC_TECH_DIR)/verif/trace/verilog/nanosoc_axi_stream_io_8_txd_from_datafile.v

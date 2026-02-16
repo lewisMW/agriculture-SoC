@@ -1,0 +1,27 @@
+# Simulation Related File Removal
+*.vcd
+*.vvp
+simulate/sim/*
+lint/*
+.socinit
+.dma350_configured
+accelerator/html/*
+wrapper/html/*
+system/src/bootrom/*
+system/src/defines/*
+system/html/*
+flist/tmp
+memories/*
+
+# Compile Test Code Removal
+/system/testcodes/*/*.elf
+/system/testcodes/*/*.ELF
+/system/testcodes/*/*.lst
+/system/testcodes/*/*.o
+/system/testcodes/*/*.bin
+
+# Remove Implementation Files
+imp/fpga/*
+imp/ASIC/*
+memories/*
+html

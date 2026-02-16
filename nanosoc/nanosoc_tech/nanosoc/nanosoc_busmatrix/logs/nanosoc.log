@@ -1,0 +1,102 @@
+
+==============================================================
+=  The confidential and proprietary information contained in this file may
+=  only be used by a person authorised under and to the extent permitted
+=  by a subsisting licensing agreement from Arm Limited or its affiliates.
+= 
+=    (C) COPYRIGHT 2001-2013,2017 Arm Limited or its affiliates.
+=        ALL RIGHTS RESERVED
+= 
+=  This entire notice must be reproduced on all copies of this file
+=  and copies of this file may only be made by a person if such person is
+=  permitted to do so under the terms of a subsisting license agreement
+=  from Arm Limited or its affiliates.
+=
+= BuildBusMatrix.pl
+=
+= Run Date : 16/06/2023 08:53:15
+==============================================================
+
+Script accepted the following parameters:
+
+ - Configuration file      : '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/xml/nanosoc.xml'
+ - Top-level name          : 'nanosoc_busmatrix'
+ - Slave interfaces        : 4
+ - Master interfaces       : 8
+ - Architecture type       : 'ahb2'
+ - Arbitration scheme      : 'burst'
+ - Address map             : user defined
+ - Connectivity mapping    : _DEBUG -> _BOOTROM_0, _IMEM_0, _DMEM_0, _SYSIO, _EXP, _EXPRAM_L, _EXPRAM_H, _SYSTABLE, 
+                             _DMAC_0 -> _BOOTROM_0, _IMEM_0, _DMEM_0, _SYSIO, _EXP, _EXPRAM_L, _EXPRAM_H, 
+                             _DMAC_1 -> _BOOTROM_0, _IMEM_0, _DMEM_0, _SYSIO, _EXP, _EXPRAM_L, _EXPRAM_H, 
+                             _CPU_0 -> _BOOTROM_0, _IMEM_0, _DMEM_0, _SYSIO, _EXP, _EXPRAM_L, _EXPRAM_H, _SYSTABLE
+ - Connectivity type       : sparse
+ - Routing data width      : 32
+ - Routing address width   : 32
+ - User signal width       : 0
+ - Timescales              : no
+ - Configuration directory : '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog'
+ - Source directory        : '/research/AAA/ip_library/latest/Corstone-101/logical/cmsdk_ahb_busmatrix/verilog/src'
+ - IPXact target directory : '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/ipxact'
+ - IPXact source directory : '/research/AAA/ip_library/latest/Corstone-101/logical/cmsdk_ahb_busmatrix/ipxact/src'
+ - Overwrite mode          : enabled
+
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_BOOTROM_0.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_DMEM_0.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_EXPANSION.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_EXPRAM_H.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_EXPRAM_L.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_IMEM_0.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_SYSIO.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_arbiter_SYSTABLE.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_busmatrix.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_busmatrix_default_slave.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_busmatrix_lite.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_inititator_input.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_matrix_decode_CPU_0.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_matrix_decode_DEBUG.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_matrix_decode_DMAC_0.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_matrix_decode_DMAC_1.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_BOOTROM_0.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_DMEM_0.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_EXPANSION.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_EXPRAM_H.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_EXPRAM_L.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_IMEM_0.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_SYSIO.v' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/verilog/nanosoc_busmatrix/nanosoc_target_output_SYSTABLE.v' file...
+
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/ipxact/nanosoc_busmatrix/nanosoc_busmatrix.xml' file...
+Deleting the '/home/dam1n19/accelerator-project/nanosoc_tech/system/nanosoc_busmatrix/ipxact/nanosoc_busmatrix/nanosoc_busmatrix_lite.xml' file...
+
+Creating the bus matrix variant...
+
+ - Rendering 'nanosoc_busmatrix.xml'
+ - Rendering 'nanosoc_busmatrix_lite.xml'
+ - Rendering 'nanosoc_matrix_decode_DMAC_0.v'
+ - Rendering 'nanosoc_target_output_BOOTROM_0.v'
+ - Rendering 'nanosoc_arbiter_EXP.v'
+ - Rendering 'nanosoc_arbiter_EXPRAM_H.v'
+ - Rendering 'nanosoc_target_output_IMEM_0.v'
+ - Rendering 'nanosoc_target_output_DMEM_0.v'
+ - Rendering 'nanosoc_target_output_EXPRAM_L.v'
+ - Rendering 'nanosoc_arbiter_SYSIO.v'
+ - Rendering 'nanosoc_target_output_SYSIO.v'
+ - Rendering 'nanosoc_busmatrix.v'
+ - Rendering 'nanosoc_arbiter_EXPRAM_L.v'
+ - Rendering 'nanosoc_inititator_input.v'
+ - Rendering 'nanosoc_target_output_EXPRAM_H.v'
+ - Rendering 'nanosoc_arbiter_BOOTROM_0.v'
+ - Rendering 'nanosoc_busmatrix_lite.v'
+ - Rendering 'nanosoc_arbiter_IMEM_0.v'
+ - Rendering 'nanosoc_arbiter_DMEM_0.v'
+ - Rendering 'nanosoc_arbiter_SYSTABLE.v'
+ - Rendering 'nanosoc_matrix_decode_CPU_0.v'
+ - Rendering 'nanosoc_matrix_decode_DEBUG.v'
+ - Rendering 'nanosoc_matrix_decode_DMAC_1.v'
+ - Rendering 'nanosoc_target_output_SYSTABLE.v'
+ - Rendering 'nanosoc_target_output_EXP.v'
+ - Rendering 'nanosoc_busmatrix_default_slave.v'
+
+Done!
+

@@ -37,8 +37,7 @@ CORE_DIR     = $(CMSIS_DIR)/CMSIS/Include
 DEVICE_DIR   = $(CMSIS_DIR)/Device/ARM/CMSDK_CM0
 
 # Program file
-TESTNAME     = hello
-
+TESTNAME     = read_entire_fifo
 # Endian Option
 COMPILE_BIGEND = 0
 
@@ -71,7 +70,7 @@ GNU_OBJCOPY = arm-none-eabi-objcopy
 LINKER_SCRIPT_PATH = $(SOFTWARE_DIR)/common/scripts
 LINKER_SCRIPT = ../linker_scripts/cmsdk_cm0.ld
 
-GNU_CC_FLAGS = -g -O3 -mthumb $(CPU_TYPE)
+GNU_CC_FLAGS = -g -O0 -mthumb $(CPU_TYPE)
 
 ifeq ($(COMPILE_BIGEND),1)
  # Big Endian

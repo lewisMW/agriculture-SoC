@@ -1,0 +1,48 @@
+diff --git a/flows/makefile.simulate b/flows/makefile.simulate
+index d06ad78..8b4bd3f 100644
+--- a/flows/makefile.simulate
++++ b/flows/makefile.simulate
+@@ -36,7 +36,7 @@ XM_VC_OPTIONS  = -f $(TBENCH_VC) $(ADP_OPTIONS)
+ 
+ # Icarus Verilog options
+ IVERILOG_OPTIONS = -g2005-sv -DVCD_SIM
+-
++DEFINES_VC_IVERILOG=$(subst +define+, -D, $(DEFINES_VC))
+ 
+ # ------- Cocotb Variables -----------
+ # Convert Simulator Name for Cocotb
+@@ -91,7 +91,7 @@ flist_vfiles_nanosoc: gen_defs
+ 	@if [ ! -d $(SIM_DIR)/logs ] ; then \
+ 	  mkdir -p $(SIM_DIR)/logs; \
+ 	fi
+-	@cd $(SIM_DIR); python $(SOCLABS_SOCTOOLS_FLOW_DIR)/bin/filelist_compile.py -f $(TBENCH_VC) -a -i $(FLIST_INCLUDES) -v -o tbench.vc
++	@cd $(SIM_DIR); python3 $(SOCLABS_SOCTOOLS_FLOW_DIR)/bin/filelist_compile.py -f $(TBENCH_VC) -a -i $(FLIST_INCLUDES) -v -o tbench.vc
+ 
+ 
+ # ------- VCS -----------
+@@ -168,7 +168,7 @@ lib_mti :
+ 
+ # Compile RTL
+ compile_iverilog: bootrom gen_defs flist_vfiles_nanosoc
+-	cd $(SIM_DIR); iverilog $(IVERILOG_OPTIONS) -o nanosoc_chip_pads -c tbench.vc
++	cd $(SIM_DIR); iverilog $(IVERILOG_OPTIONS) $(DEFINES_VC_IVERILOG) -o nanosoc_chip_pads -c tbench.vc
+ 
+ run_iverilog: code compile_iverilog
+ 	cd $(SIM_DIR); vvp -l $(SIM_DIR)/logs/run_$(TESTNAME).log nanosoc_chip_pads;
+diff --git a/verif/tb/verilog/nanosoc_tb.v b/verif/tb/verilog/nanosoc_tb.v
+index 837dbef..8ee027e 100644
+--- a/verif/tb/verilog/nanosoc_tb.v
++++ b/verif/tb/verilog/nanosoc_tb.v
+@@ -928,8 +928,9 @@ nanosoc_ft1248x1_track
+   initial    $timeformat(-9, 0, " ns", 0);
+ 
+   // Preload EXP rams
+-  localparam aw_expram_l = u_nanosoc_chip_pads.u_nanosoc_chip.u_system.EXPRAM_L_RAM_ADDR_W;
+-  localparam aw_expram_h = u_nanosoc_chip_pads.u_nanosoc_chip.u_system.EXPRAM_H_RAM_ADDR_W;
++  // Icarus Verilog Fix: hierarchical assignment not supported for localparams.
++  localparam aw_expram_l = 14; //u_nanosoc_chip_pads.u_nanosoc_chip.u_system.EXPRAM_L_RAM_ADDR_W;
++  localparam aw_expram_h = 14; //u_nanosoc_chip_pads.u_nanosoc_chip.u_system.EXPRAM_H_RAM_ADDR_W;
+ 
+   localparam awt_expram_l = ((1<<(aw_expram_l-2))-1);
+   localparam awt_expram_h = ((1<<(aw_expram_h-2))-1);
+   

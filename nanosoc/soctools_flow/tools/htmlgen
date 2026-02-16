@@ -1,0 +1,14 @@
+#!/bin/bash
+#-----------------------------------------------------------------------------
+# HTML Generatoration Tools Script 
+# A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+#
+# Contributors
+#
+# David Mapstone (d.a.mapstone@soton.ac.uk)
+#
+# Copyright � 2021-3, SoC Labs (www.soclabs.org)
+#-----------------------------------------------------------------------------
+
+# Call Python script and pass options across
+python3 $SOCLABS_SOCTOOLS_FLOW_DIR/bin/htmlgen/project_html_gen.py $@

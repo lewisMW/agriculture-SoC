@@ -1,0 +1,31 @@
+//-----------------------------------------------------------------------------
+// Accelerator Subsystem Filelist
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Abstract : This file contains a list of files and directories related to
+//            your accelerator. PLEASE MODIFY!!!
+//-----------------------------------------------------------------------------
+
+// DESIGN_TOP accelerator_subsystem
+
+// ============= Verilog library extensions ===========
++libext+.v+.vlib
+
+// =============    Accelerator Module search path    =============
+
+// ! Point this to your Accelerator RTL
+$(ACCELERATOR_DIR)/AHB
+$(ACCELERATOR_DIR)/Dummy/dummy_adc.v
+$(ACCELERATOR_DIR)/Dummy/dummy_amux.v
+$(ACCELERATOR_DIR)/Dummy/dummy_pll.v
+$(ACCELERATOR_DIR)/FIFO/fifo_apb_adc.v
+$(ACCELERATOR_DIR)/FSM/
+$(ACCELERATOR_DIR)/RTC/
+$(ACCELERATOR_DIR)/Wrapper/adc_apb_wrapper_rev1.v
+
+// ! Point this to your Wrapper RTL
+// (Not Needed, we are not using wrappers like this)
+//$(SOCLABS_PROJECT_DIR)/wrapper/src/soclabs_ahb_aes128_ctrl.v
+
+// ! Point this to your Subsystem RTL
+$(SOCLABS_PROJECT_DIR)/system/src/accelerator_subsystem.v
