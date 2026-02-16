@@ -1,5 +1,12 @@
 [
   {
+    "slug": "erick-sample-and-hold",
+    "title": "Sample-and-Hold Behavioural Model for the Analogue Front-End",
+    "author": "Erick Gomez",
+    "date": "10 February 2026",
+    "summary": "Developing a Verilog-AMS sample-and-hold behavioural model with a mixed-signal Cadence ADE Maestro testbench, bridging the amplifier/filter stage and the SAR ADC in our analogue signal chain."
+  },
+  {
     "slug": "jaime-amplifier-filter-library",
     "title": "Building the Amplifier & Filter Library in Cadence Virtuoso",
     "author": "Jaime Pryor",
