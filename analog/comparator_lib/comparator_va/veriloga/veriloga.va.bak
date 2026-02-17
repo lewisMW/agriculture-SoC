@@ -1,0 +1,23 @@
+// VerilogA for comparator_lib, comparator_va, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module comparator_va(in, out, high, low);
+
+	inout in, out, high, low; 
+	electrical in, out, high, low, gnd;
+	ground gnd; 
+
+	parameter real Vef = 1; //1V reference
+	
+	analog begin
+
+		if (V(in) > Vref)
+			V(out) <+ V(high); // output high 
+		else
+			V(out) <+ V(low); // output low 
+	end
+
+
+endmodule
