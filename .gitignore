@@ -70,5 +70,12 @@ tech.db
 # Generated previews and screenshots
 thumbnail_*.png
 
+# AHDL compiled simulation databases
+*.ahdlSimDB/
+
 # Backup files (redundant with git)
 *.bak
+*.oa-
+
+# Maestro auto-generated
+stimuliRemovedNames.xml

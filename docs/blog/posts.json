@@ -1,5 +1,12 @@
 [
   {
+    "slug": "hee-capacitive-dac",
+    "title": "Building the Capacitive DAC for the SAR ADC",
+    "author": "Hee Chan",
+    "date": "3 March 2026",
+    "summary": "Implementing an 8-bit binary-weighted capacitive DAC with charge redistribution, along with ideal switch and inverter primitives, verified by a self-checking testbench — the structural core of the SAR ADC."
+  },
+  {
     "slug": "jaime-comparator",
     "title": "Comparator Behavioural Model for the SAR ADC",
     "author": "Jaime Pryor",
