@@ -1,0 +1,30 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-XLMODE
+./xcelium.d/run.lnx8664.23.09.d
+-RUNMODE
+-NOCOPYRIGHT
+-NOSTDOUT
+-NOWARN
+DLNOHV
+-NOWARN
+SPDUSD
+-INCDIR
+"/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/"
+-CDSLIB
+./xcelium.d/run.lnx8664.23.09.d/cdsrun.lib
+-VIEW
+functional
+-WORK
+SoC_AFE
+/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE/fsm/functional/verilog.v
+-HDLVAR
+./xcelium.d/run.lnx8664.23.09.d/hdlrun.var
+-no_analogsolver
+-MESSAGES
+-UPDATE
+-XLLIBSTORE
+./xcelium.d/run.lnx8664.23.09.d/xllibs
+-ALLOWUNBOUND

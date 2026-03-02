@@ -1,0 +1,29 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-RUNMODE
+-NOCOPYRIGHT
+-NOSTDOUT
+-NOWARN
+DLNOHV
+-NOWARN
+SPDUSD
+-INCDIR
+"/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/"
+-AMS
+-UPDATE
+-CDSLIB
+./xcelium.d/run.lnx8664.23.09.d/cdsrun.lib
+-HDLVAR
+./xcelium.d/run.lnx8664.23.09.d/hdlrun.var
+-amscommfile
+./xcelium.d/AMSD/ams_spice_in/amscomm.list
+-work
+SoC_probe
+-messages
+-VIEW
+verilogams
+-SPECIFICUNIT
+cap_array_8b
+/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_probe/cap_array_8b/verilogams/verilog.vams

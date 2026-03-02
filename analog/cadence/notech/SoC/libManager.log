@@ -1,0 +1,2244 @@
+\o Program:		@(#)$CDS: libManager version 23.1 - CAT38 02/04/2025 10:05 (cpgbld15) $
+\o Sub version:		sub-version  s130 
+\o Arguments:		-mpssession virtuoso1621 -mpshost MrDonothing -masterPID 1621 -ADVM 
+\o Working Directory:	MrDonothing:/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC
+\o 64-bit offsets
+\o Qt version: 		5.15.9
+\o Log file is "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/libManager.log".
+\o Opening libManager window.
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrResizeWindow(cdsLibManager list(1286 99 925 679))
+\o MPS virtuoso types registered: 68
+\o changeWorkingDir("/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC") unnecessary.
+\o ddSetForcedLib("") unnecessary.
+\o Session hidden cells enabled.
+\o MPS service: map window
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\o Library Manager customization server connected.
+\a nrResizeWindow(cdsLibManager list(888 122 925 679))
+\a nrResizeWindow(cdsLibManager list(831 122 925 679))
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "cap_array_8b_cp"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b_cp"
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->cellListBox->value = "cap_array_8b_cp"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b_cp"
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->viewListBox->value = "veriloga"
+\a cdsLibManager->viewLineEdit->value = "veriloga"
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a lmgrLogShowPopup("mainListPopup2" 55 44 2 "symbol")
+\a cdsLibManager->viewListBox->value = "veriloga"
+\a cdsLibManager->viewLineEdit->value = "veriloga"
+\a lmgrLogShowPopup("mainListPopup2" 62 65 2 "veriloga")
+\a cdsLibManager->editDeleteButton->value = t
+\a deleteForm->deleteFilterEdit->value = "*"
+\a deleteForm->notDeleteFilterEdit->value = "*"
+\a nrSetWindowVisibility(deleteForm "show")
+\a nrSetCurrentWindow(deleteForm)
+\a nrResizeWindow(deleteForm list(976 236 627 425))
+\a deleteForm->notDeleteListBox->value = '("maestro" )
+\a deleteForm->moveToDeleteButton->value = t
+\a deleteForm->moveToDontDeleteButton->value = t
+\a deleteForm->OK->value = t
+\o QUESTION (CLM-199): The following 1 items are marked for deletion.  Are you sure?
+\a nrSetWindowVisibility(mcMBXDLG "show")
+\a nrSetCurrentWindow(mcMBXDLG)
+\a nrResizeWindow(mcMBXDLG list(1136 390 268 91))
+\a mcMBXDLG->pushButton1->value = t
+\o Deleting view "veriloga" from cell "cap_array_8b" in library "SoC_AFE".
+\a nrSetWindowVisibility(workingDialogForm "show")
+\o Deleted cellview 'SoC_AFE/cap_array_8b/veriloga'.
+\o Deletion of 1 view done.
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a nrResizeWindow(workingDialogForm list(0 0 268 133))
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(workingDialogForm)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a nrResizeWindow(workingDialogForm list(1155 382 268 133))
+\a cdsLibManager->viewListBox->value = "maestro"
+\a cdsLibManager->viewLineEdit->value = "maestro"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 0 0)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->viewListBox->value = "maestro"
+\a cdsLibManager->viewLineEdit->value = "maestro"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "maestro"
+\a cdsLibManager->viewLineEdit->value = "maestro"
+\a nrSetCurrentWindow(cdsLibManager)
+\a lmgrLogShowPopup("mainListPopup2" 50 13 2 "maestro")
+\a cdsLibManager->editDeleteButton->value = t
+\a nrSetCurrentWindow(deleteForm)
+\a nrResizeWindow(deleteForm list(944 204 627 425))
+\a deleteForm->OK->value = t
+\o QUESTION (CLM-199): The following 1 items are marked for deletion.  Are you sure?
+\a nrSetWindowVisibility(mcMBXDLG "show")
+\a nrSetCurrentWindow(mcMBXDLG)
+\a nrResizeWindow(mcMBXDLG list(1104 358 268 91))
+\a mcMBXDLG->pushButton1->value = t
+\o Deleting view "maestro" from cell "cap_array_8b" in library "SoC_AFE".
+\o Deleted cellview 'SoC_AFE/cap_array_8b/maestro'.
+\o Deletion of 1 view done.
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a nrResizeWindow(workingDialogForm list(0 0 268 133))
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(workingDialogForm)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a nrResizeWindow(workingDialogForm list(1123 350 268 133))
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 1 0)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 1 0)
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(cdsLibManager)
+\a lmgrLogShowPopup("mainListPopup2" 97 32 2 "")
+\a cdsLibManager->editDeleteButton->value = t
+\a nrSetCurrentWindow(deleteForm)
+\a nrResizeWindow(deleteForm list(912 172 627 425))
+\a deleteForm->OK->value = t
+\o QUESTION (CLM-199): The following 1 items are marked for deletion.  Are you sure?
+\a nrSetWindowVisibility(mcMBXDLG "show")
+\a nrSetCurrentWindow(mcMBXDLG)
+\a nrResizeWindow(mcMBXDLG list(1072 326 268 91))
+\a mcMBXDLG->pushButton1->value = t
+\o Deleting view "symbol" from cell "cap_array_8b" in library "SoC_AFE".
+\o Deleted cellview 'SoC_AFE/cap_array_8b/symbol'.
+\o Deletion of 1 view done.
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a nrResizeWindow(workingDialogForm list(0 0 268 133))
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(workingDialogForm)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrResizeWindow(workingDialogForm list(1091 318 268 133))
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "DAC"
+\a cdsLibManager->cellLineEdit->value = "DAC"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 0 0)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 0 0)
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "cap_array_8b_cp"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b_cp"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->viewListBox->value = "veriloga"
+\a cdsLibManager->viewLineEdit->value = "veriloga"
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellLineEdit->value = "ADC_SAR"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 1 0)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "ADC_tb"
+\a cdsLibManager->cellLineEdit->value = "ADC_tb"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 2 0)
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellLineEdit->value = "SAR"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->cellListBox->value = "inverter"
+\a cdsLibManager->cellLineEdit->value = "inverter"
+\a cdsLibManager->viewListBox->value = "veriloga"
+\a cdsLibManager->viewLineEdit->value = "veriloga"
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->cellListBox->value = "inv_array_8b"
+\a cdsLibManager->cellLineEdit->value = "inv_array_8b"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->cellListBox->value = "ideal_sw"
+\a cdsLibManager->cellLineEdit->value = "ideal_sw"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = "fsm"
+\a cdsLibManager->cellListBox->value = "SAR"
+\a cdsLibManager->cellLineEdit->value = "SAR"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a lmgrLogShowPopup("mainListPopup1" 14 54 2 "SAR")
+\a nrSetCurrentWindow(cdsLibManager)
+\a lmgrLogShowPopup("mainListPopup1" 37 54 2 "SAR")
+\a cdsLibManager->editRenameButton->value = t
+\a basicRenameForm->basicRenameFromEdit->value = "SAR"
+\a nrSetWindowVisibility(basicRenameForm "show")
+\a basicRenameForm->basicRenameToEdit->value = "SAR"
+\a nrSetCurrentWindow(basicRenameForm)
+\a nrResizeWindow(basicRenameForm list(1170 353 239 190))
+\a basicRenameForm->basicRenameToEdit->value = "sar"
+\a basicRenameForm->OK->value = t
+\o Renaming Cell "SAR" to "sar" in library "SoC_AFE".
+\a nrSetCurrentWindow(workingDialogForm)
+\a nrResizeWindow(workingDialogForm list(1059 286 268 133))
+\o Rename succeeded.
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "DAC"
+\a cdsLibManager->cellLineEdit->value = "DAC"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a lmgrLogShowPopup("mainListPopup1" 23 41 2 "DAC")
+\a cdsLibManager->editRenameButton->value = t
+\a basicRenameForm->basicRenameFromEdit->value = "DAC"
+\a basicRenameForm->basicRenameToEdit->value = "DAC"
+\a nrSetCurrentWindow(basicRenameForm)
+\a nrResizeWindow(basicRenameForm list(1138 321 239 190))
+\a basicRenameForm->basicRenameToEdit->value = "dac"
+\a basicRenameForm->OK->value = t
+\o Renaming Cell "DAC" to "dac" in library "SoC_AFE".
+\a nrSetCurrentWindow(workingDialogForm)
+\a nrResizeWindow(workingDialogForm list(1027 254 268 133))
+\o Rename succeeded.
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "dig_to_analog_bridge"
+\a cdsLibManager->cellLineEdit->value = "dig_to_analog_bridge"
+\a cdsLibManager->cellListBox->value = "dig_to_analog_array_8b"
+\a cdsLibManager->cellLineEdit->value = "dig_to_analog_array_8b"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->cellListBox->value = "cap_array_8b_tb"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b_tb"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->cellLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellListBox->value = "cap_array_8b_tb"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b_tb"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->cellListBox 4 0)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "cap_array_8b_tb"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b_tb"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 1 0)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "dig_to_analog_array_8b"
+\a cdsLibManager->cellLineEdit->value = "dig_to_analog_array_8b"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a lmgrLogShowPopup("mainListPopup1" 170 123 2 "dig_to_analog_array_8b")
+\a cdsLibManager->editDeleteButton->value = t
+\a nrSetCurrentWindow(deleteForm)
+\a nrResizeWindow(deleteForm list(880 140 627 425))
+\a deleteForm->notDeleteListBox->value = '("dig_to_analog_bridge" )
+\a deleteForm->moveToDeleteButton->value = t
+\a deleteForm->OK->value = t
+\o QUESTION (CLM-199): The following 2 items are marked for deletion.  Are you sure?
+\a nrSetWindowVisibility(mcMBXDLG "show")
+\a nrSetCurrentWindow(mcMBXDLG)
+\a nrResizeWindow(mcMBXDLG list(1040 294 268 91))
+\a mcMBXDLG->pushButton1->value = t
+\o Deleting 2 cells from library "SoC_AFE".
+\o Deleting cell "dig_to_analog_array_8b".
+\o Deleted cell 'SoC_AFE/dig_to_analog_array_8b'.
+\o Deleting cell "dig_to_analog_bridge".
+\o Deleted cell 'SoC_AFE/dig_to_analog_bridge'.
+\o Deletion of 2 cells done.
+\a nrResizeWindow(workingDialogForm list(0 0 268 133))
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(workingDialogForm)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a nrResizeWindow(workingDialogForm list(995 222 268 133))
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->cellListBox->value = "ideal_sw"
+\a cdsLibManager->cellLineEdit->value = "ideal_sw"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->viewListBox->value = "veriloga"
+\a cdsLibManager->viewLineEdit->value = "veriloga"
+\a cdsLibManager->cellListBox->value = "sar"
+\a cdsLibManager->cellLineEdit->value = "sar"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = "fsm"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "fsm"
+\a cdsLibManager->cellLineEdit->value = "fsm"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a lmgrLogShowPopup("mainListPopup1" 7 124 2 "fsm")
+\a cdsLibManager->editRenameButton->value = t
+\a basicRenameForm->basicRenameFromEdit->value = "fsm"
+\a basicRenameForm->basicRenameToEdit->value = "fsm"
+\a nrSetCurrentWindow(basicRenameForm)
+\a nrResizeWindow(basicRenameForm list(1106 289 239 190))
+\a basicRenameForm->basicRenameToEdit->value = "sarlogic"
+\a nrDialogAccept(basicRenameForm)
+\a basicRenameForm->OK->value = t
+\o View file /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE/fsm/functional/verilog.v is locked by hee at host MrDonothing.localdomain
+\o ERROR (CLM-223): Cell SoC_AFE/fsm has files that are locked or are checked out.\nCheck the "Messages" window for a list of which files are causing problem\nRename failed.
+\a nrSetWindowVisibility(errorDialog "show")
+\a nrSetCurrentWindow(errorDialog)
+\a nrResizeWindow(errorDialog list(1064 381 450 134))
+\a errorDialog->errorOkButton->value = t
+\a nrSetCurrentWindow(cdsLibManager)
+\o ddSetForcedLib("/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib")
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "fsm"
+\a cdsLibManager->cellLineEdit->value = "fsm"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "fsm"
+\a cdsLibManager->cellLineEdit->value = "fsm"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "fsm"
+\a cdsLibManager->cellLineEdit->value = "fsm"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a nrSetCurrentWindow(cdsLibManager)
+\a lmgrLogShowPopup("mainListPopup1" 39 133 2 "fsm")
+\a cdsLibManager->editRenameButton->value = t
+\a basicRenameForm->basicRenameToEdit->value = "fsm"
+\a nrSetCurrentWindow(basicRenameForm)
+\a nrResizeWindow(basicRenameForm list(1074 257 239 190))
+\a basicRenameForm->basicRenameToEdit->value = "sarlogic"
+\a nrDialogAccept(basicRenameForm)
+\a basicRenameForm->OK->value = t
+\o Renaming Cell "fsm" to "sarlogic" in library "SoC_AFE".
+\a nrSetCurrentWindow(workingDialogForm)
+\a nrResizeWindow(workingDialogForm list(963 190 268 133))
+\o Rename succeeded.
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->cellListBox->value = "sar"
+\a cdsLibManager->cellLineEdit->value = "sar"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 0 0)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellListBox->value = "cap_array_8b_cp"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b_cp"
+\a cdsLibManager->viewListBox->value = "veriloga"
+\a cdsLibManager->viewLineEdit->value = "veriloga"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 1 0)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 1 0)
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellLineEdit->value = "ADC_SAR"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 1 0)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellLineEdit->value = "ADC_SAR"
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellLineEdit->value = "ADC_SAR"
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellLineEdit->value = "ADC_SAR"
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellLineEdit->value = "ADC_SAR"
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellLineEdit->value = "ADC_SAR"
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellLineEdit->value = "ADC_SAR"
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellLineEdit->value = "ADC_SAR"
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellLineEdit->value = "ADC_SAR"
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "ADC_SAR"
+\a cdsLibManager->cellLineEdit->value = "ADC_SAR"
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "ADC_tb"
+\a cdsLibManager->cellLineEdit->value = "ADC_tb"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilogams"
+\a cdsLibManager->viewLineEdit->value = "verilogams"
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 1 0)
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = "sar"
+\a cdsLibManager->cellLineEdit->value = "sar"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a lmgrLogShowPopup("mainListPopup1" 46 194 2 "sarlogic")
+\a cdsLibManager->libListBox->value = "cdsDefTechLib"
+\a cdsLibManager->libLineEdit->value = "cdsDefTechLib"
+\a cdsLibManager->cellLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->libListBox->value = "analogLib"
+\a cdsLibManager->libLineEdit->value = "analogLib"
+\a cdsLibManager->libListBox->value = "basic"
+\a cdsLibManager->libLineEdit->value = "basic"
+\a cdsLibManager->libListBox->value = "analogLib"
+\a cdsLibManager->libLineEdit->value = "analogLib"
+\a cdsLibManager->cellListBox->value = "bjt504tpnp"
+\a cdsLibManager->cellLineEdit->value = "bjt504tpnp"
+\a cdsLibManager->cellListBox->value = "bjt504tnpn"
+\a cdsLibManager->cellLineEdit->value = "bjt504tnpn"
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\o MPS request: edit design
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = "sarlogic2"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a lmgrLogShowPopup("mainListPopup2" 59 24 2 "verilog")
+\a cdsLibManager->editPropertiesButton->value = t
+\o MPS request: edit property
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a lmgrLogShowPopup("mainListPopup2" 45 8 2 "functional")
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "sar"
+\a cdsLibManager->cellLineEdit->value = "sar"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->cellListBox->value = "inv_array_8b"
+\a cdsLibManager->cellLineEdit->value = "inv_array_8b"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->cellListBox->value = "ADC_tb"
+\a cdsLibManager->cellLineEdit->value = "ADC_tb"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a lmgrLogShowPopup("mainListPopup2" 48 25 2 "verilog")
+\a cdsLibManager->editPropertiesButton->value = t
+\o MPS request: edit property
+\a nrSetCurrentWindow(cdsLibManager)
+\a lmgrLogShowPopup("mainListPopup2" 45 22 2 "verilog")
+\a cdsLibManager->editRenameButton->value = t
+\a basicRenameForm->basicRenameFromEdit->value = "verilog"
+\a basicRenameForm->basicRenameToEdit->value = "verilog"
+\a nrSetCurrentWindow(basicRenameForm)
+\a nrResizeWindow(basicRenameForm list(1042 225 239 190))
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a lmgrLogShowPopup("mainListPopup2" 61 12 2 "functional")
+\a cdsLibManager->editRenameButton->value = t
+\a basicRenameForm->basicRenameFromEdit->value = "functional"
+\a basicRenameForm->basicRenameToEdit->value = "functional"
+\a nrSetCurrentWindow(basicRenameForm)
+\a nrResizeWindow(basicRenameForm list(1208 412 239 190))
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\o MPS request: edit design
+\a nrListItemAction(cdsLibManager->gdmXTView 0 0)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "inverter"
+\a cdsLibManager->cellLineEdit->value = "inverter"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a lmgrLogShowPopup("mainListPopup2" 63 2 2 "functional")
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "cap_array_8b_tb"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b_tb"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->cellListBox->value = "dig_sti"
+\a cdsLibManager->cellLineEdit->value = "dig_sti"
+\a cdsLibManager->cellListBox->value = "ideal_sw"
+\a cdsLibManager->cellLineEdit->value = "ideal_sw"
+\a cdsLibManager->cellListBox->value = "inv_array_8b"
+\a cdsLibManager->cellLineEdit->value = "inv_array_8b"
+\a cdsLibManager->cellListBox->value = "cap_array_8b_tb"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b_tb"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->cellListBox->value = "inv_array_8b"
+\a cdsLibManager->cellLineEdit->value = "inv_array_8b"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->cellListBox->value = "cap_array_8b_cp"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b_cp"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "symbol"
+\a cdsLibManager->viewLineEdit->value = "symbol"
+\a cdsLibManager->viewListBox->value = "veriloga"
+\a cdsLibManager->viewLineEdit->value = "veriloga"
+\a cdsLibManager->cellListBox->value = "inv_array_8b"
+\a cdsLibManager->cellLineEdit->value = "inv_array_8b"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a lmgrLogShowPopup("mainListPopup1" 63 147 2 "inv_array_8b")
+\a cdsLibManager->editDeleteButton->value = t
+\a nrSetCurrentWindow(deleteForm)
+\a nrResizeWindow(deleteForm list(848 108 627 425))
+\a deleteForm->OK->value = t
+\o QUESTION (CLM-199): The following 1 items are marked for deletion.  Are you sure?
+\a nrSetWindowVisibility(mcMBXDLG "show")
+\a nrSetCurrentWindow(mcMBXDLG)
+\a nrResizeWindow(mcMBXDLG list(1008 262 268 91))
+\a mcMBXDLG->pushButton1->value = t
+\o Deleting cell "inv_array_8b" from library "SoC_AFE".
+\o Deleted cell 'SoC_AFE/inv_array_8b'.
+\o Deletion of 1 cell done.
+\a nrResizeWindow(workingDialogForm list(0 0 268 133))
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(workingDialogForm)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a nrResizeWindow(workingDialogForm list(931 158 268 133))
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "functional"
+\a cdsLibManager->viewLineEdit->value = "functional"
+\a lmgrLogShowPopup("mainListPopup2" 79 7 2 "functional")
+\a cdsLibManager->editDeleteButton->value = t
+\a nrSetCurrentWindow(deleteForm)
+\a nrResizeWindow(deleteForm list(816 76 627 425))
+\a deleteForm->OK->value = t
+\o QUESTION (CLM-199): The following 1 items are marked for deletion.  Are you sure?
+\a nrSetWindowVisibility(mcMBXDLG "show")
+\a nrSetCurrentWindow(mcMBXDLG)
+\a nrResizeWindow(mcMBXDLG list(976 230 268 91))
+\a mcMBXDLG->pushButton1->value = t
+\o Deleting view "functional" from cell "sarlogic" in library "SoC_AFE".
+\o Deleted cellview 'SoC_AFE/sarlogic/functional'.
+\o Deletion of 1 view done.
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a nrResizeWindow(workingDialogForm list(0 0 268 133))
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(workingDialogForm)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a nrResizeWindow(workingDialogForm list(899 126 268 133))
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a nrSetCurrentWindow(cdsLibManager)
+\a nrSetCurrentWindow(cdsLibManager)
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->cellListBox->value = "cap_array_8b_cp"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b_cp"
+\a cdsLibManager->cellListBox->value = "cap_array_8b_tb"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b_tb"
+\a cdsLibManager->cellListBox->value = "sarlogic"
+\a cdsLibManager->cellLineEdit->value = "sarlogic"
+\a cdsLibManager->viewListBox->value = "verilog"
+\a cdsLibManager->viewLineEdit->value = "verilog"
+\a cdsLibManager->cellListBox->value = "sar"
+\a cdsLibManager->cellLineEdit->value = "sar"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sar"
+\a cdsLibManager->cellLineEdit->value = "sar"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: LIB analogLib from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 3 redefines
+\w LIB analogLib from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE analogLib
+\w before DEFINE analogLib
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE analogLib
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\w Warning: LIB basic from File /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib Line 4 redefines
+\w LIB basic from File /home/hee/cadence/cds.lib
+\w Insert UNDEFINE basic
+\w before DEFINE basic
+\w     in /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+\w Or remove or comment out DEFINE basic
+\w     in /home/hee/cadence/cds.lib
+\w to suppress this warning message.
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "sar"
+\a cdsLibManager->cellLineEdit->value = "sar"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\o DB was auto refreshed.

@@ -1,0 +1,29 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-RUNMODE
+-NOCOPYRIGHT
+-NOSTDOUT
+-NOWARN
+DLNOHV
+-NOWARN
+SPDUSD
+-INCDIR
+"/home/hee/cadence/SoC/"
+-AMS
+-UPDATE
+-CDSLIB
+./xcelium.d/run.lnx8664.23.09.d/cdsrun.lib
+-HDLVAR
+./xcelium.d/run.lnx8664.23.09.d/hdlrun.var
+-amscommfile
+./xcelium.d/AMSD/ams_spice_in/amscomm.list
+-work
+AMS_VERILOG_SoC
+-messages
+-VIEW
+verilogams
+-SPECIFICUNIT
+SAR_ADC
+/home/hee/cadence/AMS_VERILOG_SoC/SAR_ADC/verilogams/verilog.vams

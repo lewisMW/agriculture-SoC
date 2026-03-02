@@ -1,0 +1,45 @@
+TOOL:	xrun(64)	23.09-s013: Started on Feb 21, 2026 at 10:04:05 AEDT
+xrun
+	-compile
+	-nocopy
+	-nostdout
+	-nowarn DLNOHV
+	-nowarn SPDUSD
+	-messages
+	-update
+	-log /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/.cadence/dfII/TextSupport/Logs/Parser/verilog/SoC_probe/verilog/compile0.log
+	-incdir "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/"
+	-cdslib /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+	-view verilog
+	-work SoC_probe
+	/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_probe/dig_sti_tb/verilog/verilog.v
+file: /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_probe/dig_sti_tb/verilog/verilog.v
+	module SoC_probe.dig_sti_tb:verilog
+		errors: 0, warnings: 0
+TOOL:	xrun(64)	23.09-s013: Exiting on Feb 21, 2026 at 10:04:05 AEDT  (total: 00:00:00)
+
+
+
+ ========================================================================================================
+		                  HDL IMPORT QUICK STATUS REPORT
+ ========================================================================================================
+ HDL SETUP MODE	: 0 - IMPROVED LEGACY FLOW
+ ========================================================================================================
+ HDL SETUP STATUS	: SUCCESS
+ ========================================================================================================
+ cds.lib USED	: "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib"
+ ========================================================================================================
+ COMPILER OPTIONS	: ""
+ ========================================================================================================
+ PCDB DM CHECKS	: SUCCESS
+ ========================================================================================================
+ PCDB UPDATE REQUIRED	: NO
+ ========================================================================================================
+ IMPORT CONFIGURATION	: CHECK BELOW SETTINGS
+		: generateShadow(false)
+		: enableBlackBox(false)
+		: enableSpecificUnit(false)
+		: updateCDF(false)
+ ========================================================================================================
+ OVERALL IMPORT STATUS	: SUCCESS
+ ========================================================================================================

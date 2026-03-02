@@ -1,0 +1,26 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-RUNMODE
+-NOCOPYRIGHT
+-NOSTDOUT
+-NOWARN
+DLNOHV
+-NOWARN
+SPDUSD
+-INCDIR
+"/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/"
+-UPDATE
+-CDSLIB
+./xcelium.d/run.lnx8664.23.09.d/cdsrun.lib
+-HDLVAR
+./xcelium.d/run.lnx8664.23.09.d/hdlrun.var
+-work
+SoC_AFE
+-messages
+-VIEW
+verilog
+-SPECIFICUNIT
+sarlogic
+/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE/sarlogic/verilog/verilog.v

@@ -1,0 +1,20 @@
+Reading file: 
+        /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_probe/cap_array_8b_tb/veriloga/veriloga.va
+Reading file: 
+        /opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/etc/ahdl/constants.vams
+Reading file: 
+        /opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/etc/ahdl/disciplines.vams
+
+Warning from spectre during AHDL compile.
+    WARNING (VACOMP-1142):
+        "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_probe/cap_array_8b_tb/veriloga/veriloga.va",
+        line 205: (Archaic Syntax) Does not comply with the Accellera
+        Verilog-AMS 2.0 Standard and beyond. To comply with the current
+        standard, use `genvar' loop instead of `for', `while', and `repeat'
+        loop statements for the `timer' function.
+    WARNING (VACOMP-1142):
+        "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_probe/cap_array_8b_tb/veriloga/veriloga.va",
+        line 216: (Archaic Syntax) Does not comply with the Accellera
+        Verilog-AMS 2.0 Standard and beyond. To comply with the current
+        standard, use `genvar' loop instead of `for', `while', and `repeat'
+        loop statements for the `timer' function.

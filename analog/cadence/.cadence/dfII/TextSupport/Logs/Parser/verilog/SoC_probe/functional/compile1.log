@@ -1,0 +1,56 @@
+TOOL:	xrun(64)	23.09-s013: Started on Jan 29, 2026 at 11:27:30 CST
+xrun
+	-compile
+	-nocopy
+	-nostdout
+	-nowarn DLNOHV
+	-nowarn SPDUSD
+	-messages
+	-update
+	-log /home/hee/cadence/SoC/.cadence/dfII/TextSupport/Logs/Parser/verilog/SoC_probe/functional/compile1.log
+	-incdir "/home/hee/cadence/SoC/"
+	-cdslib /home/hee/cadence/SoC/cds.lib
+	-makelib SoC_probe
+	-view functional
+	-SPECIFICUNIT dig_sti_tb
+	/home/hee/cadence/SoC/SoC_probe/dig_sti_tb/functional/verilog.v
+	-endlib
+Recompiling... reason: file './SoC_probe/ADC_SAR/verilogams/verilog.vams' is newer than expected.
+	expected: Wed Jan 28 17:23:50 2026
+	actual:   Wed Jan 28 17:24:24 2026
+file: /home/hee/cadence/SoC/SoC_probe/dig_sti_tb/functional/verilog.v
+	module SoC_probe.dig_sti_tb:functional
+		errors: 0, warnings: 0
+TOOL:	xrun(64)	23.09-s013: Exiting on Jan 29, 2026 at 11:27:30 CST  (total: 00:00:00)
+
+
+Instance Binding Report:
+-------------------------------------------------------------------------------
+Instance		MasterLib		MasterCell		MasterView
+-------------------------------------------------------------------------------
+
+
+
+ ========================================================================================================
+		                  HDL IMPORT QUICK STATUS REPORT
+ ========================================================================================================
+ HDL SETUP MODE	: 0 - IMPROVED LEGACY FLOW
+ ========================================================================================================
+ HDL SETUP STATUS	: SUCCESS
+ ========================================================================================================
+ cds.lib USED	: "/home/hee/cadence/SoC/cds.lib"
+ ========================================================================================================
+ COMPILER OPTIONS	: ""
+ ========================================================================================================
+ PCDB DM CHECKS	: SUCCESS
+ ========================================================================================================
+ PCDB UPDATE REQUIRED	: YES
+ ========================================================================================================
+ IMPORT CONFIGURATION	: CHECK BELOW SETTINGS
+		: generateShadow(true)
+		: enableBlackBox(false)
+		: enableSpecificUnit(true)
+		: updateCDF(true)
+ ========================================================================================================
+ OVERALL IMPORT STATUS	: SUCCESS
+ ========================================================================================================

@@ -1,0 +1,51 @@
+`include "constants.vams"
+`include "disciplines.vams"
+
+module ADC_tb;
+
+  // match DUT params
+  parameter integer BITS = 8;
+  parameter real    VREF = 1.2;
+
+  // clock: slow on purpose
+  localparam real TCLK = 5u;   // 200 kHz clock (VERY gentle)
+
+  // digital
+  reg clk;
+  reg resetn;
+
+  // analog
+  electrical EXTIN;
+
+  // outputs
+  wire [BITS-1:0] DATA;
+  wire data_valid;
+
+  // DUT
+  ADC_SAR #(.BITS(BITS), .VREF(VREF)) dut (
+    .resetn(resetn),
+    .EXTIN(EXTIN),
+    .clk(clk),
+    .DATA(DATA),
+    .data_valid(data_valid)
+  );
+
+  // clock (safe style)
+  initial begin
+    clk = 1'b0;
+    forever #(TCLK/2.0) clk = ~clk;
+  end
+
+  // reset (active-low)
+  initial begin
+    resetn = 1'b0;
+    #20u resetn = 1'b1;   // release reset once
+  end
+
+  // ***** SIMPLEST ANALOG STIMULUS POSSIBLE *****
+  // Constant DC voltage only
+  analog begin
+    V(EXTIN) <+ 0.6;   // mid-scale DC input
+  end
+
+endmodule

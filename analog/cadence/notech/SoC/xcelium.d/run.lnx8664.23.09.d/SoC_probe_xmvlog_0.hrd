@@ -1,0 +1,11 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-INCDIR
+"/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/"
+-AMS
+-VIEW
+verilogams
+-SPECIFICUNIT
+cap_array_8b

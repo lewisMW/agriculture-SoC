@@ -1,0 +1,95 @@
+ahdlcmicompile: Compiling ahdlcmi in ./tb.ahdlSimDB//891f4de7646e834dbed5eae03b3be228.inverter.ahdlcmi/Linux-64/ for Linux-64 with optimize using gcc on Sun Feb 22 06:58:02 AEDT 2026 [5.0]
+ahdlcmicompile: Generating makefile
+PATH:  /opt/cadence/installs/SPECTRE231/bin:/opt/cadence/installs/SPECTRE231/tools.lnx86/bin/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/bin:/opt/cadence/installs/IC231/tools/dfII/bin:/opt/cadence/installs/IC231/tools/bin:/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/bin:/opt/cadence/installs/XCELIUM2309/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+LD_LIBRARY_PATH:  /opt/cadence/installs/SPECTRE231/tools.lnx86/TPtools/libstdc++6/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/TPtools/cuda/lib64:/opt/cadence/installs/SPECTRE231/tools.lnx86/giganta/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/mdl/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/mmsim/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/hdf/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/python/64bit/lib:/opt/cadence/installs/SPECTRE231/tools.lnx86/inca/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/awrmwo/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/dfII/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/TPtools/zlib/lib64:/opt/cadence/installs/SPECTRE231/tools.lnx86/TPtools/grpc/lib:/opt/cadence/installs/SPECTRE231/tools.lnx86/TPtools/grpc/lib64:/opt/cadence/installs/SPECTRE231/tools.lnx86/fmc/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/lib:/opt/cadence/installs/SPECTRE231/tools.lnx86/lib/64bit/RHEL/RHEL7
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/bin/gnumake -j1 -f GNUmakefile
+Cleaning ./obj/optimize/5.0
+rm -f -rf ./obj/optimize/5.0
+Compiling C file inverter.c (optimize)
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/bin/64bit/ahdlcc 0 /opt/cadence/installs/SPECTRE231/tools.lnx86/cdsgcc/gcc/9.3/bin/gcc  -ffast-math  -fno-unsafe-math-optimizations -Wno-error=int-conversion -O3 -m64 -DSYSV -DSVR4 -D_REENTRANT -fPIC   -DconfigSPECTRE -I. -I/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include -c inverter.c -o obj/optimize/5.0/inverter.o || rm -f -f obj/optimize/5.0/inverter.o
+<stdin>: In function 'inverter_DcFuncDerLoad':
+<stdin>:155:49: warning: passing argument 1 of 'aslDevInterAddStaticElement' makes pointer from integer without a cast [-Wint-conversion]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:2300:62: note: expected 'void *' but argument is of type 'long int'
+ 2300 | ASL_FUNC_DECL_START extern long aslDevInterAddStaticElement( void *, double, struct ahdlFuncModeParam * );
+      |                                                              ^~~~~~
+<stdin>:157:49: warning: passing argument 1 of 'aslDevInterAddStaticElement' makes pointer from integer without a cast [-Wint-conversion]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:2300:62: note: expected 'void *' but argument is of type 'long int'
+ 2300 | ASL_FUNC_DECL_START extern long aslDevInterAddStaticElement( void *, double, struct ahdlFuncModeParam * );
+      |                                                              ^~~~~~
+<stdin>: In function 'inverter_TranFuncDerLoad':
+<stdin>:378:49: warning: passing argument 1 of 'aslDevInterAddStaticElement' makes pointer from integer without a cast [-Wint-conversion]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:2300:62: note: expected 'void *' but argument is of type 'long int'
+ 2300 | ASL_FUNC_DECL_START extern long aslDevInterAddStaticElement( void *, double, struct ahdlFuncModeParam * );
+      |                                                              ^~~~~~
+<stdin>:380:49: warning: passing argument 1 of 'aslDevInterAddStaticElement' makes pointer from integer without a cast [-Wint-conversion]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:2300:62: note: expected 'void *' but argument is of type 'long int'
+ 2300 | ASL_FUNC_DECL_START extern long aslDevInterAddStaticElement( void *, double, struct ahdlFuncModeParam * );
+      |                                                              ^~~~~~
+<stdin>: In function 'inverter_pPrintDescription':
+<stdin>:1269:3: warning: implicit declaration of function 'msgWrite' [-Wimplicit-function-declaration]
+<stdin>:1271:67: warning: implicit declaration of function 'devGetRFinFreqDomain' [-Wimplicit-function-declaration]
+<stdin>: In function 'inverter_pGetInstanceParams':
+<stdin>:1500:41: warning: implicit declaration of function 'devGetInstKnotStatus'; did you mean 'devGetInstState'? [-Wimplicit-function-declaration]
+<stdin>: In function 'inverter_pDC_Load':
+<stdin>:1786:41: warning: passing argument 1 of 'aslDevFillZeorDiagonalElemet' makes pointer from integer without a cast [-Wint-conversion]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:2884:63: note: expected 'void *' but argument is of type 'long int'
+ 2884 | ASL_FUNC_DECL_START extern void aslDevFillZeorDiagonalElemet( void *, int, unsigned int, struct ahdlFuncModeParam * );
+      |                                                               ^~~~~~
+<stdin>: In function 'inverter_pCompare':
+<stdin>:2427:3: warning: implicit declaration of function 'spReplaceMatrixPointer'; did you mean 'aslDevLaplaceGetMatrixPointer'? [-Wimplicit-function-declaration]
+<stdin>:2433:37: warning: assignment to 'long int' from 'long int *' makes integer from pointer without a cast [-Wint-conversion]
+<stdin>:2434:23: warning: passing argument 1 of 'memcpy' makes pointer from integer without a cast [-Wint-conversion]
+In file included from /opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlPiCmi.h:5,
+                 from /opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:80,
+                 from <stdin>:24:
+/usr/include/string.h:42:14: note: expected 'void * restrict' but argument is of type 'long int'
+   42 | extern void *memcpy (void *__restrict __dest, const void *__restrict __src,
+      |              ^~~~~~
+<stdin>:2434:58: warning: passing argument 2 of 'memcpy' makes pointer from integer without a cast [-Wint-conversion]
+In file included from /opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlPiCmi.h:5,
+                 from /opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:80,
+                 from <stdin>:24:
+/usr/include/string.h:42:14: note: expected 'const void * restrict' but argument is of type 'long int'
+   42 | extern void *memcpy (void *__restrict __dest, const void *__restrict __src,
+      |              ^~~~~~
+<stdin>:2436:37: warning: assignment to 'long int' from 'void *' makes integer from pointer without a cast [-Wint-conversion]
+<stdin>: In function 'inverter_pMapSignals':
+<stdin>:2496:26: warning: comparison between pointer and integer
+<stdin>: In function 'inverter_pGetMatrixPointers':
+<stdin>:2616:34: warning: assignment to 'long int' from 'void *' makes integer from pointer without a cast [-Wint-conversion]
+<stdin>: In function 'inverter_pAnalTranLoad':
+<stdin>:3547:42: warning: passing argument 1 of 'aslDevFillZeorDiagonalElemet' makes pointer from integer without a cast [-Wint-conversion]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:2884:63: note: expected 'void *' but argument is of type 'long int'
+ 2884 | ASL_FUNC_DECL_START extern void aslDevFillZeorDiagonalElemet( void *, int, unsigned int, struct ahdlFuncModeParam * );
+      |                                                               ^~~~~~
+<stdin>: In function 'inverter_pSaveRestart':
+<stdin>:3814:13: warning: implicit declaration of function 'mmsThreshSR' [-Wimplicit-function-declaration]
+<stdin>:3821:4: warning: implicit declaration of function 'pklAccessDouble' [-Wimplicit-function-declaration]
+<stdin>:3822:29: warning: passing argument 2 of 'aslDevAvarSR' from incompatible pointer type [-Wincompatible-pointer-types]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:1230:58: note: expected 'struct ahdlAnalogVar *' but argument is of type 'char *'
+ 1230 | ASL_FUNC_DECL_START extern PklError_e aslDevAvarSR( int, struct ahdlAnalogVar *, char *, char *, char *, PklJar_t * );
+      |                                                          ^~~~~~~~~~~~~~~~~~~~~~
+<stdin>: In function 'inverter_pSaveRestartInst':
+<stdin>:3901:27: warning: passing argument 2 of 'aslDevAvarSR' from incompatible pointer type [-Wincompatible-pointer-types]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:1230:58: note: expected 'struct ahdlAnalogVar *' but argument is of type 'char *'
+ 1230 | ASL_FUNC_DECL_START extern PklError_e aslDevAvarSR( int, struct ahdlAnalogVar *, char *, char *, char *, PklJar_t * );
+      |                                                          ^~~~~~~~~~~~~~~~~~~~~~
+<stdin>: In function 'ahdlinverterDescInstall':
+<stdin>:4035:2: warning: implicit declaration of function 'descSetDeviceType'; did you mean 'descSetType'? [-Wimplicit-function-declaration]
+<stdin>:4037:2: warning: implicit declaration of function 'descSetSetContrInfoPtr'; did you mean 'inverter_pSetContrInfoPtr'? [-Wimplicit-function-declaration]
+<stdin>:4045:2: warning: implicit declaration of function 'descSetCopySignals'; did you mean 'descSetMapSignals'? [-Wimplicit-function-declaration]
+<stdin>:4075:2: warning: implicit declaration of function 'descSetPrintDescription'; did you mean 'inverter_pPrintDescription'? [-Wimplicit-function-declaration]
+<stdin>:4077:2: warning: implicit declaration of function 'descSetVATermInfo'; did you mean 'descSetGetInfo'? [-Wimplicit-function-declaration]
+<stdin>:4078:2: warning: implicit declaration of function 'descSetGetNodeNamesForBranch'; did you mean 'inverter_pGetNodeNamesForBranch'? [-Wimplicit-function-declaration]
+<stdin>:4079:2: warning: implicit declaration of function 'descSetGetLinearityFactor'; did you mean 'inverter_pGetLinearityFactor'? [-Wimplicit-function-declaration]
+rm -f -rf inverter.c
+/opt/cadence/installs/SPECTRE231/tools.lnx86/cdsgcc/gcc/9.3/bin/gcc -shared -O3 -m64 -fPIC -o obj/optimize/5.0/libahdlcmi_inverter.so ./obj/optimize/5.0/inverter.o  -Wl,-rpath,/usr/lib -Wl,-rpath,/lib -lm -s 
+rm -f -f ./obj/optimize/5.0/inverter.o 

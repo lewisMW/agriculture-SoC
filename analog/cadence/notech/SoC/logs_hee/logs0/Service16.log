@@ -1,0 +1,138 @@
+\# Program start time:     UTC 2026.01.29 16:03:06.791
+\# Local time: CST (UTC-06:00) 2026.01.29 10:03:06.791
+\o Program:		@(#)$CDS: Virtuoso Studio version IC23.1-64b 02/25/2025 23:02 (cpgbld21) $
+\o Hierarchy:		/opt/cadence/installs/IC231/tools.lnx86/dfII/
+\o Sub version:		sub-version  IC23.1-64b.ISR13.25  (64-bit addresses)
+\# Command line:	/opt/cadence/installs/IC231/tools.lnx86/dfII/bin/64bit/virtuoso -beanhost MrDonothing -beanport 11386 -beanbinlog  -beanLogFile /home/hee/cadence/SoC/logs_hee/logs0/amps_Service16.log -mpssession virtuoso29 -mpshost MrDonothing -davinciService DaVinciService_29_1769632919 -scopedPid 29 -axlSession fnxSession5 -axlServiceIdFlag 16 -uuid ad3331ec-b0e3-4c54-8aab-bc346305ba20 -heartbeat /dev/shm/swift-heartbeat.X3NEwPSkRX -log /home/hee/cadence/SoC/logs_hee/logs0/Service16.log -adeBrokerAddress MrDonothing:52767 -noautostart -nographE -lscs 000175E1894CBE06FF0966E38F1FFC06BC4D03E3E77AFC06BC4D4CE3B605886ED2223BD3E671FC06867D66E38F1FFC06BC4D66E38F1FFC06BC4D0F980BA778BED53600001E58 -interactive -offlineExprEval -upfrontMode -fenixMode explorer -heartbeatTimeout  -lingerTimeout 300 -pointlifetime -1
+\# Host name (type):	MrDonothing (x86_64)
+\# Operating system:	Linux 5.15.167.4-microsoft-standard-WSL2 #1 SMP Tue Nov 5 00:21:55 UTC 2024
+\# Linux /etc/issue:	\S
+\# Linux /etc/issue:	Kernel \r on an \m
+\# X display name (WxH):	:6979 (1024x868)
+\# Available geometry:			TL(0:0) BR(1023:867)
+\# X server:			The X.Org Foundation
+\# Depth of Visual (Root):	24 (24)
+\# Number of Planes Used:	24
+\# X version:		11.0 (vendor release 12004000)
+\# X resource pool:	base 0x400000, mask 0x1fffff (2097151), shift 0
+\# 			current id 0x0, current max 0x1ffffa (2097146)
+\# Max data seg size:	     unlimited
+\# Max process size:	     unlimited
+\# Initial sbrk value:	      1,192 MB
+\# Available memory:	     18,765 MB
+\# System memory:	     19,900 MB
+\# Maximum memory size:	     18,884 MB
+\# Max mem available:	     18,884 MB
+\# Initial memory used:	        175 MB
+\#        process size:	      1,692 MB
+\# Thread usage limits (effective/default):	maxthreads 63190/63190 maxload 20.00/20.00
+\# Qt version:		5.15.9
+\# Window Manager:	other
+\# User Name:		hee
+\o Working Directory:	MrDonothing:/home/hee/cadence/SoC
+\# Process Id:		30851
+\o 
+\o COPYRIGHT (C) 1992-2025  CADENCE DESIGN SYSTEMS INC.  ALL RIGHTS RESERVED.
+\o           (C) 1992-2025  UNIX SYSTEMS Laboratories INC.,
+\o                          Reproduced with permission.
+\o 
+\o This Cadence Design Systems program and online documentation are
+\o proprietary/confidential information and may be disclosed/used only
+\o as authorized in a license agreement controlling such use and disclosure.
+\o 
+\o           RESTRICTED RIGHTS NOTICE (SHORT FORM)
+\o Use/reproduction/disclosure is subject to restriction
+\o set forth at FAR 1252.227-19 or its equivalent.
+\o Loading geView.cxt 
+\o Loading menuBuilder.cxt 
+\o Loading im.cxt 
+\o Loading schView.cxt 
+\o Loading selectSv.cxt 
+\o Loading wireEdit.cxt 
+\o Loading pte2.cxt 
+\o Loading xlUI.cxt 
+\o Loading auCore.cxt 
+\o Loading vhdl.cxt 
+\o Loading seismic.cxt 
+\o Loading ci.cxt 
+\o Loading layers.cxt 
+\o Loading drv.cxt 
+\o Loading ams.cxt 
+\o Loading oasis.cxt 
+\o Loading dal.cxt 
+\o Loading awv.cxt 
+\o Loading socket.cxt 
+\o Loading analog.cxt 
+\o Loading par.cxt 
+\o Loading asimenv.cxt 
+\o Loading alvs.cxt 
+\o Loading caa.cxt 
+\o Loading amps.cxt 
+\o Loading adexlCore.cxt 
+\o Loading adexl.cxt 
+\# Memory report: using         312 MB, process size 1,876 MB at UTC 2026.01.29 16:03:13.710
+\# 0 lines crushed from the buffer
+\# 0 lines crushed from the buffer
+\o INFO (DB-170018): (dbPanic) dumping stack
+\o libvirtuos_sh.so:voStackTrace+59()
+\o virtuoso:dbPanic+374()
+\o libvirtuos_sh.so:voDoAbortFuncs+229()
+\# Memory report: using         527 MB, process size 2,092 MB at UTC 2026.01.29 16:03:14.806
+\o libvirtuos_sh.so:voSigAbortInfo+361()
+\o libpthread.so.0:__restore_rt+0()
+\o libc.so.6:__poll+45()
+\o libresolv.so.2:__res_context_send+1152()
+\o libresolv.so.2:__res_context_query+436()
+\o libresolv.so.2:__res_context_search+928()
+\o libnss_dns.so.2:gethostbyname3_context+344()
+\o libnss_dns.so.2:_nss_dns_gethostbyname3_r+112()
+\o libc.so.6:gaih_inet.constprop.8+4671()
+\o libc.so.6:getaddrinfo+292()
+\o virtuoso:Ox78997f1e6c92fc6c+346()
+\o virtuoso:Ox789984ee12030e17+538()
+\o virtuoso:Ox789984fd3a67e4c1+103()
+\o virtuoso:Ox78998e2a3914d38e+435()
+\o virtuoso:Ox7899877217cb9db6+100()
+\o virtuoso:Ox7899874b00c815f1+417()
+\o virtuoso:Ox789985a760ad93ec+1213()
+\o virtuoso:Ox789985a760ad93ec+8193()
+\o virtuoso:Ox7899858b31e3337f+879()
+\o virtuoso:2WCPmZj1IIKQvEqW+75()
+\o virtuoso:Cht477u29SG8VjOt+1285()
+\o virtuoso:9iezTsMETq8DifwZ+188()
+\o virtuoso:oChAiKNfGUQlPUFX+121()
+\o virtuoso:vLffa8dzvtVRb7n3+104()
+\o virtuoso:_ZN3eli13eliLicManager12featureExistERNS_10eliLicenseE+53()
+\o virtuoso:_ZNK3eli16eliPolicyExpList18isLicenseAvailableEv+121()
+\o virtuoso:_ZN3eli12eliSimpleTag18isLicenseAvailableEv+130()
+\o virtuoso:_ZNK3eli16eliPolicyExpList18isLicenseAvailableEv+170()
+\o virtuoso:_ZN3eli12eliSimpleTag18isLicenseAvailableEv+130()
+\o virtuoso:_ZN3eli21eliIsLicenseAvailableEPKc+492()
+\o libsession.so:_ZN14licenseUtility13hasLicenseDSOEv+121()
+\o libpointstrategy.so:_ZN3axl8run_mode8runModesEv+3557()
+\o libpointstrategy.so:_ZN3axl8run_mode31updateRegistryForCustomGroupRunERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_S8_bbbbbbbbbbbbbbbbS8_S8_S8_+202()
+\o libpsgil.so:_Z24psgUpdateRunModeRegistryP10iltLispval+1051()
+\o libutility.so:_ZNK7CmdExec7cmdExecEP10iltLispvalS1_+496()
+\o libil_sh.so:iliVcodeEval2C+17575()
+\o libil_sh.so:iliVcodeEval2+69()
+\o libil_sh.so:ilxSkillEval2+225()
+\o libil_sh.so:_ilErrSet+226()
+\o libil_sh.so:iliCallInitProc+157()
+\o libil_sh.so:iliAutoLoadContext+442()
+\o libil_sh.so:ilLoadDependency+223()
+\o libil_sh.so:ilLoadContextAndDepends+588()
+\o libil_sh.so:iliGetAutoload+579()
+\o libil_sh.so:iliVcodeEval2C+40895()
+\o libil_sh.so:iliVcodeEval2+69()
+\o libil_sh.so:ilxSkillEval2+225()
+\o libil_sh.so:iliLoadPort+867()
+\o libil_sh.so:iliVcodeEval2C+11788()
+\o libil_sh.so:iliVcodeEval2+69()
+\o libil_sh.so:ilxSkillEval2+225()
+\o libil_sh.so:_ilTopLevelSet+159()
+\o libil_sh.so:ilxTopLevelCmd+299()
+\o libil_sh.so:ilLoadCapContext+515()
+\o libil_sh.so:iliInitClients+1499()
+\o virtuoso:main+293()
+\o libc.so.6:__libc_start_main+245()
+\o virtuoso:_start+41()

@@ -1,0 +1,2 @@
+cdsXvfb-run[438]: WARNING: xauth failed to extract authorization for all the displays: :0.
+cdsXvfb-run[438]: WARNING: This may prevent opening graphical windows in the original user display.
