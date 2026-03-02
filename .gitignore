@@ -1,9 +1,74 @@
-agriculture_soc_main/obj_dir/**
+# OS
 .DS_Store
+
+# Build artifacts
+**/obj_dir/**
 *.bin
 *.lst
 *.o
 *.fst
-AT510-MN-80001-r2p0-00rel0
-**/obj_dir/**
 paths.mk
+
+# ARM reference (downloaded, not source)
+AT510-MN-80001-r2p0-00rel0
+
+# ==============================================
+# Cadence Virtuoso / Spectre / XCelium / Maestro
+# ==============================================
+
+# Tool state and caches
+.cadence/
+.pcdb/
+.tmp*
+xcelium.d/
+
+# Logs
+*.log
+*.log.*
+logs_*
+
+# Simulation output directories
+psf/
+psfbin/
+spectre*/
+netlist/
+run*/
+results/
+
+# Simulation data files
+*.raw
+*.ic
+*.rdb
+*.msg.db
+*.sdb
+
+# Maestro simulation artifacts
+**/maestro/active.state
+**/maestro/maestro.sdb
+**/maestro/history/
+
+# Cadence database/index files (regenerated on open)
+data.dm
+data.tid
+cdsinfo.tag
+pakvst.ts
+pc.db
+tech.db
+
+# Cadence library/module caches
+.oalib
+.cdsvmod
+.xm.db.*
+*.pak
+
+# Lock and temp files
+*.cdslck
+*.cdslck.*
+*cfg%
+*.history
+
+# Generated previews and screenshots
+thumbnail_*.png
+
+# Backup files (redundant with git)
+*.bak
