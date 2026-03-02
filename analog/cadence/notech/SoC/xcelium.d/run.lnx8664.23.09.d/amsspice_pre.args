@@ -1,0 +1,21 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-ahdllibdir
+xcelium.d/AMSD/ams_spice_in/ahdlSimDB
+-outdir
+./xcelium.d/AMSD/ams_spice_in
+-runmode
+-cdslib
+./xcelium.d/run.lnx8664.23.09.d/cdsrun.lib
+-hdlvar
+./xcelium.d/run.lnx8664.23.09.d/hdlrun.var
+-work
+worklib
+-64bit
+-amscommfile
+./xcelium.d/AMSD/ams_spice_in/amscomm.list
+-amsspice-errfile
+./xcelium.d/AMSD/ams_spice_in/amsspice_pre.log
+-dumpprim

@@ -1,0 +1,27 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-compile
+-nocopy
+-nostdout
+-nowarn
+DLNOHV
+-nowarn
+SPDUSD
+-messages
+-update
+-log
+/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/.cadence/dfII/TextSupport/Logs/Parser/verilog/SoC_AFE/verilog/compile0.log
+-incdir
+"/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/"
+-cdslib
+/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+-makelib
+SoC_AFE
+-view
+verilog
+-SPECIFICUNIT
+sarlogic
+/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE/sarlogic/verilog/verilog.v
+-endlib

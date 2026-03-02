@@ -1,0 +1,16 @@
+#
+# Edit Lock-Stake file. CAUTION: Please do not change.
+#
+# Information about current Edit Lock Owner.
+#
+LockStakeVersion               1.1
+LoginName                      hee
+HostName                       MrDonothing.localdomain
+ProcessIdentifier              950
+ProcessCreationTime_UTC        1771618464
+ProcessCreationTime_Readable   Sat Feb 21 07:14:24 2026 AEDT
+AppIdentifier                  /opt/cadence/installs/IC231/tools/dfII/bin/64bit/virtuoso
+OSType                         lnx86
+ReasonForPlacingEditLock       lock for logging service log file
+FilePathUsedToEditLock         /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/logs_hee/logs0/LoggingService21.log
+TimeEditLocked                 Sun Feb 22 06:35:14 2026 AEDT

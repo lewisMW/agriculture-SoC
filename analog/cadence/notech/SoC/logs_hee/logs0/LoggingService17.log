@@ -1,0 +1,9 @@
+[Logging Service: 17]
+[2026-02-21 12:58:26.972 +1100] [INFO] [cadence.virtuoso.ade.loggingservice] - HistoryRecorderManager init {"dbBasePath": "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_probe/ADC_tb/maestro/results/maestro"}
+[2026-02-21 12:58:26.972 +1100] [INFO] [cadence.virtuoso.ade.loggingservice] - useGRPC grpc service... {"brokerAddress": "MrDonothing:37971", "serviceName": "DaVinciService_950_1771636604", "axlSession": "fnxSession6"}
+[2026-02-21 12:58:26.973 +1100] [PROCESS] [cadence.virtuoso.ade.loggingservice] - Logging Service has successfully started. Waiting for incoming messages ... {"hostname": "MrDonothing", "processid": 18305, "logfile": "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/logs_hee/logs0/LoggingService17.log"}
+[2026-02-21 12:58:26.979 +1100] [INFO] [cadence.virtuoso.ade.loggingservice] - logging service gRPC started {"listening address": "MrDonothing:40549"}
+[2026-02-21 12:58:37.073 +1100] [INFO] [cadence.virtuoso.ade.loggingservice] - Got exit signal in processControlMessage. Will exit. {}
+[2026-02-21 12:58:38.075 +1100] [PROCESS] [cadence.virtuoso.ade.loggingservice] - Current memory used: 56.3242 MBytes, peak memory used: 56.3242 MBytes {"hostname": "MrDonothing", "processid": 18305, "logfile": "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/logs_hee/logs0/LoggingService17.log"}
+[2026-02-21 12:58:38.075 +1100] [PROCESS] [cadence.virtuoso.ade.loggingservice] - Stopping Logging Service process. {"hostname": "MrDonothing", "processid": 18305, "logfile": "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/logs_hee/logs0/LoggingService17.log"}
+[2026-02-21 12:58:38.075 +1100] [PROCESS] [cadence.virtuoso.ade.loggingservice] - Logging Service stop!!!! {"hostname": "MrDonothing", "processid": 18305, "logfile": "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/logs_hee/logs0/LoggingService17.log"}

@@ -1,0 +1,161 @@
+=======================================================================
+[Copyright 2002-2025] Cadence Design Systems, Inc. All rights reserved.
+
+This  program and online  documentation  may not be copied, modified,
+re-published, uploaded,  executed, or  distributed in any way, in any
+medium, whether in whole or in part, without prior written permission
+from Cadence Design Systems, Inc.
+=======================================================================
+
+
+============== checkSysConf:  Version 3.62 ====================
+
+
+Date information gathered: Mon Jan 26 17:09:40 CST 2026
+-------------------------------------------------------
+Host Name ..............:  MrDonothing
+Hostid .................:  007f0101
+Operating System .......:  Linux / x86_64
+OS Version .............:  CentOS Linux release 7.9.2009 (Core)
+Kernel Version .........:  5.15.167.4-microsoft-standard-WSL2
+Hardware Type ..........:  x86_64
+Memory .................:  15804 Megabyte
+CPU model ..............:  13th Gen Intel(R) Core(TM) i9-13900H
+No. of CPUs ............:  20
+Total Swap Space........:  4096 Megabyte
+Local X Server .........:  
+Patch Data file ........:  /opt/cadence/installs/IC231/share/patchData/Linux/x86_64/centos/7.0WS/IC23.1
+
+
+****************   Now verifying configuration     ****************
+
+
+Validating Kernel requirements...
+            Minimum             Installed                   Status    Info                
+            --------------      --------------------------  ------    --------------------
+            3.10.0-693          5.15.167.4-microsoft-standard-WSL2PASS                          
+
+
+Validating MEMORY requirements MegaByte ...
+            Minimum   Installed Status  Info                
+            -------   --------- ------  --------------------
+            4096MB    15804MB   PASS                        
+
+
+Validating SWAP requirements in MegaByte ...
+            Minimum   Installed Status  Info                
+            -------   --------- ------  --------------------
+            4096MB    4096MB    PASS                        
+
+
+Validating OS version requirement...
+            Minimum     Installed   Status    Info
+            ----------  ----------  ------    ----------------------------
+            7.4         7.9         PASS      
+
+
+Validating DISPLAY requirements...
+          Minimum           Installed                   Status  Info                
+          ----------------- ---------------------       ------  ----                
+          8 planes          --- planes                  UNKNOWN Command xdpyinfo not installed
+          PseudoColor                                                               
+
+
+Validating XKEYBOARD extension requirement...
+          Requirement  Installed   Status     Info
+          -----------  ---------   ------     ---------------------------
+          Required     ---         UNKNOWN    xdpyinfo not installed
+
+
+Validating PACKAGE requirements.....31 to check
+#   PACKAGE                Release    Build          Installed               Arch        Status  Info               
+--  -------                -------    -----          ----------              ----        ------  --------------------
+1   glibc                  2.17       196.el7        2.17-326.el7_9.3        x86_64      PASS                       
+->  'glibc'
+2   elfutils-libelf        0.168      8.el7          0.176-5.el7             x86_64      PASS                       
+->  'libelf.so.1'
+3   ksh                    20120801   34.el7         20120801-144.el7_9      x86_64      PASS                       
+->  'ksh'
+4   redhat-lsb             4.1        27.el7         -                       x86_64      FAIL    Package not installed.
+->                                                                                               ----------------------
+->  'lsb_release command'
+5   xterm                  295        3.el7          295-3.el7_9.1           x86_64      PASS                       
+->  'xterm command'
+6   mesa-libGL             17.0.1     6.20170307     18.3.4-12.el7_9         x86_64      PASS                       
+->  'libGL.so.1'
+7   mesa-libGLU            9.0.0      4.el7          9.0.0-4.el7             x86_64      PASS                       
+->  'libGLU.so.1'
+8   motif                  2.3.4      12.el7_4       2.3.4-14.el7_5          x86_64      PASS                       
+->  'libXm.so.4'
+9   libXp                  1.0.2      2.1.el7        1.0.2-2.1.el7           x86_64      PASS                       
+->  'libXp.so.6'
+10  libpng12               1.2.50     10.el7         -                       x86_64      FAIL    Package not installed.
+->                                                                                               ----------------------
+->  'libpng12.so.0 libpng.so.3'
+11  libpng                 1.5.13     7.el7_2        1.5.13-8.el7            x86_64      PASS                       
+->  'libpng15.so.15'
+12  libjpeg-turbo          1.2.90     5.el7          1.2.90-8.el7            x86_64      PASS                       
+->  'libjpeg.so.62'
+13  expat                  2.1.0      10.el7_3       2.1.0-15.el7_9          x86_64      PASS                       
+->  'libexpat.so.1'
+14  libXtst                1.2.3      1.el7          1.2.3-1.el7             x86_64      PASS                       
+->  'libXtst.so.6'
+15  glibc-devel            2.17       196.el7        2.17-326.el7_9.3        x86_64      PASS                       
+->  'glibc header files'
+16  gdb                    7.6.1      100            -                       x86_64      FAIL    Package not installed.
+->                                                                                               ----------------------
+->  'GNU debugger'
+17  libXScrnSaver          1.2.2      6.1.el7        1.2.2-6.1.el7           x86_64      PASS                       
+->  'libXScrnSaver'
+18  apr                    1.4.8      3              1.4.8-7.el7             x86_64      PASS                       
+->  'APR library 64 bits'
+19  apr-util               1.5.2      6              1.5.2-6.el7_9.1         x86_64      PASS                       
+->  'APR Utility library 64 bits'
+20  compat-db47            4.7.25     28             4.7.25-28.el7           x86_64      PASS                       
+->  'libdb-4.7'
+21  xorg-x11-server-Xvfb   1.19.3     11             1.20.4-29.el7_9         x86_64      PASS                       
+->  'Xvfb'
+22  mesa-dri-drivers       17.2.3     8.20171019     -                       x86_64      FAIL    Package not installed.
+->                                                                                               ----------------------
+->  'Mesa drivers'
+23  openssl-devel          1.0.2k     8              1.0.2k-26.el7_9         x86_64      PASS                       
+->  'OpenSSL library'
+24  libXext                1.3.3      3              1.3.3-3.el7             x86_64      PASS                       
+->  'libXext.so.6'
+25  libxkbcommon-x11       0.7.1      1              0.7.1-3.el7             x86_64      PASS                       
+->  'libxkbcommon-x11.so.0'
+26  xcb-util-image         0.4.0      2              0.4.0-2.el7             x86_64      PASS                       
+->  'libxcb-image.so.0'
+27  xcb-util-keysyms       0.4.0      1              0.4.0-1.el7             x86_64      PASS                       
+->  'libxcb-keysyms.so.1'
+28  xcb-util-renderutil    0.3.9      3              0.3.9-3.el7             x86_64      PASS                       
+->  'libxcb-render-util.so.0'
+29  xcb-util-wm            0.4.1      5              0.4.1-5.el7             x86_64      PASS                       
+->  'libxcb-icccm.so.4'
+30  xorg-x11-fonts-ISO8859-1-75dpi7.5        9              7.5-9.el7               noarch      PASS                       
+->  'Courier 12pt font'
+31  xorg-x11-fonts-misc    7.5        9              -                       noarch      FAIL    Package not installed.
+->                                                                                               ----------------------
+->  'Fonts'
+
+
+Validating WRITABLE-FILE .....1 to check
+#   WRITABLE-FILE                           Exists    Status  Info                                   
+-   -------------                           ------    ------  ------------                           
+1   /dev/shm                                YES       PASS    edpSharedMemory                           
+
+
+
+Configuration checks failed on this workstation (MrDonothing), status is: FAIL
+
+This system does not have the correct packages to run IC23.1
+
+Please run checkSysConf IC23.1 -P <PACKAGE>
+to find out which products require the packages marked 'FAIL'
+in the table above.
+If you intend on using listed products, please contact your IT
+department or system administrator to install the packages.
+
+
+Exiting checkSysConf ... Good-bye
+Output is saved as /tmp/checkSysConf.MrDonothing-2026.01.26.17:09.22996.log

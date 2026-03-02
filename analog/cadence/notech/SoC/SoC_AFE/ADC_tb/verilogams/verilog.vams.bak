@@ -1,0 +1,69 @@
+//Verilog-AMS HDL for "SoC_probe", "ADC_tb" "verilogams"
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module ADC_tb;
+
+	parameter integer BITS = 8;
+	parameter real	VREF = 1.2;
+
+	// 100kHz sampling clock
+	localparam real FS = 100e3;
+	localparam real TCLK = 1/(FS*8); // 1.25 us
+	
+	// digital
+	reg clk;
+	reg resetn;
+
+	// analog
+	electrical EXTIN;
+	electrical gnd;
+
+	// output
+	wire [BITS-1:0] DATA;
+	wire data_valid;
+
+	// DUT
+	//ADC_SAR #(.BITS(BITS), .VREF(VREF)) dut (
+		//.resetn(resetn),
+		//.EXTIN(EXTIN),
+		//.clk(clk),
+		//.DATA(DATA),
+		//.data_valid(data_valid)
+	//);
+
+	// Clock generator
+	// Each conversion has 8 cycles
+	// Sample rate is 100 khz
+	// Clock period: 1.25us (800KHz)
+	// always #(TCLK/2.0) clk = ~clk;
+	initial begin
+ 		clk = 1'b0;
+  		forever #(TCLK/2.0) clk = ~clk;
+	end
+
+	// Initial block
+	initial begin
+		// initialize signals
+		clk = 0;
+		resetn = 0;
+		
+		// Wait 10 ns, then resetn the ADC
+		#10 resetn = 1;
+
+	end
+
+	// Analog sine input on EXTIN
+	parameter real FIN = 1e3;		// 1KHz
+	parameter real VCM = 0.6;		// dc offset
+	parameter real VAMP = 0.4;	// amplitude
+
+	real vin;
+	analog begin
+  		//vin = VCM + VAMP*sin(2.0*`M_PI*FIN*$abstime);
+  		//V(EXTIN, gnd) <+ transition(vin, 0, 10n);
+	end
+		
+
+endmodule

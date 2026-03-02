@@ -1,0 +1,134 @@
+ahdlcmicompile: Compiling ahdlcmi in ./tb.ahdlSimDB//31a9cc73ae2e1c80fadc8727c32d722b.cap_array_8b_tb.ahdlcmi/Linux-64/ for Linux-64 with optimize using gcc on Sun Feb 22 06:58:00 AEDT 2026 [5.0]
+ahdlcmicompile: Generating makefile
+PATH:  /opt/cadence/installs/SPECTRE231/bin:/opt/cadence/installs/SPECTRE231/tools.lnx86/bin/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/bin:/opt/cadence/installs/IC231/tools/dfII/bin:/opt/cadence/installs/IC231/tools/bin:/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/bin:/opt/cadence/installs/XCELIUM2309/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+LD_LIBRARY_PATH:  /opt/cadence/installs/SPECTRE231/tools.lnx86/TPtools/libstdc++6/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/TPtools/cuda/lib64:/opt/cadence/installs/SPECTRE231/tools.lnx86/giganta/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/mdl/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/mmsim/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/hdf/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/python/64bit/lib:/opt/cadence/installs/SPECTRE231/tools.lnx86/inca/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/awrmwo/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/dfII/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/TPtools/zlib/lib64:/opt/cadence/installs/SPECTRE231/tools.lnx86/TPtools/grpc/lib:/opt/cadence/installs/SPECTRE231/tools.lnx86/TPtools/grpc/lib64:/opt/cadence/installs/SPECTRE231/tools.lnx86/fmc/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/lib/64bit:/opt/cadence/installs/SPECTRE231/tools.lnx86/lib:/opt/cadence/installs/SPECTRE231/tools.lnx86/lib/64bit/RHEL/RHEL7
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/bin/gnumake -j1 -f GNUmakefile
+Cleaning ./obj/optimize/5.0
+rm -f -rf ./obj/optimize/5.0
+Compiling C file cap_array_8b_tb_ufunc.c (optimize)
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/bin/64bit/ahdlcc 0 /opt/cadence/installs/SPECTRE231/tools.lnx86/cdsgcc/gcc/9.3/bin/gcc  -ffast-math  -fno-unsafe-math-optimizations -Wno-error=int-conversion -O3 -m64 -DSYSV -DSVR4 -D_REENTRANT -fPIC   -DconfigSPECTRE -I. -I/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include -c cap_array_8b_tb_ufunc.c -o obj/optimize/5.0/cap_array_8b_tb_ufunc.o || rm -f -f obj/optimize/5.0/cap_array_8b_tb_ufunc.o
+<stdin>: In function 'cap_array_8b_tb_userFn_update_vout_expected_0000':
+<stdin>:344:74: warning: passing argument 2 of 'cap_array_8b_tb_userFn_inv_out_from_bit_0' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:298:124: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+<stdin>:351:74: warning: passing argument 2 of 'cap_array_8b_tb_userFn_inv_out_from_bit_0' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:298:124: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+rm -f -rf cap_array_8b_tb_ufunc.c
+Compiling C file cap_array_8b_tb_func.c (optimize)
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/bin/64bit/ahdlcc 0 /opt/cadence/installs/SPECTRE231/tools.lnx86/cdsgcc/gcc/9.3/bin/gcc  -ffast-math  -fno-unsafe-math-optimizations -Wno-error=int-conversion -O3 -m64 -DSYSV -DSVR4 -D_REENTRANT -fPIC   -DconfigSPECTRE -I. -I/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include -c cap_array_8b_tb_func.c -o obj/optimize/5.0/cap_array_8b_tb_func.o || rm -f -f obj/optimize/5.0/cap_array_8b_tb_func.o
+<stdin>: In function 'cap_array_8b_tb_AcLoad':
+<stdin>:723:81: warning: passing argument 2 of 'cap_array_8b_tb_userFn_update_vout_expected_0000' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:297:131: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+<stdin>:730:81: warning: passing argument 2 of 'cap_array_8b_tb_userFn_update_vout_expected_0000' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:297:131: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+rm -f -rf cap_array_8b_tb_func.c
+Compiling C file cap_array_8b_tb_DcFuncDerLoad.c (optimize)
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/bin/64bit/ahdlcc 0 /opt/cadence/installs/SPECTRE231/tools.lnx86/cdsgcc/gcc/9.3/bin/gcc  -ffast-math  -fno-unsafe-math-optimizations -Wno-error=int-conversion -O3 -m64 -DSYSV -DSVR4 -D_REENTRANT -fPIC   -DconfigSPECTRE -I. -I/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include -c cap_array_8b_tb_DcFuncDerLoad.c -o obj/optimize/5.0/cap_array_8b_tb_DcFuncDerLoad.o || rm -f -f obj/optimize/5.0/cap_array_8b_tb_DcFuncDerLoad.o
+<stdin>: In function 'cap_array_8b_tb_DcFuncDerLoad':
+<stdin>:747:80: warning: passing argument 2 of 'cap_array_8b_tb_userFn_update_vout_expected_0000' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:297:131: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+<stdin>:754:80: warning: passing argument 2 of 'cap_array_8b_tb_userFn_update_vout_expected_0000' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:297:131: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+rm -f -rf cap_array_8b_tb_DcFuncDerLoad.c
+Compiling C file cap_array_8b_tb_DcFuncLoad.c (optimize)
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/bin/64bit/ahdlcc 0 /opt/cadence/installs/SPECTRE231/tools.lnx86/cdsgcc/gcc/9.3/bin/gcc  -ffast-math  -fno-unsafe-math-optimizations -Wno-error=int-conversion -O3 -m64 -DSYSV -DSVR4 -D_REENTRANT -fPIC   -DconfigSPECTRE -I. -I/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include -c cap_array_8b_tb_DcFuncLoad.c -o obj/optimize/5.0/cap_array_8b_tb_DcFuncLoad.o || rm -f -f obj/optimize/5.0/cap_array_8b_tb_DcFuncLoad.o
+<stdin>: In function 'cap_array_8b_tb_DcFuncLoad':
+<stdin>:745:81: warning: passing argument 2 of 'cap_array_8b_tb_userFn_update_vout_expected_0000' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:297:131: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+<stdin>:752:81: warning: passing argument 2 of 'cap_array_8b_tb_userFn_update_vout_expected_0000' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:297:131: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+rm -f -rf cap_array_8b_tb_DcFuncLoad.c
+Compiling C file cap_array_8b_tb_TranFuncDerLoad.c (optimize)
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/bin/64bit/ahdlcc 0 /opt/cadence/installs/SPECTRE231/tools.lnx86/cdsgcc/gcc/9.3/bin/gcc  -ffast-math  -fno-unsafe-math-optimizations -Wno-error=int-conversion -O3 -m64 -DSYSV -DSVR4 -D_REENTRANT -fPIC   -DconfigSPECTRE -I. -I/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include -c cap_array_8b_tb_TranFuncDerLoad.c -o obj/optimize/5.0/cap_array_8b_tb_TranFuncDerLoad.o || rm -f -f obj/optimize/5.0/cap_array_8b_tb_TranFuncDerLoad.o
+<stdin>: In function 'cap_array_8b_tb_TranFuncDerLoad':
+<stdin>:747:81: warning: passing argument 2 of 'cap_array_8b_tb_userFn_update_vout_expected_0000' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:297:131: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+<stdin>:754:81: warning: passing argument 2 of 'cap_array_8b_tb_userFn_update_vout_expected_0000' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:297:131: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+rm -f -rf cap_array_8b_tb_TranFuncDerLoad.c
+Compiling C file cap_array_8b_tb_TranFuncLoad.c (optimize)
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/bin/64bit/ahdlcc 0 /opt/cadence/installs/SPECTRE231/tools.lnx86/cdsgcc/gcc/9.3/bin/gcc  -ffast-math  -fno-unsafe-math-optimizations -Wno-error=int-conversion -O3 -m64 -DSYSV -DSVR4 -D_REENTRANT -fPIC   -DconfigSPECTRE -I. -I/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include -c cap_array_8b_tb_TranFuncLoad.c -o obj/optimize/5.0/cap_array_8b_tb_TranFuncLoad.o || rm -f -f obj/optimize/5.0/cap_array_8b_tb_TranFuncLoad.o
+<stdin>: In function 'cap_array_8b_tb_TranFuncLoad':
+<stdin>:745:81: warning: passing argument 2 of 'cap_array_8b_tb_userFn_update_vout_expected_0000' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:297:131: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+<stdin>:752:81: warning: passing argument 2 of 'cap_array_8b_tb_userFn_update_vout_expected_0000' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:297:131: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+rm -f -rf cap_array_8b_tb_TranFuncLoad.c
+Compiling C file cap_array_8b_tb_OpPointCalc.c (optimize)
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/bin/64bit/ahdlcc 0 /opt/cadence/installs/SPECTRE231/tools.lnx86/cdsgcc/gcc/9.3/bin/gcc  -ffast-math  -fno-unsafe-math-optimizations -Wno-error=int-conversion -O3 -m64 -DSYSV -DSVR4 -D_REENTRANT -fPIC   -DconfigSPECTRE -I. -I/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include -c cap_array_8b_tb_OpPointCalc.c -o obj/optimize/5.0/cap_array_8b_tb_OpPointCalc.o || rm -f -f obj/optimize/5.0/cap_array_8b_tb_OpPointCalc.o
+<stdin>: In function 'cap_array_8b_tb_OpPointCalc':
+<stdin>:713:81: warning: passing argument 2 of 'cap_array_8b_tb_userFn_update_vout_expected_0000' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:297:131: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+<stdin>:720:81: warning: passing argument 2 of 'cap_array_8b_tb_userFn_update_vout_expected_0000' from incompatible pointer type [-Wincompatible-pointer-types]
+<stdin>:297:131: note: expected 'struct cap_array_8b_tbInstData *' but argument is of type 'char *'
+rm -f -rf cap_array_8b_tb_OpPointCalc.c
+Compiling C file cap_array_8b_tb_cmi_c.c (optimize)
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/bin/64bit/ahdlcc 0 /opt/cadence/installs/SPECTRE231/tools.lnx86/cdsgcc/gcc/9.3/bin/gcc  -ffast-math  -fno-unsafe-math-optimizations -Wno-error=int-conversion -O3 -m64 -DSYSV -DSVR4 -D_REENTRANT -fPIC   -DconfigSPECTRE -I. -I/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include -I/opt/cadence/installs/SPECTRE231/tools.lnx86/cmi/include -c cap_array_8b_tb_cmi_c.c -o obj/optimize/5.0/cap_array_8b_tb_cmi_c.o || rm -f -f obj/optimize/5.0/cap_array_8b_tb_cmi_c.o
+<stdin>: In function 'cap_array_8b_tb_pPrintDescription':
+<stdin>:1116:3: warning: implicit declaration of function 'msgWrite' [-Wimplicit-function-declaration]
+<stdin>:1118:67: warning: implicit declaration of function 'devGetRFinFreqDomain' [-Wimplicit-function-declaration]
+<stdin>: In function 'cap_array_8b_tb_pGetInstanceParams':
+<stdin>:1347:41: warning: implicit declaration of function 'devGetInstKnotStatus'; did you mean 'devGetInstState'? [-Wimplicit-function-declaration]
+<stdin>: In function 'cap_array_8b_tb_pDC_Load':
+<stdin>:1633:41: warning: passing argument 1 of 'aslDevFillZeorDiagonalElemet' makes pointer from integer without a cast [-Wint-conversion]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:2884:63: note: expected 'void *' but argument is of type 'long int'
+ 2884 | ASL_FUNC_DECL_START extern void aslDevFillZeorDiagonalElemet( void *, int, unsigned int, struct ahdlFuncModeParam * );
+      |                                                               ^~~~~~
+<stdin>: In function 'cap_array_8b_tb_pCompare':
+<stdin>:2289:3: warning: implicit declaration of function 'spReplaceMatrixPointer'; did you mean 'aslDevLaplaceGetMatrixPointer'? [-Wimplicit-function-declaration]
+<stdin>:2340:37: warning: assignment to 'long int' from 'long int *' makes integer from pointer without a cast [-Wint-conversion]
+<stdin>:2341:23: warning: passing argument 1 of 'memcpy' makes pointer from integer without a cast [-Wint-conversion]
+In file included from /opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlPiCmi.h:5,
+                 from /opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:80,
+                 from <stdin>:24:
+/usr/include/string.h:42:14: note: expected 'void * restrict' but argument is of type 'long int'
+   42 | extern void *memcpy (void *__restrict __dest, const void *__restrict __src,
+      |              ^~~~~~
+<stdin>:2341:58: warning: passing argument 2 of 'memcpy' makes pointer from integer without a cast [-Wint-conversion]
+In file included from /opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlPiCmi.h:5,
+                 from /opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:80,
+                 from <stdin>:24:
+/usr/include/string.h:42:14: note: expected 'const void * restrict' but argument is of type 'long int'
+   42 | extern void *memcpy (void *__restrict __dest, const void *__restrict __src,
+      |              ^~~~~~
+<stdin>:2343:37: warning: assignment to 'long int' from 'void *' makes integer from pointer without a cast [-Wint-conversion]
+<stdin>: In function 'cap_array_8b_tb_pMapSignals':
+<stdin>:2403:26: warning: comparison between pointer and integer
+<stdin>: In function 'cap_array_8b_tb_pGetMatrixPointers':
+<stdin>:2523:34: warning: assignment to 'long int' from 'void *' makes integer from pointer without a cast [-Wint-conversion]
+<stdin>:2525:38: warning: assignment to 'long int' from 'void *' makes integer from pointer without a cast [-Wint-conversion]
+<stdin>: In function 'cap_array_8b_tb_pAnalTranLoad':
+<stdin>:3476:42: warning: passing argument 1 of 'aslDevFillZeorDiagonalElemet' makes pointer from integer without a cast [-Wint-conversion]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:2884:63: note: expected 'void *' but argument is of type 'long int'
+ 2884 | ASL_FUNC_DECL_START extern void aslDevFillZeorDiagonalElemet( void *, int, unsigned int, struct ahdlFuncModeParam * );
+      |                                                               ^~~~~~
+<stdin>:3478:39: warning: passing argument 1 of 'aslDevFillZeroDiagQuartet' makes pointer from integer without a cast [-Wint-conversion]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:2886:60: note: expected 'void *' but argument is of type 'long int'
+ 2886 | ASL_FUNC_DECL_START extern void aslDevFillZeroDiagQuartet( void *, int, unsigned int, struct ahdlFuncModeParam * );
+      |                                                            ^~~~~~
+<stdin>: In function 'cap_array_8b_tb_pSaveRestart':
+<stdin>:3751:4: warning: implicit declaration of function 'pklAccessDouble' [-Wimplicit-function-declaration]
+<stdin>:3752:30: warning: passing argument 2 of 'aslDevAvarSR' from incompatible pointer type [-Wincompatible-pointer-types]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:1230:58: note: expected 'struct ahdlAnalogVar *' but argument is of type 'char *'
+ 1230 | ASL_FUNC_DECL_START extern PklError_e aslDevAvarSR( int, struct ahdlAnalogVar *, char *, char *, char *, PklJar_t * );
+      |                                                          ^~~~~~~~~~~~~~~~~~~~~~
+<stdin>: In function 'cap_array_8b_tb_pSaveRestartInst':
+<stdin>:3829:28: warning: passing argument 2 of 'aslDevAvarSR' from incompatible pointer type [-Wincompatible-pointer-types]
+In file included from <stdin>:24:
+/opt/cadence/installs/SPECTRE231/tools.lnx86/spectre/ahdlcmi/include/ahdlDevLibGlobal.h:1230:58: note: expected 'struct ahdlAnalogVar *' but argument is of type 'char *'
+ 1230 | ASL_FUNC_DECL_START extern PklError_e aslDevAvarSR( int, struct ahdlAnalogVar *, char *, char *, char *, PklJar_t * );
+      |                                                          ^~~~~~~~~~~~~~~~~~~~~~
+<stdin>: In function 'ahdlcap_array_8b_tbDescInstall':
+<stdin>:4058:2: warning: implicit declaration of function 'descSetDeviceType'; did you mean 'descSetType'? [-Wimplicit-function-declaration]
+<stdin>:4060:2: warning: implicit declaration of function 'descSetSetContrInfoPtr' [-Wimplicit-function-declaration]
+<stdin>:4068:2: warning: implicit declaration of function 'descSetCopySignals'; did you mean 'descSetMapSignals'? [-Wimplicit-function-declaration]
+<stdin>:4098:2: warning: implicit declaration of function 'descSetPrintDescription' [-Wimplicit-function-declaration]
+<stdin>:4100:2: warning: implicit declaration of function 'descSetVATermInfo'; did you mean 'descSetGetInfo'? [-Wimplicit-function-declaration]
+<stdin>:4101:2: warning: implicit declaration of function 'descSetGetNodeNamesForBranch' [-Wimplicit-function-declaration]
+<stdin>:4102:2: warning: implicit declaration of function 'descSetGetLinearityFactor' [-Wimplicit-function-declaration]
+rm -f -rf cap_array_8b_tb_cmi_c.c
+/opt/cadence/installs/SPECTRE231/tools.lnx86/cdsgcc/gcc/9.3/bin/gcc -shared -O3 -m64 -fPIC -o obj/optimize/5.0/libahdlcmi_cap_array_8b_tb.so ./obj/optimize/5.0/cap_array_8b_tb_ufunc.o ./obj/optimize/5.0/cap_array_8b_tb_func.o ./obj/optimize/5.0/cap_array_8b_tb_DcFuncDerLoad.o ./obj/optimize/5.0/cap_array_8b_tb_DcFuncLoad.o ./obj/optimize/5.0/cap_array_8b_tb_TranFuncDerLoad.o ./obj/optimize/5.0/cap_array_8b_tb_TranFuncLoad.o ./obj/optimize/5.0/cap_array_8b_tb_OpPointCalc.o ./obj/optimize/5.0/cap_array_8b_tb_cmi_c.o  -Wl,-rpath,/usr/lib -Wl,-rpath,/lib -lm -s 
+rm -f -f ./obj/optimize/5.0/cap_array_8b_tb_ufunc.o ./obj/optimize/5.0/cap_array_8b_tb_func.o ./obj/optimize/5.0/cap_array_8b_tb_DcFuncDerLoad.o ./obj/optimize/5.0/cap_array_8b_tb_DcFuncLoad.o ./obj/optimize/5.0/cap_array_8b_tb_TranFuncDerLoad.o ./obj/optimize/5.0/cap_array_8b_tb_TranFuncLoad.o ./obj/optimize/5.0/cap_array_8b_tb_OpPointCalc.o ./obj/optimize/5.0/cap_array_8b_tb_cmi_c.o 

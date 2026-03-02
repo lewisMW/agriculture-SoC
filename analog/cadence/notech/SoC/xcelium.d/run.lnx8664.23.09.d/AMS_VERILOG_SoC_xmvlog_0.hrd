@@ -1,0 +1,11 @@
+//
+// File created by:  xrun
+// Do not modify this file
+//
+-INCDIR
+"/home/hee/cadence/SoC/"
+-AMS
+-VIEW
+verilogams
+-SPECIFICUNIT
+SAR_ADC

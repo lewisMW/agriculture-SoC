@@ -1,0 +1,9 @@
+// VerilogA for SoC_probe, ideal_sw, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module ideal_sw;
+
+
+endmodule

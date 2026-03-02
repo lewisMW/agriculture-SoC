@@ -1,0 +1,48 @@
+TOOL:	xrun(64)	23.09-s013: Started on Mar 03, 2026 at 08:55:35 AEDT
+xrun
+	-compile
+	-nocopy
+	-nostdout
+	-nowarn DLNOHV
+	-nowarn SPDUSD
+	-messages
+	-update
+	-log /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/.cadence/dfII/TextSupport/Logs/Parser/verilog/SoC_AFE/functional/compile1.log
+	-incdir "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/"
+	-xmvlogargs " -messages "
+	-cdslib /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+	-makelib SoC_AFE
+	-view functional
+	-SPECIFICUNIT sarlogic
+	/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE/sarlogic/functional/verilog.v
+	-endlib
+file: /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE/sarlogic/functional/verilog.v
+xmvlog: *F,DLIORG: Library (physical path) /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE was originally compiled with logical name 'SoC_probe'. Please include the original definition of library in cds.lib file.
+xrun: *E,VLGERR: An error occurred during parsing.  Review the log file for errors with the code *E and fix those identified problems to proceed.  Exiting with code (status 2).
+TOOL:	xrun(64)	23.09-s013: Exiting on Mar 03, 2026 at 08:55:35 AEDT  (total: 00:00:00)
+
+
+
+ ========================================================================================================
+		                  HDL IMPORT QUICK STATUS REPORT
+ ========================================================================================================
+ HDL SETUP MODE	: 0 - IMPROVED LEGACY FLOW
+ ========================================================================================================
+ HDL SETUP STATUS	: SUCCESS
+ ========================================================================================================
+ cds.lib USED	: "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib"
+ ========================================================================================================
+ COMPILER OPTIONS	: " -messages "
+ ========================================================================================================
+ PCDB DM CHECKS	: SUCCESS
+ ========================================================================================================
+ PCDB UPDATE REQUIRED	: YES
+ ========================================================================================================
+ IMPORT CONFIGURATION	: CHECK BELOW SETTINGS
+		: generateShadow(false)
+		: enableBlackBox(false)
+		: enableSpecificUnit(true)
+		: updateCDF(false)
+ ========================================================================================================
+ OVERALL IMPORT STATUS	: FAILED
+ ========================================================================================================
