@@ -62,6 +62,9 @@ Two key test cases verify the threshold behaviour:
 - **5 V DC input (above $V_{\text{ref}}$):** the comparator output follows the
   `high` supply rail, confirming that an above-threshold input is correctly
   detected.
+
+![Simulation result with 5 V DC input — output follows the high rail](https://github.com/user-attachments/assets/65321f4c-ff4a-4ba3-8be1-cc05699d150e)
+
 - **500 mV DC input (below $V_{\text{ref}}$):** the comparator output follows the
   `low` supply rail, confirming correct below-threshold detection.
 
