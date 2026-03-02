@@ -1,5 +1,12 @@
 [
   {
+    "slug": "jaime-comparator",
+    "title": "Comparator Behavioural Model for the SAR ADC",
+    "author": "Jaime Pryor",
+    "date": "17 February 2026",
+    "summary": "Building a Verilog-A comparator behavioural model with configurable supply rails and a Cadence Maestro testbench, verifying threshold detection with DC inputs as a first step towards full SAR ADC integration."
+  },
+  {
     "slug": "erick-sample-and-hold",
     "title": "Sample-and-Hold Behavioural Model for the Analogue Front-End",
     "author": "Erick Gomez",
