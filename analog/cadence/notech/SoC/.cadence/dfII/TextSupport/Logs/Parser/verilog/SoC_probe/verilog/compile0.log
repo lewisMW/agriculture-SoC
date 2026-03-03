@@ -1,4 +1,4 @@
-TOOL:	xrun(64)	23.09-s013: Started on Feb 21, 2026 at 10:04:05 AEDT
+TOOL:	xrun(64)	23.09-s013: Started on Mar 03, 2026 at 13:49:12 AEDT
 xrun
 	-compile
 	-nocopy
@@ -10,13 +10,12 @@ xrun
 	-log /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/.cadence/dfII/TextSupport/Logs/Parser/verilog/SoC_probe/verilog/compile0.log
 	-incdir "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/"
 	-cdslib /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib
+	-makelib SoC_probe
 	-view verilog
-	-work SoC_probe
+	-SPECIFICUNIT dig_sti_tb
 	/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_probe/dig_sti_tb/verilog/verilog.v
-file: /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_probe/dig_sti_tb/verilog/verilog.v
-	module SoC_probe.dig_sti_tb:verilog
-		errors: 0, warnings: 0
-TOOL:	xrun(64)	23.09-s013: Exiting on Feb 21, 2026 at 10:04:05 AEDT  (total: 00:00:00)
+	-endlib
+TOOL:	xrun(64)	23.09-s013: Exiting on Mar 03, 2026 at 13:49:12 AEDT  (total: 00:00:00)
 
 
 
@@ -38,7 +37,7 @@ TOOL:	xrun(64)	23.09-s013: Exiting on Feb 21, 2026 at 10:04:05 AEDT  (total: 00:
  IMPORT CONFIGURATION	: CHECK BELOW SETTINGS
 		: generateShadow(false)
 		: enableBlackBox(false)
-		: enableSpecificUnit(false)
+		: enableSpecificUnit(true)
 		: updateCDF(false)
  ========================================================================================================
  OVERALL IMPORT STATUS	: SUCCESS

@@ -52,6 +52,7 @@
 						<evalType>point</evalType>
 					</output>
 				</outputs>
+				<origoptions></origoptions>
 			</test>
 		</tests>
 		<currentmode>Single Run, Sweeps and Corners</currentmode>
@@ -110,6 +111,5 @@
 		</incrementalsimsetup>
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
 	</active>
-	<history>History
-	</history>
+	<history>History</history>
 </setupdb>

@@ -8,8 +8,6 @@
 DLNOHV
 -NOWARN
 SPDUSD
--WORK
-SoC_probe
 -no_analogsolver
 -MESSAGES
 -XLMODE
@@ -19,4 +17,5 @@ SoC_probe
 ./xcelium.d/run.lnx8664.23.09.d/cds.lib
 -HDLVAR
 ./xcelium.d/run.lnx8664.23.09.d/hdl.var
--HASXLMODE
+-WORK
+worklib
