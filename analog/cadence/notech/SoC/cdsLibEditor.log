@@ -1,15 +1,10 @@
 \o Program:		@(#)$CDS: cdsLibEditor version 23.1 - CAT38 02/04/2025 10:05 (sjfhw318) $
 \o Sub version:		sub-version  s130 
-\o Arguments:		-cdslib /home/hee/cadence/SoC/cds.lib -mpssession virtuoso3002 -mpshost MrDonothing -mpsversion 23.1 
-\o Working Directory:	MrDonothing:/home/hee/cadence/SoC
+\o Arguments:		-display :0 -mpssession virtuoso9210 -mpshost MrDonothing -mpsversion 23.1 -namespace CDBA -cdslib /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib 
+\o Working Directory:	MrDonothing:/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC
 \o 64-bit offsets
 \a nrSetWindowVisibility(cdsLibEditor "show")
 \o Qt version: 		5.15.9
 \a nrSetCurrentWindow(cdsLibEditor)
-\a nrResizeWindow(cdsLibEditor list(1460 873 500 400))
-\a nrResizeWindow(cdsLibEditor list(2933 259 500 400))
-\a nrListItemAction(cdsLibEditor->mainTable 13 0)
-\o Active cell: 13 0 ""
-\a nrListItemAction(cdsLibEditor->mainTable 13 1)
-\o Active cell: 13 1 ""
+\a nrResizeWindow(cdsLibEditor list(1560 681 500 400))
 \a exit(0)

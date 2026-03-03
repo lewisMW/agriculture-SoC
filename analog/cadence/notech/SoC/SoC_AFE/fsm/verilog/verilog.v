@@ -1,0 +1,137 @@
+//Verilog HDL for "SoC_AFE", "sarlogic" "verilog"
+
+`timescale 1ns/10ps
+
+module sarlogic(
+    input           clk,
+    input           rstn,
+    input           en,
+    input           comp,
+    input           cal,
+
+    output          valid,
+    output  reg [7:0]   result,     // <<< 8-bit
+    output  wire        sample,
+    output  [7:0]       ctlp,
+    output  [7:0]       ctln,
+    output  [4:0]       trim,
+    output  [4:0]       trimb,
+    output  wire        clkc
+);
+
+    reg             calibrate;
+    reg     [2:0]   state;
+    reg     [7:0]   mask;           // <<< 8-bit mask
+    reg     [4:0]   trim_mask;
+    reg     [4:0]   trim_val;
+    reg             en_co_clk;
+    reg     [3:0]   cal_count;
+    reg     [3:0]   cal_itt;
+    reg             res_valid;
+
+    parameter sInit=0, sWait=1, sSample=2, sConv=3, sDone=4, sCal=5;
+
+    // clean complementary clock generation
+    assign clkc = (~clk) & en_co_clk;
+
+    always @(posedge clk or negedge rstn) begin
+        if (!rstn) begin
+            state      <= sInit;
+            mask       <= 8'd0;
+            trim_mask  <= 5'd0;
+            result     <= 8'd0;
+            en_co_clk  <= 1'b0;
+            cal_itt    <= 4'd0;
+            cal_count  <= 4'd7;
+            trim_val   <= 5'd0;
+            calibrate  <= 1'b0;
+            res_valid  <= 1'b0;
+        end else begin
+            case (state)
+
+                sInit : begin
+                    trim_val <= 5'b10000;
+                    state <= sWait;
+                end
+
+                sWait : begin
+                    if(en) begin
+                        result     <= 8'd0;
+                        cal_itt    <= 4'd0;
+                        cal_count  <= 4'd7;
+                        state      <= sSample;
+                        calibrate  <= cal;
+                        mask       <= 8'b10000000;   // MSB first
+                        en_co_clk  <= 1'b1;
+                        res_valid  <= 1'b0;
+                    end
+                end
+
+                sSample : begin
+                    if (calibrate) begin
+                        state     <= sCal;
+                        trim_val  <= 5'b00000;
+                        trim_mask <= 5'b10000;
+                    end else begin
+                        state <= sConv;
+                    end
+                end
+
+                sConv : begin
+                    if (comp)
+                        result <= result | mask;
+
+                    mask <= mask >> 1;
+
+                    if (mask[0]) begin
+                        state <= sDone;
+                        en_co_clk <= 1'b0;
+                    end
+                end
+
+                sCal: begin
+                    if(cal_itt == 4'd7) begin
+
+                        if (cal_count > 4'd7)
+                            trim_val <= trim_val | trim_mask;
+
+                        trim_mask <= trim_mask >> 1;
+
+                        if (trim_mask[0]) begin
+                            state <= sDone;
+                            en_co_clk <= 1'b0;
+                            calibrate <= 1'b0;
+                        end else begin
+                            cal_itt <= 4'd0;
+                            state <= sCal;
+                        end
+
+                        cal_count <= 4'd7;
+
+                    end else begin
+                        if (comp)
+                            cal_count <= cal_count - 1'b1;
+                        else
+                            cal_count <= cal_count + 1'b1;
+
+                        cal_itt <= cal_itt + 1'b1;
+                    end
+                end
+
+                sDone : begin
+                    state <= sWait;
+                    res_valid <= 1'b1;
+                end
+
+            endcase
+        end
+    end
+
+    assign trim   = (trim_val | trim_mask);
+    assign trimb  = ~(trim_val | trim_mask);
+    assign sample = (state==sSample) || (state==sCal);
+    assign valid  = res_valid;
+    assign ctlp   = result | mask;
+    assign ctln   = ~(result | mask);
+
+endmodule

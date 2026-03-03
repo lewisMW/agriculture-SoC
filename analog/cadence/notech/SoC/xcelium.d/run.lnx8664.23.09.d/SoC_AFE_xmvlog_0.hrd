@@ -5,6 +5,6 @@
 -INCDIR
 "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/"
 -VIEW
-verilog
+functional
 -SPECIFICUNIT
 sarlogic

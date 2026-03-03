@@ -20,7 +20,7 @@ SPDUSD
 SoC_AFE
 -messages
 -VIEW
-verilog
+functional
 -SPECIFICUNIT
 sarlogic
-/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE/sarlogic/verilog/verilog.v
+/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE/sarlogic/functional/verilog.v

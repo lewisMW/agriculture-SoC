@@ -11,8 +11,8 @@
 			<simresults>/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE/ADC_tb/maestro/results/maestro/ExplorerRun.0.rdb</simresults>
 			<runlog>/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE/ADC_tb/maestro/results/maestro/$AXL_HISTORY_NAME.log</runlog>
 			<runlogfile>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.log</runlogfile>
-			<psfdir>/home/hee/simulation/SoC_AFE/ADC_tb/maestro/results/maestro/ExplorerRun.0</psfdir>
-			<simdir>/home/hee/simulation/SoC_AFE/ADC_tb/maestro/results/maestro/ExplorerRun.0</simdir>
+			<psfdir></psfdir>
+			<simdir></simdir>
 		</historyentry>
 	</history>
 </setupdb>

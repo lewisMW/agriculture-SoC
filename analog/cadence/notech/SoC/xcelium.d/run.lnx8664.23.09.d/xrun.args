@@ -12,7 +12,7 @@ SPDUSD
 -messages
 -update
 -log
-/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/.cadence/dfII/TextSupport/Logs/Parser/verilog/SoC_AFE/verilog/compile0.log
+/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/.cadence/dfII/TextSupport/Logs/Parser/verilog/SoC_AFE/functional/compile1.log
 -incdir
 "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/"
 -cdslib
@@ -20,8 +20,8 @@ SPDUSD
 -makelib
 SoC_AFE
 -view
-verilog
+functional
 -SPECIFICUNIT
 sarlogic
-/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE/sarlogic/verilog/verilog.v
+/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE/sarlogic/functional/verilog.v
 -endlib

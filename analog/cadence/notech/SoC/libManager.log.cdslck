@@ -6,11 +6,11 @@
 LockStakeVersion               1.1
 LoginName                      hee
 HostName                       MrDonothing.localdomain
-ProcessIdentifier              1885
-ProcessCreationTime_UTC        1772451787
-ProcessCreationTime_Readable   Mon Mar  2 22:43:07 2026 AEDT
+ProcessIdentifier              9303
+ProcessCreationTime_UTC        1772504936
+ProcessCreationTime_Readable   Tue Mar  3 13:28:56 2026 AEDT
 AppIdentifier                  /opt/cadence/installs/IC231/tools/dfII/bin/64bit/libManager
 OSType                         lnx86
 ReasonForPlacingEditLock       log file
 FilePathUsedToEditLock         /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/libManager.log
-TimeEditLocked                 Mon Mar  2 22:43:07 2026 AEDT
+TimeEditLocked                 Tue Mar  3 13:31:29 2026 AEDT
