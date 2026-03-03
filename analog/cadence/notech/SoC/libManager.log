@@ -1937,3 +1937,26 @@
 \a cdsLibManager->viewListBox->value = "schematic"
 \a cdsLibManager->viewLineEdit->value = "schematic"
 \o DB was auto refreshed.
+\a cdsLibManager->libListBox->value = nil
+\a cdsLibManager->libLineEdit->value = ""
+\a cdsLibManager->cellListBox->value = nil
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->cellLineEdit->value = ""
+\w Warning: '/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib', Line 6: Skipping: '<<<<<<<'
+\o   HEAD 
+\w Warning: '/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib', Line 7: Skipping: '======='
+\o  
+\w Warning: '/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/cds.lib', Line 9: Skipping: '>>>>>>>'
+\o   b9514e7b732317ffc612ef6c50046ac2410a6182 
+\a cdsLibManager->libListBox->value = "SoC_AFE"
+\a cdsLibManager->libLineEdit->value = "SoC_AFE"
+\a cdsLibManager->cellListBox->value = "cap_array_8b"
+\a cdsLibManager->cellLineEdit->value = "cap_array_8b"
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = ""
+\a cdsLibManager->viewListBox->value = nil
+\a cdsLibManager->viewListBox->value = "schematic"
+\a cdsLibManager->viewLineEdit->value = "schematic"
+\o DB was auto refreshed.

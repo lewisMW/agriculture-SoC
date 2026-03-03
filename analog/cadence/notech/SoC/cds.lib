@@ -3,5 +3,9 @@
 DEFINE analogLib              $CDSHOME/tools/dfII/etc/cdslib/artist/analogLib
 DEFINE basic                  $CDSHOME/tools/dfII/etc/cdslib/basic
 
+<<<<<<< HEAD
+=======
+#Removed by ddDeleteObj: DEFINE SoC_probe ./SoC_probe
+>>>>>>> b9514e7b732317ffc612ef6c50046ac2410a6182
 
 DEFINE SoC_AFE /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE
