@@ -5,7 +5,7 @@ Verilog implementation of soclabs HOSTIO interface, multiplexing 4 virtual byte 
 
 
 ## Status ##
-The core is ready for production stage, validateg with RP2040/RP2350 PIO driver
+The core is ready for production stage, validated with RP2040/RP2350 PIO driver
 
 
 ## Introduction ##
