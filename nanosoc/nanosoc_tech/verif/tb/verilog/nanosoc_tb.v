@@ -122,7 +122,7 @@ initial
 `ifdef VCD_SIM
 initial begin
   $dumpfile("waves.vcd");
-  $dumpvars(6,u_nanosoc_chip_pads);
+  $dumpvars(10,u_nanosoc_chip_pads); //I CHANGED THIS to 10 to increase the depth
   end
 `endif // VCD_SIM
 

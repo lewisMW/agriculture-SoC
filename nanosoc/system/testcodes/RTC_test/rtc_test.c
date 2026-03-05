@@ -36,56 +36,30 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "uart_stdout.h"
-
 // #define ADC_STATUS_MASK 0b00000000000000000000000000001100
 #include "sensing_ip.h"
+#include "uart_stdout.h"
 
 int main (void)
 {
-    UartStdOutInit();
     //Pointer to APB Bus from memory map 
     // volatile unsigned int *APB_BUS = (unsigned int *)0x51000000;
+    UartStdOutInit();
+    //Gonna start with just reading to the rtc
+    SENSING_IP_REGS->adc_trigger = 0x1;
+    SENSING_IP_REGS->adc_trigger = 0x0;
 
-    // Read the status register.
-    // volatile unsigned int *STATUS_REG_ADDR = APB_BUS + 0x1;
-    // volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
-    // volatile unsigned int adc_status = status_reg_value & ADC_STATUS_MASK;
-    // adc_status = adc_status >> 2;
+    SENSING_IP_REGS->rtc_cr = 0x1;
+    volatile uint32_t current_count = SENSING_IP_REGS->rtc_dr;
+    SENSING_IP_REGS->amux = current_count;
+
+    //Todo test can set control register
+    //then test can do raw interrupt status
+    //
     
-    if (GET_FIFO_STATUS(SENSING_IP_REGS->status_reg) != STATUS_FIFO_EMPTY) {
-        printf("FIFO is not empty before ADC trigger!\n");
-    }
-    
-    //Trigger the ADC
-    // volatile unsigned int *ADC_TRIGGER_ADDR =  (uint8_t*) APB_BUS + 0x108;
-    //?volatile unsigned int *ADC_TRIGGER_ADDR = APB_BUS + 0x102;
-    SENSING_IP_REGS->adc_trigger = 1;
 
-    const uint32_t TIMEOUT = 128;
-
-    uint32_t i = 0;
-    while (i < TIMEOUT) {
-        // volatile unsigned int *STATUS_REG_ADDR = APB_BUS + 0x1;
-        // volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
-        // adc_status = status_reg_value & ADC_STATUS_MASK;
-        // adc_status = adc_status >> 2;
-        if (GET_FIFO_STATUS(SENSING_IP_REGS->status_reg) == STATUS_FIFO_READY) {
-            break;
-        }
-        i += 1;
-    }
-
-    //TODO MAKE THIS A PROPER ASSERTION.gs
-    if (i >= TIMEOUT) {
-        printf("FIFO did not acquire a new measurement!\n");
-    } else {
-        printf("Test Passed!\n");
-    }
+    printf("Measurement Value\n");
     UartEndSimulation();
-
-    // while (1);
-
     return 0;
 }
 

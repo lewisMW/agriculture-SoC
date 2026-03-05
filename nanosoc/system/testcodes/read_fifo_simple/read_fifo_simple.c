@@ -36,55 +36,51 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "uart_stdout.h"
-
 // #define ADC_STATUS_MASK 0b00000000000000000000000000001100
 #include "sensing_ip.h"
+#include "uart_stdout.h"
 
 int main (void)
 {
     UartStdOutInit();
     //Pointer to APB Bus from memory map 
-    // volatile unsigned int *APB_BUS = (unsigned int *)0x51000000;
+    //Write to PLL Control register
+    SENSING_IP_REGS->pll_control = 0x0000023;
+    printf("This is the READ FIFO SIMPLE TEST\n");
 
-    // Read the status register.
-    // volatile unsigned int *STATUS_REG_ADDR = APB_BUS + 0x1;
-    // volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
-    // volatile unsigned int adc_status = status_reg_value & ADC_STATUS_MASK;
-    // adc_status = adc_status >> 2;
+    // Set analog mux control
+    SENSING_IP_REGS->amux = 0x4a;
+
+    //SET ADC TRIGGEr
+    //Setting LSB to 1 should start ADC conversion.
+    SENSING_IP_REGS->adc_trigger = 0x1;
+
+    SENSING_IP_REGS->amux = 0x4a;
     
-    if (GET_FIFO_STATUS(SENSING_IP_REGS->status_reg) != STATUS_FIFO_EMPTY) {
-        printf("FIFO is not empty before ADC trigger!\n");
-    }
+    SENSING_IP_REGS->adc_trigger = 0x0;
+
+
+
+    // Pointer to GPIO register from memory map
+    // volatile unsigned int *GPIO_DATA = (unsigned int *)0x50000000;
+    //Pointer to APB Bus from memory map 
+    // TODO Check where it is.
+ 
+    volatile unsigned int status_reg_value = SENSING_IP_REGS->status_reg;
+    // printf("Status Register Value: %u\n", status_reg_value);
+
+
+    // Do a write to make waveforms more obvious.
+    SENSING_IP_REGS->amux = 0x4a;
+
     
-    //Trigger the ADC
-    // volatile unsigned int *ADC_TRIGGER_ADDR =  (uint8_t*) APB_BUS + 0x108;
-    //?volatile unsigned int *ADC_TRIGGER_ADDR = APB_BUS + 0x102;
-    SENSING_IP_REGS->adc_trigger = 1;
-
-    const uint32_t TIMEOUT = 128;
-
-    uint32_t i = 0;
-    while (i < TIMEOUT) {
-        // volatile unsigned int *STATUS_REG_ADDR = APB_BUS + 0x1;
-        // volatile unsigned int status_reg_value = *STATUS_REG_ADDR;
-        // adc_status = status_reg_value & ADC_STATUS_MASK;
-        // adc_status = adc_status >> 2;
-        if (GET_FIFO_STATUS(SENSING_IP_REGS->status_reg) == STATUS_FIFO_READY) {
-            break;
-        }
-        i += 1;
-    }
-
-    //TODO MAKE THIS A PROPER ASSERTION.gs
-    if (i >= TIMEOUT) {
-        printf("FIFO did not acquire a new measurement!\n");
-    } else {
-        printf("Test Passed!\n");
-    }
+    //FIFO READ
+    // uint64_t combined_value = (((uint64_t) )<< 32) | low_value;
+    volatile uint32_t measurement_high = SENSING_IP_REGS->measurement_high;
+    volatile uint32_t measurement_low = SENSING_IP_REGS->measurement_low;
+    uint64_t  measurement_value = ((uint64_t)measurement_high << 32) | measurement_low;
+    // printf("Measurement Value: %llu\n", measurement_value);
     UartEndSimulation();
-
-    // while (1);
 
     return 0;
 }
