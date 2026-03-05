@@ -139,7 +139,7 @@ The core has been implemented in Xilinx FPGA devices.
 - 99 slice Registers
 - 2 F7 Muxes
 - 100 MHz target
-
+~~~
 +----------+------+---------------------+
 | Ref Name | Used | Functional Category |
 +----------+------+---------------------+
@@ -156,3 +156,4 @@ The core has been implemented in Xilinx FPGA devices.
 | MUXF7    |    2 |               MuxFx |
 | BUFG     |    1 |               Clock |
 +----------+------+---------------------+
+~~~
