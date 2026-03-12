@@ -16,7 +16,7 @@ module wrapper_control(
     input wire fifo_full,
     output reg fifo_write_en,
 
-    output reg adc_enable,
+    // output reg adc_enable,
     input wire adc_ready,
     output reg adc_start,
     input wire adc_done,
