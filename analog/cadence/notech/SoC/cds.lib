@@ -3,6 +3,8 @@
 DEFINE analogLib              $CDSHOME/tools/dfII/etc/cdslib/artist/analogLib
 DEFINE basic                  $CDSHOME/tools/dfII/etc/cdslib/basic
 
-#Removed by ddDeleteObj: DEFINE SoC_probe ./SoC_probe
-
-DEFINE SoC_AFE /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/SoC_AFE
+DEFINE adc_primitives_lib /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/adc_primitives_lib
+DEFINE adc_analog_lib /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/adc_analog_lib
+DEFINE adc_digital_lib /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/adc_digital_lib
+DEFINE adc_top_lib /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/adc_top_lib
+DEFINE adc_tb_lib /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/adc_tb_lib

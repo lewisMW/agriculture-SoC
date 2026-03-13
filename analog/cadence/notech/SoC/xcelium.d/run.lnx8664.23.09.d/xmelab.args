@@ -2,14 +2,18 @@
 // File created by:  xrun
 // Do not modify this file
 //
+-SPECTRE_ARGS
+"-ahdllibdir xcelium.d/AMSD/ahdlSimDB"
 -NOCOPYRIGHT
 -NOSTDOUT
 -NOWARN
 DLNOHV
 -NOWARN
 SPDUSD
--no_analogsolver
 -MESSAGES
+-AMSELAB
+-DMS_ELAB_REPORT
+1
 -XLMODE
 ./xcelium.d/run.lnx8664.23.09.d
 -RUNMODE

@@ -3,5 +3,5 @@
 // Do not modify this file
 //
 -makelib
-SoC_AFE
+adc_tb_lib
 -endlib

@@ -4,7 +4,8 @@
 //
 -INCDIR
 "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/"
+-AMS
 -VIEW
-functional
+verilogams
 -SPECIFICUNIT
-sarlogic
+ADC_SAR
