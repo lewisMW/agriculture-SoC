@@ -4,7 +4,8 @@
 //
 -INCDIR
 "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/"
+-AMS
 -VIEW
-verilog
+verilogams
 -WORK
-SoC_probe
+adc_tb_lib

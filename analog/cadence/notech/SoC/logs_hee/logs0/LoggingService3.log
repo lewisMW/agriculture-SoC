@@ -1,9 +1,0 @@
-[Logging Service: 3]
-[2026-01-26 17:12:52.962 -0600] [INFO] [cadence.virtuoso.ade.loggingservice] - HistoryRecorderManager init {"dbBasePath": "/home/hee/cadence/SoC/SoC_probe/ADC_eFabless/maestro/results/maestro"}
-[2026-01-26 17:12:52.962 -0600] [INFO] [cadence.virtuoso.ade.loggingservice] - useGRPC grpc service... {"brokerAddress": "MrDonothing:35538", "serviceName": "DaVinciService_19141_1769467245", "axlSession": "fnxSession1"}
-[2026-01-26 17:12:52.962 -0600] [PROCESS] [cadence.virtuoso.ade.loggingservice] - Logging Service has successfully started. Waiting for incoming messages ... {"hostname": "MrDonothing", "processid": 24539, "logfile": "/home/hee/cadence/SoC/logs_hee/logs0/LoggingService3.log"}
-[2026-01-26 17:12:52.977 -0600] [INFO] [cadence.virtuoso.ade.loggingservice] - logging service gRPC started {"listening address": "MrDonothing:34984"}
-[2026-01-26 20:13:51.556 -0600] [INFO] [cadence.virtuoso.ade.loggingservice] - Got exit signal in processControlMessage. Will exit. {}
-[2026-01-26 20:13:52.560 -0600] [PROCESS] [cadence.virtuoso.ade.loggingservice] - Current memory used: 61.1094 MBytes, peak memory used: 61.1367 MBytes {"hostname": "MrDonothing", "processid": 24539, "logfile": "/home/hee/cadence/SoC/logs_hee/logs0/LoggingService3.log"}
-[2026-01-26 20:13:52.561 -0600] [PROCESS] [cadence.virtuoso.ade.loggingservice] - Stopping Logging Service process. {"hostname": "MrDonothing", "processid": 24539, "logfile": "/home/hee/cadence/SoC/logs_hee/logs0/LoggingService3.log"}
-[2026-01-26 20:13:52.561 -0600] [PROCESS] [cadence.virtuoso.ade.loggingservice] - Logging Service stop!!!! {"hostname": "MrDonothing", "processid": 24539, "logfile": "/home/hee/cadence/SoC/logs_hee/logs0/LoggingService3.log"}

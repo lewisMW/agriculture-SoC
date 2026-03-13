@@ -1,0 +1,57 @@
+// VerilogAMS for SoC_probe, cap_array_8b, verilogams
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+// ------------------------------------------------------------
+// Module: cap_array_8b
+// Description:
+//   8-bit binary-weighted capacitive DAC for SAR ADC.
+//   Bottom plates are driven by digital control signals.
+//   Top plate node: vout.
+//
+// Function:
+//   Implements charge redistribution DAC.
+//
+// Assumptions:
+//   - Ideal capacitors (no parasitics)
+//   - No mismatch
+//   - No charge injection modeled here
+//
+// Author: Hee
+// Date: 2026-02
+// ------------------------------------------------------------
+
+module cap_array_8b(vtop, vbottom, vbottom_dum);
+	inout vtop, vbottom_dum;
+	inout [7:0] vbottom;
+	electrical [7:0] vbottom; // control bus coming from the SAR FSM 
+	electrical vtop, vbottom_dum;
+
+	parameter real cu=1f from (0:inf);
+
+	// ----------------------------------------------------------------
+	// capacitor connections top plate
+	// ----------------------------------------------------------------
+	capacitor #(.c(1*cu)) c1 (.top(vtop), .bottom(vbottom[0]));
+	capacitor #(.c(2*cu)) c2 (.top(vtop), .bottom(vbottom[1]));
+	capacitor #(.c(4*cu)) c3 (.top(vtop), .bottom(vbottom[2]));
+	capacitor #(.c(8*cu)) c4 (.top(vtop), .bottom(vbottom[3]));
+	capacitor #(.c(16*cu)) c5 (.top(vtop), .bottom(vbottom[4]));
+	capacitor #(.c(32*cu)) c6 (.top(vtop), .bottom(vbottom[5]));
+	capacitor #(.c(64*cu)) c7 (.top(vtop), .bottom(vbottom[6]));
+	capacitor #(.c(128*cu)) c8 (.top(vtop), .bottom(vbottom[7]));
+	capacitor #(.c(1*cu)) c_dum (.top(vtop), .bottom(vbottom_dum));
+
+/*
+genvar k;
+
+analog begin
+	// --- Capacitor array top plate ---
+	I(vtop,n_dummy) <+ ddt(V(vtop,n_dummy))*(1*C); 
+	for (k=0; k<8; k=k+1) begin
+		I(vtop,n[k]) <+ (C*(1<<k)) * ddt(V(vtop,n[k]));
+	end
+end
+*/
+endmodule
