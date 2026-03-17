@@ -47,6 +47,19 @@ results/
 **/maestro/maestro.sdb
 **/maestro/history/
 
+# Cadence database/index files (regenerated on open)
+data.dm
+data.tid
+cdsinfo.tag
+pakvst.ts
+pc.db
+tech.db
+
+# Cadence library/module caches
+.oalib
+.cdsvmod
+.xm.db.*
+*.pak
 
 # Lock and temp files
 *.cdslck
