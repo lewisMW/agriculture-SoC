@@ -1,0 +1,18 @@
+//Verilog-AMS HDL for "SoC", "sample_Hold" "verilogams"
+
+`include "constants.vams"
+`include "disciplines.vams"
+`timescale 1ns/1ps
+module sample_Hold (inSig, trigger, holdSig );
+	input inSig, trigger;
+	output holdSig;
+	electrical inSig,holdSig;
+	logic trigger;
+	parameter real Rout=100;
+	real vhold;
+	analog begin
+		@(posedge(trigger))
+			vhold = V(inSig);
+		I(holdSig) <+ (V(holdSig)-vhold)/Rout;
+	end
+endmodule
