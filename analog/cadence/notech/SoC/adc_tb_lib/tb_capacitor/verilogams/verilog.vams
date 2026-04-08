@@ -15,8 +15,8 @@ module tb_capacitor;
 	vsource #(.type("pulse"),
 			.val0(0.0),
 			.val1(1.0),
-			.rise(1.2e-6)) Vstim (top,bottom);
-	
+			.rise(1.2e-6)) Vstim (top, bottom);
+
 	// DUT - 1fF capacitor (unit capacitor)
 	capacitor_adc #(.c(1e-15)) DUT (.top(top), .bottom(bottom));
 

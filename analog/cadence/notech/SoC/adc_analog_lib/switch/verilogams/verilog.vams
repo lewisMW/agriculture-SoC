@@ -7,15 +7,23 @@ module switch ( p, n, ctrl );
 	input ctrl;
 	inout p, n;
 	electrical p, n;
-	logic ctrl;
+	electrical ctrl;
 
-	parameter real ron = 1;
-	parameter real roff = 1e+12;
+	parameter real ron   = 10e-3;       // on-resistance  (?)
+	parameter real roff  = 1e6;         // off-resistance (?)
+	parameter real trise = 1e-9;        // switch-on  time (s)
+	parameter real tfall = 1e-9;        // switch-off time (s)
+	parameter real vth	= 0.6;
 
-	analog begin
-		if (ctrl)
-      	I(p,n) <+ V(p,n)/ron; // on
-    		else
-      	I(p,n) <+ V(p,n)/roff; // off
-	end
+	real r1;
+
+analog begin
+	if (V(ctrl) > vth)
+		r1 = ron;
+	else
+		r1 = roff;
+
+	I(p,n) <+ V(p,n)/transition(r1, 0, trise, tfall);
+end
+
 endmodule

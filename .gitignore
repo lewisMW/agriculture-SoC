@@ -1,4 +1,4 @@
-# OS
+\# OS
 .DS_Store
 
 # Build artifacts
@@ -54,6 +54,7 @@ cdsinfo.tag
 pakvst.ts
 pc.db
 tech.db
+master.tag
 
 # Cadence library/module caches
 .oalib

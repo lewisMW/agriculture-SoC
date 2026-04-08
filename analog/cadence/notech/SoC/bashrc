@@ -1,0 +1,25 @@
+#!/bin/bash
+export LANG=en_US
+
+# These environment variables can be added to the user .bashrc file
+unset CDSHOME
+unset AMSHOME
+unset SPECTREHOME
+
+# Put in the correct path names to the software installs.
+export CDSHOME=/opt/cadence/installs/IC231  # latest ISR release specified in document
+export AMSHOME=/opt/cadence/installs/XCELIUM2309
+
+# For using the AMSD Flexible Matrix, you need a separate analog simulator installation that you can point to
+export SPECTREHOME=/opt/cadence/installs/SPECTRE231
+
+export LD_LIBRARY_PATH=${CDSHOME}/tools/lib:${SPECTREHOME}/lib:${AMSHOME}/tools/lib:${AMSHOME}/tools/affirma_ams/lib
+
+# PATH updates (append to existing PATH)
+export PATH=$PATH:${AMSHOME}/tools/dfII/bin:${AMSHOME}/tools/bin
+export PATH=$PATH:${CDSHOME}/tools/dfII/bin:${CDSHOME}/tools/bin
+export PATH=$PATH:${SPECTREHOME}/tools.lnx86/dfII/bin:${SPECTREHOME}/bin
+
+export CDS_WORKDIR=/home/hee/cadence
+
+
