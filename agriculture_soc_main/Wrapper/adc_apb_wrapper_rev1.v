@@ -8,6 +8,7 @@ module adc_apb_wrapper_rev1 #(
     // Clock and reset signals
     // Clock signal which synchronises bus operations
     input  wire                  PCLK, 
+    input wire                   CLK1HZ,
     // Active-low reset signal, used to initialise bus peripherals.
     input  wire                  PRESETn,
 
@@ -326,7 +327,7 @@ wrapper_control control_fsm_inst (
         .PSLVERR(PSLVERR), //done
 
         .CLK1HZ(CLK1HZ), //TODO make this
-        .nRTCRST(nRTCRST), //make this
+        .nRTCRST(nRTCRST), //make this. ADD parameter for number of counts so can change later. And then clock. 
         .nPOR(nPOR), .// todo make this
 
         .RTCINTR(RTCINTR), // make this
