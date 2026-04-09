@@ -1,7 +1,8 @@
---TIMESTAMP:	1773906477	Thu Mar 19 18:47:57 2026
-#
+--pcdbVlog file, Rev:1.0
+
+--TIMESTAMP: 1775621986
+
+#CELL
 * capacitor_adc *
 DUT
-#
-* vsource *
-Vstim
+

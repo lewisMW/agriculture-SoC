@@ -19,7 +19,3 @@ export LD_LIBRARY_PATH=${CDSHOME}/tools/lib:${SPECTREHOME}/tools.lnx86/lib:${AMS
 export PATH=$PATH:${AMSHOME}/tools/dfII/bin:${AMSHOME}/tools/bin
 export PATH=$PATH:${CDSHOME}/tools/dfII/bin:${CDSHOME}/tools/bin
 export PATH=$PATH:${SPECTREHOME}/tools.lnx86/dfII/bin:${SPECTREHOME}/bin
-
-export CDS_WORKDIR=/home/hee/cadence
-
-

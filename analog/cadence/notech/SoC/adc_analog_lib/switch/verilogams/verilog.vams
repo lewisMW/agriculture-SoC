@@ -10,7 +10,7 @@ module switch ( p, n, ctrl );
 	electrical ctrl;
 
 	parameter real ron   = 10e-3;       // on-resistance  (?)
-	parameter real roff  = 1e6;         // off-resistance (?)
+	parameter real roff  = 1e12;         // off-resistance (?)
 	parameter real trise = 1e-9;        // switch-on  time (s)
 	parameter real tfall = 1e-9;        // switch-off time (s)
 	parameter real vth	= 0.6;

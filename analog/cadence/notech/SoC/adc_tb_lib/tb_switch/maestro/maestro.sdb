@@ -45,8 +45,11 @@
 					<var>VCC
 						<value>1.8</value>
 					</var>
-					<var>SAMPLE_TIME
-						<value>5m</value>
+					<var>Fsample
+						<value>0.1e6</value>
+					</var>
+					<var>Fin
+						<value>10e3</value>
 					</var>
 				</vars>
 			</test>
