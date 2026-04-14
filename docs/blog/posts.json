@@ -1,5 +1,12 @@
 [
   {
+    "slug": "hee-sar-fsm-integration",
+    "title": "SAR FSM, Calibration & Top-Level ADC Integration",
+    "author": "Hee Chan",
+    "date": "14 April 2026",
+    "summary": "Completing the structural SAR ADC with a six-state FSM, a 5-bit comparator offset calibration loop, an SR latch on the comparator output, and a reorganised library hierarchy that ties the CDAC, comparator, and control logic into a single top-level sar block."
+  },
+  {
     "slug": "hee-capacitive-dac",
     "title": "Building the Capacitive DAC for the SAR ADC",
     "author": "Hee Chan",
