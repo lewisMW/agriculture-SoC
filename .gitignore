@@ -40,13 +40,27 @@ results/
 *.ic
 *.rdb
 *.msg.db
-*.sdb
+#*.sdb
 
 # Maestro simulation artifacts
-**/maestro/active.state
-**/maestro/maestro.sdb
+#**/maestro/active.state
+#**/maestro/maestro.sdb
 **/maestro/history/
 
+# Cadence database/index files (regenerated on open)
+#data.dm
+data.tid
+cdsinfo.tag
+pakvst.ts
+#pc.db
+#tech.db
+#master.tag
+
+# Cadence library/module caches
+.oalib
+.cdsvmod
+.xm.db.*
+*.pak
 
 # Lock and temp files
 *.cdslck

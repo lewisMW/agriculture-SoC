@@ -1,0 +1,31 @@
+//Verilog-AMS HDL for "adc_tb_lib", "tb_capacitor" "verilogams"
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module tb_capacitor;
+
+	// Nets
+	electrical top, bottom;
+	ground bottom;
+
+	// Ramp voltage source: 0 -> 1V in 1us
+	// dV/dt = 1V/1us  = 1e6 V/s
+	// Expected I = C * dV/dt = 1e-15 * 1e6 = 1nA
+	vsource #(.type("pulse"),
+			.val0(0.0),
+			.val1(1.0),
+			.rise(1.2e-6)) Vstim (top, bottom);
+
+	// DUT - 1fF capacitor (unit capacitor)
+	capacitor_adc #(.c(1e-15)) DUT (.top(top), .bottom(bottom));
+
+	// Simulation control
+	initial begin
+		//$shm_open("tb_capacitor.shm");
+		//$shm_probe("AS");
+		#1500; // run 1.5us
+		$finish;
+	end
+
+endmodule

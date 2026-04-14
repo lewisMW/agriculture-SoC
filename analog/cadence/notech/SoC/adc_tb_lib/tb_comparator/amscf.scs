@@ -1,0 +1,20 @@
+imulator lang=spectre
+
+// global signals
+global 0 vdd!
+
+//Analog Control File
+include "acf.scs"
+include "./verilogams/verilog.ams"
+include "./../adc_analog_lib/comparator/symbol"
+// ams configuration options
+amsd{
+
+// set the connect rule power supply
+   ie vsup=1.8 discipline=logic18V
+
+// mix analog and digital
+portmap subckt=level_shifter autobus=yes busdelim="[] <>"
+config cell=level_shifter use=spice
+}
+
