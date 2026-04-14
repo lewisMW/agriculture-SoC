@@ -1,0 +1,32 @@
+ 
+                              Fusion Compiler (TM)
+
+                  Version U-2022.12 for linux64 - Dec 11, 2022
+  This release has significant feature enhancements. Please review the Release
+                       Notes associated with this release.
+
+                    Copyright (c) 1988 - 2022 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+   or distribution of this software is strictly prohibited.  Licensed Products
+     communicate with Synopsys servers for the purpose of providing software
+    updates, detecting software piracy and verifying that customers are using
+    Licensed Products in conformity with the applicable License Key for such
+  Licensed Products. Synopsys will use information gathered in connection with
+    this process to deliver software updates and pursue software pirates and
+                                   infringers.
+
+ Inclusivity & Diversity - Visit SolvNetPlus to read the "Synopsys Statement on
+            Inclusivity and Diversity" (Refer to article 000036315 at
+                        https://solvnetplus.synopsys.com)
+
+Loading user preference file /home/dwn1c21/.synopsys_fc_gui/preferences.tcl
+Error: Message for 'CLE-10' not found
+fc_shell> exit
+Maximum memory usage for this session: 315.86 MB
+Maximum memory usage for this session including child processes: 315.86 MB
+CPU usage for this session:     11 seconds (  0.00 hours)
+Elapsed time for this session:     39 seconds (  0.01 hours)
+Thank you for using Fusion Compiler.
+
