@@ -7,12 +7,14 @@ module dummy_adc
 (
     input  wire [DATA_WIDTH-1:0] STATUS_REG_ADDR,  
     output reg  [DATA_WIDTH-1:0] MEASUREMENT,      
-    input  wire [DATA_WIDTH-1:0] ADC_TRIGGER,     
+    input  wire [DATA_WIDTH-1:0] ADC_TRIGGER,     //this is enable ADC
     input  wire                ANALOG_IN,         
-    input  wire                clk,               
-    input  wire                reset,             
+    input  wire                CLK,               
+    input  wire                RESET,             
+    input wire                 ENABLE_CALIBRATION,
     output reg                 DATA_VALID_OUT     // Data valid pulse 
 );
+    // Currently I don't know what clock or calibration do so just leaving those.
 
     // Used to detect the rising edge of ADC_TRIGGER
     reg [DATA_WIDTH-1:0] ADC_TRIGGER_PREV;
@@ -29,8 +31,8 @@ module dummy_adc
         ANALOG_IN_PREV = 0;
     end
 
-    always @(posedge clk or posedge reset) begin
-        if (reset) begin
+    always @(posedge CLK or posedge RESET) begin
+        if (RESET) begin
             // Reset all registers to initial values
             MEASUREMENT    <= 0;
             DATA_VALID_OUT <= 0;

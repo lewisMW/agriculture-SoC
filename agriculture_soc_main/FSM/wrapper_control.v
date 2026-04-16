@@ -6,7 +6,7 @@
 `define POST_CHECK_FIFO 5'd5
 `define SIGNAL_FIFO_FULL 5'd6
 `define ERR_FIFO_PRE_CHECK_FAIL 5'd7
-
+// So make it adc enable and adc valid and then update it.
 module wrapper_control(
     input  wire clk,
     input  wire rst,
@@ -17,9 +17,7 @@ module wrapper_control(
     output reg fifo_write_en,
 
     output reg adc_enable,
-    input wire adc_ready,
-    output reg adc_start,
-    input wire adc_done,
+    input wire adc_valid,
 
     output reg apb_fifo_ready
 );
