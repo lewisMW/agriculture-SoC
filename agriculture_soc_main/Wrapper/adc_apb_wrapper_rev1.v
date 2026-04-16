@@ -264,9 +264,10 @@ module adc_apb_wrapper_rev1 #(
         .MEASUREMENT    (adc_data_generated), // ADC data output.
         .ADC_TRIGGER    (adc_trig),
         .ANALOG_IN      (analog_passthrough),
-        .clk            (PCLK),
-        .reset          (~PRESETn),         // Note: dummy_adc reset is active high.
-        .DATA_VALID_OUT (adc_data_valid_out) // New data valid output.
+        .CLK            (PCLK),
+        .RESET          (~PRESETn),         // Note: dummy_adc reset is active high.
+        .DATA_VALID_OUT (adc_data_valid_out),
+        .ENABLE_CALIBRATION() // New data valid output.
     );
 
 dummy_amux amux_inst (
