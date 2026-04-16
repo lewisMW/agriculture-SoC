@@ -1,0 +1,15 @@
+// VerilogA for adc_primitives_lib, capacitor, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module capacitor_adc(top, bottom);
+parameter c=1f;
+
+inout top, bottom;
+electrical top, bottom;
+
+analog begin
+	I(top,bottom) <+ c*ddt(V(top,bottom));
+end
+endmodule

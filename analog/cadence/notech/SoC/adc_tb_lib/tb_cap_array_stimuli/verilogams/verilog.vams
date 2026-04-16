@@ -1,0 +1,53 @@
+//Verilog-AMS HDL for "adc_digital_lib", "tb_cap_array_stimuli" "verilogams"
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module tb_cap_array_stimuli (pass_flag, pass_c, vbottom, vdummy, vtop, vdd, vss);
+
+	// port declaration
+	input vtop;
+	output pass_flag, pass_c;
+	output vbottom, vdummy;
+	inout vdd, vss;
+
+	electrical vtop;
+	reg pass_flag, vdummy;
+	reg [7:0] vbottom, pass_c;
+	electrical vdd, vss;
+	
+	parameter real C_unit = 1f; // unit capacitor for calculations
+
+	real expected_output;
+	real capacitance;
+	integer i;
+
+	analog begin
+		expected_output = V(vdd,vss)*capacitance/256.0;
+	end
+
+	initial begin
+
+		pass_c = 0;
+		pass_flag = 1'b0; // compares the expected with the measured output
+		vdummy = 1'b0;
+		vbottom = 8'b00000000;
+		capacitance = vbottom;
+
+		for (i=0;i<=255;i=i+1) begin
+			#5
+			pass_flag = 1'b0;
+			vbottom = vbottom + 1'b1;
+			capacitance = vbottom;
+		
+			#120
+			if (V(vtop,vss)>0.99*expected_output && V(vtop,vss)<1.01*expected_output) begin
+				pass_flag = 1'b1;
+				pass_c = pass_c + 1;
+			end 
+		end
+		
+
+	end 
+
+endmodule

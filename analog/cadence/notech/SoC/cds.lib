@@ -1,0 +1,10 @@
+
+#SOFTINCLUDE $CDS_WORKDIR/cds.lib
+DEFINE analogLib              $CDSHOME/tools/dfII/etc/cdslib/artist/analogLib
+DEFINE basic                  $CDSHOME/tools/dfII/etc/cdslib/basic
+
+DEFINE adc_primitives_lib ./adc_primitives_lib
+DEFINE adc_analog_lib ./adc_analog_lib
+DEFINE adc_digital_lib ./adc_digital_lib
+DEFINE adc_top_lib ./adc_top_lib
+DEFINE adc_tb_lib ./adc_tb_lib
