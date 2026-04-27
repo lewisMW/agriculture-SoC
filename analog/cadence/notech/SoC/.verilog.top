@@ -1,0 +1,22 @@
+
+`timescale 1ns / 1ns
+
+module test;
+
+
+// Buses in the design
+
+wire  [4:0]  trimb;
+
+wire  [4:0]  trima;
+
+wire  [7:0]  ctln;
+
+wire  [7:0]  ctlp;
+
+wire  [7:0]  result;
+
+
+
+tb_sarlogic top(); 
+ 

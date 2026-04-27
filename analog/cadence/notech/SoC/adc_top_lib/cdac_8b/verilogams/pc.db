@@ -1,18 +1,24 @@
---TIMESTAMP:	1772601462	Wed Mar  4 16:17:42 2026
-#
+--pcdbVlog file, Rev:1.0
+
+--TIMESTAMP: 1777007859
+
+#CELL
+* switch_adc *
+sw
+
+#CELL
 * cap_array_8b *
 c_array
-#
+
+#CELL
 * inverter *
 invp_dum
-inv1
-inv2
-inv3
-inv4
-inv5
-inv6
-inv7
 inv8
-#
-* switch *
-sw
+inv7
+inv6
+inv5
+inv4
+inv3
+inv2
+inv1
+

@@ -1,0 +1,21 @@
+
+`timescale 1ns / 1ns
+
+module test;
+
+
+wire  clkc, sample, valid;
+
+reg  cal, clk, comp, en, rstn;
+
+wire [4:0]  trimb;
+wire [4:0]  trim;
+wire [7:0]  ctln;
+wire [7:0]  ctlp;
+wire [7:0]  result;
+
+
+
+sarlogic top(clk, rstn, en, comp, cal, valid, result, sample, ctlp, 
+     ctln, trim, trimb, clkc); 
+ 

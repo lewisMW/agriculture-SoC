@@ -1,0 +1,19 @@
+// Verilog HDL and netlist files of
+// "adc_digital_lib sarlogic functional"
+
+// HDL models
+
+// HDL file for adc_digital_lib, sarlogic, functional.
+/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/adc_digital_lib/sarlogic/functional/verilog.v
+
+
+
+// End HDL models
+
+// Netlisted models
+
+// netlist file - adc_digital_lib, sarlogic, functional.
+ihnl/cds0/netlist
+
+
+// End HDL models

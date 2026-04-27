@@ -1,0 +1,28 @@
+( ( nil
+  version "2.1"
+  mapType "incremental"
+  blockName "sarlogic"
+  repList "behavioral functional system verilog pld_verilog lai_verilog lmsi_verilog schematic symbol"
+  stopList "verilog pld_verilog lai_verilog lmsi_verilog symbol"
+  hierDelim "."
+  hierPrefix "test.top"
+  globalHierPrefix "cds_globals."
+  netlistDir "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1"
+  busRef   "ORDERED"
+  netType   "BUS"
+  leftStr  "["
+  rangeStr  ":"
+  rightStr  "]"
+ )
+( defbus
+( "result" 7 0  "result" 7 0  )
+( "ctlp" 7 0  "ctlp" 7 0  )
+( "ctln" 7 0  "ctln" 7 0  )
+( "trim" 4 0  "trim" 4 0  )
+( "trimb" 4 0  "trimb" 4 0  )
+ )
+( model
+( "adc_digital_lib/sarlogic/functional" "sarlogic" )
+ )
+( "sarlogic" "ihnl/cds0/map" )
+ )

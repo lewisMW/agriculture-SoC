@@ -1,0 +1,5 @@
+tmLCVDPLList = '((nil viewType "netlist" viewName "functional"
+    cellName "sarlogic" libName "adc_digital_lib"
+    )
+)
+xxxInternalGlobAliasList = '(nil)

@@ -1,0 +1,11 @@
+simVerilogNetlistFileList = '(
+    (("adc_digital_lib" "sarlogic") 
+	("cds0/netlist" "cds0/map" "functional")
+    )
+)
+simVerilogNetlistFileLibList = '("adc_digital_lib")
+simVerilogNetlistFileCellList = '(("adc_digital_lib" 
+	("sarlogic")
+    )
+)
+hnlIncrementalDirectory = '"ihnl"

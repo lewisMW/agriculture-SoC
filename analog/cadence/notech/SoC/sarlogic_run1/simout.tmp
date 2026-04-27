@@ -1,0 +1,35 @@
+TOOL:	xmxlmode	23.09-s013: Started on Apr 16, 2026 at 16:37:43 AEST
+xmxlmode
+	+delay_mode_path
+	+typdelays
+	-l
+	simout.tmp
+	/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.template
+	-f /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/verilog.inpfiles
+		/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/adc_digital_lib/sarlogic/functional/verilog.v
+		ihnl/cds0/netlist
+	+nostdout
+	+nocopyright
+	+ncvlogargs+" -neverwarn -nostdout -nocopyright "
+	+ncelabargs+" -neg_tchk  -nonotifier  -sdf_NOCheck_celltype  -access +r  -pulse_e 100  -pulse_r 100  -neverwarn  -timescale 1ns/1ns -nostdout -nocopyright"
+	+ncsimargs+" -neverwarn  -nocopyright -nostdout -batch -exit "
+xmxlmode: *W,OPDEPRREN: Command Line Option (+ncvlogargs+ -neverwarn -nostdout -nocopyright ) is deprecated. Use (+xmvlogargs+ -neverwarn -nostdout -nocopyright ) instead.
+xmxlmode: *W,OPDEPRREN: Command Line Option (+ncelabargs+ -neg_tchk  -nonotifier  -sdf_NOCheck_celltype  -access +r  -pulse_e 100  -pulse_r 100  -neverwarn  -timescale 1ns/1ns -nostdout -nocopyright) is deprecated. Use (+xmelabargs+ -neg_tchk  -nonotifier  -sdf_NOCheck_celltype  -access +r  -pulse_e 100  -pulse_r 100  -neverwarn  -timescale 1ns/1ns -nostdout -nocopyright) instead.
+xmxlmode: *W,OPDEPRREN: Command Line Option (+ncsimargs+ -neverwarn  -nocopyright -nostdout -batch -exit ) is deprecated. Use (+xmsimargs+ -neverwarn  -nocopyright -nostdout -batch -exit ) instead.
+file: /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.template
+always #625 clk ~clk;
+                |
+xmvlog: *E,MISEXX (/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.verilog,10|16): expecting an '=' or '<=' sign in an assignment [9.2(IEEE)].
+(`include file: /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.verilog line 10, file: /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.template line 26)
+@(posdege sample);
+               |
+xmvlog: *E,EXPRPA (/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.verilog,34|15): expecting a right parenthesis (')') [9.7.2(IEEE)].
+(`include file: /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.verilog line 34, file: /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.template line 26)
+@(posdege sample);
+                |
+xmvlog: *E,NOTSTT (/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.verilog,34|16): expecting a statement [9(IEEE)].
+(`include file: /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.verilog line 34, file: /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.template line 26)
+	module worklib.test:template
+		errors: 3, warnings: 0
+xmxlmode: *E,VLGERR: An error occurred during parsing.  Review the log file for errors with the code *E and fix those identified problems to proceed.  Exiting with code (status 1).
+TOOL:	xmxlmode	23.09-s013: Exiting on Apr 16, 2026 at 16:37:43 AEST  (total: 00:00:00)

@@ -1,0 +1,57 @@
+
+// Verilog stimulus file.
+// Please do not create a module in this file.
+
+
+// Default verilog stimulus. 
+integer bit_idx;
+
+initial clk = 0;
+always #625 clk ~clk;
+
+initial begin
+
+// inputs
+rstn = 0;
+en = 0;
+comp = 0;
+cal = 0;
+
+$display("[t=%0t] Asserting reset", $time);
+repeat(4) @(posedge clk);
+rstn = 1;
+@(posedge clk);
+@(posedge clk);
+
+
+
+// comp pattern: 8'b10110001 => expected result 0xB1
+$display("[t=%0t] Asserting en", $time);
+en = 1;
+@(posedge clk); #1;
+en = 0;
+
+@(posdege sample);
+$display("[t=%0t] sample asserted", $time);
+
+@(posedge clk); #1; comp = 1;
+@(posedge clk); #1; comp = 0;
+@(posedge clk); #1; comp = 1;
+@(posedge clk); #1; comp = 1;
+@(posedge clk); #1; comp = 0;
+@(posedge clk); #1; comp = 0;
+@(posedge clk); #1; comp = 0;
+@(posedge clk); #1; comp = 1;
+
+@(posedge valid);
+$display("[t=%0t] valid asserted - result=0x%02X (expected 0xB1)", $time,result);
+
+if (result === 8'hB1)
+$display(" PASS");
+else
+$display(" FAIL - got 0x%02X", result);
+
+repeat(4) @(posedge clk);
+$finish;
+
+end 

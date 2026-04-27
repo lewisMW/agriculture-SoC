@@ -1,0 +1,8 @@
+CADENCE IHNL11140
+$model
+adc_digital_lib/sarlogic/functional sarlogic
+$endmodel
+$net
+$endnet
+$param
+$endparam

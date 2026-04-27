@@ -1,0 +1,2 @@
+cellViewCounterTable = makeTable('cellViewCounterTableType nil)
+cellViewCounterTable['("adc_digital_lib" "sarlogic" "functional" )] =  105

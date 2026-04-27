@@ -1,0 +1,30 @@
+
+`timescale 1ns / 1ns
+
+module test;
+
+
+wire  clkc, sample, valid;
+
+reg  cal, clk, comp, en, rstn;
+
+wire [4:0]  trimb;
+wire [4:0]  trima;
+wire [7:0]  ctln;
+wire [7:0]  ctlp;
+wire [7:0]  result;
+
+
+
+sarlogic top(clk, rstn, en, comp, cal, valid, result, sample, ctlp, 
+     ctln, trima, trimb, clkc); 
+ 
+
+`ifdef verilog
+
+ //please enter any additional verilog stimulus in the /home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.verilog file
+`include "/home/hee/projects/agriculture-SoC/analog/cadence/notech/SoC/sarlogic_run1/testfixture.verilog"
+
+`endif
+
+endmodule 
