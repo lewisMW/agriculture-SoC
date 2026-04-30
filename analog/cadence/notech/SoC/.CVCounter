@@ -1,2 +1,0 @@
-cellViewCounterTable = makeTable('cellViewCounterTableType nil)
-cellViewCounterTable['("adc_tb_lib" "tb_sarlogic" "functional" )] =  84
