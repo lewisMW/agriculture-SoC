@@ -39,7 +39,7 @@ module cdac_8b (vin, vout, sample, ctl, ctl_dum, vdd, vss );
 	// ----------------------------------------------------------------
 	// Connects input to capacitors top plate
 	// ----------------------------------------------------------------
-	switch sw (.p(vin), .n(vout), .ctrl(sample));
+	switch_adc sw (.p(vin), .n(vout), .ctrl(sample));
 
 	// ----------------------------------------------------------------
 	// Capacitor array between comparator input and inverter
