@@ -55,7 +55,7 @@ module sar (vp, vn, clk, en, cal, rstn, valid, result, vdd, vss);
 	
 	// Control signals from FSM to comparator
 	wire clkc;
-	wire [4:0] trim, trimb;
+	wire [4:0] trima, trimb;
 
 	// SR Latch comparator signal to FSM
 	wire comp_out, comp_outn;
@@ -88,7 +88,7 @@ module sar (vp, vn, clk, en, cal, rstn, valid, result, vdd, vss);
 				.outp(outp), 
 				.outn(outn), 
 				.clk(clkc), 
-				.trim(trim),
+				.trima(trima),
 				.trimb(trimb), 
 				.vdd(vdd), 
 				.vss(vss));
@@ -111,7 +111,7 @@ module sar (vp, vn, clk, en, cal, rstn, valid, result, vdd, vss);
 				.sample(sample_ctl),
 				.ctlp(ctlp),
 				.ctln(ctln),
-				.trim(trim),
+				.trima(trima),
 				.trimb(trimb),
 				.clkc(clkc));
 

@@ -21,6 +21,7 @@ AT510-MN-80001-r2p0-00rel0
 .pcdb/
 .tmp*
 xcelium.d/
+bashrc
 
 # Logs
 *.log
