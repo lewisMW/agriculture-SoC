@@ -24,8 +24,9 @@ typedef struct
     volatile uint32_t rtc_ris;           // 0x214 - RTC Raw Interrupt Status
     volatile uint32_t rtc_mis;           // 0x218 - RTC Masked Interrupt Status
     volatile uint32_t rtc_icr;           // 0x21C - RTC Interrupt Clear Register 
+    volatile uint32_t fifo_clear;        // 0x220 - Clear FIFO Register
 } sensing_ip_regs_t;
-
+// TODO - chat about where to put FIFO clear
 #define SENSING_IP_REGS ((volatile sensing_ip_regs_t *) SENSING_IP_REGS_BASE)
 
 

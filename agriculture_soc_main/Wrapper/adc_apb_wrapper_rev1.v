@@ -59,6 +59,7 @@ module adc_apb_wrapper_rev1 #(
     wire [63:0]          fifo_data_out;
     reg                  fifo_rd_en;   // Used to trigger FIFO read out
     reg                  fifo_rd_en_delay; // One-cycle delayed version
+    reg                  fifo_clear;
 
     wire fifo_write_en;
 
@@ -69,6 +70,7 @@ module adc_apb_wrapper_rev1 #(
     wire [55:0] adc_data_generated;
     // adc_data_vald_out: single-cycle pulse indicating new ADC data is valid.
     wire adc_data_valid_out;
+    wire adc_enable_calibration;
 
     // --------------------------------------------------------------------------
     // APB addresses for various ADC functionality
@@ -82,13 +84,18 @@ module adc_apb_wrapper_rev1 #(
     localparam PLL_CONTROL_ADDR    = 12'h100;
     localparam AMUX_ADDR           = 12'h104;
     localparam ADC_TRIGGER_ADDR    = 12'h108;
+    localparam ADC_ENABLE_CALIB_ADDR = 12'h10C; // TODO if want to add this is that a problem.
+    //RTC REGs
     localparam RTC_DATA_REG = 12'h200;
     localparam RTC_MATCH_REG = 12'h204;
     localparam RTC_LOAD_REG = 12'h208;
-    localparam RTC_CLEAR_EG = 12'h20C;
+    localparam RTC_CLEAR_ADDR = 12'h20C;
     localparam RTC_INTERRUPT_MASK_SETCLEAR = 12'h210;
     localparam RTC_RAW_INTERUPT_STATUS = 12'h214;
+    localparam RTC_MASKED_INTERUPT_STATUS = 12'h218; //What is this actually? 
     localparam RTC_INTERRUPT_CLEAR_REG = 12'h21C;
+    // FIFO Reg
+    localparam FIFO_CLEAR_REG = 12'h220; 
 
 
     // --------------------------------------------------------------------------
@@ -126,9 +133,9 @@ module adc_apb_wrapper_rev1 #(
         .apb_rd_en    (fifo_rd_en),
         .apb_rd_data  (fifo_data_out),
         .fifo_empty   (fifo_empty),
-        .fifo_clear   ()
+        .fifo_clear   (fifo_clear)
     );
-    //TODO: FIFO CLEAR
+
 
     // --------------------------------------------------------------------------
     // APB Read Logic
@@ -143,7 +150,7 @@ module adc_apb_wrapper_rev1 #(
                 MEASUREMENT_LO_ADDR: PRDATA = fifo_data_out[31:0];
                 RTC_DATA_REG: PRDATA = ctrl_time_value;
                 RTC_RAW_INTERUPT_STATUS: PRDATA = ctrl_intr_flag;
-
+                
 
                 
             endcase
@@ -215,7 +222,7 @@ module adc_apb_wrapper_rev1 #(
     end
 
     // ADC trigger write: When APB write address is ADC_TRIGGER_ADDR,
-    // update the trigger register and generate a FIFO clear pulse.
+    // update the trigger register and generate a FIFO clear pulse. // TODO - The FIFO Clear address is not triggered?
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) begin
             // trig_reg <= {DATA_WIDTH{1'b0}};
@@ -223,14 +230,29 @@ module adc_apb_wrapper_rev1 #(
         end else begin
             if (adc_enable) begin
                 adc_trig <= adc_enable;
+            end
             if (write_enable && (PADDR == ADC_TRIGGER_ADDR)) begin
                 // trig_reg <= PWDATA;
                 adc_trig <= PWDATA[0]; // Use the lowest bit as the trigger signal
             end else begin
                 adc_trig <= 1'b0;
             end
+            if (ADC_ENABLE_CALIB_ADDR) begin
+                adc_enable_calibration <= PWDATA[0];
+            end
         end
     end
+
+    // RTC Writes:
+    always @(posedge PCLK or negedge PRESETn) begin
+        if (!PRESETn) begin
+            //todo check if need to do anything
+        end else if (write_enable && (PADDR == RTC_CLEAR_ADDR)) begin
+            ctrl_clear_intr <= PWDATA;
+        end
+    end
+
+
 
     // --------------------------------------------------------------------------
     // APB response logic: Always ready for transmission, no errors occur
@@ -267,7 +289,7 @@ module adc_apb_wrapper_rev1 #(
         .CLK            (PCLK),
         .RESET          (~PRESETn),         // Note: dummy_adc reset is active high.
         .DATA_VALID_OUT (adc_data_valid_out),
-        .ENABLE_CALIBRATION() // New data valid output.
+        .ENABLE_CALIBRATION(adc_enable_calibration) // New data valid output.
     );
 
 dummy_amux amux_inst (
@@ -293,21 +315,10 @@ wrapper_control control_fsm_inst (
     .fifo_write_en(fifo_write_en),
     .adc_enable(adc_enable),
     .adc_ready(adc_data_valid_out),
-    .adc_start(),
-    .adc_done(),
+    .adc_start(), // Don't see anywhere where this is necessary.
+    .adc_done(), // we assume it is 1 byte?
     .apb_fifo_ready()
 );
-
-// --------------------------------------------------------------------------
-    // RTC REG writes
-    // --------------------------------------------------------------------------
-    always @(posedge PCLK or negedge PRESETn) begin
-        if (!PRESETn)
-            pll_reg <= {DATA_WIDTH{1'b0}};
-        else if (write_enable && (PADDR == PLL_CONTROL_ADDR))
-            pll_reg <= PWDATA;
-    end
-
 
 // --------------------------------------------------------------------------
     // Instantiate RTC
@@ -316,20 +327,19 @@ wrapper_control control_fsm_inst (
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDR_WIDTH)
     ) dut (
+        // THESE HAVE TO BE RENAMED TO BE RTC
         .PCLK(PCLK), //done
         .PRESETn(PRESETn), //done
         .PSEL(PSEL), //done
-        .PENABLE(PENABLE), //done
         .PWRITE(PWRITE), //done
         .PADDR(PADDR),  //done
         .PWDATA(PWDATA), //done
-        .PRDATA(PRDATA), //done
         .PREADY(PREADY), //done
         .PSLVERR(PSLVERR), //done
 
         .CLK1HZ(CLK1HZ), //TODO make this
         .nRTCRST(nRTCRST), //make this. ADD parameter for number of counts so can change later. And then clock. 
-        .nPOR(nPOR), .// todo make this
+        .nPOR(nPOR), // todo make this
 
         .RTCINTR(RTCINTR), // make this
         .rtc_trig(rtc_trig), //done

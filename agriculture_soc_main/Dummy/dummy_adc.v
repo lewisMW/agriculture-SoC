@@ -7,7 +7,7 @@ module dummy_adc
 (
     input  wire [DATA_WIDTH-1:0] STATUS_REG_ADDR,  
     output reg  [DATA_WIDTH-1:0] MEASUREMENT,      
-    input  wire [DATA_WIDTH-1:0] ADC_TRIGGER,     //this is enable ADC
+    input  wire                ADC_TRIGGER,     //this is enable ADC
     input  wire                ANALOG_IN,         
     input  wire                CLK,               
     input  wire                RESET,             
@@ -63,7 +63,8 @@ module dummy_adc
 
             // Detect rising edge of ADC_TRIGGER to generate a new measurement
             if (ADC_TRIGGER && !ADC_TRIGGER_PREV) begin
-                MEASUREMENT    <= $urandom(); // Generate new data only on a rising edge
+                MEASUREMENT    <= 0xFFFFFFFFFFFFFF & {$urandom(), $urandom()}
+                ; // Generate new data only on a rising edge
                 DATA_VALID_OUT <= 1;  // Generate a one-clock-cycle high pulse
                 $display("ADC_TRIGGER rising edge detected. Measured %h", MEASUREMENT);
             end else begin
