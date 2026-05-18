@@ -70,6 +70,7 @@ def output_construct(input_hex, address_width):
     f = open(input_hex, "r")
     hex_bytes = f.readlines()
     f.close()
+  
 
     # Number of bytes expected depending on address_width
     address_bytes = 1 << (address_width + 2)
@@ -78,10 +79,15 @@ def output_construct(input_hex, address_width):
     while (len(hex_bytes) < address_bytes): hex_bytes.append("00")
     hex_words = math.ceil(len(hex_bytes)/4)
     hex_data = []
+    # print(hex_bytes)
+
+    # print(hex_bytes)
+    # print(hex_words)
 
     # Combine bytes into words
     for i in range(hex_words):
-        temp_hex_word= f"{hex_bytes[i*4+3].rstrip()}{hex_bytes[(i*4)+2].rstrip()}{hex_bytes[(i*4)+1].rstrip()}{hex_bytes[(i*4)].rstrip()}"
+        temp_hex_word= f"{hex_bytes[i*4+3].strip()}{hex_bytes[(i*4)+2].strip()}{hex_bytes[(i*4)+1].strip()}{hex_bytes[(i*4)].strip()}"
+        # print("This is it", i, "start now:", temp_hex_word, "finished")
         hex_data.append(int(temp_hex_word, 16))
 
     # Get Date and Time to put in Generated Header

@@ -10,7 +10,7 @@
 #-----------------------------------------------------------------------------
 
 #!/usr/bin/env bash
-
+set -x
 # Check arguments passed to SoCSim
 if [ $# -eq 0 ]
   then

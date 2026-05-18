@@ -1,1 +1,6 @@
 adc_trigger_test
+read_test
+write_test
+read_fifo_simple
+read_entire_fifo
+
