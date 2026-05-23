@@ -1,6 +1,23 @@
 CAPI=2:
 
-name : soclabs:nanosoc:hostio4:1.0.0
+name : soclabs:nanosoc:hostio4:2.0.0
+
+##-----------------------------------------------------------------------------
+## 4 channel 8-bit hostio transfer over 4-bit data bus
+##
+##  SoC Testbench
+##
+## A joint work commissioned on behalf of SoC Labs,
+## under Arm Academic Access license.
+##
+## Contributors
+##
+## Design: David Flynn (dwflynn@soton.ac.uk)
+##
+## Packaging: Microsoft CoPilot AI agent support
+##
+## Copyright (c) 2024-6, SoC Labs (www.soclabs.org)
+##-----------------------------------------------------------------------------
 
 #provider : https://git.soton.ac.uk/soclabs/
 
@@ -8,27 +25,28 @@ description: FuseSoc packaged simulation testbench for hostio4 IP and validation
 
 filesets:
   rtl_cont:
-    file_type : verilogSource
+    file_type : systemVerilogSource
     files:
-      - soc_rtl/hostio4_controller_axis_txport.v
-      - soc_rtl/hostio4_controller_axis_rxport.v
-      - soc_rtl/hostio4_controller_sync.v
-      - soc_rtl/hostio4_controller_fsm.v
-      - soc_rtl/hostio4_controller.v
+      - soc_rtl/hostio4_controller_axis_txport.sv
+      - soc_rtl/hostio4_controller_axis_rxport.sv
+      - soc_rtl/hostio4_controller_sync.sv
+      - soc_rtl/hostio4_controller_fsm.sv
+      - soc_rtl/hostio4_controller.sv
 
   rtl_targ:
-    file_type : verilogSource
+    file_type : systemVerilogSource
     files:
-      - target_rtl/hostio4_target_axis_txport.v
-      - target_rtl/hostio4_target_axis_rxport.v
-      - target_rtl/hostio4_target_sync.v
-      - target_rtl/hostio4_target_fsm.v
-      - target_rtl/hostio4_target.v
+      - target_rtl/hostio4_target_axis_txport.sv
+      - target_rtl/hostio4_target_axis_rxport.sv
+      - target_rtl/hostio4_target_sync.sv
+      - target_rtl/hostio4_target_fsm.sv
+      - target_rtl/hostio4_target.sv
 
   tb:
     file_type : verilogSource
     files:
       - tb/tb_hostio4.v
+      - tb/tb_hostio4_monitor.v
       - tb/tb_axi_stream_io8_buffer.v
       - tb/tb_axi_stream_io8_rxd_check_file.v
       - tb/tb_axi_stream_io8_txd_from_file.v
@@ -39,17 +57,9 @@ filesets:
          is_include_file: true
 
 parameters:
-  POWER_PINS:
-    datatype      : int
-    description   : Gate level power pins to ARM libraries and memories
-    paramtype     : vlogdefine
   ARM_UD_MODEL:
     datatype      : int
     description   : Gate level model flag to ARM libraries and memories
-    paramtype     : vlogdefine
-  SDF_SIM:
-    datatype      : inttb_axi_stream_io8_txd_from_file
-    description   : SDF annotation enable
     paramtype     : vlogdefine
 
 #  openlane: {files : [data/sky130.tcl : {file_type : tclSource}]}

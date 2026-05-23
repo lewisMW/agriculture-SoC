@@ -27,7 +27,7 @@
 .side_set 1 opt // mapped to {XIOT_ACK}
 
 .lang_opt python out_init     = (rp2.PIO.OUT_HIGH,rp2.PIO.OUT_HIGH,rp2.PIO.OUT_HIGH,rp2.PIO.OUT_HIGH)
-.lang_opt python set_init     = (rp2.PIO.OUT_HIGH,rp2.PIO.OUT_HIGH,rp2.PIO.OUT_HIGH,rp2.PIO.OUT_HIGH)
+.lang_opt python set_init     = (rp2.PIO.OUT_LOW,rp2.PIO.OUT_LOW,rp2.PIO.OUT_LOW,rp2.PIO.OUT_LOW)
 .lang_opt python sideset_init = (rp2.PIO.OUT_HIGH)
 .lang_opt python out_shiftdir = rp2.PIO.SHIFT_RIGHT
 .lang_opt python in_shiftdir  = rp2.PIO.SHIFT_LEFT
@@ -44,7 +44,7 @@
 
 .wrap_target // wrap target for SM0
 sm02:
-    set x, 0b1111                 // default busy
+    set x, 0b0000                 // default inactive
     set pindirs 0b1111            // status drive on dio pins
 statloop:                         // poll status flags from RXFIFO
     pull noblock                  // return X if empty
@@ -168,24 +168,24 @@ sm1 = rp2.StateMachine(1, XIOTsm13, out_base=Pin(XIOT_DATA), sideset_base=XIOT_A
 sm3 = rp2.StateMachine(3, XIOTsm13, out_base=Pin(XIOT_DATA), sideset_base=XIOT_ACK)
 
 # global copy of virtual channel flags
-xiot_vcflags = 0b1111
+xiot_vcflags = 0b0000
 
 verbose = False
 
 # Function to get target FIFO status
 #From controller perspective:
 #   FIFO_status[3:0] = { tx1, rx1, tx0, rx0}
-#   Controller interprets as (tx1 empty, rx1_full, tx0 empty, rx0_full)
+#   Controller interprets as (tx1 full, rx1_empty, tx0 full, rx0_empty)
 # so we need (rx)
 #    fifo_status = rx1_not_empty << 3 | tx1_full << 2 | rx0_not_empty << 1 | tx0_full
 def get_xiot_fifo_status():
-    fifo_flags = 0b1111
+    fifo_flags = 0b0000
     if sm0.rx_fifo() <= 1: #2 RX channels share SM0
-        fifo_flags = fifo_flags & 0b0101
+        fifo_flags = fifo_flags | 0b1010
     if sm1.tx_fifo() > 0:
-        fifo_flags = fifo_flags & 0b1110 #0b1110
+        fifo_flags = fifo_flags | 0b0001
     if sm3.tx_fifo() > 0:
-        fifo_flags = fifo_flags & 0b1011 #0b1011
+        fifo_flags = fifo_flags | 0b0100
     return fifo_flags
 
 # Function to update target FIFO status
@@ -245,7 +245,7 @@ def adp_console_enter():
 # start both output state machines
 sm1.active(1)
 sm3.active(1)
-sm0.put(0b1111) # all channels inactive
+sm0.put(0b0000) # all channels inactive
 # finally start main read/control state machine
 sm0.active(1)
 

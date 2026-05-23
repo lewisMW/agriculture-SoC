@@ -1,76 +1,78 @@
 //-----------------------------------------------------------------------------
 // 4 channel 8-bit hostio transfer over 4-bit data bus
 //
-//  Target Finite State Machine
+//  SoC Target
 //
 // A joint work commissioned on behalf of SoC Labs,
 // under Arm Academic Access license.
 //
 // Contributors
 //
-// David Flynn (d.w.flynn@soton.ac.uk)
+// Design: David Flynn (dwflynn@soton.ac.uk)
+//
+// Packaging: Microsoft CoPilot AI agent support
 //
 // Copyright (c) 2024-6, SoC Labs (www.soclabs.org)
 //-----------------------------------------------------------------------------
 
-
-//-----------------------------------------------------------------------------
-// Abstract : Target (HOST)  state machine and sequencer
-//-----------------------------------------------------------------------------
-
 module hostio4_target_fsm
   (
-  input  wire       clk,
-  input  wire       resetn,
+  input  logic       clk,
+  input  logic       resetn,
 // RX 4-channel AXIS interface
-  output wire       axis_rx0_tready, 
-  input  wire       axis_rx0_tvalid,
-  input  wire [7:0] axis_rx0_tdata8,
-  output wire       axis_rx1_tready, 
-  input  wire       axis_rx1_tvalid,
-  input  wire [7:0] axis_rx1_tdata8,
-  input  wire       axis_tx0_tready, 
-  output wire       axis_tx0_tvalid,
-  output wire [7:0] axis_tx0_tdata8,
-  input  wire       axis_tx1_tready, 
-  output wire       axis_tx1_tvalid,
-  output wire [7:0] axis_tx1_tdata8,
+  output logic       axis_rx0_tready, 
+  input  logic       axis_rx0_tvalid,
+  input  logic [7:0] axis_rx0_tdata8,
+  output logic       axis_rx1_tready, 
+  input  logic       axis_rx1_tvalid,
+  input  logic [7:0] axis_rx1_tdata8,
+  input  logic       axis_tx0_tready, 
+  output logic       axis_tx0_tvalid,
+  output logic [7:0] axis_tx0_tdata8,
+  input  logic       axis_tx1_tready, 
+  output logic       axis_tx1_tvalid,
+  output logic [7:0] axis_tx1_tdata8,
 // external io interface
-  input  wire [3:0] iodata4_i,
-  output wire [3:0] iodata4_o,
-  output wire [3:0] iodata4_e,
-  output wire [3:0] iodata4_t,
-  input  wire       ioreq1_s,
-  input  wire       ioreq2_s,
-  output wire       ioack_o
-  );
+  input  logic [3:0] iodata4_i,
+  output logic [3:0] iodata4_o,
+  output logic [3:0] iodata4_e,
+  output logic [3:0] iodata4_t,
+  input  logic       ioreq1_s,
+  input  logic       ioreq2_s,
+  output logic       ioack_o//,
+//  output hostio4_target_state_e fsm_state_dbg,
+//  output logic [31:0] fsm_state_tag
+);
 
+//  hostio4_target_state_e fsm_state_dbg,
+logic [31:0] fsm_state_tag;
 
 // axis request per channel to FSM, hold until ack
-wire rx0_xfer_req;
-wire rx1_xfer_req;
-wire tx0_xfer_req;
-wire tx1_xfer_req;
+logic rx0_xfer_req;
+logic rx1_xfer_req;
+logic tx0_xfer_req;
+logic tx1_xfer_req;
 // axis request acknowledge per channel, from FSM, 1-cycle pulse
-wire rx0_xfer_ack;
-wire rx1_xfer_ack;
-wire tx0_xfer_ack;
-wire tx1_xfer_ack;
+logic rx0_xfer_ack;
+logic rx1_xfer_ack;
+logic tx0_xfer_ack;
+logic tx1_xfer_ack;
 
-reg rx0_xfer_pending;
-reg rx1_xfer_pending;
-reg tx0_xfer_pending;
-reg tx1_xfer_pending;
+logic rx0_xfer_pending;
+logic rx1_xfer_pending;
+logic tx0_xfer_pending;
+logic tx1_xfer_pending;
 
 // data ports
-wire [7:0] tx_xfer_rdata8;
-wire [7:0] rx0_xfer_wdata8;
-wire [7:0] rx1_xfer_wdata8;
+logic [7:0] tx_xfer_rdata8;
+logic [7:0] rx0_xfer_wdata8;
+logic [7:0] rx1_xfer_wdata8;
 
 // ack edge detect
-wire ack_nxt = ioreq1_s ^ ioreq2_s;
-reg ack;
-always @(posedge clk or negedge resetn)
+logic ack_nxt;
+assign ack_nxt = ioreq1_s ^ ioreq2_s;
+logic ack;
+always_ff @(posedge clk or negedge resetn)
 begin
   if (!resetn)
     ack <= 1'b0;
@@ -78,7 +80,8 @@ begin
     ack <= ack_nxt;
 end
 // ack change pulse on edge
-wire ack_change = ack ^ ack_nxt;
+logic ack_change;
+assign ack_change = ack ^ ack_nxt;
 
 
 // state[0] = ACK
@@ -106,11 +109,11 @@ localparam TXCZ = 8'b1_000_000_0;
 localparam TXDH = 8'b1_010_000_1;                     
 localparam TXDL = 8'b1_100_000_0;                     
 
-reg  [7:0] fsm_state;
-reg  [7:0] nxt_fsm_state;
+logic  [7:0] fsm_state;
+logic  [7:0] nxt_fsm_state;
 
 // ifsm next-state seqeuncer                                             
-always @(*)
+always_comb
   case (fsm_state)
   TXST: nxt_fsm_state = ( ioreq1_s) ? RXC1 : TXST;
   RXC1: nxt_fsm_state = (!ioreq2_s) ? RXC1 : (iodata4_i[0]) ? TXCZ : RXDH;
@@ -125,7 +128,7 @@ always @(*)
   endcase
 
 // state update
-always @(posedge clk or negedge resetn)
+always_ff @(posedge clk or negedge resetn)
 begin
   if (!resetn) begin
     fsm_state <= TXSZ;
@@ -133,21 +136,28 @@ begin
     fsm_state <= nxt_fsm_state;
   end
 
+logic cmd_state;
+logic rdh_state;
+logic rdl_state;
+logic vcs_state;
+logic wdh_state;
+logic wdl_state;
 assign ioack_o = fsm_state[0]; // signal ACK handshake toggle
 // 3 input sample enable
-wire cmd_state = fsm_state[1]; // Read Command nibble
-wire rdh_state = fsm_state[2]; // Read Data hi-nibble
-wire rdl_state = fsm_state[3]; // Read Data lo-nibble
+assign cmd_state = fsm_state[1]; // Read Command nibble
+assign rdh_state = fsm_state[2]; // Read Data hi-nibble
+assign rdl_state = fsm_state[3]; // Read Data lo-nibble
 // 3 output enable
-wire vcs_state = fsm_state[4]; // Virtual Channel Status
-wire wdh_state = fsm_state[5]; // Write Data hi-nibble
-wire wdl_state = fsm_state[6]; // Write Data lo-nibble
+assign vcs_state = fsm_state[4]; // Virtual Channel Status
+assign wdh_state = fsm_state[5]; // Write Data hi-nibble
+assign wdl_state = fsm_state[6]; // Write Data lo-nibble
 
-wire rdsafe_state = !fsm_state[2] & !fsm_state[3];
+logic rdsafe_state;
+assign rdsafe_state = !fsm_state[2] & !fsm_state[3];
 
 // command resister
-reg [3:0] cmd4;
-always @(posedge clk or negedge resetn)
+logic [3:0] cmd4;
+always_ff @(posedge clk or negedge resetn)
 begin
   if (!resetn)
     cmd4 <= 4'b1111; // invalid xfer pattern
@@ -155,7 +165,10 @@ begin
     cmd4 <= iodata4_i[3:0];
 end
 
-wire [3:0] vchan4_status = {tx1_xfer_pending, rx1_xfer_pending, tx0_xfer_pending, rx0_xfer_pending };
+// Virtual Channel Status bits on iodata4 during vcs_state (STAT_EN): {tx1, rx1, tx0, rx0} active-high
+
+logic [3:0] vchan4_status;
+assign vchan4_status = {tx1_xfer_pending, rx1_xfer_pending, tx0_xfer_pending, rx0_xfer_pending};
 // IO Write Data
 assign iodata4_o = ({4{vcs_state}} & vchan4_status)
                  | ({4{wdh_state}} & ((cmd4[1]) ? rx1_xfer_wdata8[7:4] : rx0_xfer_wdata8[7:4]))
@@ -171,8 +184,8 @@ assign rx1_xfer_ack =  cmd4[1] &  cmd4[0] & wdl_state & ack_change;
 
 // IO Read data
 // first register high nibble read data
-reg [3:0] rd4_hi;
-always @(posedge clk or negedge resetn)
+logic [3:0] rd4_hi;
+always_ff @(posedge clk or negedge resetn)
 begin
   if (!resetn)
     rd4_hi <= 4'b0000; // initialize
@@ -188,7 +201,7 @@ assign tx1_xfer_ack =  cmd4[1] & !cmd4[0] & rdl_state & ack_change;
 
 // channel transfer pending flags for channel status flags (inverted)
 
-always @(posedge clk or negedge resetn)
+always_ff @(posedge clk or negedge resetn)
 begin
   if (!resetn)
     rx0_xfer_pending <= 1'b0; // avoid X propagation
@@ -198,7 +211,7 @@ begin
     rx0_xfer_pending <= 1'b0;
 end
 
-always @(posedge clk or negedge resetn)
+always_ff @(posedge clk or negedge resetn)
 begin
   if (!resetn)
     rx1_xfer_pending <= 1'b0; // avoid X propagation
@@ -209,7 +222,7 @@ begin
 end
 
 // request handshake
-always @(posedge clk or negedge resetn)
+always_ff @(posedge clk or negedge resetn)
 begin
   if (!resetn)
     tx0_xfer_pending <= 1'b0; // avoid X propagation
@@ -219,7 +232,7 @@ begin
     tx0_xfer_pending <= 1'b0;
 end
 
-always @(posedge clk or negedge resetn)
+always_ff @(posedge clk or negedge resetn)
 begin
   if (!resetn)
     tx1_xfer_pending <= 1'b0; // avoid X propagation
@@ -299,34 +312,23 @@ hostio4_target_axis_txport # (
   .axis_tx_tdata   ( axis_tx1_tdata8 )
   );
 
+
+// Debug state outputs
+assign fsm_state_dbg = fsm_state;
+
+always_comb begin
+  unique case (fsm_state)
+    TXST: fsm_state_tag = {"T","X","S","T"};
+    RXC1: fsm_state_tag = {"R","X","C","1"};
+    RXDH: fsm_state_tag = {"R","X","D","H"};
+    RXDL: fsm_state_tag = {"R","X","D","L"};
+    RXDZ: fsm_state_tag = {"R","X","D","Z"};
+    TXSZ: fsm_state_tag = {"T","X","S","Z"};
+    TXCZ: fsm_state_tag = {"T","X","C","Z"};
+    TXDH: fsm_state_tag = {"T","X","D","H"};
+    TXDL: fsm_state_tag = {"T","X","D","L"};
+    default: fsm_state_tag = {"?","?","?","?"};
+  endcase
+end
+
 endmodule
-
-/*
-hostio4_target_fsm u_hostio4_target_fsm
-  (
-  .clk             ( clk             ),
-  .resetn          ( resetn          ),
-// Target 4-channel AXIS interface
-  .axis_rx0_tready ( axis_rx0_tready ), 
-  .axis_rx0_tvalid ( axis_rx0_tvalid ),
-  .axis_rx0_tdata8 ( axis_rx0_tdata8 ),
-  .axis_rx1_tready ( axis_rx1_tready ), 
-  .axis_rx1_tvalid ( axis_rx1_tvalid ),
-  .axis_rx1_tdata8 ( axis_rx1_tdata8 ),
-  .axis_tx0_tready ( axis_tx0_tready ), 
-  .axis_tx0_tvalid ( axis_tx0_tvalid ),
-  .axis_tx0_tdata8 ( axis_tx0_tdata8 ),
-  .axis_tx1_tready ( axis_tx1_tready ), 
-  .axis_tx1_tvalid ( axis_tx1_tvalid ),
-  .axis_tx1_tdata8 ( axis_tx1_tdata8 ),
-// external io interface
-  .iodata4_i       ( iodata4_i       ),
-  .iodata4_o       ( iodata4_o       ),
-  .iodata4_e       ( iodata4_e       ),
-  .iodata4_t       ( iodata4_t       ),
-  .ioreq1_s        ( ioreq1_s        ),
-  .ioreq2_s        ( ioreq2_s        ),
-  .ioack_o         ( ioack_o         )
-  );
-
-*/

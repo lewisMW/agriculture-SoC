@@ -1,60 +1,57 @@
 //-----------------------------------------------------------------------------
 // 4 channel 8-bit hostio transfer over 4-bit data bus
 //
-//  Controller
+//  SoC Controller
 //
 // A joint work commissioned on behalf of SoC Labs,
 // under Arm Academic Access license.
 //
 // Contributors
 //
-// David Flynn (d.w.flynn@soton.ac.uk)
+// Design: David Flynn (dwflynn@soton.ac.uk)
+//
+// Packaging: Microsoft CoPilot AI agent support
 //
 // Copyright (c) 2024-6, SoC Labs (www.soclabs.org)
 //-----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
-// Abstract : Initiator FSM wrapped with synchronizers
-//-----------------------------------------------------------------------------
-
-// 'define IOCLKDIV 1
-
 module hostio4_controller
   (
-  input  wire       clk,
-  input  wire       resetn,
-  input  wire       testmode,
+  input  logic       clk,
+  input  logic       resetn,
+  input  logic       testmode,
 // RX 4-channel AXIS interface
-  output wire       axis_rx0_tready, 
-  input  wire       axis_rx0_tvalid,
-  input  wire [7:0] axis_rx0_tdata8,
-  output wire       axis_rx1_tready, 
-  input  wire       axis_rx1_tvalid,
-  input  wire [7:0] axis_rx1_tdata8,
-  input  wire       axis_tx0_tready, 
-  output wire       axis_tx0_tvalid,
-  output wire [7:0] axis_tx0_tdata8,
-  input  wire       axis_tx1_tready, 
-  output wire       axis_tx1_tvalid,
-  output wire [7:0] axis_tx1_tdata8,
+  output logic       axis_rx0_tready, 
+  input  logic       axis_rx0_tvalid,
+  input  logic [7:0] axis_rx0_tdata8,
+  output logic       axis_rx1_tready, 
+  input  logic       axis_rx1_tvalid,
+  input  logic [7:0] axis_rx1_tdata8,
+  input  logic       axis_tx0_tready, 
+  output logic       axis_tx0_tvalid,
+  output logic [7:0] axis_tx0_tdata8,
+  input  logic       axis_tx1_tready, 
+  output logic       axis_tx1_tvalid,
+  output logic [7:0] axis_tx1_tdata8,
 // external io interface
-  input  wire [3:0] iodata4_a,
-  output wire [3:0] iodata4_o,
-  output wire [3:0] iodata4_e,
-  output wire [3:0] iodata4_t,
-  output wire       ioreq1_o,
-  output wire       ioreq2_o,
-  output wire       ioreq_e,
-  output wire       ioreq_t,
-  input  wire       ioack_a
+  input  logic [3:0] iodata4_a,
+  output logic [3:0] iodata4_o,
+  output logic [3:0] iodata4_e,
+  output logic [3:0] iodata4_t,
+  output logic       ioreq1_o,
+  output logic       ioreq2_o,
+  output logic       ioreq_e,
+  output logic       ioreq_t,
+  input  logic       ioack_a
   );
 
-wire       ioack_s;
-wire [3:0] iodata4_s;
+logic       ioack_s;
+logic [3:0] iodata4_s;
 
 hostio4_controller_sync  # (
   .RESET_VALUE(1'b1)
-  ) u_hostio4_controller_sync_ioack
+  )
+ u_hostio4_controller_sync_ioack
   (
   .clk(clk),
   .resetn(resetn),
@@ -63,7 +60,7 @@ hostio4_controller_sync  # (
   .sig_s(ioack_s)
   );
 
-// async status on iodata4 is active-hi so preset synchronizers to avoid spurious requests
+// async status on iodata4 is active-hi so reset synchronizers to avoid spurious requests
 
 hostio4_controller_sync  # (
   .RESET_VALUE(1'b0)
@@ -106,7 +103,7 @@ hostio4_controller_sync   # (
   .sig_s(iodata4_s[3])
   );
 
-wire ioclken;
+logic ioclken;
 `ifdef IOCLKDIV
 hostio4_controller_sync u_hostio4_ioclken_div2
   (
@@ -152,34 +149,3 @@ hostio4_controller_fsm u_hostio4_controller_fsm
   );
            
 endmodule
-
-/*
-hostio4_controller u_hostio4_controller
-  (
-  .clk             ( clk             ),
-  .resetn          ( resetn          ),
-  .testmode        ( testmode        ),
-// SoC 4-channel AXIS interface
-  .axis_rx0_tready ( axis_rx0_tready ), 
-  .axis_rx0_tvalid ( axis_rx0_tvalid ),
-  .axis_rx0_tdata8 ( axis_rx0_tdata8 ),
-  .axis_rx1_tready ( axis_rx1_tready ), 
-  .axis_rx1_tvalid ( axis_rx1_tvalid ),
-  .axis_rx1_tdata8 ( axis_rx1_tdata8 ),
-  .axis_tx0_tready ( axis_tx0_tready ), 
-  .axis_tx0_tvalid ( axis_tx0_tvalid ),
-  .axis_tx0_tdata8 ( axis_tx0_tdata8 ),
-  .axis_tx1_tready ( axis_tx1_tready ), 
-  .axis_tx1_tvalid ( axis_tx1_tvalid ),
-  .axis_tx1_tdata8 ( axis_tx1_tdata8 ),
-// external io interface
-  .iodata4_a       ( iodata4_a       ),
-  .iodata4_o       ( iodata4_o       ),
-  .iodata4_e       ( iodata4_e       ),
-  .iodata4_t       ( iodata4_t       ),
-  .ioreq1_o        ( ioreq1_a        ),
-  .ioreq2_o        ( ioreq2_a        ),
-  .ioack_a         ( ioack_a         )
-  );
-
-*/

@@ -1,7 +1,27 @@
 hostio4
 ========
 
-Verilog implementation of soclabs HOSTIO interface, multiplexing 4 virtual byte wide channels over a 7-pin interface (4-bit bidirectional packet data bus)
+~~~
+##-----------------------------------------------------------------------------
+## 4 channel 8-bit hostio transfer over 4-bit data bus
+##
+##  HOSTIO4
+##
+## A joint work commissioned on behalf of SoC Labs,
+## under Arm Academic Access license.
+##
+## Contributors
+##
+## Design: David Flynn (dwflynn@soton.ac.uk)
+##
+## Packaging: Microsoft CoPilot AI agent support
+##
+## Copyright (c) 2024-6, SoC Labs (www.soclabs.org)
+##-----------------------------------------------------------------------------
+
+~~~
+
+Verilog and SystemVerilog implementations of soclabs HOSTIO4 interface, multiplexing 4 virtual byte wide channels over a 7-pin interface (4-bit bidirectional packet data bus)
 
 
 ## Status ##
@@ -92,33 +112,47 @@ fusesoc core list
 
 To run lint (assuming Synopsys SpyGlass in this example)
 ~~~
-fusesoc run --target=lint soclabs:nanosoc:hostio4:1
+fusesoc run --target=lint soclabs:nanosoc:hostio4:2
 ~~~
 
 Run tb_hostio4_axis testbench with vcs
 ~~~
-fusesoc run --target=sim --tool=vcs soclabs:nanosoc:hostio4:1
+fusesoc run --target=sim --tool=vcs soclabs:nanosoc:hostio4:2
 ~~~
 OR, if other python vesrions or libraries installed:
 
-/usr/bin/python3.8 /usr/local/bin/fusesoc --verbose run --target=sim --tool=vcs soclabs:nanosoc:hostio4:1
+/usr/bin/python3.8 /usr/local/bin/fusesoc --verbose run --target=sim --tool=vcs soclabs:nanosoc:hostio4:2
 
 
 Run with modelsim instead of default tool (vcs)
 ~~~
-fusesoc run --target=sim --tool=modelsim soclabs:nanosoc:hostio4:1
+fusesoc run --target=sim --tool=modelsim soclabs:nanosoc:hostio4:2
 ~~~
 
 Run tb_hostio4_axis testbench with vcs and Verdi GUI
 ~~~
-fusesoc run --target=sim_gui --tool=vcs soclabs:nanosoc:hostio4:1
+fusesoc run --target=sim_gui --tool=vcs soclabs:nanosoc:hostio4:2
 ~~~
 
 List all targets
 ~~~
-fusesoc core show soclabs:nanosoc:hostio4:1
+fusesoc core show soclabs:nanosoc:hostio4:2
 ~~~
 
+## cocotb AXI-Stream testbench
+
+The soc and host modules are supported in a cocotb testbench:
+- testbench has 2 controllers, one used, one tied-off with _.ioak(1'b1)_
+- in order to validate chiplet mode can share _.xioreq1/2_
+- instantiates a _tb_hostio4_monitor()_ (use VERBOSE=1) for tramscript
+- validates and calibrates 1000x byte transfers across 4 concurrent channels 
+
+select an installed simulator that supports cocotb VPI integration and run:
+
+~~~
+cd cocotb
+make SIM=questasim
+~~~
 
 ## Implementation results - ASIC ##
 

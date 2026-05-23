@@ -23,7 +23,7 @@ localparam CLOCK_PHASE = 5;
 `ifdef ADP_FILE
   localparam ASC_FILENAME=`ADP_FILE;
 `else
-  localparam ASC_FILENAME="src/soclabs_nanosoc_hostio4_1.0.0/tb/asc-test.txt";
+  localparam ASC_FILENAME="src/soclabs_nanosoc_hostio4_2.0.0/tb/asc-test.txt";
 `endif
 
 `ifdef VCD_SIM
@@ -116,6 +116,8 @@ hostio4_controller u_hostio4_controller
   .iodata4_t       ( C_iodata4_t       ),
   .ioreq1_o        ( ioreq1            ),
   .ioreq2_o        ( ioreq2            ),
+  .ioreq_e         (                   ),
+  .ioreq_t         (                   ),
   .ioack_a         ( ioack             )
   );
 
@@ -161,11 +163,11 @@ hostio4_target u_hostio4_target
    bufif0 #1 (iodata4[0], T_iodata4_o[0], T_iodata4_t[0]);
    assign T_iodata4_i = iodata4;
 
-// bidirectional/HiZ pullups to suppress X-inputs
-  pullup(iodata4[ 0]);
-  pullup(iodata4[ 1]);
-  pullup(iodata4[ 2]);
-  pullup(iodata4[ 3]);
+// bidirectional/HiZ pulldowns to suppress X-inputs
+  pulldown(iodata4[ 0]);
+  pulldown(iodata4[ 1]);
+  pulldown(iodata4[ 2]);
+  pulldown(iodata4[ 3]);
 
 reg [19:0] cycle_count;
 integer C_tx0_byte_count ;
@@ -413,6 +415,15 @@ always @(posedge T_clk or negedge resetn)
 
   assign T_end_of_file = T_end_of_file1 & T_end_of_file2;
 
+
+  tb_hostio4_monitor #(
+    .VERBOSE(1)
+  ) u_tb_hostio4_monitor (
+  .iodata4 ( iodata4 ),
+  .ioreq1  ( ioreq1  ),
+  .ioreq2  ( ioreq2  ),
+  .ioack   ( ioack   )
+  );
 
 //-----------------------------------------------------------------------------
 // Abstract : Simple clock and power on reset generator
