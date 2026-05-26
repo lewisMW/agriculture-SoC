@@ -1,0 +1,8 @@
+//Verilog-AMS HDL for "Testench", "Enable_test" "verilogams"
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module Enable_test ( );
+
+endmodule

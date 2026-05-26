@@ -1,0 +1,36 @@
+//Verilog-AMS HDL for "Testench", "Cal_test" "verilogams"
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+
+module Cal_test (out);
+
+    output out;
+    electrical out;
+
+    parameter real period   = 1.0;     // Full period in seconds (toggle every period/2 = 0.5s)
+    parameter real vhigh    = 1.0;     // Logic high voltage
+    parameter real vlow     = 0.0;     // Logic low voltage
+    parameter real trise    = 1n;      // Rise time
+    parameter real tfall    = 1n;      // Fall time
+    parameter real tdelay   = 0.0;     // Initial delay
+
+    integer state;
+
+    analog begin
+        // Initialize state at the start of simulation
+        @(initial_step) begin
+            state = 0;
+        end
+
+        // Toggle state every period/2 (i.e., every 0.5s when period = 1.0)
+        @(timer(tdelay, period/2.0)) begin
+            state = !state;
+        end
+
+        // Drive the output voltage with rise/fall transitions
+        V(out) <+ transition(state ? vhigh : vlow, 0.0, trise, tfall);
+    end
+
+endmodule
