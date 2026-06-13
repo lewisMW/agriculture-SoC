@@ -227,7 +227,7 @@ initial begin
 `endif
 
  // --------------------------------------------------------------------------------
- // EXTIO8x4 stream interface - enabled when P1[7] is low
+ // HOSTIO4 stream interface - enabled when P1[7] is low
  //   default in previous testbenches was pullup (for FT1248, UART2)
  //
  //          v1 mapping was:    v2 config
@@ -273,7 +273,7 @@ wire end_sim = test_done & !FT1248MODE & !ioreq1 & !ioreq2 & !ioack;
       $stop;
     end
 
-extio8x4_axis_target u_extio8x4_axis_target
+hostio4_target u_hostio4_target
   (
   .clk             ( CLK             ),
   .resetn          ( NRST            ),

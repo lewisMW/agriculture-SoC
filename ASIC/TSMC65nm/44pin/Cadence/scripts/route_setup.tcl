@@ -10,9 +10,3 @@ set_db route_design_with_timing_driven 1
 
 ### SI Driven Route 
 set_db route_design_with_si_driven 1 
-
-### Route Design 
-route_design -global_detail
-
-### Timing Analysis Type 
-set_db timing_analysis_type ocv
