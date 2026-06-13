@@ -16,6 +16,7 @@
 +libext+.v+.vlib
 
 // =============    Accelerator Module search path    =============
+$(SOCLABS_GENERIC_LIB_TECH_DIR)/apb_interrupt_router/logical/apb_interrupt_router.v
 $(SOCLABS_GENERIC_LIB_TECH_DIR)/pads/verilog/PAD_INOUT8MA_NOE.v
 $(SOCLABS_GENERIC_LIB_TECH_DIR)/pads/verilog/PAD_VDDIO.v
 $(SOCLABS_GENERIC_LIB_TECH_DIR)/pads/verilog/PAD_VSSIO.v
