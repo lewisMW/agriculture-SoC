@@ -22,7 +22,7 @@ MTI_VC_OPTIONS    += -f $(TBENCH_VC) $(ADP_OPTIONS)
 MTI_RUN_OPTIONS   = -voptargs=+acc
 
 # VCS options
-VCS_OPTIONS    =  +vcs+lic+wait +v2k -sverilog -override_timescale=1ns/1ps +lint=all,noTMR,noVCDE -debug -debug_access+all -kdb
+VCS_OPTIONS    =  +vcs+lic+wait +v2k -sverilog -xprop=tmerge -override_timescale=1ns/1ps +lint=all,noTMR,noVCDE -debug -debug_access+all -kdb
 VCS_SIM_OPTION = +vcs+lic+wait +vcs+flush+log -assert nopostproc
 VCS_VC_OPTIONS = -f $(TBENCH_VC) $(ADP_OPTIONS)
 

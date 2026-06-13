@@ -1,13 +1,16 @@
 #-----------------------------------------------------------------------------
-# NanoSoC FPGA Flow Makefile 
+# NanoSoC ASIC Flow Makefile 
 # A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
 #
 # Contributors
 #
 # David Mapstone (d.a.mapstone@soton.ac.uk)
+# Daniel Newbrook (d.newbrook@soton.ac.uk)
 #
-# Copyright (C) 2021-3, SoC Labs (www.soclabs.org)
+# Copyright (C) 2021-6, SoC Labs (www.soclabs.org)
 #-----------------------------------------------------------------------------
+
+MEM_COMPILER_DIR := /home/dwn1c21/SoC-Labs/phys_ip
 
 # NanoSoC Synthesis Properties
 NANOSOC_VENDOR   ?= soclabs.org
@@ -59,6 +62,15 @@ NODE ?= 65
 
 ifeq ($(NODE),65)
 	NANOSOC_SYNTH_DIR	:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC65nm
+	NANOSOC_CADENCE_SCRIPTS_DIR	:= $(NANOSOC_SYNTH_DIR)/44pin/Cadence/scripts
+	NANOSOC_CADENCE_INPUTS_DIR	:= $(NANOSOC_SYNTH_DIR)/44pin/Cadence/inputs
+	NANOSOC_SYN_SCRIPTS_DIR 	:= $(NANOSOC_SYNTH_DIR)/44pin/Synopsys/scripts
+	NANOSOC_SYN_FLOORPLAN_DIR 	:= $(NANOSOC_SYNTH_DIR)/44pin/Synopsys/floorplan
+	NANOSOC_SYN_INPUTS_DIR 		:= $(NANOSOC_SYNTH_DIR)/44pin/Synopsys/inputs
+else ifeq ($(NODE),GF180)
+	NANOSOC_SYNTH_DIR	:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/GF180nm
+	NANOSOC_CADENCE_SCRIPTS_DIR	:= $(NANOSOC_SYNTH_DIR)/Cadence/scripts
+	NANOSOC_CADENCE_INPUTS_DIR	:= $(NANOSOC_SYNTH_DIR)/Cadence/inputs
 else
 	NANOSOC_SYNTH_DIR 			:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm
 	NANOSOC_FC_SCRIPTS_DIR 		:= $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/scripts
@@ -99,15 +111,15 @@ gen_memories: bootrom
 	cp $(BOOTROM_BIN_FILE_IN) $(BOOTROM_BIN_FILE)
 	echo "Generating register file memory libraries"
 	echo "16K RF"
-	cd $(RF_16K_DIR); $(PHYS_IP)/arm/tsmc/cln65lp/rf_sp_hdf_hvt_rvt/r0p0/bin/rf_sp_hdf_hvt_rvt all -spec $(RF_16K_65nm_SPEC_FILE);
-	cd $(RF_16K_DIR); $(PHYS_IP)/arm/tsmc/cln65lp/rf_sp_hdf_hvt_rvt/r0p0/bin/rf_sp_hdf_hvt_rvt liberty -spec $(RF_16K_65nm_SPEC_FILE);
+	cd $(RF_16K_DIR); $(MEM_COMPILER_DIR)/arm/tsmc/cln65lp/rf_sp_hdf_hvt_rvt/r0p0/bin/rf_sp_hdf_hvt_rvt all -spec $(RF_16K_65nm_SPEC_FILE);
+	cd $(RF_16K_DIR); $(MEM_COMPILER_DIR)/arm/tsmc/cln65lp/rf_sp_hdf_hvt_rvt/r0p0/bin/rf_sp_hdf_hvt_rvt liberty -spec $(RF_16K_65nm_SPEC_FILE);
 	echo "8K RF"
-	cd $(RF_08K_DIR); $(PHYS_IP)/arm/tsmc/cln65lp/rf_sp_hdf_hvt_rvt/r0p0/bin/rf_sp_hdf_hvt_rvt all -spec $(RF_08K_65nm_SPEC_FILE);
-	cd $(RF_08K_DIR); $(PHYS_IP)/arm/tsmc/cln65lp/rf_sp_hdf_hvt_rvt/r0p0/bin/rf_sp_hdf_hvt_rvt liberty -spec $(RF_08K_65nm_SPEC_FILE);
+	cd $(RF_08K_DIR); $(MEM_COMPILER_DIR)/arm/tsmc/cln65lp/rf_sp_hdf_hvt_rvt/r0p0/bin/rf_sp_hdf_hvt_rvt all -spec $(RF_08K_65nm_SPEC_FILE);
+	cd $(RF_08K_DIR); $(MEM_COMPILER_DIR)/arm/tsmc/cln65lp/rf_sp_hdf_hvt_rvt/r0p0/bin/rf_sp_hdf_hvt_rvt liberty -spec $(RF_08K_65nm_SPEC_FILE);
 	cd $(ROM_DIR)
 	echo "Generating ROM Libraries"
-	cd $(ROM_DIR); $(PHYS_IP)/arm/tsmc/cln65lp/rom_via_hdd_rvt_rvt/r0p0/bin/rom_via_hdd_rvt_rvt liberty -spec $(ROM_65nm_SPEC_FILE) -code_file $(BOOTROM_BIN_FILE);
-	cd $(ROM_DIR); $(PHYS_IP)/arm/tsmc/cln65lp/rom_via_hdd_rvt_rvt/r0p0/bin/rom_via_hdd_rvt_rvt all -spec $(ROM_65nm_SPEC_FILE) -code_file $(BOOTROM_BIN_FILE);
+	cd $(ROM_DIR); $(MEM_COMPILER_DIR)/arm/tsmc/cln65lp/rom_via_hdd_rvt_rvt/r0p0/bin/rom_via_hdd_rvt_rvt liberty -spec $(ROM_65nm_SPEC_FILE) -code_file $(BOOTROM_BIN_FILE);
+	cd $(ROM_DIR); $(MEM_COMPILER_DIR)/arm/tsmc/cln65lp/rom_via_hdd_rvt_rvt/r0p0/bin/rom_via_hdd_rvt_rvt all -spec $(ROM_65nm_SPEC_FILE) -code_file $(BOOTROM_BIN_FILE);
 	echo "Finished generating memory libraries"
 
 gen_memories_frontend_28nm: bootrom
@@ -149,17 +161,42 @@ gen_memories_16nm:
 convert_mem_to_db: 
 	lc_shell -no_log -f  $(NANOSOC_SYNTH_DIR)/synopsys_lib_conversion.tcl
 
-syn_genus_44pin: 
+cadence_setup_dirs:
 	@mkdir -p $(REPORTS_FOLDER)
+	@mkdir -p $(SYN_LOGS)	
 	@mkdir -p $(NETLIST_FOLDER)
-	@mkdir -p $(SYN_LOGS)
-	cd $(NANOSOC_SYNTH_DIR)/44pin/Cadence/scripts; genus -f $(NANOSOC_SYNTH_DIR)/44pin/Cadence/scripts/genus.tcl -log $(SYN_LOGS)/nanosoc_synth_genus.log
+	@mkdir -p $(ASIC_OUTPUT_DIR) 	 
+	@mkdir -p $(ASIC_WORK_DIR) 
+	@mkdir -p $(ASIC_LIBS_DIR) 
+	cp -rf $(NANOSOC_CADENCE_SCRIPTS_DIR) $(IMP_NANOSOC_ASIC_DIR)/
+	cp -rf $(NANOSOC_CADENCE_INPUTS_DIR) $(IMP_NANOSOC_ASIC_DIR)/
 
-syn_genus_44pin_noDFT: 
+cadence_synthesis: cadence_setup_dirs 
+	cd $(ASIC_WORK_DIR)/; genus -f $(SOCLABS_ASIC_FLOW_DIR)/Cadence/1_synthesis.tcl -log $(SYN_LOGS)/nanosoc_synth_genus.log
+
+cadence_lec:
+	cd $(ASIC_WORK_DIR)/; lec_64 -xl -dofile lec.dofile
+
+cadence_pnr_setup:
+	cd $(ASIC_WORK_DIR)/; innovus -stylus -files $(SOCLABS_ASIC_FLOW_DIR)/Cadence/2_pnr_setup.tcl
+
+cadence_pnr_clock:
+	cd $(ASIC_WORK_DIR)/; innovus -stylus -files $(SOCLABS_ASIC_FLOW_DIR)/Cadence/3_pnr_clock.tcl
+
+cadence_pnr_route:
+	cd $(ASIC_WORK_DIR)/; innovus -stylus -files $(SOCLABS_ASIC_FLOW_DIR)/Cadence/4_pnr_route.tcl
+
+# Synopsys Design Compiler and ICC2 Flows
+synopsys_setup_dirs:
 	@mkdir -p $(REPORTS_FOLDER)
+	@mkdir -p $(SYN_LOGS)	
 	@mkdir -p $(NETLIST_FOLDER)
-	@mkdir -p $(SYN_LOGS)
-	cd $(NANOSOC_SYNTH_DIR)/44pin/Cadence/scripts; genus -f $(NANOSOC_SYNTH_DIR)/44pin/Cadence/scripts/genus_nodft.tcl -log $(SYN_LOGS)/nanosoc_synth_genus_noDFT.log
+	@mkdir -p $(ASIC_OUTPUT_DIR) 	 
+	@mkdir -p $(ASIC_WORK_DIR) 
+	@mkdir -p $(ASIC_LIBS_DIR) 
+	cp -rf $(NANOSOC_SYN_SCRIPTS_DIR) $(IMP_NANOSOC_ASIC_DIR)/
+	cp -rf $(NANOSOC_SYN_FLOORPLAN_DIR) $(IMP_NANOSOC_ASIC_DIR)/
+	cp -rf $(NANOSOC_SYN_INPUTS_DIR) $(IMP_NANOSOC_ASIC_DIR)/
 
 syn_dc:
 	@mkdir -p $(REPORTS_FOLDER)
@@ -186,10 +223,11 @@ fusion_setup_libs: fusion_setup_dirs
 	fi
 
 fusion_setup_saif:
-	cp $(SOCLABS_PROJECT_DIR)/simulate/sim/dhry/waves.vcd $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/inputs/waves.vcd
+	cp $(SOCLABS_PROJECT_DIR)/simulate/sim/A_Cube_RR_out_Check/waves.vcd $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/inputs/waves.vcd
 	cd $(SOCLABS_NANOSOC_TECH_DIR)/ASIC/TSMC28nm/38pin/Synopsys_FC/inputs;  vcd2saif -verilog_instance u_nanosoc_chip_pads -input ./waves.vcd -output ./waves.saif 
 
 fusion_init: fusion_setup_saif
+	@mkdir -p $(ASIC_WORK_DIR) 
 	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/1_design_setup.tcl
 
 fusion_synthesis: 
@@ -197,6 +235,9 @@ fusion_synthesis:
 
 fusion_clock_opt:
 	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/3_clock.tcl
+
+fusion_fm_gate:
+	cd $(ASIC_WORK_DIR); fm_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/3_formality_gate.tcl
 
 fusion_route:
 	cd $(ASIC_WORK_DIR); fc_shell -f $(SOCLABS_ASIC_FLOW_DIR)/Synopsys_Fusion/4_route.tcl
