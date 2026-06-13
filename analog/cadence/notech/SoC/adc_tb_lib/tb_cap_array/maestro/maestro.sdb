@@ -32,7 +32,7 @@
 				</tooloptions>
 				<vars>
 					<var>cap_unit
-						<value>1f</value>
+						<value>34.6223</value>
 					</var>
 					<var>Vsupply
 						<value>1.8</value>
@@ -73,7 +73,7 @@
 				<value>(None)</value>
 			</plottingoption>
 			<plottingoption>plottingmode
-				<value>Replace</value>
+				<value>New Win</value>
 			</plottingoption>
 			<plottingoption>plottype
 				<value>None</value>
@@ -93,10 +93,16 @@
 			<plottingoption>distributedplot_enabled
 				<value>no</value>
 			</plottingoption>
+			<plottingoption>autoplotmode
+				<value>New Win</value>
+			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
 			<exploreroption>waveformtemplate
 				<value>(None)</value>
+			</exploreroption>
+			<exploreroption>autoplotmode
+				<value>New Win</value>
 			</exploreroption>
 		</exploreroptions>
 		<incrementalsimsetup>
@@ -106,6 +112,7 @@
 			<copyreferenceresults>1</copyreferenceresults>
 		</incrementalsimsetup>
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
+		<allcornersenabled>1</allcornersenabled>
 	</active>
 	<history>History
 	</history>
