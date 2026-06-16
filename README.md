@@ -48,6 +48,8 @@ While the interface is quiescent (both Request signals de-asserted) the target d
 Control
  + IOREQ1_o
  + IOREQ2_o
+ + IOREQ_e
+ + IOREQ_t
  + IOACK_i   // asynchronous
 
 Data
@@ -144,7 +146,7 @@ fusesoc core show soclabs:nanosoc:hostio4:2
 The soc and host modules are supported in a cocotb testbench:
 - testbench has 2 controllers, one used, one tied-off with _.ioak(1'b1)_
 - in order to validate chiplet mode can share _.xioreq1/2_
-- instantiates a _tb_hostio4_monitor()_ (use VERBOSE=1) for tramscript
+- instantiates a _tb_hostio4_monitor()_ (use VERBOSE=1) for transcript
 - validates and calibrates 1000x byte transfers across 4 concurrent channels 
 
 select an installed simulator that supports cocotb VPI integration and run:
