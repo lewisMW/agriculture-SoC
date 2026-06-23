@@ -1,2 +1,0 @@
-$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/sl_ams_tech/SL_ADC_8bits/logical/soclabs_adc.v
-$(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/sl_ams_tech/SL_ADC_8bits/logical/soclabs_adc_8bits.vams

@@ -1,1 +1,0 @@
-LINKER_NAME = cmsdk_bootloader
