@@ -128,6 +128,7 @@ compile_xm : bootrom gen_defs flist_vfiles_nanosoc
 	@echo $(ADP_OPTIONS)
 	cd $(SIM_DIR); xmprep  +overwrite $(XM_VC_OPTIONS) $(DEFINES_VC) +debug -timescale 1ns/1ps -top $(TB_TOP) | tee compile_xm.log
 	cd $(SIM_DIR); xmvlog  -work worklib -f xmvlog_ver.args | tee -a compile_xm.log
+	cd $(SIM_DIR); xmvlog  -work worklib -sv -f xmvlog_sv.args | tee -a compile_xm.log
 	cd $(SIM_DIR); xmelab  -mess -f xmelab.args -access +r | tee -a compile_xm.log
 	
 # Note : If coverage is required, you can add -coverage all to xmelab

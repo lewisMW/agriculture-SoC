@@ -203,7 +203,9 @@ ifeq ($(ASIC),yes)
 		FLIST_INCLUDES += $(SOCLABS_ASIC_LIB_TECH_DIR)/flist/asic_lib_ip_TSMC28nm.flist
 	else ifeq ($(NODE),GF180)
 		FLIST_INCLUDES += $(SOCLABS_ASIC_LIB_TECH_DIR)/flist/asic_lib_ip_GF180.flist
-	else 
+	else ifeq ($(NODE),SKY130)
+		FLIST_INCLUDES += $(SOCLABS_ASIC_LIB_TECH_DIR)/flist/asic_lib_ip_SKY130.flist
+	else
 		FLIST_INCLUDES += $(SOCLABS_ASIC_LIB_TECH_DIR)/flist/asic_lib_ip.flist
 	endif
 endif
