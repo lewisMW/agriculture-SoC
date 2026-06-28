@@ -86,6 +86,19 @@ module accelerator_subsystem #(
   // Interrupts
   output wire   [IRQ_NUM-1:0]      EXP_IRQ
 );
+
+
+wire [SYS_DATA_W-1:0] PWDATA;
+wire PWRITE;
+wire [SYS_DATA_W-1:0] PRDATA;
+wire [ACC_ADDR_W-1:0] PADDR;
+wire PREADY;
+wire PSEL;
+wire PENABLE;
+wire PSLVERR;
+wire [3:0] PSTRB;
+wire [2:0] PPROT;
+wire APBACTIVE;
   
   //-------------------------------------------
   // Instantiate your accelerator/wrapper here
@@ -126,17 +139,6 @@ module accelerator_subsystem #(
   /*input  wire*/.PREADY(PREADY),    // Ready for each APB slave
   /*input  wire*/.PSLVERR(PSLVERR));  // Error state for each APB slave
 
-wire [SYS_DATA_W-1:0] PWDATA;
-wire PWRITE;
-wire [SYS_DATA_W-1:0] PRDATA;
-wire [ACC_ADDR_W-1:0] PADDR;
-wire PREADY;
-wire PSEL;
-wire PENABLE;
-wire PSLVERR;
-wire [3:0] PSTRB;
-wire [2:0] PPROT;
-wire APBACTIVE;
 
 adc_apb_wrapper_rev1 #(
    .ADDR_WIDTH(ACC_ADDR_W),
