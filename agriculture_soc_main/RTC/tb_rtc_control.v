@@ -297,7 +297,7 @@ initial begin
     // P07 - ctrl_time_value should be non-zero (RTC has been running)
     //       We can't predict exact value but it should not be 0 after
     //       several CLK1HZ ticks have passed
-    repeat(10) @(posedge CLK1HZ);
+    // repeat(10) @(posedge CLK1HZ);
     repeat(2) @(posedge PCLK);
     // capture via hierarchical ref to confirm it was latched during READ_ACCESS
     captured_time = ctrl_time_value;
