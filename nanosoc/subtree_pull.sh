@@ -13,3 +13,4 @@ git subtree pull --prefix=nanosoc/nanosoc_tech/nanosoc/sldma230_tech https://git
 git subtree pull --prefix=nanosoc/nanosoc_tech/nanosoc/sldma350_tech https://git.soton.ac.uk/soclabs/sldma350_tech.git main --squash
 git subtree pull --prefix=nanosoc/nanosoc_tech/nanosoc/sl_ams_tech https://git.soton.ac.uk/soclabs/sl_ams_tech.git main --squash
 git subtree pull --prefix=nanosoc/nanosoc_tech/nanosoc/synopsys_28nm_slm_integration https://git.soton.ac.uk/soclabs/synopsys_28nm_slm_integration.git main --squash
+git subtree pull --prefix=nanosoc/nanosoc_tech/hostio4 https://git.soton.ac.uk/soclabs/hostio4.git main --squash

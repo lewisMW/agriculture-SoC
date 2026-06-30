@@ -26,6 +26,8 @@ xcelium.d/
 *.log
 *.log.*
 logs_*
+genus.cmd*
+genus.log*
 
 # Simulation output directories
 psf/
