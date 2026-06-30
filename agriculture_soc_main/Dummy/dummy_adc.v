@@ -14,6 +14,7 @@ module dummy_adc
     output reg                 DATA_VALID_OUT     // Data valid pulse 
 );
 
+`ifdef SIMULATION
     // Used to detect the rising edge of ADC_TRIGGER
     reg [DATA_WIDTH-1:0] ADC_TRIGGER_PREV;
     reg [DATA_WIDTH-1:0] STATUS_REG_ADDR_PREV;
@@ -72,5 +73,8 @@ module dummy_adc
             ADC_TRIGGER_PREV <= ADC_TRIGGER;
         end
     end
+`else // SIMULATION
+
+`endif
 
 endmodule
