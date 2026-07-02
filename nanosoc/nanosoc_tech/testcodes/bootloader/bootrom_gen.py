@@ -68,7 +68,9 @@ def bootrom_gen(args):
 def output_construct(input_hex, address_width):
     # Read in Hex File
     f = open(input_hex, "r")
-    hex_bytes = f.readlines()
+    ## NEW LINE ADDED
+    # hex_bytes = f.readlines()
+    hex_bytes = [line.strip() for line in f.readlines()]
     f.close()
 
     # Number of bytes expected depending on address_width

@@ -44,7 +44,7 @@
 int main (void)
 {
     UartStdOutInit();
-    //Pointer to APB Bus from memory map 
+    // Pointer to APB Bus from memory map 
     // volatile unsigned int *APB_BUS = (unsigned int *)0x51000000;
 
     // Read the status register.
@@ -57,7 +57,7 @@ int main (void)
         printf("FIFO is not empty before ADC trigger!\n");
     }
     
-    //Trigger the ADC
+    // Trigger the ADC
     // volatile unsigned int *ADC_TRIGGER_ADDR =  (uint8_t*) APB_BUS + 0x108;
     //?volatile unsigned int *ADC_TRIGGER_ADDR = APB_BUS + 0x102;
     SENSING_IP_REGS->adc_trigger = 1;
@@ -80,7 +80,7 @@ int main (void)
     if (i >= TIMEOUT) {
         printf("FIFO did not acquire a new measurement!\n");
     } else {
-        printf("Test Passed!\Fn");
+        printf("Test Passed!\n");
     }
     UartEndSimulation();
 

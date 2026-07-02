@@ -124,7 +124,9 @@ module adc_apb_wrapper_rev1 #(
     // --------------------------------------------------------------------------
     
     // .adc_wr_en    (adc_data_valid_out & ~fifo_full), TODO delete later
-    fifo_apb_adc fifo (
+    fifo_apb_adc #(
+        .DATA_WIDTH(DATA_WIDTH)   // Set dummy_adc data width to 56 bits to match FIFO.（zero padding atm）
+    ) fifo (
         .clk          (PCLK),
         .rst_n        (PRESETn),
         .adc_wr_en    (fifo_write_en),
@@ -279,7 +281,7 @@ module adc_apb_wrapper_rev1 #(
     // --------------------------------------------------------------------------
     wire analog_passthrough;
     dummy_adc #(
-        .DATA_WIDTH(56),   // Set dummy_adc data width to 56 bits to match FIFO.（zero padding atm）
+        .DATA_WIDTH(DATA_WIDTH),   // USED TO Set dummy_adc data width to 56 bits to match FIFO. But both are now 32 bits.
         .RAND_SEED(1)
     ) adc_inst (
         .STATUS_REG_ADDR(status_reg),
@@ -314,16 +316,16 @@ wrapper_control control_fsm_inst (
     .fifo_full(fifo_full),
     .fifo_write_en(fifo_write_en),
     .adc_enable(adc_enable),
-    .adc_ready(adc_data_valid_out),
-    .adc_start(), // Don't see anywhere where this is necessary.
-    .adc_done(), // we assume it is 1 byte?
+    // .adc_ready(adc_data_valid_out),
+    // .adc_start(), // Don't see anywhere where this is necessary.
+    // .adc_done(), // we assume it is 1 byte?
     .apb_fifo_ready()
 );
 
 // --------------------------------------------------------------------------
     // Instantiate RTC
     // --------------------------------------------------------------------------
-  rtc_control #(
+rtc_control #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDR_WIDTH)
     ) dut (
