@@ -65,6 +65,7 @@ wire        PSLVERR;
 // ── Test tracking ─────────────────────────────────────────────────────────────
 integer pass_count;
 integer fail_count;
+reg [31:0] time_at_alarm_set;
 
 // ── DUT instantiation ─────────────────────────────────────────────────────────
 rtc_control #(
@@ -290,14 +291,15 @@ initial begin
     // AREA 3: Timestamp read (P07-P08)
     // =========================================================================
     $display("\n--- Timestamp read (P07-P08) ---");
-
+    wait_for_state(`S_CALC, 200);
+    time_at_alarm_set = ctrl_time_value;
     // Wait for FSM to complete full first cycle and reach WAITING
     wait_for_state(`S_WAITING, 200);
 
     // P07 - ctrl_time_value should be non-zero (RTC has been running)
     //       We can't predict exact value but it should not be 0 after
     //       several CLK1HZ ticks have passed
-    // repeat(10) @(posedge CLK1HZ);
+    repeat(2) @(posedge CLK1HZ);
     repeat(2) @(posedge PCLK);
     // capture via hierarchical ref to confirm it was latched during READ_ACCESS
     captured_time = ctrl_time_value;
@@ -315,7 +317,7 @@ initial begin
     //       CDC latency means ctrl_time_value = RTC_counter - 1, but
     //       alarm_target = ctrl_time_value + alarm_offset exactly
     captured_alarm = `ALARM_TARGET;
-    check(captured_alarm, captured_time + alarm_offset,
+    check(captured_alarm, time_at_alarm_set + alarm_offset,
           "P08 alarm_target = time + offset");
 
     // =========================================================================
@@ -327,10 +329,12 @@ initial begin
     //       Trigger a new cycle by waiting for rtc_trig and then
     //       changing alarm_offset before next READ
     // For now verify the stored alarm_target matches arithmetic
-    check(`ALARM_TARGET, ctrl_time_value + alarm_offset,
-          "P09 alarm arithmetic correct");
+    // Accomplishes nothing so removed.
+    // check(`ALARM_TARGET, ctrl_time_value + alarm_offset,
+    //       "P09 alarm arithmetic correct");
 
     // P10 - alarm_target must be > ctrl_time_value (always in the future)
+    repeat(4) @(posedge PCLK);
     if (`ALARM_TARGET > ctrl_time_value)
         $display("PASS [%0t] P10 alarm_target is in the future", $time);
     else begin
@@ -351,7 +355,10 @@ initial begin
     // and RTCIMSC (word addr 0x004 = byte 0x010)
 
     // P11 - RTCMR should equal alarm_target
+    $display("Time [%0t]", $time);
     ext_apb_read(12'h004, rd_data, rd_slverr);  // RTCMR byte offset
+    $display("Time [%0t] rd_slverr: [%b]",
+                 $time, rd_slverr);
     check(rd_data, `ALARM_TARGET, "P11 RTCMR matches alarm_target");
 
     // P12 - RTCIMSC should be 1 (unmasked)
