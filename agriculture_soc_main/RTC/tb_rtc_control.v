@@ -144,6 +144,21 @@ task check;
     end
 endtask
 
+// ── Boolean check (for properties without a single expected word) ─────────────
+task check_true;
+    input         cond;
+    input [511:0] name;
+    begin
+        if (cond) begin
+            $display("PASS [%0t] %s", $time, name);
+            pass_count = pass_count + 1;
+        end else begin
+            $display("FAIL [%0t] %s", $time, name);
+            fail_count = fail_count + 1;
+        end
+    end
+endtask
+
 // ── APB passthrough tasks (external master) ───────────────────────────────────
 task ext_apb_write;
     input [11:0] addr;
@@ -238,8 +253,10 @@ initial begin
     PADDR     = 0;
     PWDATA    = 0;
 
-    // Default alarm offset - 5 CLK1HZ ticks
-    alarm_offset = 32'd5;
+    // Default alarm offset - 10 CLK1HZ ticks. Big enough to leave a comfortable
+    // window in WAITING for the passthrough / read tests before the alarm fires,
+    // and still well inside the interrupt-wait timeouts below.
+    alarm_offset = 32'd10;
 
     // =========================================================================
     // AREA 1: Reset behaviour  (P01-P04)
@@ -296,22 +313,17 @@ initial begin
     // Wait for FSM to complete full first cycle and reach WAITING
     wait_for_state(`S_WAITING, 200);
 
-    // P07 - ctrl_time_value should be non-zero (RTC has been running)
-    //       We can't predict exact value but it should not be 0 after
-    //       several CLK1HZ ticks have passed
+    // P07 - RTC counter is running. The counter starts from 0 at enable, so
+    //       rather than expecting a non-zero snapshot we prove it advances:
+    //       read RTCDR via passthrough, wait a couple of CLK1HZ ticks, read
+    //       again, and confirm it incremented.
+    ext_apb_read(12'h000, rd_data, rd_slverr);          // RTCDR now
+    captured_time = rd_data;
     repeat(2) @(posedge CLK1HZ);
     repeat(2) @(posedge PCLK);
-    // capture via hierarchical ref to confirm it was latched during READ_ACCESS
-    captured_time = ctrl_time_value;
-    if (captured_time !== 32'h0)
-        $display("PASS [%0t] P07 ctrl_time_value captured non-zero: 0x%08X",
-                 $time, captured_time);
-    else begin
-        $display("FAIL [%0t] P07 ctrl_time_value still zero after RTC running",
-                 $time);
-        fail_count = fail_count + 1;
-    end
-    pass_count = pass_count + 1;
+    ext_apb_read(12'h000, rd_data, rd_slverr);          // RTCDR later
+    check_true(rd_data > captured_time,
+               "P07 RTCDR advances over time (counter running)");
 
     // P08 - alarm_target should be ctrl_time_value + alarm_offset
     //       CDC latency means ctrl_time_value = RTC_counter - 1, but
@@ -335,14 +347,8 @@ initial begin
 
     // P10 - alarm_target must be > ctrl_time_value (always in the future)
     repeat(4) @(posedge PCLK);
-    if (`ALARM_TARGET > ctrl_time_value)
-        $display("PASS [%0t] P10 alarm_target is in the future", $time);
-    else begin
-        $display("FAIL [%0t] P10 alarm_target not in future: target=0x%08X time=0x%08X",
-                 $time, `ALARM_TARGET, ctrl_time_value);
-        fail_count = fail_count + 1;
-    end
-    pass_count = pass_count + 1;
+    check_true(`ALARM_TARGET > ctrl_time_value,
+               "P10 alarm_target is in the future");
 
     // =========================================================================
     // AREA 5: Match register + IMSC write (P11-P12)
@@ -376,8 +382,8 @@ initial begin
     repeat(10) @(posedge PCLK);
     check(`FSM_STATE, `S_WAITING, "P13b FSM still in WAITING after 10 cycles");
 
-    // P14 - Wait for real interrupt to fire (alarm_offset=5 ticks)
-    //       FSM should leave WAITING only when RTCINTR goes high
+    // P14 - Wait for the real interrupt to fire. FSM should leave WAITING only
+    //       when RTCINTR goes high.
     begin : wait_alarm
         integer timeout;
         timeout = 0;
@@ -385,16 +391,9 @@ initial begin
             @(posedge PCLK);
             timeout = timeout + 1;
         end
-        if (`FSM_STATE !== `S_WAITING)
-            $display("PASS [%0t] P14 FSM left WAITING when RTCINTR fired",
-                     $time);
-        else begin
-            $display("FAIL [%0t] P14 FSM stuck in WAITING - RTCINTR never fired",
-                     $time);
-            fail_count = fail_count + 1;
-        end
+        check_true(`FSM_STATE !== `S_WAITING,
+                   "P14 FSM left WAITING when RTCINTR fired");
     end
-    pass_count = pass_count + 1;
 
     // =========================================================================
     // AREA 7: Passthrough (P15-P18)
@@ -431,12 +430,13 @@ initial begin
     // and we catch it mid-flight
     PRESETn = 1'b0;
     repeat(3) @(posedge PCLK);
-    PRESETn = 1'b1; //TODO
-    // FSM will be in S_ENABLE_SETUP or S_READ_SETUP - neither is IDLE or WAITING
-    // so an external access should get PSLVERR
-    @(posedge PCLK); #1;
-    // Wait until we're in a busy state (not IDLE, not WAITING)
-    wait_for_state(`S_ENABLE_ACCESS, 10);
+    PRESETn = 1'b1;
+    // After reset the FSM correctly holds in IDLE until nRTCRST recovers
+    // (2 CLK1HZ cycles), so wait for that before trying to catch a busy state.
+    repeat(2) @(posedge CLK1HZ);
+    // FSM will now run ENABLE -> READ -> ... ; catch it in a non-idle/non-waiting
+    // state so an external ACCESS lands while the FSM owns the bus.
+    wait_for_state(`S_ENABLE_ACCESS, 300);
     // Now try an external read - should get PSLVERR
     PSEL    = 1'b1;
     PENABLE = 1'b0;
@@ -481,32 +481,31 @@ initial begin
         check(ctrl_intr_flag, 1'b1, "P19 ctrl_intr_flag high when RTCINTR fires");
     end
 
-    // P20 - FSM writes RTCICR=1 to clear (check FSM goes through ICR states)
+    // P20 - FSM writes RTCICR=1 to clear (check FSM enters the ICR states)
     wait_for_state(`S_ICR_SETUP, 100);
-    $display("PASS [%0t] P20 FSM entered ICR_SETUP to clear interrupt", $time);
-    pass_count = pass_count + 1;
+    check(`FSM_STATE, `S_ICR_SETUP, "P20 FSM entered ICR_SETUP to clear interrupt");
 
     // P21 - rtc_trig pulses for exactly 1 cycle
+    // P23 - after PULSE_TRIG the FSM returns to IDLE for a single cycle then
+    //       jumps straight to READ_SETUP (rtc_enabled still 1, so ENABLE is
+    //       skipped). IDLE lasts only one cycle, so both are checked in-sequence
+    //       here rather than by polling for the transient IDLE state.
     wait_for_state(`S_PULSE_TRIG, 20);
     @(posedge PCLK);
     check(rtc_trig, 1'b1, "P21 rtc_trig high in PULSE_TRIG");
+    check(`FSM_STATE, `S_IDLE, "P23 returns to IDLE after PULSE_TRIG");
     @(posedge PCLK);
     check(rtc_trig, 1'b0, "P21b rtc_trig low after 1 cycle");
+    check(`FSM_STATE, `S_READ_SETUP, "P23b second cycle skips ENABLE, goes to READ");
 
     // P22 - ctrl_intr_flag goes low after clear
     repeat(3) @(posedge PCLK);
     check(ctrl_intr_flag, 1'b0, "P22 ctrl_intr_flag low after ICR write");
 
     // =========================================================================
-    // AREA 9: Repeat cycle (P23-P24)
+    // AREA 9: Repeat cycle (P24)
     // =========================================================================
-    $display("\n--- Repeat cycle (P23-P24) ---");
-
-    // P23 - after PULSE_TRIG FSM returns to IDLE then READ_SETUP (skips enable)
-    wait_for_state(`S_IDLE, 20);
-    @(posedge PCLK);
-    // rtc_enabled should still be 1, so next state is READ_SETUP not ENABLE_SETUP
-    check(`FSM_STATE, `S_READ_SETUP, "P23 second cycle skips ENABLE goes to READ");
+    $display("\n--- Repeat cycle (P24) ---");
 
     // P24 - second alarm is calculated correctly relative to new timestamp
     wait_for_state(`S_WAITING, 200);
