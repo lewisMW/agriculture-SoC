@@ -14,12 +14,14 @@
 // Scan pins are tied off — not used outside scan insertion flow.
 //
 // FSM sequence (auto-starts after reset):
-//   IDLE -> ENABLE_RTC -> READ_TIME -> CALC_ALARM -> SET_MATCH ->
-//   ENABLE_INT -> WAITING -> CLEAR_INT -> PULSE_TRIG -> IDLE
+//   IDLE -> ENABLE_RTC -> READ_TIME -> CAPTURE -> CALC_ALARM -> SET_MATCH ->
+//   ENABLE_INT -> WAITING -> (RTCINTR) -> CLEAR_INT -> PULSE_TRIG -> IDLE
+// On repeat cycles ENABLE is skipped (counter already running).
 //
-// Passthrough: while in WAITING the internal APB bus is idle so the
-// external master can read RTC registers directly (e.g. firmware reading
-// the current timestamp).
+// Passthrough: while parked in WAITING (and IDLE) the FSM leaves the internal
+// APB bus alone, so the external master can read/write RTC registers directly
+// (e.g. firmware reading the live timestamp). A whole external transfer is
+// granted at once, so the RTC always sees a protocol-correct SETUP+ACCESS.
 // -----------------------------------------------------------------------------
 
 module rtc_control #(
@@ -77,35 +79,13 @@ end
 
 wire nRTCRST = nRTCRST_ff2;
 
-// This detectes 1 CLK HZ edge
-reg clk1hz_sync0, clk1hz_sync1, clk1hz_sync2;
-
-always @(posedge PCLK or negedge PRESETn) begin
-    if (!PRESETn) begin
-        clk1hz_sync0 <= 1'b0;
-        clk1hz_sync1 <= 1'b0;
-        clk1hz_sync2 <= 1'b0;
-    end else begin
-        clk1hz_sync0 <= CLK1HZ;
-        clk1hz_sync1 <= clk1hz_sync0;
-        clk1hz_sync2 <= clk1hz_sync1;
-    end
-end
-
-wire clk1hz_rise = clk1hz_sync1 & ~clk1hz_sync2;
-
 
 // -----------------------------------------------------------------------------
-// Passthrough signals — from external master, used during WAITING only
+// Passthrough — the external master's APB ports (PSEL/PENABLE/... in the port
+// list) are muxed onto the RTC bus while the FSM is parked (see arbitration
+// block below), so firmware can read/write RTC registers directly. If
+// passthrough is not needed, tie those inputs to 0 at the wrapper.
 // -----------------------------------------------------------------------------
-// These ports exist so firmware can read RTCDR etc while FSM is waiting.
-// Wire them in at the top level by connecting PSEL/PENABLE etc from the
-// wrapper into rtc_control. For now declared as inputs below the RTC ports.
-// If passthrough is not needed, tie them to 0.
-
-// Declared as localparams here — replace with ports if passthrough needed
-// For now the FSM owns the bus exclusively and passthrough is left as a
-// future wiring task at wrapper level.
 
 // -----------------------------------------------------------------------------
 // RTC APB signals (muxed: FSM or passthrough)
@@ -171,7 +151,7 @@ localparam [4:0]
     S_ENABLE_SETUP  = 5'd1,   // APB SETUP  — write RTCCR=1
     S_ENABLE_ACCESS = 5'd2,   // APB ACCESS — write RTCCR=1
     S_READ_SETUP    = 5'd3,   // APB SETUP  — read  RTCDR
-    S_READ_ACCESS   = 5'd4,   // APB ACCESS — read  RTCDR, latch value
+    S_READ_ACCESS   = 5'd4,   // APB ACCESS — read  RTCDR (drive PENABLE)
     S_CALC          = 5'd5,   // 1 cycle:  alarm_target = time + offset
     S_MATCH_SETUP   = 5'd6,   // APB SETUP  — write RTCMR
     S_MATCH_ACCESS  = 5'd7,   // APB ACCESS — write RTCMR
@@ -181,9 +161,7 @@ localparam [4:0]
     S_ICR_SETUP     = 5'd11,  // APB SETUP  — write RTCICR=1
     S_ICR_ACCESS    = 5'd12,  // APB ACCESS — write RTCICR=1
     S_PULSE_TRIG    = 5'd13,  // pulse rtc_trig for 1 cycle then back to IDLE
-    S_TICK_SETUP    = 5'd14,   // APB SETUP  — periodic read RTCDR while waiting
-    S_TICK_ACCESS   = 5'd15,   // APB ACCESS — periodic read RTCDR, latch value
-    S_TICK_CAPTURE  = 5'd16;
+    S_READ_CAPTURE  = 5'd14;  // latch RTCDR while the bus is in the ACCESS phase
 
 // -----------------------------------------------------------------------------
 // Internal state
@@ -202,29 +180,35 @@ end
 
 
 
-// APB Bus passthrough
-// External access attempted
-wire ext_access = PSEL & PENABLE;
+// -----------------------------------------------------------------------------
+// APB bus arbitration: external-master passthrough vs FSM
+// -----------------------------------------------------------------------------
+// The bus is free for the external master whenever the FSM is parked in IDLE or
+// WAITING *and* is not still driving the tail of its own transfer. Because the
+// FSM's APB outputs are registered, the ACCESS phase of its last write appears
+// on the bus one cycle after the FSM leaves the ACCESS state (i.e. during the
+// first WAITING cycle). Gating on !fsm_psel keeps the bus "busy" for that one
+// drain cycle so a passthrough can't clobber the FSM's write.
+wire bus_free   = ((state == S_IDLE) || (state == S_WAITING)) && !fsm_psel;
 
-// Bus is free when FSM is idle or waiting
-wire bus_free = (state == S_IDLE) || (state == S_WAITING);
+// Passthrough is granted for the WHOLE external transfer (SETUP and ACCESS), so
+// the RTC sees a protocol-correct access — we key off PSEL, not PSEL&PENABLE.
+wire ext_sel    = PSEL & bus_free;      // external master owns the bus
+wire ext_access = PSEL & PENABLE;       // ACCESS phase of an external transfer
 
-// Passthrough only when bus is free
-wire passthrough = ext_access & bus_free;
-
-// Error when external master tries during FSM activity
+// Error only if the external ACCESS phase lands while the FSM holds the bus.
 assign PSLVERR = ext_access & ~bus_free;
 assign PREADY  = 1'b1;   // always complete immediately, never stall
 
-// PRDATA — return RTC data on passthrough, 0 otherwise
-assign PRDATA  = passthrough ? rtc_prdata : 32'h0;
+// PRDATA — return RTC data during a granted passthrough, 0 otherwise
+assign PRDATA  = ext_sel ? rtc_prdata : 32'h0;
 
-// APB to RTC — mux FSM vs passthrough
-assign rtc_psel    = passthrough ? PSEL    : fsm_psel;
-assign rtc_penable = passthrough ? PENABLE : fsm_penable;
-assign rtc_pwrite  = passthrough ? PWRITE  : fsm_pwrite;
-assign rtc_paddr   = passthrough ? PADDR[11:2] : fsm_paddr;
-assign rtc_pwdata  = passthrough ? PWDATA  : fsm_pwdata;
+// APB to RTC — mux external master vs FSM
+assign rtc_psel    = ext_sel ? PSEL        : fsm_psel;
+assign rtc_penable = ext_sel ? PENABLE     : fsm_penable;
+assign rtc_pwrite  = ext_sel ? PWRITE      : fsm_pwrite;
+assign rtc_paddr   = ext_sel ? PADDR[11:2] : fsm_paddr;
+assign rtc_pwdata  = ext_sel ? PWDATA      : fsm_pwdata;
 
 
 
@@ -297,15 +281,24 @@ always @(posedge PCLK or negedge PRESETn) begin
                 state       <= S_READ_ACCESS;
             end
 
+            // Drive the read ACCESS phase (PENABLE high). Registered outputs
+            // mean this appears on the RTC bus during S_READ_CAPTURE, which is
+            // where rtc_prdata is actually valid to sample.
             S_READ_ACCESS: begin
-                fsm_psel        <= 1'b1;
-                fsm_penable     <= 1'b1;
-                ctrl_time_value <= rtc_prdata;   // latch timestamp
+                fsm_psel    <= 1'b1;
+                fsm_penable <= 1'b1;
+                fsm_paddr   <= RTC_RTCDR;   // hold address through ACCESS
+                state       <= S_READ_CAPTURE;
+            end
+
+            // Bus is in the read ACCESS phase this cycle — latch the timestamp.
+            S_READ_CAPTURE: begin
+                ctrl_time_value <= rtc_prdata;
                 state           <= S_CALC;
             end
 
             // ── Calculate alarm target (1 cycle) ──────────────────────────────
-            // ctrl_time_value is now stable from previous cycle
+            // ctrl_time_value was latched in the previous cycle and is stable.
             S_CALC: begin
                 alarm_target <= ctrl_time_value + alarm_offset;
                 state        <= S_MATCH_SETUP;
@@ -324,6 +317,9 @@ always @(posedge PCLK or negedge PRESETn) begin
             S_MATCH_ACCESS: begin
                 fsm_psel    <= 1'b1;
                 fsm_penable <= 1'b1;
+                fsm_pwrite  <= 1'b1;          // hold write through ACCESS
+                fsm_paddr   <= RTC_RTCMR;     // hold address
+                fsm_pwdata  <= alarm_target;  // hold data
                 state       <= S_IMSC_SETUP;
             end
 
@@ -340,25 +336,20 @@ always @(posedge PCLK or negedge PRESETn) begin
             S_IMSC_ACCESS: begin
                 fsm_psel    <= 1'b1;
                 fsm_penable <= 1'b1;
+                fsm_pwrite  <= 1'b1;          // hold write through ACCESS
+                fsm_paddr   <= RTC_RTCIMSC;   // hold address
+                fsm_pwdata  <= 32'h1;         // hold data
                 state       <= S_WAITING;
             end
 
             // ── Wait for RTCINTR ──────────────────────────────────────────────
-            // FSM holds bus idle here. Passthrough can be added by muxing
-            // external PSEL/PENABLE into rtc_psel/rtc_penable at this state.
-            // S_WAITING: begin
-            //     fsm_pwrite <= 1'b0;
-            //     if (RTCINTR && !passthrough)
-            //         state <= S_ICR_SETUP;
-
-            // end
-            // Now once every 1hz cycle we go and do a passthrough.
+            // FSM parks here with the bus idle so the external master can
+            // read/write RTC registers via passthrough. Defer servicing the
+            // alarm by a cycle if an external transfer is in progress, so we
+            // never tear down a passthrough access half-way.
             S_WAITING: begin
-                fsm_pwrite <= 1'b0;
-                if (RTCINTR && !passthrough)
+                if (RTCINTR && !ext_sel)
                     state <= S_ICR_SETUP;
-                else if (clk1hz_rise && !ext_access)
-                    state <= S_TICK_SETUP;
             end
 
             // ── Clear interrupt — RTCICR = 1 ─────────────────────────────────
@@ -374,6 +365,9 @@ always @(posedge PCLK or negedge PRESETn) begin
             S_ICR_ACCESS: begin
                 fsm_psel    <= 1'b1;
                 fsm_penable <= 1'b1;
+                fsm_pwrite  <= 1'b1;          // hold write through ACCESS
+                fsm_paddr   <= RTC_RTCICR;    // hold address
+                fsm_pwdata  <= 32'h1;         // hold data
                 state       <= S_PULSE_TRIG;
             end
 
@@ -381,28 +375,6 @@ always @(posedge PCLK or negedge PRESETn) begin
             S_PULSE_TRIG: begin
                 rtc_trig <= 1'b1;
                 state    <= S_IDLE;
-            end
-            S_TICK_SETUP: begin
-                fsm_psel    <= 1'b1;
-                fsm_penable <= 1'b0;
-                fsm_pwrite  <= 1'b0;
-                fsm_paddr   <= RTC_RTCDR;
-                fsm_pwdata  <= 32'h0;
-                state       <= S_TICK_ACCESS;
-            end
-
-            S_TICK_ACCESS: begin
-                fsm_psel        <= 1'b1;
-                fsm_penable     <= 1'b1;
-                // ctrl_time_value <= rtc_prdata;   // refresh latched timestamp
-                state           <= S_TICK_CAPTURE;
-            end
-
-            S_TICK_CAPTURE: begin
-                fsm_psel        <= 1'b1;        // keep bus held steady while sampling
-                fsm_penable     <= 1'b1;
-                ctrl_time_value <= rtc_prdata;  // now valid
-                state           <= S_WAITING;
             end
 
             default: state <= S_IDLE;
