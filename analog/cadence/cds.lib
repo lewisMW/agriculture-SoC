@@ -11,3 +11,4 @@ DEFINE adc_tb_lib ./notech/SoC/adc_tb_lib
 
 INCLUDE $SKY130/cds.lib
 DEFINE sky130_analog_lib ./sky130/SoC/sky130_analog_lib
+DEFINE avTech /opt/cadence/installs/ASSURA41/tools.lnx86/assura/etc/avtech/avTech
