@@ -1,78 +1,81 @@
 `timescale 1ns/1ps
-module dummy_adc
-#(
-    parameter DATA_WIDTH = 32,
-    parameter RAND_SEED = 1
-)
-(
-    input  wire [DATA_WIDTH-1:0] STATUS_REG_ADDR,  
-    output reg  [DATA_WIDTH-1:0] MEASUREMENT,      
-    input  wire                ADC_TRIGGER,     //this is enable ADC
-    input  wire                ANALOG_IN,         
-    input  wire                CLK,               
-    input  wire                RESET,             
-    input wire                 ENABLE_CALIBRATION,
-    output reg                 DATA_VALID_OUT     // Data valid pulse 
+// -----------------------------------------------------------------------------
+// dummy_adc.v
+//
+// Behavioural stand-in for the real SAR ADC (analog/.../adc_top_lib/sar, whose
+// digital core is adc_digital_lib/sarlogic). Matches the DIGITAL-facing port
+// list of the real block so it is a drop-in replacement in the synthesis flow:
+//
+//   inputs : clk, rstn (active-low), en (start/hold), cal (calibration mode)
+//   outputs: valid (conversion complete, held until the next en), result[7:0]
+//
+// The comparator feedback (`comp`) and analog nets (vp/vn/vdd/vss) of the real
+// block are internal / analog-only and are not modelled here. ANALOG_IN is a
+// placeholder for the sampled analog input.
+//
+// Timing mirrors sarlogic: while idle, asserting `en` clears `valid`, runs a
+// CONV_CYCLES conversion (SAR converts one bit per cycle), then asserts `valid`
+// and presents `result`. `result`/`valid` stay put until the next `en`, so the
+// consumer must wait for valid to fall (conversion started) and rise again
+// (conversion done). `cal` just lengthens the conversion, mirroring the sCal
+// path. Sample values come from an LFSR (deterministic, seed-controlled).
+// -----------------------------------------------------------------------------
+module dummy_adc #(
+    parameter RESULT_WIDTH = 8,
+    parameter CONV_CYCLES  = 8,     // conversion length (1 SAR bit per cycle)
+    parameter CAL_CYCLES   = 8,     // extra cycles when calibrating
+    parameter RAND_SEED    = 8'h5A  // non-zero LFSR seed
+)(
+    input  wire                    clk,
+    input  wire                    rstn,      // active-low
+    input  wire                    en,        // start/enable a conversion
+    input  wire                    cal,       // calibration mode
+    input  wire                    ANALOG_IN, // placeholder for analog input
+    output reg                     valid,     // conversion complete (level)
+    output reg  [RESULT_WIDTH-1:0] result
 );
-    // Currently I don't know what clock or calibration do so just leaving those.
+    localparam [1:0] S_WAIT = 2'd0, S_CONV = 2'd1, S_DONE = 2'd2;
 
-    // Used to detect the rising edge of ADC_TRIGGER
-    reg [DATA_WIDTH-1:0] ADC_TRIGGER_PREV;
-    reg [DATA_WIDTH-1:0] STATUS_REG_ADDR_PREV;
-    reg [DATA_WIDTH-1:0] MEASUREMENT_PREV;
-    reg ANALOG_IN_PREV;
+    reg [1:0] state;
+    reg [5:0] cnt;
+    reg [RESULT_WIDTH-1:0] lfsr;
 
-    integer seed;
-    initial begin
-        seed = RAND_SEED;
-        ADC_TRIGGER_PREV = 0;
-        STATUS_REG_ADDR_PREV = 0;
-        MEASUREMENT_PREV = 0;
-        ANALOG_IN_PREV = 0;
-    end
+    // Feedback taps for an 8-bit maximal LFSR (x^8+x^6+x^5+x^4+1)
+    wire fb = lfsr[7] ^ lfsr[5] ^ lfsr[4] ^ lfsr[3];
 
-    always @(posedge CLK or posedge RESET) begin
-        if (RESET) begin
-            // Reset all registers to initial values
-            MEASUREMENT    <= 0;
-            DATA_VALID_OUT <= 0;
-            ADC_TRIGGER_PREV <= 0;
-            STATUS_REG_ADDR_PREV <= 0;
-            MEASUREMENT_PREV <= 0;
-            ANALOG_IN_PREV <= 0;
+    always @(posedge clk or negedge rstn) begin
+        if (!rstn) begin
+            state  <= S_WAIT;
+            valid  <= 1'b0;
+            result <= {RESULT_WIDTH{1'b0}};
+            cnt    <= 6'd0;
+            lfsr   <= RAND_SEED[RESULT_WIDTH-1:0] | {{(RESULT_WIDTH-1){1'b0}}, 1'b1};
         end else begin
-            if (STATUS_REG_ADDR != STATUS_REG_ADDR_PREV) begin
-                $display("STATUS_REG_ADDR = %h", STATUS_REG_ADDR);
-                STATUS_REG_ADDR_PREV <= STATUS_REG_ADDR;
-            end
+            case (state)
+                S_WAIT: begin
+                    if (en) begin
+                        valid <= 1'b0;   // clear on a fresh conversion
+                        cnt   <= cal ? (CONV_CYCLES + CAL_CYCLES) : CONV_CYCLES;
+                        state <= S_CONV;
+                    end
+                end
 
-            if (MEASUREMENT != MEASUREMENT_PREV) begin
-                $display("MEASUREMENT = %h", MEASUREMENT);
-                MEASUREMENT_PREV <= MEASUREMENT;
-            end
+                S_CONV: begin
+                    lfsr <= {lfsr[RESULT_WIDTH-2:0], fb};  // churn the sample source
+                    if (cnt == 6'd0)
+                        state <= S_DONE;
+                    else
+                        cnt <= cnt - 6'd1;
+                end
 
-            if (ADC_TRIGGER != ADC_TRIGGER_PREV) begin
-                $display("ADC_TRIGGER = %h", ADC_TRIGGER);
-                ADC_TRIGGER_PREV <= ADC_TRIGGER;
-            end
+                S_DONE: begin
+                    result <= lfsr;
+                    valid  <= 1'b1;
+                    state  <= S_WAIT;
+                end
 
-            if (ANALOG_IN != ANALOG_IN_PREV) begin
-                $display("ANALOG_IN = %h", ANALOG_IN);
-                ANALOG_IN_PREV <= ANALOG_IN;
-            end
-
-            // Detect rising edge of ADC_TRIGGER to generate a new measurement
-            if (ADC_TRIGGER && !ADC_TRIGGER_PREV) begin
-                MEASUREMENT <= 56'hFFFFFFFFFFFFFF & {$urandom(), $urandom()}; // Generate new data only on a rising edge
-                DATA_VALID_OUT <= 1;  // Generate a one-clock-cycle high pulse
-                $display("ADC_TRIGGER rising edge detected. Measured %h", MEASUREMENT);
-            end else begin
-                DATA_VALID_OUT <= 0; // Keep DATA_VALID_OUT low after one cycle
-            end
-
-            // Store the previous ADC_TRIGGER value to detect future edges
-            ADC_TRIGGER_PREV <= ADC_TRIGGER;
+                default: state <= S_WAIT;
+            endcase
         end
     end
-
 endmodule
