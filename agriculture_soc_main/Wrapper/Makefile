@@ -1,43 +1,31 @@
-# VERILATOR = verilator
-# TB_MODULE = adc_apb_wrapper_tb
-
-# VERILOG_FILES = \
-#     ./adc_apb_wrapper.v \
-#     ./dummy_adc.v \
-#     ./dummy_amux.v \
-#     ../FIFO/fifo_apb_adc.v \
-#     ./adc_apb_wrapper_tb.v
-
-# all:
-# 	$(VERILATOR) --cc --exe --build -Wall \
-#         --trace --timescale 1ns/1ps \
-#         $(VERILOG_FILES) \
-#         -CFLAGS "-std=c++11" \
-#         -o obj_dir/$(TB_MODULE)
-
-# 	$(MAKE) -C obj_dir -f V$(TB_MODULE).mk
-# 	./obj_dir/V$(TB_MODULE)
-
-# clean:
-# 	rm -rf obj_dir waveform.vcd
-# Verilator 仿真配置
 VERILATOR = verilator
-VFLAGS = -Wno-fatal --cc --exe --trace --build --timing --main --top-module adc_apb_fifo_wrapper_tb 
+TB_MODULE = adc_apb_wrapper_rev1_tb
 
-TB_MODULE = adc_apb_fifo_wrapper_tb
-OBJ_DIR = obj_dir
+# ARM PL031 RTC IP (needed by rtc_control). Set ARM_IP_LIBRARY_PATH in your env.
+rtc_ip = $(ARM_IP_LIBRARY_PATH)/PL031/PL031-r1p3-00rel0/PL031-BU-00000-r1p3-00rel0/PL031_VC/rtc_pl031/verilog/rtl_source
 
+# Explicit file list — do NOT glob the sibling dirs (they contain rev0, *_old.v
+# and other testbenches that would collide with these modules).
 VERILOG_FILES = \
-    ./adc_apb_fifo_wrapper.v \
+    ./adc_apb_wrapper_rev1.v \
+    ./adc_apb_wrapper_rev1_tb.v \
+    ../FSM/wrapper_control.v \
     ../FIFO/fifo_apb_adc.v \
     ../Dummy/dummy_adc.v \
     ../Dummy/dummy_amux.v \
-    ./adc_apb_fifo_wrapper_tb.v
+    ../Dummy/dummy_pll.v \
+    ../RTC/rtc_control.v \
+    $(shell find $(rtc_ip) -type f -name "*.v")
+
+simulation_defs = -DSIMULATION
+VERILATOR_FLAGS = -Wno-fatal
+
+.PHONY: all clean
 
 all:
-	$(VERILATOR) $(VFLAGS) $(VERILOG_FILES)
-	make -C $(OBJ_DIR) -f V$(TB_MODULE).mk
-	./$(OBJ_DIR)/V$(TB_MODULE)
+	$(VERILATOR) --cc --trace --exe --main $(VERILATOR_FLAGS) --top $(TB_MODULE) $(VERILOG_FILES) --timing $(simulation_defs) -I$(rtc_ip)
+	$(MAKE) -C obj_dir -f V$(TB_MODULE).mk
+	./obj_dir/V$(TB_MODULE)
 
 clean:
-	rm -rf $(OBJ_DIR) *.vcd
+	rm -rf obj_dir waveform.vcd
