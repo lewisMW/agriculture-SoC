@@ -291,18 +291,17 @@ initial begin
     // =========================================================================
     $display("\n--- RTC enable first boot (P05-P06) ---");
 
-    // P05 - FSM should immediately move to S_ENABLE_SETUP after reset
-    // It auto-starts from IDLE so catch it early
-    // Re-reset to observe cleanly
-    // In AREA 2 (P05/P06): wait for nRTCRST to propagate
+    // P05 - After an APB-only reset (PRESETn pulse, nPOR held high) the RTC
+    //   block stays out of reset (nRTCRST tracks nPOR), so the FSM re-arms
+    //   immediately: its first action is ENABLE_SETUP on the next cycle, with
+    //   no wait for the nRTCRST synchroniser.
     PRESETn = 1'b0;
     repeat(3) @(posedge PCLK);
     PRESETn = 1'b1;
-    // Wait 2 CLK1HZ cycles for nRTCRST synchronizer
-    repeat(2) @(posedge CLK1HZ);
-    @(posedge PCLK); #1;
-    @(posedge PCLK);
-    check(`FSM_STATE, `S_ENABLE_SETUP, "P05 FSM goes to ENABLE_SETUP first");
+    // nRTCRST stays high (it tracks nPOR), so the FSM re-arms immediately.
+    // Catch the transient ENABLE_SETUP rather than assuming a fixed cycle.
+    wait_for_state(`S_ENABLE_SETUP, 20);
+    check(`FSM_STATE, `S_ENABLE_SETUP, "P05 FSM re-enables (ENABLE_SETUP) after APB reset");
 
     // =========================================================================
     // AREA 3: Timestamp read (P07-P08)
@@ -431,12 +430,10 @@ initial begin
     PRESETn = 1'b0;
     repeat(3) @(posedge PCLK);
     PRESETn = 1'b1;
-    // After reset the FSM correctly holds in IDLE until nRTCRST recovers
-    // (2 CLK1HZ cycles), so wait for that before trying to catch a busy state.
-    repeat(2) @(posedge CLK1HZ);
-    // FSM will now run ENABLE -> READ -> ... ; catch it in a non-idle/non-waiting
-    // state so an external ACCESS lands while the FSM owns the bus.
-    wait_for_state(`S_ENABLE_ACCESS, 300);
+    // nRTCRST stays high across an APB reset (tracks nPOR), so the FSM re-arms
+    // immediately -- catch it in a busy (non-idle/non-waiting) state so the
+    // external ACCESS below lands while the FSM owns the bus.
+    wait_for_state(`S_ENABLE_ACCESS, 20);
     // Now try an external read - should get PSLVERR
     PSEL    = 1'b1;
     PENABLE = 1'b0;
@@ -516,21 +513,52 @@ initial begin
           "P24 second alarm arithmetic correct");
 
     // =========================================================================
-    // AREA 10: nRTCRST generation (P25-P26)
+    // AREA 9b: RTC time survives an APB reset (P27)
+    // =========================================================================
+    $display("\n--- Time survives APB reset (P27) ---");
+
+    // Capture the live time (retry if the FSM briefly owns the bus)
+    wait_for_state(`S_WAITING, 500);
+    begin : rd_before
+        integer t; t = 0;
+        ext_apb_read(12'h000, rd_data, rd_slverr);         // RTCDR
+        while (rd_slverr && t < 100) begin
+            ext_apb_read(12'h000, rd_data, rd_slverr); t = t + 1;
+        end
+        captured_time = rd_data;
+    end
+
+    // APB reset ONLY (nPOR stays high) — the counter must keep running.
+    PRESETn = 1'b0;
+    repeat(3) @(posedge PCLK);
+    PRESETn = 1'b1;
+    wait_for_state(`S_WAITING, 500);
+    begin : rd_after
+        integer t; t = 0;
+        ext_apb_read(12'h000, rd_data, rd_slverr);
+        while (rd_slverr && t < 100) begin
+            ext_apb_read(12'h000, rd_data, rd_slverr); t = t + 1;
+        end
+        captured_alarm = rd_data;   // reuse reg for the "after" value
+    end
+    $display("    time before=0x%08X after=0x%08X", captured_time, captured_alarm);
+    check_true(captured_alarm >= captured_time,
+               "P27 RTC time preserved across APB reset (counter not reset)");
+
+    // =========================================================================
+    // AREA 10: nRTCRST generation vs nPOR (P25-P26)
     // =========================================================================
     $display("\n--- nRTCRST generation (P25-P26) ---");
 
-    // P25 - nRTCRST low while PRESETn low
-    PRESETn = 1'b0;
+    // P25 - nRTCRST low while nPOR low (RTC block reset; independent of PRESETn)
+    nPOR = 1'b0;
     repeat(2) @(posedge PCLK);
-    check(`NRTCRST, 1'b0, "P25 nRTCRST low while PRESETn low");
+    check(`NRTCRST, 1'b0, "P25 nRTCRST low while nPOR low");
 
-    // P26 - nRTCRST deasserts exactly 2 CLK1HZ cycles after PRESETn releases
-    PRESETn = 1'b1;
-    // After 1 CLK1HZ cycle ff1 goes high, ff2 still low
+    // P26 - nRTCRST deasserts exactly 2 CLK1HZ cycles after nPOR releases
+    nPOR = 1'b1;
     @(posedge CLK1HZ); #1;
     check(`NRTCRST, 1'b0, "P26a nRTCRST still low after 1 CLK1HZ cycle");
-    // After 2nd CLK1HZ cycle ff2 goes high
     @(posedge CLK1HZ); #1;
     check(`NRTCRST, 1'b1, "P26b nRTCRST high after 2 CLK1HZ cycles");
 
