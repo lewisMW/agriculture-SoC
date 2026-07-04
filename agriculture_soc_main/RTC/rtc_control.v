@@ -4,9 +4,13 @@
 //
 // Self-contained RTC controller. Owns the PL031 instance and all reset logic.
 //
-// Internally generates nRTCRST via 2-flop sync on CLK1HZ per ARM spec:
-//   - asserted asynchronously when PRESETn deasserts
-//   - deasserted synchronously to CLK1HZ (2 cycles after PRESETn reasserts)
+// Internally generates nRTCRST via a 2-flop sync on CLK1HZ, keyed off nPOR:
+//   - asserted asynchronously when nPOR deasserts (power-on / cold reset)
+//   - deasserted synchronously to CLK1HZ (2 cycles after nPOR reasserts)
+// It is deliberately NOT derived from PRESETn, so the RTC counter keeps time
+// across an APB (PRESETn) reset. Only a power-on (nPOR) — or a firmware write
+// to RTCLR via passthrough — resets the count. The control FSM below is still
+// reset by PRESETn and simply re-arms the alarm against the preserved time.
 //
 // nPOR must come from outside — it survives APB resets so cannot be
 // generated internally.
@@ -62,13 +66,14 @@ wire        SCANOUTCLK1HZ;
 
 
 // -----------------------------------------------------------------------------
-// nRTCRST generation — 2-flop synchroniser per ARM PL031 spec s4.11
-// Assert asynchronously with PRESETn, deassert synchronously to CLK1HZ
+// nRTCRST generation — 2-flop synchroniser on CLK1HZ, keyed off nPOR (NOT
+// PRESETn) so the counter survives an APB reset. Assert async with nPOR,
+// deassert synchronously to CLK1HZ (2 cycles after nPOR reasserts).
 // -----------------------------------------------------------------------------
 reg nRTCRST_ff1, nRTCRST_ff2;
 
-always @(posedge CLK1HZ or negedge PRESETn) begin
-    if (!PRESETn) begin
+always @(posedge CLK1HZ or negedge nPOR) begin
+    if (!nPOR) begin
         nRTCRST_ff1 <= 1'b0;
         nRTCRST_ff2 <= 1'b0;
     end else begin

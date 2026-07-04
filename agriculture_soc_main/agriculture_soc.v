@@ -28,7 +28,34 @@ module agriculture_soc #(
 wire fclk; // Free Running Clock 
 assign fclk = clk; 
 
-wire resetn = reset; 
+wire resetn = reset;
+
+// -------------------------------------------------------------------------
+// RTC support signals for the sensing peripheral
+// -------------------------------------------------------------------------
+// ~1 Hz tick for the RTC. CLK1HZ_DIV sets the half-period divide from fclk;
+// this value is sim-friendly. For real hardware set it to (fclk_hz / 2) so
+// CLK1HZ toggles at 1 Hz (e.g. 25_000_000 for a 50 MHz fclk).
+localparam [31:0] CLK1HZ_DIV = 32'd50;
+reg  [31:0] clk1hz_ctr;
+reg         clk1hz_reg;
+always @(posedge fclk or negedge resetn) begin
+   if (~resetn) begin
+      clk1hz_ctr <= 32'd0;
+      clk1hz_reg <= 1'b0;
+   end else if (clk1hz_ctr >= (CLK1HZ_DIV - 32'd1)) begin
+      clk1hz_ctr <= 32'd0;
+      clk1hz_reg <= ~clk1hz_reg;
+   end else begin
+      clk1hz_ctr <= clk1hz_ctr + 32'd1;
+   end
+end
+wire clk1hz = clk1hz_reg;
+
+// Power-on reset for the RTC. Driven from the external reset only, so it
+// survives the CPU/system (APB) reset (hresetn, which sys_reset_req can pulse)
+// and the RTC keeps time across a warm reset.
+wire npor = resetn;
 
 // MUX2CPU Response and Data
 wire mux2cpu_hready; 
@@ -273,8 +300,11 @@ cmsdk_ahb_to_sram SRAM_Interface (
    .SRAMCS(sram_cs)
 ); 
 
-// Mock SRAM
-cmsdk_fpga_sram #(.MEMFILE("code.hex")) SRAM_Bank0 (
+// Boot RAM: CMSDK preloadable FPGA memory model. cmsdk_fpga_rom is a writable
+// SRAM that $readmemh's `filename` at time 0 (same model nanosoc uses to load a
+// program image). Replaces the DesignStart cmsdk_fpga_sram/.MEMFILE variant,
+// which isn't in the Corstone-101/BP210 kit.
+cmsdk_fpga_rom #(.filename("code.hex")) SRAM_Bank0 (
    // Clock and Reset
    .CLK(fclk),
    // .RESETn(hresetn),    // This module doesn't have a reset
@@ -370,7 +400,9 @@ adc_apb_wrapper_rev1 #(
 ) sensor_wrapper (
    // Clock and Reset
    .PCLK(fclk),
-   .PRESETn(hresetn),
+   .CLK1HZ(clk1hz),      // ~1 Hz RTC tick
+   .PRESETn(hresetn),    // APB reset (may be pulsed by sys_reset_req)
+   .nPOR(npor),          // power-on reset (survives warm reset; keeps RTC time)
    // Address and Control
    .PSEL(apb_wrapper_sel),
    .PADDR(apb_addr),
@@ -381,7 +413,11 @@ adc_apb_wrapper_rev1 #(
    // Handshake
    .PRDATA(apb_rdata),
    .PREADY(apb_wrapper_ready),
-   .PSLVERR()
+   .PSLVERR(),
+   // Unused APB sidebands
+   .APBACTIVE(1'b1),
+   .PPROT(3'b000),
+   .PSTRB(4'b1111)
 );
 
 endmodule
