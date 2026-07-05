@@ -91,3 +91,72 @@ all:
 
 clean:
 	rm -rf obj_dir code.hex *.vcd
+
+# -----------------------------------------------------------------------------
+# Unit-test regression. Runs every self-checking block testbench and aggregates
+# the per-block "=== NAME: N PASSED, M FAILED ===" summary lines.
+#
+#   make verify        # full suite (RTC + Wrapper need ARM_IP_LIBRARY_PATH set)
+#   make verify-free   # only the blocks that need no ARM IP (FIFO + FSM)
+#
+# Each block builds in its own dir/obj_dir, so there are no cross-block
+# collisions. Failures in one block do not stop the others (leading '-').
+# -----------------------------------------------------------------------------
+VERIF_LOG = verif_run.log
+
+.PHONY: verify verify-free _verify_summary
+
+verify: _run_free _run_ip _verify_summary
+
+verify-free: _run_free _verify_summary
+
+_run_free:
+	@rm -f $(VERIF_LOG)
+	@echo "===== UNIT TEST REGRESSION ====="
+	-@$(MAKE) --no-print-directory -C FIFO rand 2>&1 | tee -a $(VERIF_LOG)
+	-@$(MAKE) --no-print-directory -C FSM  all  2>&1 | tee -a $(VERIF_LOG)
+	-@$(MAKE) --no-print-directory -C FSM  seq  2>&1 | tee -a $(VERIF_LOG)
+
+_run_ip:
+	-@$(MAKE) --no-print-directory -C RTC     all  2>&1 | tee -a $(VERIF_LOG)
+	-@$(MAKE) --no-print-directory -C Wrapper all  2>&1 | tee -a $(VERIF_LOG)
+	-@$(MAKE) --no-print-directory -C Wrapper rand 2>&1 | tee -a $(VERIF_LOG)
+
+_verify_summary:
+	@echo ""
+	@echo "===== REGRESSION SUMMARY ====="
+	@grep -E "===.*PASSED,.*FAILED.*===" $(VERIF_LOG) || echo "(no summary lines — did a build fail? RTC/Wrapper need ARM_IP_LIBRARY_PATH)"
+	@echo "=============================="
+	@if grep -qE "[1-9][0-9]* FAILED" $(VERIF_LOG); then \
+	    echo "RESULT: FAILURES PRESENT"; false; \
+	 else \
+	    echo "RESULT: ALL REPORTED SUITES PASS"; \
+	 fi
+
+# -----------------------------------------------------------------------------
+# Lint (sign-off gate 2). Two scopes:
+#   make lint-free  # peripheral RTL that needs no ARM IP (fast, vendor-noise-free)
+#   make lint       # full sensing DUT incl. rtc_control + PL031 (needs ARM IP)
+# HANDOFF note: expect a few benign WIDTH/UNUSED to fix; the dummy analog stubs
+# warn — waive or exclude those.
+# -----------------------------------------------------------------------------
+LINT_FREE_FILES = \
+    ./FIFO/fifo_apb_adc.v \
+    ./FSM/wrapper_control.v \
+    ./Dummy/dummy_adc.v \
+    ./Dummy/dummy_amux.v \
+    ./Dummy/dummy_pll.v
+
+LINT_DUT_FILES = \
+    ./Wrapper/adc_apb_wrapper_rev1.v \
+    ./RTC/rtc_control.v \
+    $(LINT_FREE_FILES) \
+    $(shell find $(rtc_ip) -type f -name "*.v")
+
+.PHONY: lint lint-free
+
+lint-free:
+	verilator --lint-only -Wall $(LINT_FREE_FILES)
+
+lint:
+	verilator --lint-only -Wall --top-module adc_apb_wrapper_rev1 $(LINT_DUT_FILES) $(ARM_INCDIRS)
