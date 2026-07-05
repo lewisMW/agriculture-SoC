@@ -26,6 +26,19 @@
 // APB bus alone, so the external master can read/write RTC registers directly
 // (e.g. firmware reading the live timestamp). A whole external transfer is
 // granted at once, so the RTC always sees a protocol-correct SETUP+ACCESS.
+//
+// poll_enable (from the wrapper's rtc_ctrl register, reset = 1) gates autonomous
+// polling. When it is low the FSM parks in WAITING and does NOT service the
+// alarm: it never advances to CLEAR_INT/PULSE_TRIG, so no rtc_trig is emitted
+// and wrapper_control is not kicked. The PL031 counter and nRTCRST are left
+// untouched, so time keeps running and passthrough reads still work while
+// disabled. Re-enable semantics: as soon as poll_enable goes high again the FSM
+// resumes from WAITING. If the alarm already fired while disabled (RTCINTR
+// pending) it services it immediately — one sample fires on re-enable, then the
+// FSM clears the interrupt, re-reads the counter and re-arms from the *current*
+// time. If the alarm had not yet fired, it simply keeps waiting for the
+// already-armed target. Either way there is no stale-offset stall (the bug that
+// motivated this control): pausing/resuming never depends on alarm_offset.
 // -----------------------------------------------------------------------------
 
 module rtc_control #(
@@ -42,6 +55,7 @@ module rtc_control #(
 
     // ── Control interface from wrapper ────────────────────────────────────────
     input  wire [DATA_WIDTH-1:0] alarm_offset,     // seconds to wait
+    input  wire                  poll_enable,       // 1 = autonomous polling on (default)
 
     // ── Status outputs to wrapper ─────────────────────────────────────────────
     output reg  [DATA_WIDTH-1:0] ctrl_time_value,  // last captured timestamp
@@ -353,7 +367,11 @@ always @(posedge PCLK or negedge PRESETn) begin
             // alarm by a cycle if an external transfer is in progress, so we
             // never tear down a passthrough access half-way.
             S_WAITING: begin
-                if (RTCINTR && !ext_sel)
+                // Only service the alarm when polling is enabled. When
+                // poll_enable is low we park here indefinitely (counter still
+                // runs, passthrough still granted); resume the moment it is
+                // raised, servicing any alarm that fired while disabled.
+                if (RTCINTR && !ext_sel && poll_enable)
                     state <= S_ICR_SETUP;
             end
 

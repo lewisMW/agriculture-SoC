@@ -14,6 +14,8 @@
 //   P19-P22  Interrupt handling
 //   P23-P24  Repeat cycle
 //   P25-P26  nRTCRST generation
+//   P27      RTC time survives an APB reset
+//   P28-P32  poll_enable disable/enable (Task A)
 // =============================================================================
 
 // ── FSM state values - must match rtc_control.v ──────────────────────────────
@@ -47,6 +49,7 @@ reg         PRESETn;
 reg         CLK1HZ;
 reg         nPOR;
 reg  [31:0] alarm_offset;
+reg         poll_enable;
 
 wire [31:0] ctrl_time_value;
 wire        ctrl_intr_flag;
@@ -65,6 +68,7 @@ wire        PSLVERR;
 // ── Test tracking ─────────────────────────────────────────────────────────────
 integer pass_count;
 integer fail_count;
+integer trig_count;                 // counts rtc_trig pulses (for poll_enable test)
 reg [31:0] time_at_alarm_set;
 
 // ── DUT instantiation ─────────────────────────────────────────────────────────
@@ -77,6 +81,7 @@ rtc_control #(
     .CLK1HZ         (CLK1HZ),
     .nPOR           (nPOR),
     .alarm_offset   (alarm_offset),
+    .poll_enable    (poll_enable),
     .ctrl_time_value(ctrl_time_value),
     .ctrl_intr_flag (ctrl_intr_flag),
     .rtc_trig       (rtc_trig),
@@ -126,6 +131,12 @@ always @(posedge PCLK) begin
              dut.RTCINTR);
 end
 
+
+// ── rtc_trig pulse counter (used by the poll_enable disable/enable test) ─────
+always @(posedge PCLK) begin
+    if (!PRESETn) trig_count <= 0;
+    else if (rtc_trig) trig_count <= trig_count + 1;
+end
 
 // ── Check task ────────────────────────────────────────────────────────────────
 task check;
@@ -235,6 +246,7 @@ reg [31:0] rd_data;
 reg        rd_slverr;
 reg [31:0] captured_time;
 reg [31:0] captured_alarm;
+integer    trig_saved;
 
 // =============================================================================
 // Stimulus
@@ -245,6 +257,9 @@ initial begin
 
     pass_count = 0;
     fail_count = 0;
+
+    // Autonomous polling enabled by default (matches the reg's reset value)
+    poll_enable = 1'b1;
 
     // Initialise bus to idle
     PSEL      = 0;
@@ -561,6 +576,62 @@ initial begin
     check(`NRTCRST, 1'b0, "P26a nRTCRST still low after 1 CLK1HZ cycle");
     @(posedge CLK1HZ); #1;
     check(`NRTCRST, 1'b1, "P26b nRTCRST high after 2 CLK1HZ cycles");
+
+    // =========================================================================
+    // AREA 11: poll_enable disable/enable (P28-P32)
+    //   Task A: firmware must be able to pause autonomous polling without
+    //   stopping the RTC counter. Clean-slate reset, arm a short period, prove:
+    //     - autonomous rtc_trig fires while enabled
+    //     - disable -> no further rtc_trig even though the alarm fires
+    //     - the counter keeps advancing while disabled (passthrough still works)
+    //     - re-enable -> rtc_trig resumes (pending alarm serviced immediately)
+    // =========================================================================
+    $display("\n--- poll_enable disable/enable (P28-P32) ---");
+
+    // Clean slate so this area doesn't depend on the nPOR toggling above.
+    poll_enable = 1'b1;
+    alarm_offset = 32'd3;            // short period for a quick alarm
+    do_reset;
+
+    // Let the first autonomous cycle complete: FSM arms, alarm fires, trig pulses.
+    begin : wait_first_trig
+        integer t; t = 0;
+        while (trig_count == 0 && t < 20000) begin @(posedge PCLK); t = t + 1; end
+    end
+    // P28 - autonomous trigger fires while enabled
+    check_true(trig_count >= 1, "P28 autonomous rtc_trig fires while poll_enable=1");
+
+    // Disable polling immediately after a trigger (FSM is re-arming toward the
+    // next alarm, well inside the alarm_offset window).
+    poll_enable = 1'b0;
+    trig_saved  = trig_count;
+
+    // Capture time, then wait longer than alarm_offset so the alarm WOULD fire.
+    ext_apb_read(12'h000, rd_data, rd_slverr);
+    captured_time = rd_data;
+    repeat(6) @(posedge CLK1HZ);    // > alarm_offset (3) CLK1HZ ticks
+    repeat(4) @(posedge PCLK);
+
+    // P29 - no new rtc_trig while disabled, even though the alarm fired
+    check(trig_count, trig_saved, "P29 no rtc_trig while poll_enable=0");
+
+    // P30 - FSM parked in WAITING while disabled (bus free for passthrough)
+    check(`FSM_STATE, `S_WAITING, "P30 FSM parked in WAITING while disabled");
+
+    // P31 - counter still advancing while disabled (passthrough read succeeds)
+    ext_apb_read(12'h000, rd_data, rd_slverr);
+    check_true(rd_slverr === 1'b0, "P31a passthrough read still granted while disabled");
+    check_true(rd_data > captured_time, "P31b RTC counter advances while disabled");
+
+    // Re-enable: the alarm that fired while disabled is pending, so trig should
+    // resume promptly.
+    poll_enable = 1'b1;
+    begin : wait_resume
+        integer t; t = 0;
+        while (trig_count == trig_saved && t < 20000) begin @(posedge PCLK); t = t + 1; end
+    end
+    // P32 - rtc_trig resumes after re-enable
+    check_true(trig_count > trig_saved, "P32 rtc_trig resumes after poll_enable=1");
 
     // =========================================================================
     // Summary

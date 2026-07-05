@@ -24,6 +24,7 @@
 //   0x200-0x21C RTC     (RW) PL031 regs via passthrough (address-translated)
 //   0x220 fifo_clear    (WO) any write flushes the FIFO
 //   0x224 rtc_alarm_off (RW) polling period in RTC seconds (default below)
+//   0x228 rtc_ctrl      (RW) bit0 = autonomous-polling enable (reset = 1)
 // -----------------------------------------------------------------------------
 module adc_apb_wrapper_rev1 #(
     parameter ADDR_WIDTH = 12,
@@ -65,6 +66,7 @@ module adc_apb_wrapper_rev1 #(
     localparam ADC_CAL_ADDR      = 12'h10C;
     localparam FIFO_CLEAR_ADDR   = 12'h220;
     localparam ALARM_OFFSET_ADDR = 12'h224;
+    localparam RTC_CTRL_ADDR     = 12'h228;
 
     // RTC region: 0x200-0x21F. Forwarded to rtc_control with the address
     // translated down to PL031 word space (0x200 -> RTCDR, 0x204 -> RTCMR, ...).
@@ -83,6 +85,7 @@ module adc_apb_wrapper_rev1 #(
     reg [DATA_WIDTH-1:0] amux_reg;
     reg                  cal_reg;           // ADC calibration enable (bit0)
     reg [DATA_WIDTH-1:0] alarm_offset_reg;  // polling period (RTC seconds)
+    reg                  poll_enable_reg;   // autonomous-polling enable (bit0, reset 1)
     reg [DATA_WIDTH-1:0] status_reg;
 
     // --------------------------------------------------------------------------
@@ -163,6 +166,7 @@ module adc_apb_wrapper_rev1 #(
                     AMUX_ADDR:         PRDATA = amux_reg;
                     ADC_CAL_ADDR:      PRDATA = {{(DATA_WIDTH-1){1'b0}}, cal_reg};
                     ALARM_OFFSET_ADDR: PRDATA = alarm_offset_reg;
+                    RTC_CTRL_ADDR:     PRDATA = {{(DATA_WIDTH-1){1'b0}}, poll_enable_reg};
                     default:           PRDATA = {DATA_WIDTH{1'b0}};
                 endcase
             end
@@ -219,6 +223,13 @@ module adc_apb_wrapper_rev1 #(
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) alarm_offset_reg <= DEFAULT_ALARM_OFFSET;
         else if (write_enable && (PADDR == ALARM_OFFSET_ADDR)) alarm_offset_reg <= PWDATA;
+    end
+
+    // Autonomous-polling enable. Resets to 1 (polling on). Firmware clears bit0
+    // to pause autonomous sampling (RTC counter keeps running); sets it to resume.
+    always @(posedge PCLK or negedge PRESETn) begin
+        if (!PRESETn) poll_enable_reg <= 1'b1;
+        else if (write_enable && (PADDR == RTC_CTRL_ADDR)) poll_enable_reg <= PWDATA[0];
     end
 
     // Manual one-shot trigger (1-cycle pulse) on a write to adc_trigger.
@@ -301,6 +312,7 @@ module adc_apb_wrapper_rev1 #(
         .CLK1HZ          (CLK1HZ),
         .nPOR            (nPOR),
         .alarm_offset    (alarm_offset_reg),
+        .poll_enable     (poll_enable_reg),
         .ctrl_time_value (),                 // firmware reads live time via passthrough (RTCDR)
         .ctrl_intr_flag  (ctrl_intr_flag),
         .rtc_trig        (rtc_trig),

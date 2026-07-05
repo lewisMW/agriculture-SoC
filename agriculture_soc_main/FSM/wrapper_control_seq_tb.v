@@ -93,7 +93,7 @@ module wrapper_control_seq_tb;
 
     integer i;
     integer exp_writes;
-    integer before;
+    integer wr_before;
 
     initial begin
         $dumpfile("waveform.vcd");
@@ -119,7 +119,7 @@ module wrapper_control_seq_tb;
         check_true(wr_count == 3, "C2 back-to-back triggers each produce a write");
 
         // C3: a trigger asserted mid-conversion must be ignored (no extra write)
-        before = wr_count;
+        wr_before = wr_count;
         pulse_trig;
         // wait until the ADC is mid-conversion, then fire a spurious trigger
         wait (uut.state == S_WAIT_DONE);
@@ -127,22 +127,22 @@ module wrapper_control_seq_tb;
         repeat (2) @(posedge clk);
         i = 0;
         while (uut.state !== S_IDLE && i < 50) begin @(posedge clk); i = i + 1; end
-        check_true(wr_count == before + 1, "C3 mid-conversion trigger ignored (only one write)");
+        check_true(wr_count == wr_before + 1, "C3 mid-conversion trigger ignored (only one write)");
 
         // C4: FIFO full at pre-check -> drop, err set, NO write
-        before = wr_count;
+        wr_before = wr_count;
         fifo_full = 1'b1;
         pulse_trig;
         repeat (4) @(posedge clk);
         check_true(err_fifo_full === 1'b1, "C4 err_fifo_full set on full drop");
-        check_true(wr_count == before, "C4 no write when FIFO full");
+        check_true(wr_count == wr_before, "C4 no write when FIFO full");
         check_true(adc_en === 1'b0, "C4 ADC not enabled on full drop");
 
         // C4b: err_fifo_full self-clears on the next successful cycle
         fifo_full = 1'b0;
         run_episode(50);
         check_true(err_fifo_full === 1'b0, "C4b err_fifo_full clears on next good cycle");
-        check_true(wr_count == before + 1, "C4b write resumes after full clears");
+        check_true(wr_count == wr_before + 1, "C4b write resumes after full clears");
 
         // C5: constrained-random stream. Hold fifo_full stable across each
         //     episode; expected writes += 1 only when not full at the pre-check.
