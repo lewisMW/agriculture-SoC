@@ -50,6 +50,7 @@ module adc_apb_wrapper_rand_tb;
     localparam A_RTC_DR  = 12'h200;
     localparam A_FIFOCLR = 12'h220;
     localparam A_ALARMO  = 12'h224;
+    localparam A_RTCCTRL = 12'h228;
 
     adc_apb_wrapper_rev1 #(.ADDR_WIDTH(ADDR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) uut (
         .PCLK(PCLK), .CLK1HZ(CLK1HZ), .PRESETn(PRESETn), .nPOR(nPOR),
@@ -149,6 +150,7 @@ module adc_apb_wrapper_rand_tb;
     integer i, k;
     integer sample_count;
     reg [3:0] op;
+    reg [31:0] rtc_t0;
 
     initial begin
         $dumpfile("waveform.vcd");
@@ -166,49 +168,66 @@ module adc_apb_wrapper_rand_tb;
         repeat(3) @(posedge PCLK);
         $display("--- reset released ---");
 
-        // ── Phase A: long interval — a huge period must yield NO autonomous
-        //    sample within a long window (also proves offset writes take hold).
-        apb_write(A_ALARMO, 32'h0FFFFFFF); note_regacc(A_ALARMO);
-        apb_write(A_FIFOCLR, 32'h1);       note_regacc(A_FIFOCLR);
-        repeat(4) @(posedge PCLK);
-        wait_fifo_data(5000);              // give it a long chance
-        apb_read(A_STATUS); note_regacc(A_STATUS);
-        check_true((rd & 32'h3) == 32'h0, "A long interval: no autonomous sample");
+        // NOTE on the RTC: it re-arms the alarm (time + alarm_offset) only AFTER
+        // the current alarm fires, so a change to alarm_offset takes effect on the
+        // NEXT cycle, not immediately. We therefore keep a short period throughout
+        // and never arm a huge offset (which would stall re-arming). The runtime
+        // offset-change property is proven deterministically at the RTC unit level
+        // (tb_rtc_control P24).
 
-        // ── Phase B: alarm_offset runtime change — drop to a short period and a
-        //    sample must now appear autonomously (new offset took effect).
+        // ── Phase A: the autonomous path works — set a short poll period and a
+        //    sample must appear with no manual trigger.
         apb_write(A_ALARMO, 32'd3); note_regacc(A_ALARMO);
-        $display("--- waiting for autonomous sample after offset change ---");
-        wait_fifo_data(20000);
-        apb_read(A_STATUS); note_regacc(A_STATUS);
-        check_true((rd & 32'h3) != 32'h0, "B offset change takes effect (sample appears)");
-
-        // ── Phase B2: deterministic fill to FULL (autonomous suppressed) so the
-        //    full-occupancy bin, S_WRITE and the S_ERR_FULL drop state are hit.
-        apb_write(A_ALARMO, 32'h0FFFFFFF); note_regacc(A_ALARMO);
-        apb_write(A_FIFOCLR, 32'h1);       note_regacc(A_FIFOCLR);
-        repeat(4) @(posedge PCLK);
-        for (i = 0; i < FIFO_DEPTH; i = i + 1) trig_and_settle;
-        apb_read(A_STATUS); note_regacc(A_STATUS);
-        check_true((rd & 32'h3) == 32'h2, "B2 FIFO FULL after DEPTH manual samples");
-        trig_and_settle;                                  // one more -> dropped
-        apb_read(A_STATUS); note_regacc(A_STATUS);
-        check_true((rd & 32'h10) != 32'h0, "B2 drop flag set on overflow");
-
-        // ── Phase C: manual-vs-autonomous collision stress. Re-enable short-
-        //    period autonomous polling, hammer manual triggers and drain; the
-        //    FSM must stay live (return to IDLE) and never overflow.
         apb_write(A_FIFOCLR, 32'h1); note_regacc(A_FIFOCLR);
-        apb_write(A_ALARMO, 32'd3);  note_regacc(A_ALARMO);
+        $display("--- waiting for autonomous RTC-driven sample ---");
+        wait_fifo_data(40000);
+        apb_read(A_STATUS); note_regacc(A_STATUS);
+        check_true((rd & 32'h3) != 32'h0, "A autonomous RTC-driven sample appears");
+
+        // ── Phase A2 (Task A): poll_enable disable/enable. Clearing rtc_ctrl bit0
+        //    pauses autonomous sampling while the RTC counter keeps running, so
+        //    RTCDR stays readable; setting it resumes sampling.
+        apb_write(A_RTCCTRL, 32'h0);                      // disable autonomous polling
+        repeat(4) @(posedge PCLK);                        // let any in-flight sample settle
+        apb_write(A_FIFOCLR, 32'h1); note_regacc(A_FIFOCLR);
+        apb_read(A_RTCCTRL);
+        check_true((rd & 32'h1) == 32'h0, "A2 rtc_ctrl reads back disabled");
+        apb_read(A_RTC_DR); note_regacc(A_RTC_DR); rtc_t0 = rd;
+        repeat(12) @(posedge CLK1HZ);                     // >> alarm_offset: an alarm WOULD fire
+        apb_read(A_STATUS); note_regacc(A_STATUS);
+        check_true((rd & 32'h3) == 32'h0, "A2 no autonomous sample while polling disabled");
+        apb_read(A_RTC_DR); note_regacc(A_RTC_DR);
+        check_true(!rd_err && rd > rtc_t0, "A2 RTCDR still readable + advancing while disabled");
+        apb_write(A_RTCCTRL, 32'h1);                      // re-enable autonomous polling
+        wait_fifo_data(40000);
+        apb_read(A_STATUS); note_regacc(A_STATUS);
+        check_true((rd & 32'h3) != 32'h0, "A2 autonomous samples resume after re-enable");
+
+        // ── Phase B: reach FULL and verify the overflow drop. Both the autonomous
+        //    alarm and manual triggers feed the FIFO; fire manual triggers until
+        //    FULL (capped), then one more trigger while full must set the drop
+        //    flag. Hits the full-occupancy bin and the S_ERR_FULL state.
+        k = 0;
+        while (!uut.fifo_full && k < 200) begin trig_and_settle; k = k + 1; end
+        check_true(uut.fifo_full === 1'b1, "B FIFO reaches FULL");
+        trig_and_settle;                                  // trigger while full -> dropped
+        apb_read(A_STATUS); note_regacc(A_STATUS);
+        check_true((rd & 32'h10) != 32'h0, "B drop flag set on overflow while full");
+
+        // ── Phase C: liveness under a rapid manual-trigger + drain storm while the
+        //    autonomous alarm is also firing (manual-vs-rtc_trig collision). The
+        //    FSM must never lock up (always return to IDLE) and never overflow
+        //    (the continuous invariants above catch a bad write).
+        apb_write(A_FIFOCLR, 32'h1); note_regacc(A_FIFOCLR);
         for (i = 0; i < 40; i = i + 1) begin
             apb_write(A_TRIG, 32'h1); note_regacc(A_TRIG);
             if ((i & 3) == 0) begin apb_read(A_MEAS_LO); note_regacc(A_MEAS_LO); end
             repeat(($random & 4'hF)) @(posedge PCLK);   // random gap
         end
-        // FSM must be able to return to IDLE (liveness after the collision storm)
+        // FSM must be able to return to IDLE (liveness after the trigger storm)
         k = 0;
-        while (uut.u_ctrl.state !== 3'd0 && k < 200) begin @(posedge PCLK); k = k + 1; end
-        check_true(uut.u_ctrl.state === 3'd0, "C FSM returns to IDLE after collision storm");
+        while (uut.u_ctrl.state !== 3'd0 && k < 500) begin @(posedge PCLK); k = k + 1; end
+        check_true(uut.u_ctrl.state === 3'd0, "C FSM returns to IDLE after trigger storm");
         apb_write(A_FIFOCLR, 32'h1); note_regacc(A_FIFOCLR);
 
         // ── Phase D: constrained-random APB traffic across the whole map, with

@@ -8,11 +8,11 @@
 //
 // These formalise the same invariants the testbenches check procedurally, but
 // as always-on temporal properties independent of the stimulus. On a violation
-// Verilator prints the $error and flags the assertion failure.
+// the simulator prints the $error and flags the assertion failure.
 //
-// NOTE: SystemVerilog. Verilator supports this SVA subset with --assert; if your
-// Verilator build rejects a construct, this file is optional (the procedural
-// monitors in the testbenches cover the same properties in the default flow).
+// NOTE: SystemVerilog SVA. Supported with the --assert flag; if your tool
+// rejects a construct here, this file is optional (the procedural monitors in
+// the testbenches cover the same properties in the default flow).
 // -----------------------------------------------------------------------------
 
 // ── FIFO invariants (fifo_apb_adc) ───────────────────────────────────────────
