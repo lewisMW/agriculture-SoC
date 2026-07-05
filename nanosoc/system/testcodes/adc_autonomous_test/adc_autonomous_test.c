@@ -1,28 +1,24 @@
 /*
  *-----------------------------------------------------------------------------
- * adc_autonomous_test.c
+ * adc_autonomous_test.c  (INSTRUMENTED diagnostic, printf-free / small binary)
  *
- * End-to-end firmware test of the INTENDED operating mode: the RTC alarm drives
- * the sampling FSM autonomously (no manual trigger), the CPU just polls/drains.
- * This is the path adc_trigger_test does NOT cover (that one uses the manual
- * 0x108 trigger).
+ * WHY printf-free: printf with %-format specifiers pulls in newlib vfprintf,
+ * which bloats the image to ~42k words and OVERFLOWS the 16384-word program
+ * memory (cmsdk_fpga_rom range [0:16383]) -> the image is truncated and the CPU
+ * runs garbage (this is why adc_autonomous_test / fifo_drain_test "run forever"
+ * with no output, while adc_trigger_test, which only uses plain-string printf
+ * folded to puts, fits and works). Here we output via UartPutc only, so the
+ * binary stays small and actually runs.
  *
- *   1. Clear the FIFO.
- *   2. Set a short poll period (rtc_alarm_offset) so the alarm fires quickly.
- *   3. Poll status until an autonomous sample appears (RTC alarm -> FSM -> FIFO).
- *   4. Confirm the RTC re-arms: wait for a SECOND autonomous sample.
- *   5. Drain and report.
+ * Output goes to logs/uart2.log (the terminal shows the FT1248/ADP tube garble,
+ * which is expected framing noise, not our text).
  *
- * PREREQUISITE (NanoSoC): accelerator_subsystem.v must wire CLK1HZ + nPOR into
- * the sensor_wrapper (currently unconnected — see VERIFICATION.md). Without that
- * the RTC never ticks and no autonomous sample ever arrives (this test will
- * report the timeout FAIL). Works once CLK1HZ/nPOR are driven.
- *
- * SIM-TIME CAVEAT: how fast this completes depends on the CLK1HZ rate in the
- * NanoSoC integration (alarm_offset is in RTC "seconds" = CLK1HZ periods). The
- * timeout below is generous; if it times out, lower ALARM_PERIOD or check that
- * CLK1HZ is toggling fast enough in the testbench. A timeout prints a clear
- * FAIL rather than hanging.
+ * Phase 1 — is the RTC ticking? PARK the RTC (huge alarm_offset) so it arms once
+ *   then sits in WAITING and never re-arms, making the rtc_dr passthrough read
+ *   collision-free (a PSLVERR would HardFault the CPU with no handler). Read
+ *   rtc_dr twice: advancing => CLK1HZ+nPOR wired (Task D worked); stuck => not.
+ * Phase 2 — autonomous sampling: short period, poll ONLY status_reg (never
+ *   PSLVERRs), bounded so it ends fast either way and flushes the log.
  *-----------------------------------------------------------------------------
  */
 #ifdef CORTEX_M0
@@ -34,70 +30,79 @@
 #include "core_cm0plus.h"
 #endif
 
-#include <stdio.h>
 #include <stdint.h>
 #include "uart_stdout.h"
-#include "sensing_ip.h"
+#include "../sensing_ip.h"
+#include "../sensing_print.h"   /* sp_str / sp_hex / sp_dec / sp_nl (printf-free) */
 
-#define ALARM_PERIOD   2u          /* RTC seconds between autonomous samples */
-#define POLL_TIMEOUT   2000000u    /* max status polls before giving up      */
+#define PARK_OFFSET    0x0FFFFFFFu
+#define ALARM_PERIOD   2u
+#define POLL_TIMEOUT   60000u
 
-/* Poll status until the FIFO reports data, or timeout. Returns 1 on data. */
-static int wait_for_sample(void)
-{
-    uint32_t polls = 0;
-    while (polls < POLL_TIMEOUT) {
-        if (GET_FIFO_STATUS(SENSING_IP_REGS->status_reg) != STATUS_FIFO_EMPTY)
-            return 1;
-        polls++;
-    }
-    return 0;
-}
+static void settle(volatile uint32_t n) { while (n--) { __asm volatile("nop"); } }
 
 int main(void)
 {
     int failures = 0;
     uint32_t drained = 0;
+    uint32_t t0, t1, s, polls;
 
     UartStdOutInit();
-    printf("adc_autonomous_test: start\n");
+    sp_str("adc_autonomous_test: start\n");
 
-    /* 1. Clean slate */
-    SENSING_IP_REGS->fifo_clear = 1;
-
-    /* 2. Short poll period -> RTC alarm fires soon and re-arms each cycle */
-    SENSING_IP_REGS->rtc_alarm_offset = ALARM_PERIOD;
-    printf("Armed autonomous polling, period = %u RTC-seconds\n", (unsigned)ALARM_PERIOD);
-
-    /* 3. First autonomous sample */
-    if (!wait_for_sample()) {
-        printf("FAIL: no autonomous sample within timeout (check CLK1HZ rate)\n");
+    /* ---- Phase 1: park RTC, then check the counter advances --------------- */
+    SENSING_IP_REGS->rtc_alarm_offset = PARK_OFFSET;
+    settle(8000u);
+    t0 = SENSING_IP_REGS->rtc_dr;
+    settle(8000u);
+    t1 = SENSING_IP_REGS->rtc_dr;
+    sp_str("RTC counter: t0="); sp_hex(t0);
+    sp_str(" t1="); sp_hex(t1);
+    sp_str((t1 != t0) ? " (advancing - RTC alive)\n" : " (STUCK - CLK1HZ/nPOR not wired!)\n");
+    if (t1 == t0) {
+        sp_str("FAIL: RTC counter not advancing -> Task D wiring not effective.\n");
         UartEndSimulation();
         return 0;
     }
-    printf("First autonomous sample acquired (ok)\n");
 
-    /* 4. Drain what we have, then confirm the alarm re-arms with a 2nd sample */
-    while (GET_FIFO_STATUS(SENSING_IP_REGS->status_reg) != STATUS_FIFO_EMPTY) {
-        volatile uint32_t s = SENSING_IP_REGS->measurement_low;
-        (void)s;
-        drained++;
-        if (drained > 32u) break;   /* safety */
+    /* ---- Phase 2: autonomous sampling (status-only polling) --------------- */
+    SENSING_IP_REGS->fifo_clear = 1;
+    SENSING_IP_REGS->rtc_alarm_offset = ALARM_PERIOD;
+    sp_str("Armed autonomous polling (period=2s). Waiting for sample...\n");
+
+    polls = 0;
+    while (polls < POLL_TIMEOUT) {
+        s = SENSING_IP_REGS->status_reg;
+        if (GET_FIFO_STATUS(s) != STATUS_FIFO_EMPTY) break;
+        polls++;
     }
-    printf("Drained %u sample(s) from first burst\n", (unsigned)drained);
+    if (polls >= POLL_TIMEOUT) {
+        sp_str("FAIL: RTC ticks but no autonomous sample. last status="); sp_hex(s); sp_nl();
+        UartEndSimulation();
+        return 0;
+    }
+    sp_str("First autonomous sample acquired (ok)\n");
 
-    if (!wait_for_sample()) {
-        printf("FAIL: RTC did not re-arm (no second autonomous sample)\n");
+    while (GET_FIFO_STATUS(SENSING_IP_REGS->status_reg) != STATUS_FIFO_EMPTY) {
+        volatile uint32_t d = SENSING_IP_REGS->measurement_low;
+        (void)d;
+        if (++drained > 32u) break;
+    }
+    sp_str("Drained "); sp_dec(drained); sp_str(" sample(s)\n");
+
+    polls = 0;
+    while (polls < POLL_TIMEOUT) {
+        if (GET_FIFO_STATUS(SENSING_IP_REGS->status_reg) != STATUS_FIFO_EMPTY) break;
+        polls++;
+    }
+    if (polls >= POLL_TIMEOUT) {
+        sp_str("FAIL: RTC did not re-arm (no second sample)\n");
         failures++;
     } else {
-        printf("Second autonomous sample acquired — RTC re-armed (ok)\n");
+        sp_str("Second autonomous sample acquired - RTC re-armed (ok)\n");
     }
 
-    if (failures == 0)
-        printf("Test Passed!\n");
-    else
-        printf("Test FAILED: %d check(s) failed\n", failures);
-
+    sp_str(failures == 0 ? "Test Passed!\n" : "Test FAILED\n");
     UartEndSimulation();
     return 0;
 }

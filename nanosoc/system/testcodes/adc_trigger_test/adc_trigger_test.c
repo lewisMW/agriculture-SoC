@@ -39,7 +39,7 @@
 #include "uart_stdout.h"
 
 // #define ADC_STATUS_MASK 0b00000000000000000000000000001100
-#include "sensing_ip.h"
+#include "../sensing_ip.h"
 
 int main (void)
 {
