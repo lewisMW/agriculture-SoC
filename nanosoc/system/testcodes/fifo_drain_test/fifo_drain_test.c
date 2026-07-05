@@ -26,10 +26,10 @@
 #include "core_cm0plus.h"
 #endif
 
-#include <stdio.h>
 #include <stdint.h>
 #include "uart_stdout.h"
-#include "sensing_ip.h"
+#include "../sensing_ip.h"
+#include "../sensing_print.h"   /* printf-free output: keeps image within 16k-word memory */
 
 #define FIFO_DEPTH   16
 
@@ -49,14 +49,14 @@ int main(void)
     int i;
 
     UartStdOutInit();
-    printf("fifo_drain_test: start\n");
+    sp_str("fifo_drain_test: start\n");
 
     /* Start clean */
     SENSING_IP_REGS->fifo_clear = 1;
     settle();
     status = SENSING_IP_REGS->status_reg;
     if (GET_FIFO_STATUS(status) != STATUS_FIFO_EMPTY) {
-        printf("FAIL: FIFO not empty after clear (status=0x%08x)\n", (unsigned)status);
+        sp_str("FAIL: FIFO not empty after clear (status="); sp_hex(status); sp_str(")\n");
         failures++;
     }
 
@@ -67,11 +67,10 @@ int main(void)
     }
     status = SENSING_IP_REGS->status_reg;
     if (GET_FIFO_STATUS(status) != STATUS_FIFO_FULL) {
-        printf("FAIL: FIFO not FULL after %d samples (status=0x%08x)\n",
-               FIFO_DEPTH, (unsigned)status);
+        sp_str("FAIL: FIFO not FULL after fill (status="); sp_hex(status); sp_str(")\n");
         failures++;
     } else {
-        printf("FIFO full after %d samples (ok)\n", FIFO_DEPTH);
+        sp_str("FIFO full after 16 samples (ok)\n");
     }
 
     /* 2. Overflow attempt: one more trigger must be dropped, flag set */
@@ -79,13 +78,13 @@ int main(void)
     settle();
     status = SENSING_IP_REGS->status_reg;
     if ((status & STATUS_FIFO_DROP_MASK) == 0) {
-        printf("FAIL: drop flag not set on overflow (status=0x%08x)\n", (unsigned)status);
+        sp_str("FAIL: drop flag not set on overflow (status="); sp_hex(status); sp_str(")\n");
         failures++;
     } else {
-        printf("Overflow correctly dropped, drop flag set (ok)\n");
+        sp_str("Overflow correctly dropped, drop flag set (ok)\n");
     }
     if (GET_FIFO_STATUS(status) != STATUS_FIFO_FULL) {
-        printf("FAIL: FIFO not FULL after dropped overflow (status=0x%08x)\n", (unsigned)status);
+        sp_str("FAIL: FIFO not FULL after dropped overflow (status="); sp_hex(status); sp_str(")\n");
         failures++;
     }
 
@@ -97,21 +96,21 @@ int main(void)
         drained++;
         settle();                       /* let status settle after the pop */
         if (drained > FIFO_DEPTH + 4) {  /* safety net against a stuck flag */
-            printf("FAIL: drain did not terminate (drained=%u)\n", (unsigned)drained);
+            sp_str("FAIL: drain did not terminate (drained="); sp_dec(drained); sp_str(")\n");
             failures++;
             break;
         }
     }
-    printf("Drained %u samples\n", (unsigned)drained);
+    sp_str("Drained "); sp_dec(drained); sp_str(" samples\n");
     if (drained != FIFO_DEPTH) {
-        printf("FAIL: expected %d samples, got %u\n", FIFO_DEPTH, (unsigned)drained);
+        sp_str("FAIL: expected 16 samples, got "); sp_dec(drained); sp_nl();
         failures++;
     }
 
     if (failures == 0)
-        printf("Test Passed!\n");
+        sp_str("Test Passed!\n");
     else
-        printf("Test FAILED: %d check(s) failed\n", failures);
+        sp_str("Test FAILED\n");
 
     UartEndSimulation();
     return 0;

@@ -27,6 +27,7 @@ typedef struct
     volatile uint32_t rtc_icr;           // 0x21C - RTC Interrupt Clear Register
     volatile uint32_t fifo_clear;        // 0x220 - Clear FIFO Register (any write flushes)
     volatile uint32_t rtc_alarm_offset;  // 0x224 - polling period in RTC seconds
+    volatile uint32_t rtc_ctrl;          // 0x228 - bit0 = autonomous-polling enable (reset 1)
 } sensing_ip_regs_t;
 #define SENSING_IP_REGS ((volatile sensing_ip_regs_t *) SENSING_IP_REGS_BASE)
 
@@ -50,6 +51,9 @@ typedef struct
 
 // ADC_TRIGGER
 #define ADC_TRIGGER_ONESHOT   0x01
+
+// RTC_CTRL (0x228)
+#define RTC_CTRL_POLL_ENABLE  0x01   // bit0: 1 = autonomous polling on (reset), 0 = paused
 
 #define GET_FIFO_STATUS(status_reg)    ((status_reg) & STATUS_FIFO_MASK)
 #define GET_ADC_STATUS(status_reg)     (((status_reg) & STATUS_ADC_MASK) >> STATUS_ADC_SHIFT)

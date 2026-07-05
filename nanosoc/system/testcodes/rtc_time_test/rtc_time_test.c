@@ -34,10 +34,10 @@
 #include "core_cm0plus.h"
 #endif
 
-#include <stdio.h>
 #include <stdint.h>
 #include "uart_stdout.h"
-#include "sensing_ip.h"
+#include "../sensing_ip.h"
+#include "../sensing_print.h"   /* printf-free output: keeps image within 16k-word memory */
 
 #define RTC_LOAD_VALUE   0x00001000u
 
@@ -53,7 +53,7 @@ int main(void)
     uint32_t t1, t2;
 
     UartStdOutInit();
-    printf("rtc_time_test: start\n");
+    sp_str("rtc_time_test: start\n");
 
     /* Park the RTC: a huge poll period means it arms once then stays in
      * WAITING, so passthrough accesses below are granted. */
@@ -62,7 +62,7 @@ int main(void)
 
     /* 1. Read the live time */
     t1 = SENSING_IP_REGS->rtc_dr;
-    printf("RTCDR (initial) = 0x%08x\n", (unsigned)t1);
+    sp_str("RTCDR (initial) = "); sp_hex(t1); sp_nl();
 
     /* 2. Load a known time via RTCLR (only reachable through passthrough) */
     SENSING_IP_REGS->rtc_lr = RTC_LOAD_VALUE;
@@ -71,19 +71,19 @@ int main(void)
     /* 3. Read it back — should reflect the loaded value (>= it, counter may
      *    have ticked on). */
     t2 = SENSING_IP_REGS->rtc_dr;
-    printf("RTCDR (after load 0x%08x) = 0x%08x\n", (unsigned)RTC_LOAD_VALUE, (unsigned)t2);
+    sp_str("RTCDR (after load "); sp_hex(RTC_LOAD_VALUE); sp_str(") = "); sp_hex(t2); sp_nl();
 
     if (t2 < RTC_LOAD_VALUE) {
-        printf("FAIL: RTCDR did not reflect the loaded time\n");
+        sp_str("FAIL: RTCDR did not reflect the loaded time\n");
         failures++;
     } else {
-        printf("RTC load/read via passthrough works (ok)\n");
+        sp_str("RTC load/read via passthrough works (ok)\n");
     }
 
     if (failures == 0)
-        printf("Test Passed!\n");
+        sp_str("Test Passed!\n");
     else
-        printf("Test FAILED: %d check(s) failed\n", failures);
+        sp_str("Test FAILED\n");
 
     UartEndSimulation();
     return 0;
