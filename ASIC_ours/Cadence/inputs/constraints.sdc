@@ -44,17 +44,36 @@ set_multicycle_path 2 -through uPAD_SWDIO_IO
 #set_false_path -through uPAD_P0_*
 #set_false_path -through uPAD_P1_*
 
-set_multicycle_path 2 -from uPAD_SWDIO_IO/A -to uPAD_SWDIO_IO/Y 
-set_multicycle_path 2 -from uPAD_SWDIO_IO/IE -to uPAD_SWDIO_IO/Y 
-set_multicycle_path 2 -from uPAD_SWDIO_IO/OE -to uPAD_SWDIO_IO/Y 
+# A: OUT      (soc to external)
+# Y: IN       (external to soc)
+# IE: INP_DIS (inverted: input enable == !input disable)
+# OE: OE_N    (inverted: output enable == !output disable)
+
+# set_multicycle_path 2 -from uPAD_SWDIO_IO/A -to uPAD_SWDIO_IO/Y 
+# set_multicycle_path 2 -from uPAD_SWDIO_IO/IE -to uPAD_SWDIO_IO/Y 
+# set_multicycle_path 2 -from uPAD_SWDIO_IO/OE -to uPAD_SWDIO_IO/Y 
+set_multicycle_path 2 -from uPAD_SWDIO_IO/OUT -to uPAD_SWDIO_IO/IN 
+set_multicycle_path 2 -from uPAD_SWDIO_IO/INP_DIS -to uPAD_SWDIO_IO/IN
+set_multicycle_path 2 -from uPAD_SWDIO_IO/OE_N -to uPAD_SWDIO_IO/IN
 
 set_multicycle_path 2 -through [get_pins uPAD_P0_*/PAD]
-set_multicycle_path 2 -from uPAD_P0_*/IE -to uPAD_P0_*/Y
-set_multicycle_path 2 -from uPAD_P0_*/OE -to uPAD_P0_*/Y
+# set_multicycle_path 2 -from uPAD_P0_*/IE -to uPAD_P0_*/Y
+# set_multicycle_path 2 -from uPAD_P0_*/OE -to uPAD_P0_*/Y
+# set_multicycle_path 2 -from uPAD_P0_*/INP_DIS -to uPAD_P0_*/IN
+# set_multicycle_path 2 -from uPAD_P0_*/OE_N -to uPAD_P0_*/IN
 
 set_multicycle_path 2 -through [get_pins uPAD_P1_*/PAD]
-set_multicycle_path 2 -from uPAD_P1_*/IE -to uPAD_P1_*/Y
-set_multicycle_path 2 -from uPAD_P1_*/OE -to uPAD_P1_*/Y
+# set_multicycle_path 2 -from uPAD_P1_*/IE -to uPAD_P1_*/Y
+# set_multicycle_path 2 -from uPAD_P1_*/OE -to uPAD_P1_*/Y
+# set_multicycle_path 2 -from uPAD_P1_*/INP_DIS -to uPAD_P1_*/IN
+# set_multicycle_path 2 -from uPAD_P1_*/OE_N -to uPAD_P1_*/IN
+
+# for the P0 and P1 GPIO ones, need to ignore the path that goes through externally
+# ie from IE -> IN and OE -> IN again.
+foreach uPAD_cell [get_db [get_cells -regexp "uPAD_P[01]_.*" -hierarchical] .name] {
+    set_multicycle_path 2 -through [get_pins -regexp "${uPAD_cell}/(INP_DIS)|(IN)"]
+    set_multicycle_path 2 -through [get_pins -regexp "${uPAD_cell}/(OE_N)|(IN)"]
+}
 
 #### DELAY DEFINITION
 

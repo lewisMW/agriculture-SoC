@@ -28,6 +28,8 @@ xcelium.d/
 logs_*
 genus.cmd*
 genus.log*
+innovus.cmd*
+innovus.log*
 
 # Simulation output directories
 psf/
@@ -75,6 +77,10 @@ thumbnail_*.png
 
 # AHDL compiled simulation databases
 *.ahdlSimDB/
+
+# synthesis generated files
+ASIC_ours/Cadence/outputs
+ASIC_ours/Cadence/reports
 
 # Backup files (redundant with git)
 *.bak

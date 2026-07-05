@@ -1,9 +1,12 @@
 set io_dir      /opt/pdk/sky130A/libs.ref/sky130_fd_io
 set sram_dir    /home/daniel/precompiled_mems/SKY130
+set sky130_dir  /home/daniel/sky130_cadence
 set sc_dir      /home/daniel/sky130_cadence/sky130_scl_9T_0.1.2/sky130_scl_9T
+set sc_tech_dir /home/daniel/sky130_cadence/sky130_scl_9T_0.1.2/sky130_scl_9T_tech
 
 set io_lib_dir ${io_dir}/lib
 set sc_lib_dir ${sc_dir}/lib
+set sc_techlib_dir ${sc_tech_dir}/lib
 set sram_8k_lib_dir  ${sram_dir}/sky130_sram_8kbyte_1rw_32x2048_8
 
 set io_max_libs [list \
@@ -47,21 +50,21 @@ create_library_set -name default_libset_max\
     [list ${sc_lib_dir}/sky130_ss_1.62_125_nldm.lib \
     ${sram_8k_lib_dir}/sky130_sram_8kbyte_1rw_32x2048_8_SS_1p8V_25C.lib \
     {*}$io_max_libs \
-    /research/open-pdks/sky130-cadence/sky130_scl_9T_0.1.1/sky130_scl_9T_tech/lib/sky130_scl_9T_phyCells.lib ]
+    ${sc_techlib_dir}/sky130_scl_9T_phyCells.lib ]
 
 create_library_set -name default_libset_min\
    -timing\
     [list ${sc_lib_dir}/sky130_ff_1.98_0_nldm.lib \
     ${sram_8k_lib_dir}/sky130_sram_8kbyte_1rw_32x2048_8_FF_1p8V_25C.lib \
     {*}$io_min_libs \
-    /research/open-pdks/sky130-cadence/sky130_scl_9T_0.1.1/sky130_scl_9T_tech/lib/sky130_scl_9T_phyCells.lib ]
+    ${sc_techlib_dir}/sky130_scl_9T_phyCells.lib ]
 
 create_library_set -name typical_libset\
    -timing\
     [list ${sc_lib_dir}/sky130_tt_1.8_25_nldm.lib \
     ${sram_8k_lib_dir}/sky130_sram_8kbyte_1rw_32x2048_8_TT_1p8V_25C.lib \
     {*}$io_typical_libs \
-    /research/open-pdks/sky130-cadence/sky130_scl_9T_0.1.1/sky130_scl_9T_tech/lib/sky130_scl_9T_phyCells.lib ]
+    ${sc_techlib_dir}/sky130_scl_9T_phyCells.lib ]
 
 create_timing_condition -name default_mapping_tc_2\
    -library_sets [list default_libset_min]
@@ -70,7 +73,8 @@ create_timing_condition -name default_mapping_tc_1\
 create_timing_condition -name typical_mapping\
    -library_sets [list typical_libset]
 
-
+# got the qrcTechFile from https://github.com/stineje/sky130_cds
+# there's two, but there are the same
 create_rc_corner -name default_rc_corner\
    -pre_route_res 1\
    -post_route_res 1\
@@ -79,7 +83,7 @@ create_rc_corner -name default_rc_corner\
    -post_route_cross_cap 1\
    -pre_route_clock_res 0\
    -pre_route_clock_cap 0\
-   -qrc_tech /research/open-pdks/sky130-cadence/sky130_release_0.1.0/quantus/extraction/typical/qrcTechFile
+   -qrc_tech ${sky130_dir}/qrcTechFile
 
 
 

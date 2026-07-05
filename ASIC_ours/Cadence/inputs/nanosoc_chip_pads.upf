@@ -24,22 +24,22 @@ create_supply_port VSSIO
 create_supply_net VSSIO
 connect_supply_net VSSIO -ports VSSIO
 
-connect_supply_net VDD -ports uPAD_VDD_0/DVDD
-connect_supply_net VDD -ports uPAD_VDD_1/DVDD
-connect_supply_net VDD -ports uPAD_VDD_2/DVDD
-connect_supply_net VDD -ports uPAD_VDD_3/DVDD
+connect_supply_net VDD -ports uPAD_VDD_0/VCCD_PAD
+connect_supply_net VDD -ports uPAD_VDD_1/VCCD_PAD
+connect_supply_net VDD -ports uPAD_VDD_2/VCCD_PAD
+connect_supply_net VDD -ports uPAD_VDD_3/VCCD_PAD
 
-connect_supply_net VDDIO -ports uPAD_VDDIO_0/DVDD
-connect_supply_net VDDIO -ports uPAD_VDDIO_2/DVDD
-connect_supply_net VDDIO -ports uPAD_VDDIO_3/DVDD
+connect_supply_net VDDIO -ports uPAD_VDDIO_0/VDDIO_PAD
+connect_supply_net VDDIO -ports uPAD_VDDIO_2/VDDIO_PAD
+connect_supply_net VDDIO -ports uPAD_VDDIO_3/VDDIO_PAD
 
-connect_supply_net VSSIO -ports uPAD_VSSIO_0/DVSS
-connect_supply_net VSSIO -ports uPAD_VSSIO_1/DVSS
+connect_supply_net VSSIO -ports uPAD_VSSIO_0/VSSIO_PAD
+connect_supply_net VSSIO -ports uPAD_VSSIO_1/VSSIO_PAD
 
-connect_supply_net VSS -ports uPAD_VSS_0/DVSS
-connect_supply_net VSS -ports uPAD_VSS_1/DVSS
-connect_supply_net VSS -ports uPAD_VSS_2/DVSS
-connect_supply_net VSS -ports uPAD_VSS_3/DVSS
+connect_supply_net VSS -ports uPAD_VSS_0/VSSD_PAD
+connect_supply_net VSS -ports uPAD_VSS_1/VSSD_PAD
+connect_supply_net VSS -ports uPAD_VSS_2/VSSD_PAD
+connect_supply_net VSS -ports uPAD_VSS_3/VSSD_PAD
 
 # connect_supply_net VDDACC -ports uPAD_VDDACC_0/ASIG5V
 # connect_supply_net VDDACC -ports uPAD_VDDACC_1/ASIG5V
@@ -75,11 +75,15 @@ add_port_state VDD              -state {ON_FAST 1.32}
 add_port_state VDDIO            -state {ON_SLOW 2.97}
 add_port_state VDDIO            -state {ON_TYP  3.30}
 add_port_state VDDIO            -state {ON_FAST 3.63}
+add_port_state VSSIO            -state {ON_SLOW 0}
+add_port_state VSSIO            -state {ON_TYP  0}
+add_port_state VSSIO            -state {ON_FAST 0}
 
 create_pst top_pst -supplies {\
     VSS \
     VDD \
     VDDIO \
+    VSSIO \
     }
 
 #    VDDACC \
