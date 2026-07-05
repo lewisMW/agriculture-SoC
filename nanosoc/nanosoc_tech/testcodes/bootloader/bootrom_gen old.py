@@ -101,19 +101,11 @@ def output_construct(input_hex, address_width):
     bootrom_binary = ""
 
     # Append Hex Data to File
-    #
-    # Size the case-label constant to the actual number of words rather than a
-    # fixed `address_width` bits. When the image has more than 2**address_width
-    # words, indices past that overflow an `address_width`-bit literal, which
-    # iverilog flags as "extra digits / truncated" and silently aliases the high
-    # entries onto low addresses. Widening the literal to hold the largest index
-    # keeps every label distinct (the over-depth entries stay unreachable, since
-    # W_ADDR is only address_width bits, but no longer collide). For images that
-    # fit, label_bits == address_width so the output is unchanged.
-    label_bits = max(1, address_width, (len(hex_data) - 1).bit_length())
-    hex_digits = (label_bits + 3) // 4
     for i, word in enumerate(hex_data):
-        temp_verilog = f"""       {label_bits:d}'h{i:0{hex_digits}x} : RDATA <= 32'h{word:08x}; // 0x{i*4:04x}\n"""
+        if address_width > 8:
+            temp_verilog = f"""       {address_width:d}'h{i:03x} : RDATA <= 32'h{word:08x}; // 0x{i*4:04x}\n"""
+        else:
+            temp_verilog = f"""       {address_width:d}'h{i:02x} : RDATA <= 32'h{word:08x}; // 0x{i*4:04x}\n"""
         temp_binary = f"""{word:032b}\n"""
         bootrom_verilog += temp_verilog
         bootrom_binary  += temp_binary
