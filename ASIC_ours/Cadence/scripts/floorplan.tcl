@@ -7,6 +7,7 @@
 # Daniel Newbrook (d.newbrook@soton.ac.uk)
 # Copyright (c) 2026, SoC Labs (www.soclabs.org)
 #------------------------------------------------------------------------------------
+# TODO this needs to be (2.920um w x 3.520um h) (right now too large, max 15mm^2)
 create_floorplan -die_size_by_io_height max -site CoreSite -core_size 3600 5200 50 50 50 50
 
 

@@ -2,11 +2,11 @@
 set process_node 130
 
 set sky130_open_dir    /opt/pdk/sky130A
-set sky130_digital_dir ${sky130_open_dir}/libs.ref/sky130_fd_sc_hd
+set sky130_cadence_dir /home/daniel/sky130_cadence
 
 set io_dir      ${sky130_open_dir}/libs.ref/sky130_fd_io
 set sram_dir    /home/daniel/precompiled_mems/SKY130
-set sc_dir      ${sky130_digital_dir}
+set sc_dir      ${sky130_cadence_dir}/sky130_scl_9T_0.1.2/sky130_scl_9T
 
 set io_lib_dir ${io_dir}/lib
 set sc_lib_dir ${sc_dir}/lib
@@ -14,7 +14,7 @@ set sram_8k_lib_dir  ${sram_dir}/sky130_sram_8kbyte_1rw_32x2048_8
 
 set lib_search_path_list "$io_lib_dir $sc_lib_dir $sram_8k_lib_dir"
 
-set BASE_LIB sky130_fd_sc_hd__ss_100C_1v60.lib
+set BASE_LIB sky130_ss_1.62_125_nldm.lib
 set SRAM_LIB sky130_sram_8kbyte_1rw_32x2048_8_SS_1p8V_25C.lib
 set IO_PAD_DRIVER [list \
     sky130_ef_io__gpiov2_pad_wrapped_ss_ss_100C_1v60_3v00.lib \
@@ -52,19 +52,14 @@ set ground_nets {VSS VSSIO}
 # Set library paths 
 # !! EDIT THIS TO YOUR PATHS IN YOUR ENVIRONMENT
 # NOTE!! I had to uncomment out the li1 layer for this version.
-# set TECH_LEF            ${sky130_cadence_dir}/sky130_scl_9T_0.1.2/sky130_scl_9T_tech/lef/sky130_scl_9T.tlef
+set TECH_LEF            ${sky130_cadence_dir}/sky130_scl_9T_0.1.2/sky130_scl_9T_tech/lef/sky130_scl_9T.tlef
 
-# set BASE_LEF            ${sky130_cadence_dir}/sky130_scl_9T_0.1.2/sky130_scl_9T/lef/sky130_scl_9T.lef
-# set PHYS_CELL_LEF       ${sky130_cadence_dir}/sky130_scl_9T_0.1.2/sky130_scl_9T_tech/lef/sky130_scl_9T_phyCells.lef
-set TECH_LEF            ${sky130_digital_dir}/techlef/sky130_fd_sc_hd__nom.tlef
-set BASE_LEF            ${sky130_digital_dir}/lef/sky130_fd_sc_hd.lef
-# for the open source one physical cells (e.g. filler) are included in BASE_LEF
-
+set BASE_LEF            ${sky130_cadence_dir}/sky130_scl_9T_0.1.2/sky130_scl_9T/lef/sky130_scl_9T.lef
+set PHYS_CELL_LEF       ${sky130_cadence_dir}/sky130_scl_9T_0.1.2/sky130_scl_9T_tech/lef/sky130_scl_9T_phyCells.lef
 set IO_PAD_DRIVER_LEF   ${sky130_open_dir}/libs.ref/sky130_fd_io/lef/sky130_ef_io.lef
 set SRAM_LEF            ${sram_dir}/sky130_sram_8kbyte_1rw_32x2048_8/sky130_sram_8kbyte_1rw_32x2048_8.lef
 
-#set lef_file_list [list ${TECH_LEF} ${PHYS_CELL_LEF} ${BASE_LEF} ${IO_PAD_DRIVER_LEF} ${SRAM_LEF}]
-set lef_file_list [list ${TECH_LEF} ${BASE_LEF} ${IO_PAD_DRIVER_LEF} ${SRAM_LEF}]
+set lef_file_list [list ${TECH_LEF} ${PHYS_CELL_LEF} ${BASE_LEF} ${IO_PAD_DRIVER_LEF} ${SRAM_LEF}]
 
 # TODO: the analog blocks lefs
 
