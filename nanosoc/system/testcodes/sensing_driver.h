@@ -16,15 +16,22 @@
  *     uint32_t n = sensing_fifo_drain(buf, 16);
  *     uint32_t t = sensing_read_time();   // fault-safe live RTC time
  *
- * IMPORTANT (RTC passthrough + PSLVERR): reads/writes of the RTC region
- * (rtc_dr/rtc_lr/... at 0x200-0x21C) go through rtc_control's passthrough, which
- * returns PSLVERR if it collides with an autonomous arm cycle. On Cortex-M0 that
- * PSLVERR is an unrecoverable bus fault (no handler wired). So the time helpers
- * PAUSE autonomous polling first (rtc_ctrl bit0 = 0): the RTC then parks in
- * WAITING with the bus always granted, the counter keeps running, and the access
- * cannot collide. Polling is resumed afterwards. Wrapper-local registers
+ * RTC passthrough (now fault-safe): reads/writes of the RTC region
+ * (rtc_dr/rtc_lr/... at 0x200-0x21C) go through rtc_control's passthrough. If an
+ * access collides with an autonomous arm cycle it is now STALLED (APB wait
+ * states, PREADY held low) until the RTC FSM parks, then completes normally -
+ * it no longer returns PSLVERR. So an unguarded RTC access can no longer fault
+ * or hang the CPU (see pslverr_test / TEST_RUNBOOK §3.5). The time helpers below
+ * still PAUSE autonomous polling first (rtc_ctrl bit0 = 0) before touching the
+ * RTC: this is now DEFENSIVE only, and it also avoids the few-cycle wait-state
+ * latency by parking the FSM in WAITING (bus always granted) up front. Polling
+ * is resumed afterwards. Wrapper-local registers
  * (status/measurement/trigger/fifo_clear/alarm_offset/adc_cal/rtc_ctrl) never
- * return PSLVERR and are accessed directly.
+ * stall and are accessed directly.
+ *
+ * Production images should also install the HardFault backstop in
+ * sensing_fault.h (a controlled reset instead of the weak dead-loop handler) to
+ * recover from any OTHER unexpected bus fault.
  */
 #include <stdint.h>
 #include "sensing_ip.h"

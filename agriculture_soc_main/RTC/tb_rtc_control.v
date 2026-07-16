@@ -171,6 +171,11 @@ task check_true;
 endtask
 
 // ── APB passthrough tasks (external master) ───────────────────────────────────
+// These tasks model the AHB->APB bridge: they hold the ACCESS phase until the
+// slave asserts PREADY. rtc_control now inserts wait states (instead of PSLVERR)
+// when a passthrough access collides with an autonomous arm cycle, so a bridge
+// must wait for PREADY — the old fixed 1-cycle ACCESS would abandon a stalled
+// transfer.
 task ext_apb_write;
     input [11:0] addr;
     input [31:0] data;
@@ -184,6 +189,7 @@ task ext_apb_write;
         @(posedge PCLK); #1;
         PENABLE = 1'b1;
         @(posedge PCLK); #1;
+        while (!PREADY) begin @(posedge PCLK); #1; end
         PSEL    = 1'b0;
         PENABLE = 1'b0;
         PWRITE  = 1'b0;
@@ -203,10 +209,10 @@ task ext_apb_read;
         PENABLE = 1'b0;
         @(posedge PCLK); #1;
         PENABLE = 1'b1;
-        @(posedge PCLK);
+        @(posedge PCLK); #1;
+        while (!PREADY) begin @(posedge PCLK); #1; end
         rdata  = PRDATA;
         slverr = PSLVERR;
-        #1;
         PSEL    = 1'b0;
         PENABLE = 1'b0;
     end
@@ -247,6 +253,7 @@ reg        rd_slverr;
 reg [31:0] captured_time;
 reg [31:0] captured_alarm;
 integer    trig_saved;
+integer    stall_cycles;
 
 // =============================================================================
 // Stimulus
@@ -438,10 +445,12 @@ initial begin
     check(rd_slverr, 1'b0, "P16 no PSLVERR on write during WAITING");
     check(rd_data, 32'hFFFFFFFF, "P16b RTCMR write took effect");
 
-    // P17 - external access during non-idle/waiting state returns PSLVERR
-    // Force FSM out of WAITING by triggering a new cycle
-    // We do this by resetting - after reset FSM goes through ENABLE->READ etc
-    // and we catch it mid-flight
+    // P17 - an external access that COLLIDES with an arm cycle is now STALLED
+    // (PREADY held low) and then completes WITHOUT PSLVERR. Previously this
+    // returned PSLVERR, which the AHB->APB bridge turns into an AHB error and
+    // the Cortex-M0 turns into an unrecoverable HardFault (hang). The wait-state
+    // removes that hang vector: firmware can read the RTC region at any time.
+    // Force FSM out of WAITING by resetting - it re-arms and we catch it busy.
     PRESETn = 1'b0;
     repeat(3) @(posedge PCLK);
     PRESETn = 1'b1;
@@ -449,25 +458,36 @@ initial begin
     // immediately -- catch it in a busy (non-idle/non-waiting) state so the
     // external ACCESS below lands while the FSM owns the bus.
     wait_for_state(`S_ENABLE_ACCESS, 20);
-    // Now try an external read - should get PSLVERR
+    // Drive a RAW external read (no auto-wait) so we can observe the stall.
     PSEL    = 1'b1;
     PENABLE = 1'b0;
     PWRITE  = 1'b0;
     PADDR   = 12'h000;
     @(posedge PCLK); #1;
     PENABLE = 1'b1;
-    @(posedge PCLK);
-    check(PSLVERR, 1'b1, "P17 PSLVERR asserted during FSM-busy state");
+    @(posedge PCLK); #1;
+    check(PREADY,  1'b0, "P17 colliding access stalls (PREADY low), not yet complete");
+    check(PSLVERR, 1'b0, "P17b no PSLVERR while stalled (no HardFault path)");
+    // Hold ACCESS until the slave completes (models the AHB->APB bridge).
+    // Bounded so a (hypothetical) permanent stall fails loudly instead of
+    // hanging the sim -- the FSM always parks within ~10 PCLK, so this exits fast.
+    stall_cycles = 0;
+    while (!PREADY && stall_cycles < 200) begin @(posedge PCLK); #1; stall_cycles = stall_cycles + 1; end
+    check_true(PREADY === 1'b1, "P17c colliding access eventually completes (PREADY high, bounded stall)");
+    check(PSLVERR, 1'b0, "P17d colliding access completes WITHOUT PSLVERR");
     rd_data = PRDATA;
-    check(rd_data, 32'h0, "P17b PRDATA=0 during FSM-busy state");
     #1;
     PSEL    = 1'b0;
     PENABLE = 1'b0;
+    $display("    P17: collision stalled %0d extra cycle(s) then completed, RTCDR=0x%08h",
+             stall_cycles, rd_data);
 
-    // P18 - PREADY always 1 regardless of state
-    check(PREADY, 1'b1, "P18 PREADY always 1");
+    // P18 - when parked in WAITING the bus is free: a passthrough read completes
+    // with no wait state (PREADY high) and no error.
     wait_for_state(`S_WAITING, 500);
-    check(PREADY, 1'b1, "P18b PREADY still 1 in WAITING");
+    check(PREADY, 1'b1, "P18 PREADY high (no stall) when parked in WAITING");
+    ext_apb_read(12'h000, rd_data, rd_slverr);
+    check(rd_slverr, 1'b0, "P18b passthrough read succeeds when parked");
 
     // =========================================================================
     // AREA 8: Interrupt handling (P19-P22)

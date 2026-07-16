@@ -200,7 +200,7 @@ end
 
 
 // -----------------------------------------------------------------------------
-// APB bus arbitration: external-master passthrough vs FSM
+// APB bus arbitration: external-master passthrough vs FSM (WAIT-STATE, no error)
 // -----------------------------------------------------------------------------
 // The bus is free for the external master whenever the FSM is parked in IDLE or
 // WAITING *and* is not still driving the tail of its own transfer. Because the
@@ -210,24 +210,48 @@ end
 // drain cycle so a passthrough can't clobber the FSM's write.
 wire bus_free   = ((state == S_IDLE) || (state == S_WAITING)) && !fsm_psel;
 
-// Passthrough is granted for the WHOLE external transfer (SETUP and ACCESS), so
-// the RTC sees a protocol-correct access — we key off PSEL, not PSEL&PENABLE.
-wire ext_sel    = PSEL & bus_free;      // external master owns the bus
-wire ext_access = PSEL & PENABLE;       // ACCESS phase of an external transfer
+// An external transfer that collides with an arm cycle is STALLED (PREADY held
+// low) until the FSM parks — it is never failed with PSLVERR. The FSM is
+// deterministic and always returns to WAITING/IDLE within a bounded number of
+// cycles (a full re-arm is ~10 PCLK, then it parks and, while a passthrough is
+// granted, defers leaving WAITING), so the stall is bounded and the access
+// always completes. This removes the PSLVERR -> AHB-error -> Cortex-M0 HardFault
+// hang vector: firmware can read/write the RTC region at any time without
+// pausing autonomous polling first.
+wire grant = PSEL & bus_free;           // external owns the RTC bus this cycle
+wire ext_sel = grant;
 
-// Error only if the external ACCESS phase lands while the FSM holds the bus.
-assign PSLVERR = ext_access & ~bus_free;
-assign PREADY  = 1'b1;   // always complete immediately, never stall
+// Track whether the RTC has already been shown a SETUP cycle for the current
+// external transfer. A colliding access is stalled into its ACCESS phase before
+// the bus frees, so on the first granted cycle we force an RTC SETUP (PENABLE
+// low) regardless of the external PENABLE, then drive ACCESS the next cycle —
+// the RTC always sees a protocol-correct SETUP -> ACCESS.
+reg  pt_setup_done;
+wire ext_penable = PENABLE & pt_setup_done;         // RTC ACCESS only after SETUP
+wire ext_done    = grant & pt_setup_done & PENABLE; // transfer completes this cycle
+
+always @(posedge PCLK or negedge PRESETn) begin
+    if (!PRESETn)      pt_setup_done <= 1'b0;
+    else if (ext_done) pt_setup_done <= 1'b0;   // completed — reset for next transfer
+    else if (!PSEL)    pt_setup_done <= 1'b0;   // no transfer in flight
+    else if (grant)    pt_setup_done <= 1'b1;   // first granted cycle = SETUP
+end
+
+// Never error — colliding accesses are stalled, not failed.
+assign PSLVERR = 1'b0;
+// Stall (PREADY low) while an external ACCESS is pending but not yet granted a
+// clean SETUP+ACCESS on the RTC; complete (PREADY high) on the granted ACCESS.
+assign PREADY  = (PSEL & PENABLE) ? ext_done : 1'b1;
 
 // PRDATA — return RTC data during a granted passthrough, 0 otherwise
 assign PRDATA  = ext_sel ? rtc_prdata : 32'h0;
 
 // APB to RTC — mux external master vs FSM
-assign rtc_psel    = ext_sel ? PSEL        : fsm_psel;
-assign rtc_penable = ext_sel ? PENABLE     : fsm_penable;
-assign rtc_pwrite  = ext_sel ? PWRITE      : fsm_pwrite;
-assign rtc_paddr   = ext_sel ? PADDR[11:2] : fsm_paddr;
-assign rtc_pwdata  = ext_sel ? PWDATA      : fsm_pwdata;
+assign rtc_psel    = ext_sel ? PSEL         : fsm_psel;
+assign rtc_penable = ext_sel ? ext_penable  : fsm_penable;
+assign rtc_pwrite  = ext_sel ? PWRITE       : fsm_pwrite;
+assign rtc_paddr   = ext_sel ? PADDR[11:2]  : fsm_paddr;
+assign rtc_pwdata  = ext_sel ? PWDATA       : fsm_pwdata;
 
 
 
