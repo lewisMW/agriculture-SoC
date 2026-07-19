@@ -1,0 +1,13 @@
+Starting Single Run, Sweeps and Corners...
+
+Current time: Sun Jul 19 17:17:04 2026 
+Best design point: 1
+Design specs: 
+	adc_analog_lib_Testbench_1_1	corner	Nominal - 
+Design parameters: 
+
+ExplorerRun.0
+Number of points completed: 1
+Number of simulation errors: 0
+ExplorerRun.0 completed. 
+Current time: Sun Jul 19 17:17:27 2026 

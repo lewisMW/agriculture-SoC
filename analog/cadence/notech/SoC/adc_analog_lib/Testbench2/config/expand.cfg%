@@ -1,0 +1,22 @@
+//Revision 3
+//NOTE
+// Default config view template for AMS netlister(s) in ADE.
+// Note:
+//      Please remember to replace Top Cell Library, Cell, and View
+//      fields with the actual names used by your design.
+//END_NOTE
+
+config Testbench2;
+design adc_analog_lib.Testbench2:schematic;
+liblist myLib;
+
+viewlist spectre, spice, pspice, verilog, verilogams, behavioral, functional, systemVerilog, schematic, veriloga, vhdl, vhdlams, wreal;
+stoplist spectre;
+
+
+cell Testench.Display_a binding :verilogams;
+
+cell adc_digital_lib.sr_latch binding :functional;
+
+
+endconfig
