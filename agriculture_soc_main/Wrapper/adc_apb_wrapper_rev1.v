@@ -173,8 +173,13 @@ module adc_apb_wrapper_rev1 #(
         end
     end
 
-    // Peripheral never stalls. Error only comes from the RTC passthrough.
-    assign PREADY  = 1'b1;
+    // Wrapper-local registers never stall. The RTC passthrough now inserts wait
+    // states (PREADY low) when an access collides with an autonomous arm cycle,
+    // instead of returning PSLVERR — so an unguarded RTC access can no longer
+    // fault/hang the CPU. Forward rtc_pready for RTC-region accesses; everything
+    // else completes immediately. PSLVERR is tied off in rtc_control (never
+    // errors) but kept wired for interface parity.
+    assign PREADY  = rtc_region ? rtc_pready : 1'b1;
     assign PSLVERR = rtc_region ? rtc_pslverr : 1'b0;
 
     // --------------------------------------------------------------------------
