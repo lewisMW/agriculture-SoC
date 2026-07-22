@@ -51,6 +51,14 @@ int main(void)
     UartStdOutInit();
     sp_str("fifo_drain_test: start\n");
 
+    /* Under nanosoc the RTC is now live (CLK1HZ = HCLK/100, default offset 5
+     * -> an autonomous sample every ~500 HCLK cycles), which refills the FIFO
+     * faster than this test drains it. Pause autonomous polling first, and let
+     * any in-flight conversion land before clearing. */
+    SENSING_IP_REGS->rtc_ctrl = 0;
+    while (GET_ADC_STATUS(SENSING_IP_REGS->status_reg) == STATUS_ADC_RUNNING) { }
+    settle();
+
     /* Start clean */
     SENSING_IP_REGS->fifo_clear = 1;
     settle();
@@ -106,6 +114,9 @@ int main(void)
         sp_str("FAIL: expected 16 samples, got "); sp_dec(drained); sp_nl();
         failures++;
     }
+
+    /* Restore autonomous polling */
+    SENSING_IP_REGS->rtc_ctrl = RTC_CTRL_POLL_ENABLE;
 
     if (failures == 0)
         sp_str("Test Passed!\n");

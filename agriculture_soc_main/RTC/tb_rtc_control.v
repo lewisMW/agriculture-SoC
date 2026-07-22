@@ -473,7 +473,9 @@ initial begin
     // hanging the sim -- the FSM always parks within ~10 PCLK, so this exits fast.
     stall_cycles = 0;
     while (!PREADY && stall_cycles < 200) begin @(posedge PCLK); #1; stall_cycles = stall_cycles + 1; end
-    check_true(PREADY === 1'b1, "P17c colliding access eventually completes (PREADY high, bounded stall)");
+    // NOTE: check/check_true name inputs are [511:0] = 64 chars max — longer
+    // literals fail Verilator elaboration ("generates N bits ... doesn't fit").
+    check_true(PREADY === 1'b1, "P17c colliding access completes (bounded stall, PREADY high)");
     check(PSLVERR, 1'b0, "P17d colliding access completes WITHOUT PSLVERR");
     rd_data = PRDATA;
     #1;

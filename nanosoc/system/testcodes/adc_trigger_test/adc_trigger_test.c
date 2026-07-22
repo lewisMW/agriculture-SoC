@@ -41,9 +41,25 @@
 // #define ADC_STATUS_MASK 0b00000000000000000000000000001100
 #include "../sensing_ip.h"
 
+/* Busy-wait long enough for one ADC conversion + FIFO write to complete. */
+static void settle(void)
+{
+    volatile uint32_t j;
+    for (j = 0; j < 600; j++) { __asm volatile ("nop"); }
+}
+
 int main (void)
 {
     UartStdOutInit();
+
+    /* Under nanosoc the RTC is now live (CLK1HZ = HCLK/100), so autonomous
+     * samples accumulate before main() runs. Pause polling and start with an
+     * empty FIFO so the READY check below sees only our one-shot sample. */
+    SENSING_IP_REGS->rtc_ctrl = 0;
+    while (GET_ADC_STATUS(SENSING_IP_REGS->status_reg) == STATUS_ADC_RUNNING) { }
+    settle();
+    SENSING_IP_REGS->fifo_clear = 1;
+    settle();
     // Pointer to APB Bus from memory map 
     // volatile unsigned int *APB_BUS = (unsigned int *)0x51000000;
 
@@ -82,6 +98,10 @@ int main (void)
     } else {
         printf("Test Passed!\n");
     }
+
+    /* Restore autonomous polling */
+    SENSING_IP_REGS->rtc_ctrl = RTC_CTRL_POLL_ENABLE;
+
     UartEndSimulation();
 
     // while (1);
