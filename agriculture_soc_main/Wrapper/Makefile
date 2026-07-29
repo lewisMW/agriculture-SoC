@@ -1,7 +1,7 @@
 VERILATOR = verilator
 TB_MODULE = adc_apb_wrapper_rev2_tb
 
-# ARM PL031 RTC IP (needed by rtc_control). Set ARM_IP_LIBRARY_PATH in your env.
+# ARM PL031 RTC IP (needed by rtc_control_2). Set ARM_IP_LIBRARY_PATH in your env.
 rtc_ip = $(ARM_IP_LIBRARY_PATH)/PL031/PL031-r1p3-00rel0/PL031-BU-00000-r1p3-00rel0/PL031_VC/rtc_pl031/verilog/rtl_source
 
 # Explicit file list — do NOT glob the sibling dirs (they contain rev0, *_old.v
@@ -9,12 +9,12 @@ rtc_ip = $(ARM_IP_LIBRARY_PATH)/PL031/PL031-r1p3-00rel0/PL031-BU-00000-r1p3-00re
 VERILOG_FILES = \
     ./adc_apb_wrapper_rev2.v \
     ./adc_apb_wrapper_rev2_tb.v \
-    ../FSM/wrapper_control.v \
+    ../FSM/wrapper_control_2.v \
     ../FIFO/fifo_apb_adc.v \
     ../Dummy/dummy_adc.v \
     ../Dummy/dummy_amux.v \
     ../Dummy/dummy_pll.v \
-    ../RTC/rtc_control.v \
+    ../RTC/rtc_control_2.v \
     $(shell find $(rtc_ip) -type f -name "*.v")
 
 simulation_defs = -DSIMULATION
@@ -33,12 +33,12 @@ RAND_MODULE = adc_apb_wrapper_rand_tb
 RAND_FILES = \
     ./adc_apb_wrapper_rev2.v \
     ./adc_apb_wrapper_rand_tb.v \
-    ../FSM/wrapper_control.v \
+    ../FSM/wrapper_control_2.v \
     ../FIFO/fifo_apb_adc.v \
     ../Dummy/dummy_adc.v \
     ../Dummy/dummy_amux.v \
     ../Dummy/dummy_pll.v \
-    ../RTC/rtc_control.v \
+    ../RTC/rtc_control_2.v \
     $(shell find $(rtc_ip) -type f -name "*.v")
 
 rand:

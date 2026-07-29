@@ -3,10 +3,10 @@
 // adc_apb_wrapper_rev2.v
 //
 // APB slave for the precision-agriculture sensing peripheral. Ties together:
-//   - rtc_control  : autonomous PL031-based RTC. Arms a periodic alarm (period
+//   - rtc_control_2  : autonomous PL031-based RTC. Arms a periodic alarm (period
 //                    = alarm_offset seconds) and pulses rtc_trig. Also exposes
 //                    the PL031 registers to firmware via APB passthrough.
-//   - wrapper_control (FSM) : on each trigger runs one ADC conversion and
+//   - wrapper_control_2 (FSM) : on each trigger runs one ADC conversion and
 //                    pushes the sample into the FIFO. Lets the CPU sleep between
 //                    polls.
 //   - dummy_adc / dummy_amux / dummy_pll : behavioural analog stand-ins.
@@ -68,7 +68,7 @@ module adc_apb_wrapper_rev2 #(
     localparam ALARM_OFFSET_ADDR = 12'h224;
     localparam RTC_CTRL_ADDR     = 12'h228;
 
-    // RTC region: 0x200-0x21F. Forwarded to rtc_control with the address
+    // RTC region: 0x200-0x21F. Forwarded to rtc_control_2 with the address
     // translated down to PL031 word space (0x200 -> RTCDR, 0x204 -> RTCMR, ...).
     wire rtc_region = ((PADDR & 12'hFE0) == 12'h200);
 
@@ -177,7 +177,7 @@ module adc_apb_wrapper_rev2 #(
     // states (PREADY low) when an access collides with an autonomous arm cycle,
     // instead of returning PSLVERR — so an unguarded RTC access can no longer
     // fault/hang the CPU. Forward rtc_pready for RTC-region accesses; everything
-    // else completes immediately. PSLVERR is tied off in rtc_control (never
+    // else completes immediately. PSLVERR is tied off in rtc_control_2 (never
     // errors) but kept wired for interface parity.
     assign PREADY  = rtc_region ? rtc_pready : 1'b1;
     assign PSLVERR = rtc_region ? rtc_pslverr : 1'b0;
@@ -297,7 +297,7 @@ module adc_apb_wrapper_rev2 #(
         .reset       (PRESETn)
     );
 
-    wrapper_control u_ctrl (
+    wrapper_control_2 u_ctrl (
         .clk           (PCLK),
         .rstn          (PRESETn),
         .sample_trig   (sample_trig),
@@ -308,7 +308,7 @@ module adc_apb_wrapper_rev2 #(
         .err_fifo_full (err_fifo_full)
     );
 
-    rtc_control #(
+    rtc_control_2 #(
         .DATA_WIDTH(32),
         .ADDR_WIDTH(12)
     ) u_rtc (

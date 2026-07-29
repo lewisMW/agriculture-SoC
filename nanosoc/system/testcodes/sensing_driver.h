@@ -17,7 +17,7 @@
  *     uint32_t t = sensing_read_time();   // fault-safe live RTC time
  *
  * RTC passthrough (now fault-safe): reads/writes of the RTC region
- * (rtc_dr/rtc_lr/... at 0x200-0x21C) go through rtc_control's passthrough. If an
+ * (rtc_dr/rtc_lr/... at 0x200-0x21C) go through rtc_control_2's passthrough. If an
  * access collides with an autonomous arm cycle it is now STALLED (APB wait
  * states, PREADY held low) until the RTC FSM parks, then completes normally -
  * it no longer returns PSLVERR. So an unguarded RTC access can no longer fault

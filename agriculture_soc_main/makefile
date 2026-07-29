@@ -53,20 +53,20 @@ TB_MODULE = agriculture_soc_tb
 ROM_FILE = ../software/hello/write_test.hex
 
 # Design files only — do NOT glob the tree. The sub-dirs contain per-block
-# testbenches (wrapper_control_tb, tb_rtc_control, fifo_apb_adc_tb, arm_rtc_tb,
+# testbenches (wrapper_control_2_tb, tb_rtc_control, fifo_apb_adc_tb, arm_rtc_tb,
 # adc_apb_wrapper_rev2_tb) and legacy revisions (adc_apb_wrapper_rev0,
-# rtc_control_old, rtc_control_tb_*) that collide / add extra top-levels.
+# rtc_control, rtc_control_tb_*) that collide / add extra top-levels.
 DESIGN_FILES = \
     ./agriculture_soc.v \
     ./agriculture_soc_tb.v \
     ./AHB/AHBDCD.v \
     ./AHB/AHBMUX.v \
     ./FIFO/fifo_apb_adc.v \
-    ./FSM/wrapper_control.v \
+    ./FSM/wrapper_control_2.v \
     ./Dummy/dummy_adc.v \
     ./Dummy/dummy_amux.v \
     ./Dummy/dummy_pll.v \
-    ./RTC/rtc_control.v \
+    ./RTC/rtc_control_2.v \
     ./Wrapper/adc_apb_wrapper_rev2.v
 
 VERILOG_FILES = \
@@ -142,14 +142,14 @@ _verify_summary:
 # -----------------------------------------------------------------------------
 LINT_FREE_FILES = \
     ./FIFO/fifo_apb_adc.v \
-    ./FSM/wrapper_control.v \
+    ./FSM/wrapper_control_2.v \
     ./Dummy/dummy_adc.v \
     ./Dummy/dummy_amux.v \
     ./Dummy/dummy_pll.v
 
 LINT_DUT_FILES = \
     ./Wrapper/adc_apb_wrapper_rev2.v \
-    ./RTC/rtc_control.v \
+    ./RTC/rtc_control_2.v \
     $(LINT_FREE_FILES) \
     $(shell find $(rtc_ip) -type f -name "*.v")
 

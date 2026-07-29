@@ -43,7 +43,7 @@ bind fifo_apb_adc fifo_sva #(.DEPTH(16), .CW(5)) u_fifo_sva (
     .fifo_full(fifo_full), .fifo_empty(fifo_empty)
 );
 
-// ── FSM invariants (wrapper_control) ─────────────────────────────────────────
+// ── FSM invariants (wrapper_control_2) ─────────────────────────────────────────
 module fsm_sva (
     input logic       clk,
     input logic       rstn,
@@ -54,15 +54,15 @@ module fsm_sva (
     // state stays within the legal encoding (no illegal/unreachable state)
     a_legal_state: assert property (@(posedge clk) disable iff (!rstn)
         state <= 3'd6)
-        else $error("wrapper_control illegal state %0d", state);
+        else $error("wrapper_control_2 illegal state %0d", state);
 
     // the FSM must never push a sample while the FIFO is full
     a_no_write_when_full: assert property (@(posedge clk) disable iff (!rstn)
         !(fifo_write_en && fifo_full))
-        else $error("wrapper_control wrote to a FULL FIFO");
+        else $error("wrapper_control_2 wrote to a FULL FIFO");
 endmodule
 
-bind wrapper_control fsm_sva u_fsm_sva (
+bind wrapper_control_2 fsm_sva u_fsm_sva (
     .clk(clk), .rstn(rstn), .state(state),
     .fifo_write_en(fifo_write_en), .fifo_full(fifo_full)
 );

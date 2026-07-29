@@ -7,7 +7,7 @@
  * RTC access returned PSLVERR -> AHB error -> Cortex-M0 HardFault -> the weak
  * CMSDK handler `b .` (dead-loop) -> the device HANGS FOREVER. Two fixes remove
  * that:
- *   1. rtc_control now inserts APB wait states instead of PSLVERR, so the known
+ *   1. rtc_control_2 now inserts APB wait states instead of PSLVERR, so the known
  *      RTC vector no longer faults at all (pslverr_test now PASSes).
  *   2. sensing_fault.h installs a real HardFault handler that requests a
  *      controlled system reset (SYSRESETREQ -> HRESETn, wired in nanosoc) so any

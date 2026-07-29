@@ -18,7 +18,7 @@
 //   P28-P32  poll_enable disable/enable (Task A)
 // =============================================================================
 
-// ── FSM state values - must match rtc_control.v ──────────────────────────────
+// ── FSM state values - must match rtc_control_2.v ──────────────────────────────
 `define S_IDLE          5'd0
 `define S_ENABLE_SETUP  5'd1
 `define S_ENABLE_ACCESS 5'd2
@@ -72,7 +72,7 @@ integer trig_count;                 // counts rtc_trig pulses (for poll_enable t
 reg [31:0] time_at_alarm_set;
 
 // ── DUT instantiation ─────────────────────────────────────────────────────────
-rtc_control #(
+rtc_control_2 #(
     .DATA_WIDTH(32),
     .ADDR_WIDTH(12)
 ) dut (
