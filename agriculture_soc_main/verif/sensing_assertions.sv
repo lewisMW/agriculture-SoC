@@ -67,7 +67,7 @@ bind wrapper_control fsm_sva u_fsm_sva (
     .fifo_write_en(fifo_write_en), .fifo_full(fifo_full)
 );
 
-// ── APB handshake legality (adc_apb_wrapper_rev1 external port) ───────────────
+// ── APB handshake legality (adc_apb_wrapper_rev2 external port) ───────────────
 module apb_sva (
     input logic PCLK,
     input logic PRESETn,
@@ -84,7 +84,7 @@ module apb_sva (
         PENABLE |-> PSEL);
 endmodule
 
-bind adc_apb_wrapper_rev1 apb_sva u_apb_sva (
+bind adc_apb_wrapper_rev2 apb_sva u_apb_sva (
     .PCLK(PCLK), .PRESETn(PRESETn),
     .PSEL(PSEL), .PENABLE(PENABLE), .PREADY(PREADY)
 );

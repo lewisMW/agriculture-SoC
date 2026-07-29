@@ -28,7 +28,7 @@ $(ACCELERATOR_DIR)/FIFO/fifo_apb_adc.v
 // rtc_control_old, ...) as extra top-levels. Matches the standalone makefile.
 $(ACCELERATOR_DIR)/FSM/wrapper_control.v
 $(ACCELERATOR_DIR)/RTC/rtc_control.v
-$(ACCELERATOR_DIR)/Wrapper/adc_apb_wrapper_rev1.v
+$(ACCELERATOR_DIR)/Wrapper/adc_apb_wrapper_rev2.v
 
 // PL031 RTC IP — rtc_control.v instantiates the PL031 `Rtc` module. Same IP the
 // standalone SoC uses; it lives under ARM_IP_LIBRARY_PATH, not ACCELERATOR_DIR.

@@ -1,5 +1,5 @@
 VERILATOR = verilator
-TB_MODULE = adc_apb_wrapper_rev1_tb
+TB_MODULE = adc_apb_wrapper_rev2_tb
 
 # ARM PL031 RTC IP (needed by rtc_control). Set ARM_IP_LIBRARY_PATH in your env.
 rtc_ip = $(ARM_IP_LIBRARY_PATH)/PL031/PL031-r1p3-00rel0/PL031-BU-00000-r1p3-00rel0/PL031_VC/rtc_pl031/verilog/rtl_source
@@ -7,8 +7,8 @@ rtc_ip = $(ARM_IP_LIBRARY_PATH)/PL031/PL031-r1p3-00rel0/PL031-BU-00000-r1p3-00re
 # Explicit file list — do NOT glob the sibling dirs (they contain rev0, *_old.v
 # and other testbenches that would collide with these modules).
 VERILOG_FILES = \
-    ./adc_apb_wrapper_rev1.v \
-    ./adc_apb_wrapper_rev1_tb.v \
+    ./adc_apb_wrapper_rev2.v \
+    ./adc_apb_wrapper_rev2_tb.v \
     ../FSM/wrapper_control.v \
     ../FIFO/fifo_apb_adc.v \
     ../Dummy/dummy_adc.v \
@@ -31,7 +31,7 @@ all:
 # functional coverage) against the autonomous RTC.
 RAND_MODULE = adc_apb_wrapper_rand_tb
 RAND_FILES = \
-    ./adc_apb_wrapper_rev1.v \
+    ./adc_apb_wrapper_rev2.v \
     ./adc_apb_wrapper_rand_tb.v \
     ../FSM/wrapper_control.v \
     ../FIFO/fifo_apb_adc.v \

@@ -54,7 +54,7 @@ ROM_FILE = ../software/hello/write_test.hex
 
 # Design files only — do NOT glob the tree. The sub-dirs contain per-block
 # testbenches (wrapper_control_tb, tb_rtc_control, fifo_apb_adc_tb, arm_rtc_tb,
-# adc_apb_wrapper_rev1_tb) and legacy revisions (adc_apb_wrapper_rev0,
+# adc_apb_wrapper_rev2_tb) and legacy revisions (adc_apb_wrapper_rev0,
 # rtc_control_old, rtc_control_tb_*) that collide / add extra top-levels.
 DESIGN_FILES = \
     ./agriculture_soc.v \
@@ -67,7 +67,7 @@ DESIGN_FILES = \
     ./Dummy/dummy_amux.v \
     ./Dummy/dummy_pll.v \
     ./RTC/rtc_control.v \
-    ./Wrapper/adc_apb_wrapper_rev1.v
+    ./Wrapper/adc_apb_wrapper_rev2.v
 
 VERILOG_FILES = \
     $(DESIGN_FILES) \
@@ -148,7 +148,7 @@ LINT_FREE_FILES = \
     ./Dummy/dummy_pll.v
 
 LINT_DUT_FILES = \
-    ./Wrapper/adc_apb_wrapper_rev1.v \
+    ./Wrapper/adc_apb_wrapper_rev2.v \
     ./RTC/rtc_control.v \
     $(LINT_FREE_FILES) \
     $(shell find $(rtc_ip) -type f -name "*.v")
@@ -159,4 +159,4 @@ lint-free:
 	verilator --lint-only -Wall $(LINT_FREE_FILES)
 
 lint:
-	verilator --lint-only -Wall --top-module adc_apb_wrapper_rev1 $(LINT_DUT_FILES) $(ARM_INCDIRS)
+	verilator --lint-only -Wall --top-module adc_apb_wrapper_rev2 $(LINT_DUT_FILES) $(ARM_INCDIRS)

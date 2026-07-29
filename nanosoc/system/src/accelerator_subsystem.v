@@ -172,7 +172,7 @@ always @(posedge HCLK or negedge HRESETn) begin
 end
 wire clk1hz = clk1hz_reg;
 
-adc_apb_wrapper_rev1 #(
+adc_apb_wrapper_rev2 #(
    .ADDR_WIDTH(ACC_ADDR_W),
    .DATA_WIDTH(SYS_DATA_W)
 ) sensor_wrapper (
