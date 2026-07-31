@@ -1,0 +1,35 @@
+*******************************************************************
+* CDL Produced by pegasusBuildNetlist on Wed Jul 29 11:25:27 2026 *
+*******************************************************************
+
+
+
+* File content...
+
+
+***********************************************************
+* CDL produced by pvsBuildNetlist on Jul 29 11:25:27 2026 *
+***********************************************************
+
+
+*pvsViewList = auLvs schematic
+*pvsStopList = ("auLvs")
+*pvsSimName  = auLvs
+
+
+
+*.EXPAND_ON_M_FACTOR
+*.MEGA
+
+
+
+.subckt inverter GND IN OUT VDD
+*PVSCELL netlisted from sky130_analog_lib inverter schematic
+  MNM0 OUT IN GND GND nfet_01v8 m=1 l=150n w=420n
+  MPM0 OUT IN VDD VDD pfet_01v8 m=1 l=150n w=550n
+.ends inverter
+
+
+***********************************************************
+*             Completed at Jul 29 11:25:27 2026           *
+***********************************************************

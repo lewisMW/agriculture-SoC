@@ -1,0 +1,25 @@
+Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.24s.
+
+Running simulation in directory: "/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/".
+
+
+Running netlist
+Begin Incremental Netlisting Jul 31 09:46:43 2026
+Loading sky130_fd_pr_main/libInit.il ...
+	Loading sky130_fd_pr_main/loadCxt.ile ... done!
+	Loading context 'sky130_fd_pr_main' from library 'sky130_fd_pr_main' ... done!
+	Loading context 'pdkUtils' from library 'sky130_fd_pr_main' ... done!
+	Loading sky130_fd_pr_main/libInitCktPro.il ... done!
+	Loading sky130_fd_pr_main/libInitCustomExit.il ... 	Loading Environment Settings ...
+done!
+Loaded sky130_fd_pr_main/libInit.il successfully!
+WARNING (OSSHNL-117): Ignoring switch view 'symbol' of cell 'cap_mim_m3__base' in library 'sky130_fd_pr_main', as it does not contain
+any instance. To netlist this cell, add this switch view to the stop list or to
+ignore any specific instance set the property 'nlAction' to value "ignore" on
+this cell view.
+
+
+End netlisting Jul 31 09:46:43 2026
+
+
+CDL netlist completed successfully.

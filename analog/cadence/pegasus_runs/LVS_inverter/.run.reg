@@ -1,0 +1,76 @@
+# This Pegasus GUI File Index Registry was created automatically
+# Do not attempt to modify this file as any change may lead
+# to Pegasus GUI Tools malfunction.
+# 
+"Run Directory" internal none /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter
+"Current Directory" internal none /home/hee/projects/agriculture-SoC/analog/cadence
+"Cadence Directory" internal none /home/hee/projects/agriculture-SoC/analog/cadence/.cadence/
+"Job Signature" internal none IPVS_1785493755_255
+"Pegasus Job Mode" internal none lvs
+"GUI Flow" internal none virtuoso6
+"GUI Preset" internal none /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/.preset.autosave
+"Pegasus Version" internal none 24.11-s021
+"Binary Name" internal none pegasusgui
+"Pegasus Build Date" internal none "Wed Jan 15 14:24:19 PST 2025"
+"Pegasus Job Time" internal none 1785493756
+"DFII version" internal none IC23.1.0
+"Run Directory" internal none /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter
+"Pegasus Job Mode" internal none lvs
+"Rule File" input text /home/hee/cadence/lib/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
+"Layout Scale" internal none 0.001
+"Layout TechLib" internal none sky130_fd_pr_main
+"Layout Library Name" internal none sky130_analog_lib
+"Layout Cell Name" internal none cap_array_8b
+"Layout View Name" internal none layout
+"Layout ConvertPin" internal text geometry
+"Layout HierDepth" internal none 32
+"Layout MaxVertices" internal none 2048
+"Layout Top Cell" internal none cap_array_8b
+"Layout GDSII" input none /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/cap_array_8b.gds.gz
+"Intermediate GDSII File" output none /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/cap_array_8b.gds.gz
+"Intermediate GDSII File creation Errors" internal text /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/PIPO1.LOG
+"Intermediate OASIS File creation Errors" internal text /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/PIPO1.LOG
+"Enable Coloring" input none yes
+"Layout ReplaceBusBitChar" input none t
+"Layout NoConvertHalfWidthPath" input none nil
+"Layout FlattenPCells" input none t
+"Schematic Data is in Control File" internal none ENABLED
+"Schematic Top Cell" internal none cap_array_8b
+"Check Schematic" internal none ENABLED
+"Extracted Spice File" output text /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/cap_array_8b.spi
+"Do not check rules files before run" internal none ENABLED
+"Control File" input text /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/pegasuslvsctl
+"Pegasus Job Log" log text /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/pegasusuilvs.log
+"It is Pegasus flow" internal none ENABLED
+"Pegasus Log Dir" internal none LOGS
+"PIPO Setup File I" internal text  /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/pipo1.setup
+"PIPO Log I" log text  /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/PIPO1.LOG
+"PIPO Output I" internal text  /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/PIPO1.OUT
+"Input Layout" input none OA: sky130_analog_lib cap_array_8b layout
+"Output Layout Cellmap I" internal text /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/lay_cellMap.txt
+"Pegasus Version" internal none 24.11-s021
+"Binary Name" internal none pegasusvirt
+"Pegasus Build Date" internal none "Wed Jan 15 14:24:19 PST 2025"
+"Pegasus Job Time" internal none 1785493757
+"ERC Result" internal none EMPTY
+"ERC Summary" output text /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/cap_array_8b.sum
+"Extracted Spice File" output text /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/cap_array_8b.spi
+"Extraction Report" output erc /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/cap_array_8b.rep
+"LVS Report Options" internal none none
+"Layout GDSII" input none /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/cap_array_8b.gds.gz
+"Layout Top Cell" internal none cap_array_8b
+"Pegasus Job Mode" internal none lvs
+"Report MaxResults" internal none 1000
+"Rule File" input text /home/hee/cadence/lib/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
+"Run Directory" internal none /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/
+"Schematic Top Cell" internal none cap_array_8b
+"LVS Run Name" internal none cap_array_8b.rep
+"Schematic Netlist" input text /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/cap_array_8b.cdl
+"UI Data" internal none ENABLED
+"Comparison Report" output cls /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/LVS_inverter/cap_array_8b.rep.cls
+"Pegasus Mode Info" internal none DHNGLLILPBMMJLFMFNLPNPKNNGGHMPBN
+"Keep Layers Database" output rdb .keep_layers.cdb
+"Pegasus Version" internal none 24.11-s021
+"Binary Name" internal none pegasus
+"Pegasus Build Date" internal none "Thu Jan 16 06:52:05 AEDT 2025"
+"Pegasus Job Time" internal none 1785493764

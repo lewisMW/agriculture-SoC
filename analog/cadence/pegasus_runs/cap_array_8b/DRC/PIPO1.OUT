@@ -1,0 +1,80 @@
+Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.24s.
+********************************************************************************
+Product   : Virtuoso(R) XStream Out
+Program   : @(#)$CDS: strmout version IC23.1-64b 02/25/2025 22:49 (cpgbld15) $
+          : sub-version  IC23.1-64b.ISR13.25 
+Started at: 31-Jul-2026  10:08:13
+User Name : hee
+Host Name : MrDonothing
+Directory : /home/hee/projects/agriculture-SoC/analog/cadence
+CADENCE Design Systems, Inc.
+********************************************************************************
+Info: Cellview Rev Num:99,  Tech Rev Num:59
+
+WARNING (XSTRM-20): Output Stream file '/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/DRC/cap_array_8b.gds.gz' already exists. It will be overwritten.
+Loading sky130_fd_pr_main/libInit.il ...
+	Loading sky130_fd_pr_main/loadCxt.ile ... done!
+	Loading context 'sky130_fd_pr_main' from library 'sky130_fd_pr_main' ... done!
+	Loading context 'pdkUtils' from library 'sky130_fd_pr_main' ... done!
+	Loading sky130_fd_pr_main/libInitCktPro.il ... done!
+	Loading sky130_fd_pr_main/libInitCustomExit.il ... 	Loading Environment Settings ...
+done!
+Loaded sky130_fd_pr_main/libInit.il successfully!
+INFO (XSTRM-217): Reading the layer map file, /home/hee/cadence/lib/sky130_release_0.1.0/libs/sky130_fd_pr_main/sky130_fd_pr_main.layermap
+WARNING (XSTRM-333): The '-enableColoring' option will be ignored during XStream Out. This is because there is no color entry in the layer map and the object map file.
+INFO (XSTRM-427): Based on current hardware configuration, running XStream Out translation in multi-threaded mode with 4 threads.
+INFO (XSTRM-280): The output file will be a compressed file because the file name has extension .gz
+INFO (XSTRM-162): You have not used the '-viaMap' option. If the OpenAccess design has native oaVia instances, use the '-viaMap' option for preserving oaVia instances in a XStream Out - XStream In round trip. Using the '-viaMap' option improves performance and VM usage of applications using the Streamed-In design.
+
+Summary of Options :
+library                                 sky130_analog_lib
+strmFile                                /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/DRC/cap_array_8b.gds.gz
+topCell                                 cap_array_8b
+view                                    layout
+runDir                                  /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/DRC
+logFile                                 /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/DRC/PIPO1.LOG
+techLib                                 sky130_fd_pr_main
+hierDepth                               32
+maxVertices                             2048
+layerMap                                /home/hee/cadence/lib/sky130_release_0.1.0/libs/sky130_fd_pr_main/sky130_fd_pr_main.layermap
+userSkillFile                           /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/DRC/strmout.il
+labelDepth                              32
+case                                    Preserve
+convertDot                              node
+
+INFO (XSTRM-180): You have not used the '-objectMap' option. The design has instance(s) of at least one of following OpenAccess objects: oaBlockage, oaBoundary, oaRow, and oaMarker. Any information about these objects will not be translated into the generated stream file. Use the '-objectMap' option to translate/preserve these objects using XStream.
+INFO (XSTRM-223): 1. Translating stdVia sky130_fd_pr_main/M2M3_C/layout as STRUCTURE M2M3_C_CDNS_785456493180.
+INFO (XSTRM-223): 2. Translating stdVia sky130_fd_pr_main/M2M3_C/layout as STRUCTURE M2M3_C_CDNS_785456493181.
+INFO (XSTRM-223): 3. Translating stdVia sky130_fd_pr_main/M2M3_C/layout as STRUCTURE M2M3_C_CDNS_785456493182.
+INFO (XSTRM-223): 4. Translating stdVia sky130_fd_pr_main/M2M3_C/layout as STRUCTURE M2M3_C_CDNS_785456493183.
+INFO (XSTRM-223): 5. Translating cellview sky130_fd_pr_main/cap_mim_m3__base/layout as STRUCTURE cap_mim_m3__base_CDNS_785456493180.
+INFO (XSTRM-223): 6. Translating cellview sky130_analog_lib/cap_array_8b/layout as STRUCTURE cap_array_8b.
+
+Summary of Objects Translated:
+	Scalar Instances:                       255
+	Array Instances:                        1
+	Polygons:                               0
+	Paths:                                  0
+	Rectangles:                             94
+	Lines:                                  0
+	Arcs:                                   0
+	Donuts:                                 0
+	Dots:                                   0
+	Ellipses:                               0
+	Boundaries:                             0
+	Area Blockages:                         0
+	Layer Blockages:                        0
+	Area Halos:                             0
+	Markers:                                0
+	Rows:                                   0
+	Stitch:                                 0
+	Standard Vias                           21
+	Custom Vias:                            0
+	CdsGen Vias:                            0
+	Pathsegs:                               219
+	Text:                                   0
+	TextDisplay:                            12
+	Cells:                                  6
+
+Elapsed Time: 0.9s   User Time: 0.2s   CPU Time: 0.1s   Peak VM: 23872KB
+INFO (XSTRM-234): Translation completed. '0' error(s) and '2' warning(s) found.

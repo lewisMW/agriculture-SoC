@@ -1,0 +1,134 @@
+;| version 1
+text text_pwell_all attach pwell_all
+text text_met5 attach met5
+text text_met4 attach met4
+text text_met3 attach met3
+text text_met2 attach met2
+text text_met1 attach met1
+text text_li1 attach li1
+text text_nwell attach nwell
+connect li1 prec_resistor_term by licon1
+connect met3 bottom_plate
+connect met4 top_plate
+connect li1 pSourceDrain by licon1
+connect li1 nSourceDrain by licon1
+connect li1 pp_term by licon1
+connect li1 np_term by licon1
+connect li1 ptap by licon1
+connect li1 ntap by licon1
+connect li1 nsd by licon1
+connect li1 psd by licon1
+connect li1 isolated_tap by licon1
+connect li1 poly by poly_licon1
+connect poly pfet
+connect poly nfet
+connect gate poly
+connect li1 HV_poly by licon1
+connect li1 HV_source_drain by licon1
+connect met1 li1 by mcon
+connect met2 met1 by via
+connect met3 met2 by via2
+connect met4 met3 by via3
+connect met5 met4 by via4
+connect HV_tap HV_nwell
+connect li1 npnC by licon1
+connect li1 npnB by licon1
+connect li1 npnE by licon1
+connect li1 pnpC by licon1
+connect li1 pnpB by licon1
+connect li1 pnpE by licon1
+connect pfet_v20_gate poly
+connect pfet_v20_source psd
+connect pfet_v20_drain psd
+connect nfet_v20_gate poly
+connect nfet_v20_source nsd
+connect nfet_v20_drain nsd
+stamp pwell_all by ptap
+stamp nwell by ntap
+stamp HV_FET_gate by gate
+stamp hvtpfet by pfet
+stamp lvtpfet by pfet
+stamp lvtnfet by nfet
+stamp hvnpnE by npnE
+model=res[res_generic_m1],res_generic_m1
+element res[res_generic_m1] met1_res met1
+model=res[res_generic_m2],res_generic_m2
+element res[res_generic_m2] met2_res met2
+model=res[res_generic_m3],res_generic_m3
+element res[res_generic_m3] met3_res met3
+model=res[res_generic_m4],res_generic_m4
+element res[res_generic_m4] met4_res met4
+model=res[res_generic_m5],res_generic_m5
+element res[res_generic_m5] met5_res met5
+model=diode[diode_pd2nw_05v5],diode_pd2nw_05v5
+element diode[diode_pd2nw_05v5] diode_pd2nw_05v5_rec psd nwell
+model=diode[diode_pd2nw_05v5_hvt],diode_pd2nw_05v5_hvt
+element diode[diode_pd2nw_05v5_hvt] diode_pd2nw_05v5_hvt_rec psd nwell
+model=diode[diode_pd2nw_05v5_lvt],diode_pd2nw_05v5_lvt
+element diode[diode_pd2nw_05v5_lvt] diode_pd2nw_05v5_lvt_rec psd nwell
+model=diode[diode_pd2nw_11v0],diode_pd2nw_11v0
+element diode[diode_pd2nw_11v0] diode_pd2nw_11v0_rec psd nwell
+model=diode[diode_pw2nd_05v5],diode_pw2nd_05v5
+element diode[diode_pw2nd_05v5] diode_pw2nd_05v5_rec pwell_all nsd
+model=diode[diode_pw2nd_05v5_lvt],diode_pw2nd_05v5_lvt
+element diode[diode_pw2nd_05v5_lvt] diode_pw2nd_05v5_lvt_rec pwell_all nsd
+model=diode[diode_pw2nd_05v5_nvt],diode_pw2nd_05v5_nvt
+element diode[diode_pw2nd_05v5_nvt] diode_pw2nd_05v5_nvt_rec pwell_all nsd
+model=diode[diode_pw2nd_11v0],diode_pw2nd_11v0
+element diode[diode_pw2nd_11v0] diode_pw2nd_11v0_rec pwell_all nsd
+model=res[RES_GENERIC_ND],RES_GENERIC_ND
+element res[RES_GENERIC_ND] diff_res np_term
+model=res[RES_GENERIC_PD],RES_GENERIC_PD
+element res[RES_GENERIC_PD] diff_res pp_term
+model=mos[nfet_01v8],nfet_01v8
+element mos[nfet_01v8] nfet_01v8_rec nfet nSourceDrain pwell_all
+model=mos[pfet_01v8],pfet_01v8
+element mos[pfet_01v8] pfet_01v8_rec pfet pSourceDrain nwell
+model=mos[pfet_01v8_lvt],pfet_01v8_lvt
+element mos[pfet_01v8_lvt] lvtpfet_01v8_rec lvtpfet pSourceDrain nwell
+model=mos[nfet_01v8_lvt],nfet_01v8_lvt
+element mos[nfet_01v8_lvt] lvtnfet_01v8_rec lvtnfet nSourceDrain pwell_all
+model=mos[pfet_01v8_hvt],pfet_01v8_hvt
+element mos[pfet_01v8_hvt] hvtpfet_01v8_rec hvtpfet pSourceDrain nwell
+model=mos[nfet_03v3_nvt],nfet_03v3_nvt
+element mos[nfet_03v3_nvt] HV_ngate_3v3 HV_FET_gate HV_source_drain pwell_all
+model=mos[nfet_05v0_nvt],nfet_05v0_nvt
+element mos[nfet_05v0_nvt] HV_ngate_5v0 HV_FET_gate HV_source_drain pwell_all
+model=mos[nfet_g5v0d10v5],nfet_g5v0d10v5
+element mos[nfet_g5v0d10v5] HV_ngate_5v10v HV_FET_gate HV_source_drain pwell_all
+model=mos[pfet_g5v0d10v5],pfet_g5v0d10v5
+element mos[pfet_g5v0d10v5] HV_pgate_5v10v HV_FET_gate HV_source_drain nwell
+model=ldd[nfet_20v0],nfet_20v0
+element ldd[nfet_20v0] nfet_v20_rec nfet_v20_gate nfet_v20_drain nfet_v20_source pwell_all
+model=ldd[nfet_20v0_zvt],nfet_20v0_zvt
+element ldd[nfet_20v0_zvt] nfet_v20_zvt_rec nfet_v20_gate nfet_v20_drain nfet_v20_source pwell_all
+model=ldd[pfet_20v0],pfet_20v0
+element ldd[pfet_20v0] pfet_v20_rec pfet_v20_gate pfet_v20_drain pfet_v20_source nwell
+model=bjt[npn_05v5],npn_05v5
+element bjt[npn_05v5] npn_rec npnC npnB npnE pwell_all
+model=bjt[npn_11v0],npn_11v0
+element bjt[npn_11v0] hvnpn_rec npnC npnB hvnpnE pwell_all
+model=bjt[pnp_05v5],pnp_05v5
+element bjt[pnp_05v5] pnp_rec pnpC pnpB pnpE pwell_all
+model=res[res_high_po_0p35],res_high_po_0p35
+element res[res_high_po_0p35] res_high_po_0p35_rec prec_resistor_term pwell_all
+model=res[res_high_po_0p69],res_high_po_0p69
+element res[res_high_po_0p69] res_high_po_0p69_rec prec_resistor_term pwell_all
+model=res[res_high_po_1p41],res_high_po_1p41
+element res[res_high_po_1p41] res_high_po_1p41_rec prec_resistor_term pwell_all
+model=res[res_high_po_2p85],res_high_po_2p85
+element res[res_high_po_2p85] res_high_po_2p85_rec prec_resistor_term pwell_all
+model=res[res_high_po_5p73],res_high_po_5p73
+element res[res_high_po_5p73] res_high_po_5p73_rec prec_resistor_term pwell_all
+model=res[res_xhigh_po_0p35],res_xhigh_po_0p35
+element res[res_xhigh_po_0p35] res_xhigh_po_0p35_rec prec_resistor_term pwell_all
+model=res[res_xhigh_po_0p69],res_xhigh_po_0p69
+element res[res_xhigh_po_0p69] res_xhigh_po_0p69_rec prec_resistor_term pwell_all
+model=res[res_xhigh_po_1p41],res_xhigh_po_1p41
+element res[res_xhigh_po_1p41] res_xhigh_po_1p41_rec prec_resistor_term pwell_all
+model=res[res_xhigh_po_2p85],res_xhigh_po_2p85
+element res[res_xhigh_po_2p85] res_xhigh_po_2p85_rec prec_resistor_term pwell_all
+model=res[res_xhigh_po_5p73],res_xhigh_po_5p73
+element res[res_xhigh_po_5p73] res_xhigh_po_5p73_rec prec_resistor_term pwell_all
+model=cap[cap_mim_m3__base],cap_mim_m3__base
+element cap[cap_mim_m3__base] capacitor top_plate bottom_plate

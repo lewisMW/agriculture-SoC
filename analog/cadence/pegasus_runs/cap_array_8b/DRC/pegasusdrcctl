@@ -1,0 +1,25 @@
+text_depth -primary;
+virtual_connect -colon no;
+virtual_connect -semicolon_as_colon yes;
+virtual_connect -noname;
+virtual_connect -report no;
+virtual_connect -depth -primary;
+report_summary -drc "cap_array_8b.sum" -replace;
+max_results -drc 1000;
+results_db -drc "/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/DRC/cap_array_8b.drc_errors.ascii" -ascii;
+abort_on_layout_error yes;
+layout_format gdsii;
+layout_path "/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/DRC/cap_array_8b.gds.gz";
+//=== Configurator controls ===
+//  Density Rules 
+#UNDEFINE NODEN
+//  Warning & Guidelines Rule
+#UNDEFINE NOGLR
+#UNDEFINE NOWARN
+#UNDEFINE SRAM
+// These are the affected rules and alternate implementation: 
+//    licon.4a: licon in areaid.ce must overlap LI
+//    licon.4b: licon in areaid.ce must overlap (poly or diff or tap)
+//    mcon.cover.1: mcon in areaid.ce must overlap LI
+// ** WARNING: This switch is for debugging purposes only, errors may be missed **
+//=== End of configurator controls ===

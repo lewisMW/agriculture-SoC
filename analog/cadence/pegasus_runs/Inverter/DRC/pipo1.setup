@@ -1,0 +1,17 @@
+case	"preserve"
+convertDot	"node"
+convertPin	"geometry"
+hierDepth	32
+labelCase	"preserve"
+labelDepth	32
+library	"sky130_analog_lib"
+logFile	"/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/DRC/PIPO1.LOG"
+maxVertices	2048
+pinAttNum	0
+runDir	"/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/DRC"
+strmFile	"/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/DRC/inverter.gds.gz"
+strmVersion	5
+techLib	"sky130_fd_pr_main"
+topCell	"inverter"
+view	"layout"
+enableColoring
