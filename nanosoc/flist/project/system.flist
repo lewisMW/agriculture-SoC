@@ -20,7 +20,9 @@
 -f $(SOCLABS_PROJECT_DIR)/flist/project/accelerator.flist
 
 // - Primitives IP
--f $(SOCLABS_PRIMITIVES_TECH_DIR)/flist/rtl_primitives_ip.flist
+// rtl_primitives (only fifo_vr.sv, unused here) excluded for the same reason
+// as accelerator_wrapper_tech below: SystemVerilog does not parse under -ams.
+// -f $(SOCLABS_PRIMITIVES_TECH_DIR)/flist/rtl_primitives_ip.flist
 
 // - Generic Pad Library
 -f $(SOCLABS_GENERIC_LIB_TECH_DIR)/flist/generic_lib_ip.flist
@@ -29,7 +31,11 @@
 -f $(SOCLABS_FPGA_LIB_TECH_DIR)/flist/fpga_lib_mem_ip.flist
 
 // - Accelerator Wrapper IP
--f $(SOCLABS_WRAPPER_TECH_DIR)/flist/accelerator_wrapper_ip.flist
+// accelerator_wrapper_tech components are unused in this project (the sensing
+// subsystem talks APB via cmsdk_ahb_to_apb directly). Excluded because their
+// SystemVerilog sources cannot be parsed in the Xcelium AMS flow (-ams makes
+// `logic` a discipline keyword). Re-enable if wrapper components are adopted.
+// -f $(SOCLABS_WRAPPER_TECH_DIR)/flist/accelerator_wrapper_ip.flist
 
 // - Bootrom Code RTL
 $(SOCLABS_PROJECT_DIR)/system/src/bootrom/verilog/bootrom.v

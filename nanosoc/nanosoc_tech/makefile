@@ -66,7 +66,12 @@ EXCLUDE_LIST_FLIE = $(PROJ_SW_DIR)/regression_exclude.txt
 # - Verilog Defines and Filelists
 #-------------------------------------
 # Simulator/Lint Defines
-DEFINES_VC  += +define+CORTEX_M0 +define+USE_TARMAC 
+DEFINES_VC  += +define+CORTEX_M0 +define+USE_TARMAC
+
+# Extra defines passed on the make command line, e.g.
+#   make run_xr ... EXTRA_DEFINES=+define+SENSING_DEBUG
+EXTRA_DEFINES ?=
+DEFINES_VC  += $(EXTRA_DEFINES)
 
 # Set Variables depending on whether Accelerator is in System
 ifeq ($(ACCELERATOR),yes)
@@ -126,6 +131,13 @@ ifdef ADC_3_INCLUDE
 	AMS = yes
 	NANOSOC_DEFINES += AMS_PERIPHERALS ADC_3_INCLUDE
 	FLIST_INCLUDES += $(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/sl_ams_tech/SL_ADC_8bits/flist/sl_adc_8bits_ip.flist
+endif
+
+ifdef SAR_AMS_INCLUDE
+	AMS = yes
+	NANOSOC_DEFINES += SAR_AMS
+	DEFINES_VC += +define+SAR_AMS
+	FLIST_INCLUDES += $(ACCELERATOR_DIR)/AMS/sar_ams.flist
 endif
 
 ifdef SNPS_PVT_TS_0_INCLUDE

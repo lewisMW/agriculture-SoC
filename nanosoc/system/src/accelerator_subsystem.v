@@ -90,6 +90,19 @@ module accelerator_subsystem #(
   //-------------------------------------------
   // Instantiate your accelerator/wrapper here
   //-------------------------------------------
+  // APB bridge <-> wrapper nets (declared before first use - strict Verilog)
+  wire [SYS_DATA_W-1:0] PWDATA;
+  wire PWRITE;
+  wire [SYS_DATA_W-1:0] PRDATA;
+  wire [ACC_ADDR_W-1:0] PADDR;
+  wire PREADY;
+  wire PSEL;
+  wire PENABLE;
+  wire PSLVERR;
+  wire [3:0] PSTRB;
+  wire [2:0] PPROT;
+  wire APBACTIVE;
+
   cmsdk_ahb_to_apb  #(
   .ADDRWIDTH(SYS_ADDR_W),
   .REGISTER_RDATA(1),
@@ -125,18 +138,6 @@ module accelerator_subsystem #(
   /*input  wire*/.PRDATA(PRDATA),    // Read data for each APB slave
   /*input  wire*/.PREADY(PREADY),    // Ready for each APB slave
   /*input  wire*/.PSLVERR(PSLVERR));  // Error state for each APB slave
-
-wire [SYS_DATA_W-1:0] PWDATA;
-wire PWRITE;
-wire [SYS_DATA_W-1:0] PRDATA;
-wire [ACC_ADDR_W-1:0] PADDR;
-wire PREADY;
-wire PSEL;
-wire PENABLE;
-wire PSLVERR;
-wire [3:0] PSTRB;
-wire [2:0] PPROT;
-wire APBACTIVE;
 
 // ---------------------------------------------------------------------------
 // RTC support signals for the sensing peripheral (mirrors agriculture_soc.v).

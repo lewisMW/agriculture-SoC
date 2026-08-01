@@ -12,13 +12,24 @@
 # Software Directory
 NANOSOC_SW_DIR     ?= $(SOCLABS_NANOSOC_TECH_DIR)/software
 
-# Default to DS-5 tool-chain
-TOOL_CHAIN = ds5
+# Default to DS-5 tool-chain; override on the command line with TOOL_CHAIN=gcc
+# (this is passed down via SW_MAKE_OPTIONS and overrides the testcode makefiles'
+# own setting, so it must be overridable here).
+TOOL_CHAIN ?= ds5
 
 # Software make options
 # - Pass onto the software makefile to define targetted CPU type
 # You can append additional make options for testcode here
 SW_MAKE_OPTIONS = CPU_PRODUCT=CORTEX_M0 TOOL_CHAIN=$(TOOL_CHAIN)
+
+# Toolchain for the size-critical ROM images (bootloader, debugtester), kept
+# separate from TOOL_CHAIN so that building testcodes with gcc does not clobber
+# them. The boot ROM holds 2**BOOTROM_ADDRW words (1 KB at ADDRW=8); the
+# committed armcc bootloader.hex is 916 B, whereas a gcc build is ~3.1 KB and
+# bootrom_gen.py silently drops the over-depth entries, leaving a ROM that
+# never boots. Leave this as ds5 to keep using the committed prebuilt images.
+BOOTROM_TOOL_CHAIN ?= ds5
+SW_MAKE_OPTIONS_ROM = CPU_PRODUCT=CORTEX_M0 TOOL_CHAIN=$(BOOTROM_TOOL_CHAIN)
 
 # Bootrom Parameters:
 # Boot Loader image
@@ -38,7 +49,7 @@ code : testcode bootrom debugtester
 # Note : The use of ls after compile allows the computing server to sync up
 bootrom:
 	@(cd $(TESTCODES_DIR)/$(BOOTLOADER) ;\
-	$(MAKE) all $(SW_MAKE_OPTIONS) ;\
+	$(MAKE) all $(SW_MAKE_OPTIONS_ROM) ;\
 	echo Compile done ;\
 	ls > /dev/null ;\
 	echo Copy $(BOOTLOADER).hex ;\
@@ -140,7 +151,7 @@ endif
 # Note : The use of ls after compile allows the computing server to sync up
 debugtester:
 	@(cd $(NANOSOC_SW_DIR)/debug_tester ;\
-	$(MAKE) all $(SW_MAKE_OPTIONS) ;\
+	$(MAKE) all $(SW_MAKE_OPTIONS_ROM) ;\
 	echo Compile done ;\
 	ls > /dev/null ;\
 	echo Copy $(DEBUGTESTER)_le.hex ;\
