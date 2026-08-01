@@ -23,5 +23,14 @@ all:
 	$(MAKE) -C obj_dir -f V$(TB_MODULE).mk;
 	./obj_dir/V$(TB_MODULE);
 
+# Rigorous self-checking unit test (reference model + invariants + random)
+RAND_MODULE = fifo_apb_adc_rand_tb
+RAND_FILES  = ./fifo_apb_adc_rand_tb.v ./fifo_apb_adc.v
+
+rand:
+	$(VERILATOR) --Wno-fatal --trace --exe --main --top $(RAND_MODULE) $(RAND_FILES) --timing;
+	$(MAKE) -C obj_dir -f V$(RAND_MODULE).mk;
+	./obj_dir/V$(RAND_MODULE);
+
 clean:
 	rm -rf obj_dir waveform.vcd

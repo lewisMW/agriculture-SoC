@@ -8,6 +8,7 @@
 *.o
 *.fst
 paths.mk
+nanosoc/env/dependency_env.sh
 
 # ARM reference (downloaded, not source)
 AT510-MN-80001-r2p0-00rel0

@@ -14,8 +14,8 @@ module rtc_control
     input  wire                  PWRITE,
     input  wire [ADDR_WIDTH-1:0] PADDR,
     input  wire [DATA_WIDTH-1:0] PWDATA,
-    output reg  [DATA_WIDTH-1:0] PRDATA,
-    output reg                   PREADY,
+    // output reg  [DATA_WIDTH-1:0] PRDATA, //This should not be here.
+    // output reg                   PREADY, // The rtc doesn't handle this directly.
     output wire                  PSLVERR,
 
     // RTC Domain Signals

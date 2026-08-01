@@ -61,7 +61,7 @@ module fifo_apb_adc_tb;
             @(posedge clk);
             if (!fifo_full) begin
                 adc_wr_en = 1;
-                adc_data = {$random, $random[23:0]};
+                adc_data = {$random, $random};   // fill the width; truncates to adc_data
                 $display("Data written: %h", adc_data);
             end
         end
