@@ -1,8 +1,0 @@
-//Verilog-AMS HDL for "Testench", "Cal_test" "verilogams"
-
-`include "constants.vams"
-`include "disciplines.vams"
-
-module Cal_test ( );
-
-endmodule
