@@ -2,7 +2,7 @@
 
 Branch fix-ups:
 
-## analog-sky130-dev (Hee) — cap_array_8b, cdac_8b, inverter
+## analog-sky130-dev (Hee) — cap_array_8b, cdac_8b, inverter (54e94e6)
 
 - cap_array_8b MSB is one cap short. Layout has 127 unit caps on vbottom<7> (CC7.18 missing); schematic says m=128. Causes ~−1 LSB DNL at code 128. Fix one side so they agree.
 - Don't rename inverter pins (GND IN OUT VDD) — the behavioural view has been renamed to match.
@@ -10,7 +10,7 @@ Branch fix-ups:
 - Confirm sky130 cdac_8b is not meant to be swapped wholesale. It has no sampling switch and different pin names. We swap leaf cells only.
 - DRC density violations (CDR/CDRW) are expected standalone — no action.
 
-## bootstrap-sw — bootstrap_sw, inv_lvt
+## bootstrap-sw — bootstrap_sw, inv_lvt (0d8dd22)
 
 - Port out is declared dir=input — should be output. AMS binding uses port directions.
 - Back-to-back conversions produce alternating samples 60–90 LSB low. RTC-spaced conversions are clean. Suspect the 4×53 fF boost caps can't recharge in the trigger interval. Characterise in bootstrap_sw_tb (probe vbsh/vbsl under rapid en), then publish a minimum conversion interval or strengthen the precharge. But also, not yet ruled out: wrapper FSM re-asserting adc_en too early.
@@ -18,7 +18,7 @@ Branch fix-ups:
 - Add a switch_adc cell = one bootstrap_sw instance, pins p n ctrl vdd vss (ctrl→en, p→in, n→out). Removes a wrapper from our glue.
 - Re-Check&Save to clear stale "floating net" results in the OA — the live data is fine, they mislead.
 
-## Erick_branch — Comparator, Trim
+## Erick_branch — Comparator, Trim (5845df0)
 
 - Trim instances bind to a library named SoC that doesn't exist. Netlisting fails (OSSHNL-366). Re-bind I0/I1 to sky130_analog_lib. Cannot be fixed in cds.lib — Cadence rejects two library names sharing a directory.
 - Output polarity is inverted. Latch pulls the winner low, so Vp > Vn → Out_P LOW; sr_latch/sarlogic expect outp = 1. With natural wiring the SAR rails (0x00/0xff). Fix by renaming pins or adding output inverters.
