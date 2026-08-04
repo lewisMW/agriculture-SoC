@@ -1,8 +1,8 @@
 # Executive Summary
 
-Branch fix-ups
+Branch fix-ups:
 
-analog-sky130-dev (Hee) — cap_array_8b, cdac_8b, inverter
+## analog-sky130-dev (Hee) — cap_array_8b, cdac_8b, inverter
 
 - cap_array_8b MSB is one cap short. Layout has 127 unit caps on vbottom<7> (CC7.18 missing); schematic says m=128. Causes ~−1 LSB DNL at code 128. Fix one side so they agree.
 - Don't rename inverter pins (GND IN OUT VDD) — the behavioural view has been renamed to match.
@@ -10,7 +10,7 @@ analog-sky130-dev (Hee) — cap_array_8b, cdac_8b, inverter
 - Confirm sky130 cdac_8b is not meant to be swapped wholesale. It has no sampling switch and different pin names. We swap leaf cells only.
 - DRC density violations (CDR/CDRW) are expected standalone — no action.
 
-bootstrap-sw — bootstrap_sw, inv_lvt
+## bootstrap-sw — bootstrap_sw, inv_lvt
 
 - Port out is declared dir=input — should be output. AMS binding uses port directions.
 - Back-to-back conversions produce alternating samples 60–90 LSB low. RTC-spaced conversions are clean. Suspect the 4×53 fF boost caps can't recharge in the trigger interval. Characterise in bootstrap_sw_tb (probe vbsh/vbsl under rapid en), then publish a minimum conversion interval or strengthen the precharge. But also, not yet ruled out: wrapper FSM re-asserting adc_en too early.
@@ -18,7 +18,7 @@ bootstrap-sw — bootstrap_sw, inv_lvt
 - Add a switch_adc cell = one bootstrap_sw instance, pins p n ctrl vdd vss (ctrl→en, p→in, n→out). Removes a wrapper from our glue.
 - Re-Check&Save to clear stale "floating net" results in the OA — the live data is fine, they mislead.
 
-Erick_branch — Comparator, Trim
+## Erick_branch — Comparator, Trim
 
 - Trim instances bind to a library named SoC that doesn't exist. Netlisting fails (OSSHNL-366). Re-bind I0/I1 to sky130_analog_lib. Cannot be fixed in cds.lib — Cadence rejects two library names sharing a directory.
 - Output polarity is inverted. Latch pulls the winner low, so Vp > Vn → Out_P LOW; sr_latch/sarlogic expect outp = 1. With natural wiring the SAR rails (0x00/0xff). Fix by renaming pins or adding output inverters.
@@ -27,13 +27,13 @@ Erick_branch — Comparator, Trim
 - Rename Comparator → comparator, pins to lowercase (Vp→vp, Out_P→outp, Trima→trima…). Spectre subckt names are case-insensitive, so you can't keep both spellings.
 - Keep Comparator_tb_AMS — right place for offset/trim characterisation.
 
-Everyone
+## Everyone
 
 - One flat sky130_analog_lib. No nested libraries, no SoC references.
 - Rule for swappable cells: every view of a cell shares the same name, ports and parameters. All our wrappers exist where that's broken.
 - Commit an in-repo cds.lib so netlisting works from a clean checkout.
 
-Integration (us, after the above merge)
+## Integration (us, after the above merge)
 
 - Confirm all 8 cells in one library, DRC clean, LVS MATCH.
 - Regenerate netlists: virtuoso -nograph < AMS/netlist_sky130.il.
@@ -42,12 +42,111 @@ Integration (us, after the above merge)
 - Re-run all 6 tests with EXTRA_DEFINES=+define+SENSING_CHECK. Clean iff no SENSING_CHECK FAIL in the log.
 - Expect: mid-code DNL improves, cross removed, calibration direction correct, fifo_drain/sensing_driver stop failing.
 
-Two traps to know
+## Two traps to know
 
 - A passing firmware test does not mean the ADC works. The tests only check the FIFO is non-empty — a run with every code 0x00 still printed Test Passed!. Always grep SENSING_CHECK FAIL, and for swaps check Spectre's circuit inventory shows bsim4/capacitor and no worklib__<cell>__vams__*.
 - The amsd block must be a source file (XRUN_EXTRA_SRC), never -analogcontrol. Passed the wrong way it's silently ignored — the run passes and the design is still fully behavioural.
 
 Full detail, with the file-by-file coupling table, is in agriculture_soc_main/AMS/INTEGRATION.md.
+
+# Demo
+
+## Setup
+
+```bash
+cd ~/agriculture-SoC
+git fetch origin
+git checkout sky130-ams-integration
+```
+
+Not needed for the demo as sky130_cells.scs is committed, but you can regenerate netlists with:
+```bash
+cd ~/agriculture-SoC && git fetch origin
+# 1. Extract the analog branches. PIN THE COMMITS — branch tips move and the
+#    generated netlists change with them. These are the exact commits that
+#    produced the committed AMS/spice/sky130_cells.scs:
+#      54e94e6  analog-sky130-dev : cap_array_8b, cdac_8b, inverter
+#      0d8dd22  bootstrap-sw      : bootstrap_sw, inv_lvt
+#      5845df0  Erick_branch      : Comparator, Trim
+for c in 54e94e6 0d8dd22 5845df0; do
+  d=/tmp/$c; rm -rf $d; mkdir -p $d
+  git archive $c analog | tar -x -C $d
+done
+
+# 2. Erick's Comparator binds Trim to a phantom "SoC" library — give it its own
+#    directory (Cadence refuses two lib names on one path)
+L=/tmp/5845df0/analog/cadence/sky130/SoC/sky130_analog_lib
+rm -rf /tmp/soclib && mkdir -p /tmp/soclib
+cp -r $L/data.dm $L/.oalib /tmp/soclib/ && ln -s $L/Trim /tmp/soclib/Trim
+
+# 3. cds.lib (note: '#' comments only — '//' silently breaks DEFINEs).
+#    Comparator/Trim are on 5845df0; cap_array_8b/cdac_8b/inverter are on
+#    54e94e6 — point sky130_analog_lib at whichever you are netlisting.
+mkdir -p /tmp/oaread && cd /tmp/oaread
+cat > cds.lib <<'EOF'
+INCLUDE $SKY130/cds.lib
+DEFINE sky130_analog_lib /tmp/5845df0/analog/cadence/sky130/SoC/sky130_analog_lib
+DEFINE SoC /tmp/soclib
+DEFINE bootstrap_switch_lib /tmp/0d8dd22/analog/cadence/sky130/SoC/sky130_analog_lib/bootstrap_switch_lib
+EOF
+
+# 4. Netlist
+virtuoso -nograph < ~/agriculture-SoC/agriculture_soc_main/AMS/netlist_sky130.il
+```
+
+## The demo — four acts, ~6 minutes
+
+```bash
+cd ~/agriculture-SoC/nanosoc
+export SOCLABS_PROJECT_DIR=$PWD ARM_IP_LIBRARY_PATH=/opt/arm
+source env/dependency_env.sh
+```
+
+### Act 1 — digital baseline (~10 s). Same SoC, dummy ADC.
+
+```bash
+make -C nanosoc_tech run_xr TESTNAME=adc_trigger_test ACCELERATOR=yes TOOL_CHAIN=gcc
+```
+Point at: Test Passed! — Cortex-M0 boots, runs compiled C, reads the peripheral.
+
+### Act 2 — behavioural AMS (~15 s). Spectre now in the loop.
+
+```bash
+make -C nanosoc_tech run_xr TESTNAME=adc_trigger_test ACCELERATOR=yes TOOL_CHAIN=gcc \
+     SAR_AMS_INCLUDE=yes
+```
+Point at: spectre completes with 0 errors — a real SAR algorithm with an analog solver, driven by firmware.
+
+### Act 3 — real sky130 silicon (~20 s). The headline.
+
+```bash
+make -C nanosoc_tech run_xr TESTNAME=adc_trigger_test ACCELERATOR=yes TOOL_CHAIN=gcc \
+     SAR_AMS_INCLUDE=yes \
+     XRUN_EXTRA_SRC=$ACCELERATOR_DIR/AMS/amsd_sky130_all.scs \
+     AMS_ACF=$ACCELERATOR_DIR/AMS/acf_sky130.scs \
+     EXTRA_DEFINES=+define+SENSING_DEBUG
+```
+Point at two things in the log:
+
+Circuit inventory:  bsim4 75   capacitor 36   resistor 52
+                    (no worklib__*__vams__*_behavioral)
+— proof it's actual transistors and MIM caps, not models.
+
+fifo_push data=0x75 … 0x7e … 0x86 … 0x9e … 0xab … 0xb7 … 0xb5 …
+— the CPU reading codes that trace the input sine.
+
+### Act 4 — the verification story (~4½ min). This is the part that impresses engineers.
+
+```bash
+bash $ACCELERATOR_DIR/AMS/run_sky130_suite.sh
+```
+Runs a deliberately-broken configuration first, then all 6 firmware tests.
+
+Point at, in order:
+1. Negative control: 23 SENSING_CHECK FAIL lines — and the firmware still says Test Passed!. The tests only check the FIFO is non-empty, so a dead ADC passes. That's why the checker exists.
+2. Then 4 tests clean, and fifo_drain_test / sensing_driver_test fail with 6 checks each — alternating samples 60–90 LSB low. A real design finding: the bootstrap switch's boost caps can't recharge between back-to-back conversions. RTC-spaced conversions are fine.
+
+That's the strongest thing you have to show: the flow found a genuine analog defect through a firmware test.
 
 # sky130 AMS integration guide
 

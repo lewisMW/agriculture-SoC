@@ -9,21 +9,43 @@
 ;
 ; USAGE (headless - no GUI needed, but a Virtuoso licence is required):
 ;
-;   1. Put the OA libraries on disk. The cells currently live on two DIFFERENT
-;      branches, which have diverged (merge base 966efc6):
-;         analog-sky130-dev : cap_array_8b, cdac_8b, inverter, opamp_np_ab
-;         bootstrap-sw      : bootstrap_switch_lib/{bootstrap_sw, inv_lvt}
-;      e.g.  git archive origin/analog-sky130-dev analog | tar -x -C /tmp/asd
-;            git archive origin/bootstrap-sw      analog | tar -x -C /tmp/bsw
+;   1. Put the OA libraries on disk. The cells live on THREE diverged branches
+;      (merge base 966efc6). PIN THE COMMITS - branch tips move, and the
+;      generated netlists change with them. These are the commits that produced
+;      the committed AMS/spice/sky130_cells.scs:
 ;
-;   2. Create a cds.lib next to where you run virtuoso:
+;         54e94e6  analog-sky130-dev : cap_array_8b, cdac_8b, inverter, opamp_np_ab
+;         0d8dd22  bootstrap-sw      : bootstrap_switch_lib/{bootstrap_sw, inv_lvt}
+;         5845df0  Erick_branch      : Comparator, Trim (+ Comparator_tb_AMS)
+;
+;      for c in 54e94e6 0d8dd22 5845df0; do
+;        d=/tmp/$c; rm -rf $d; mkdir -p $d
+;        git archive $c analog | tar -x -C $d
+;      done
+;
+;   2. Erick's Comparator binds its two Trim instances to a library named "SoC"
+;      (Trim actually lives in sky130_analog_lib). Cadence REFUSES two library
+;      names pointing at one directory, so SoC needs its own directory:
+;
+;         L=/tmp/5845df0/analog/cadence/sky130/SoC/sky130_analog_lib
+;         rm -rf /tmp/soclib && mkdir -p /tmp/soclib
+;         cp -r $L/data.dm $L/.oalib /tmp/soclib/ && ln -s $L/Trim /tmp/soclib/Trim
+;
+;   3. Create a cds.lib next to where you run virtuoso. Comment character is
+;      '#', NOT '//' - a '//' comment silently breaks the following DEFINE:
 ;         INCLUDE $SKY130/cds.lib
-;         DEFINE sky130_analog_lib     /tmp/asd/analog/cadence/sky130/SoC/sky130_analog_lib
-;         DEFINE bootstrap_switch_lib  /tmp/bsw/analog/cadence/sky130/SoC/sky130_analog_lib/bootstrap_switch_lib
+;         DEFINE sky130_analog_lib     /tmp/5845df0/analog/cadence/sky130/SoC/sky130_analog_lib
+;         DEFINE SoC                   /tmp/soclib
+;         DEFINE bootstrap_switch_lib  /tmp/0d8dd22/analog/cadence/sky130/SoC/sky130_analog_lib/bootstrap_switch_lib
+;      (cap_array_8b/cdac_8b/inverter exist on 54e94e6; point sky130_analog_lib
+;       there instead when netlisting those, or merge the trees first.)
 ;
-;   3. virtuoso -nograph < netlist_sky130.il
+;   4. virtuoso -nograph < netlist_sky130.il
 ;
-;   4. Netlists appear at ~/simulation/<cell>/spectre/schematic/netlist/netlist
+;   5. Netlists appear at ~/simulation/<cell>/spectre/schematic/netlist/netlist
+;
+; All of step 1-3 disappears once the three branches are merged into ONE flat
+; sky130_analog_lib - see AMS/INTEGRATION.md.
 ;
 ; ASSEMBLING sky130_cells.scs from the output:
 ;   - cap_array_8b and inverter: take the `subckt ... ends` blocks out of the
