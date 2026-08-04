@@ -271,6 +271,79 @@ module adc_apb_wrapper_rev2 #(
     end
 `endif
 
+`ifdef SENSING_CHECK
+    // ------------------------------------------------------------------------
+    // Automatic plausibility checks on the ADC output stream.
+    //
+    // WHY: the sensing firmware tests only assert that the FIFO becomes
+    // non-empty after a trigger - they never look at the sample VALUE. A run
+    // with a completely dead converter (every code 0x00) still printed
+    // "Test Passed!". These checks validate the ANALOG result instead: driven
+    // by sar_ams_shim's differential sine (VCM 0.9 V, +/-0.4 V) the codes must
+    // stay inside a plausible band, move smoothly between samples, and never
+    // sit at a rail.
+    //
+    // Enable with EXTRA_DEFINES=+define+SENSING_CHECK. Any violation prints a
+    // line starting "SENSING_CHECK FAIL", so a run is clean iff that string is
+    // absent from the log.
+    //
+    // Bounds are deliberately loose - they are here to catch a broken or
+    // stuck converter, not to grade linearity. Observed good runs sit in
+    // 0x73..0xb7 with steps <= ~26 LSB.
+    // ------------------------------------------------------------------------
+    localparam [7:0]  CHK_LO      = 8'h20;  // plausible code band
+    localparam [7:0]  CHK_HI      = 8'hE0;
+    localparam integer CHK_MAXSTEP = 48;    // max |delta| between consecutive samples
+    localparam integer CHK_STUCK   = 12;    // identical samples in a row => stuck
+
+    reg [7:0] chk_prev;
+    reg       chk_have_prev;
+    integer   chk_n, chk_same, chk_fail, chk_delta;
+
+    initial begin
+        chk_have_prev = 1'b0;
+        chk_n = 0; chk_same = 0; chk_fail = 0;
+    end
+
+    always @(posedge PCLK) if (PRESETn && fifo_write_en) begin
+        chk_n = chk_n + 1;
+
+        if (adc_sample == 8'h00 || adc_sample == 8'hFF) begin
+            $display("SENSING_CHECK FAIL [%0t] sample %0d at rail: 0x%02h",
+                     $time, chk_n, adc_sample);
+            chk_fail = chk_fail + 1;
+        end else if (adc_sample < CHK_LO || adc_sample > CHK_HI) begin
+            $display("SENSING_CHECK FAIL [%0t] sample %0d outside band 0x%02h..0x%02h: 0x%02h",
+                     $time, chk_n, CHK_LO, CHK_HI, adc_sample);
+            chk_fail = chk_fail + 1;
+        end
+
+        if (chk_have_prev) begin
+            chk_delta = (adc_sample > chk_prev) ? (adc_sample - chk_prev)
+                                                : (chk_prev - adc_sample);
+            if (chk_delta > CHK_MAXSTEP) begin
+                $display("SENSING_CHECK FAIL [%0t] sample %0d jumped %0d LSB (0x%02h -> 0x%02h)",
+                         $time, chk_n, chk_delta, chk_prev, adc_sample);
+                chk_fail = chk_fail + 1;
+            end
+            if (adc_sample == chk_prev) chk_same = chk_same + 1;
+            else                        chk_same = 0;
+            if (chk_same == CHK_STUCK) begin
+                $display("SENSING_CHECK FAIL [%0t] stuck: %0d identical samples at 0x%02h",
+                         $time, CHK_STUCK + 1, adc_sample);
+                chk_fail = chk_fail + 1;
+            end
+        end
+
+        chk_prev      = adc_sample;
+        chk_have_prev = 1'b1;
+
+        if ((chk_n % 8) == 0)
+            $display("SENSING_CHECK: %0d samples, %0d failures so far (last 0x%02h)",
+                     chk_n, chk_fail, adc_sample);
+    end
+`endif
+
     fifo_apb_adc #(
         .DATA_WIDTH(SAMPLE_WIDTH),
         .DEPTH(16)
