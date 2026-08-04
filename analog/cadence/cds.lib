@@ -1,7 +1,9 @@
+# File Created by root at Mon Aug  3 19:21:29 2026
+# assisted by CdsLibEditor
 
 #SOFTINCLUDE $CDS_WORKDIR/cds.lib
-DEFINE analogLib              $CDSHOME/tools/dfII/etc/cdslib/artist/analogLib
-DEFINE basic                  $CDSHOME/tools/dfII/etc/cdslib/basic
+DEFINE analogLib $CDSHOME/tools/dfII/etc/cdslib/artist/analogLib
+DEFINE basic $CDSHOME/tools/dfII/etc/cdslib/basic
 
 DEFINE adc_primitives_lib ./notech/SoC/adc_primitives_lib
 DEFINE adc_analog_lib ./notech/SoC/adc_analog_lib
@@ -11,3 +13,4 @@ DEFINE adc_tb_lib ./notech/SoC/adc_tb_lib
 
 INCLUDE $SKY130/cds.lib
 DEFINE sky130_analog_lib ./sky130/SoC/sky130_analog_lib
+DEFINE sky130_fd_pr_main /home/admin/Documents/PDKs/sky130_release_0.1.0/libs/sky130_fd_pr_main
