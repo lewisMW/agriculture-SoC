@@ -1,0 +1,94 @@
+Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.26s.
+********************************************************************************
+Product   : Virtuoso(R) XStream Out
+Program   : @(#)$CDS: strmout version IC23.1-64b 07/08/2025 22:22 (cpgbld17) $
+          : sub-version  IC23.1-64b.ISR15.37 
+Started at: 21-Aug-2026  14:16:25
+User Name : root
+Host Name : msi
+Directory : /home/admin/git/agriculture-SoC/analog/cadence
+CADENCE Design Systems, Inc.
+********************************************************************************
+Info: Cellview Rev Num:99,  Tech Rev Num:59
+
+WARNING (XSTRM-20): Output Stream file '/home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC/Comparator.gds.gz' already exists. It will be overwritten.
+Loading sky130_fd_pr_main/libInit.il ...
+	Loading sky130_fd_pr_main/loadCxt.ile ... done!
+	Loading context 'sky130_fd_pr_main' from library 'sky130_fd_pr_main' ... done!
+	Loading context 'pdkUtils' from library 'sky130_fd_pr_main' ... done!
+	Loading sky130_fd_pr_main/libInitCktPro.il ... done!
+	Loading sky130_fd_pr_main/libInitCustomExit.il ... 	Loading Environment Settings ...
+done!
+Loaded sky130_fd_pr_main/libInit.il successfully!
+INFO (XSTRM-217): Reading the layer map file, /home/admin/Documents/PDKs/sky130_release_0.1.0/libs/sky130_fd_pr_main/sky130_fd_pr_main.layermap
+WARNING (XSTRM-333): The '-enableColoring' option will be ignored during XStream Out. This is because there is no color entry in the layer map and the object map file.
+INFO (XSTRM-427): Based on current hardware configuration, running XStream Out translation in multi-threaded mode with 4 threads.
+INFO (XSTRM-280): The output file will be a compressed file because the file name has extension .gz
+INFO (XSTRM-162): You have not used the '-viaMap' option. If the OpenAccess design has native oaVia instances, use the '-viaMap' option for preserving oaVia instances in a XStream Out - XStream In round trip. Using the '-viaMap' option improves performance and VM usage of applications using the Streamed-In design.
+
+Summary of Options :
+library                                 sky130_analog_lib
+strmFile                                /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC/Comparator.gds.gz
+topCell                                 Comparator
+view                                    layout
+runDir                                  /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC
+logFile                                 /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC/PIPO1.LOG
+techLib                                 sky130_fd_pr_main
+hierDepth                               32
+maxVertices                             2048
+layerMap                                /home/admin/Documents/PDKs/sky130_release_0.1.0/libs/sky130_fd_pr_main/sky130_fd_pr_main.layermap
+userSkillFile                           /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC/strmout.il
+labelDepth                              32
+case                                    Preserve
+convertDot                              node
+
+INFO (XSTRM-180): You have not used the '-objectMap' option. The design has instance(s) of at least one of following OpenAccess objects: oaBlockage, oaBoundary, oaRow, and oaMarker. Any information about these objects will not be translated into the generated stream file. Use the '-objectMap' option to translate/preserve these objects using XStream.
+INFO (XSTRM-223): 1. Translating stdVia sky130_fd_pr_main/M1M2_C/layout as STRUCTURE M1M2_C_CDNS_787285785640.
+INFO (XSTRM-223): 2. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_787285785641.
+INFO (XSTRM-223): 3. Translating stdVia sky130_fd_pr_main/M1M2_C/layout as STRUCTURE M1M2_C_CDNS_787285785642.
+INFO (XSTRM-223): 4. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_787285785643.
+INFO (XSTRM-223): 5. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_787285785644.
+INFO (XSTRM-223): 6. Translating stdVia sky130_fd_pr_main/M4M5_C/layout as STRUCTURE M4M5_C_CDNS_787285785645.
+INFO (XSTRM-223): 7. Translating stdVia sky130_fd_pr_main/M3M4_C/layout as STRUCTURE M3M4_C_CDNS_787285785646.
+INFO (XSTRM-223): 8. Translating stdVia sky130_fd_pr_main/M2M3_C/layout as STRUCTURE M2M3_C_CDNS_787285785647.
+INFO (XSTRM-223): 9. Translating stdVia sky130_fd_pr_main/M1M2_C/layout as STRUCTURE M1M2_C_CDNS_787285785648.
+INFO (XSTRM-223): 10. Translating cellview sky130_fd_pr_main/pfet_01v8/layout as STRUCTURE pfet_01v8_CDNS_787285785640.
+INFO (XSTRM-223): 11. Translating customVia sky130_fd_pr_main/polyConn/layout as STRUCTURE polyConn_CDNS_787285785641.
+INFO (XSTRM-223): 12. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787285785642.
+INFO (XSTRM-223): 13. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787285785643.
+INFO (XSTRM-223): 14. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787285785644.
+INFO (XSTRM-223): 15. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787285785645.
+INFO (XSTRM-223): 16. Translating cellview sky130_analog_lib/sarcta__C0/layout as STRUCTURE sarcta__C0.
+INFO (XSTRM-223): 17. Translating cellview sky130_analog_lib/sarct__trim_array/layout as STRUCTURE sarct__trim_array.
+INFO (XSTRM-223): 18. Translating cellview sky130_analog_lib/Trim/layout as STRUCTURE Trim.
+INFO (XSTRM-223): 19. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787285785646.
+INFO (XSTRM-223): 20. Translating cellview sky130_analog_lib/Comparator/layout as STRUCTURE Comparator.
+
+Summary of Objects Translated:
+	Scalar Instances:                       37
+	Array Instances:                        0
+	Polygons:                               0
+	Paths:                                  9
+	Rectangles:                             548
+	Lines:                                  0
+	Arcs:                                   0
+	Donuts:                                 0
+	Dots:                                   0
+	Ellipses:                               0
+	Boundaries:                             0
+	Area Blockages:                         0
+	Layer Blockages:                        0
+	Area Halos:                             0
+	Markers:                                0
+	Rows:                                   0
+	Stitch:                                 0
+	Standard Vias                           74
+	Custom Vias:                            18
+	CdsGen Vias:                            0
+	Pathsegs:                               156
+	Text:                                   0
+	TextDisplay:                            0
+	Cells:                                  20
+
+Elapsed Time: 0.7s   User Time: 0.1s   CPU Time: 0.0s   Peak VM: 36100KB
+INFO (XSTRM-234): Translation completed. '0' error(s) and '2' warning(s) found.

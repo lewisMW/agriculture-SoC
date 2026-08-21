@@ -11,6 +11,6 @@ DEFINE adc_digital_lib ./notech/SoC/adc_digital_lib
 DEFINE adc_top_lib ./notech/SoC/adc_top_lib
 DEFINE adc_tb_lib ./notech/SoC/adc_tb_lib
 
-INCLUDE $SKY130/cds.lib
+#INCLUDE $SKY130/cds.lib
 DEFINE sky130_analog_lib ./sky130/SoC/sky130_analog_lib
 DEFINE sky130_fd_pr_main /home/admin/Documents/PDKs/sky130_release_0.1.0/libs/sky130_fd_pr_main

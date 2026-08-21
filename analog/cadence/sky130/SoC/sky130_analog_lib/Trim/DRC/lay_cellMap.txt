@@ -1,0 +1,3 @@
+sky130_analog_lib Trim layout Trim
+sky130_analog_lib sarct__trim_array layout sarct__trim_array
+sky130_analog_lib sarcta__C0 layout sarcta__C0
