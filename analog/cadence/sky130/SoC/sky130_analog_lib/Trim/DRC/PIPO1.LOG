@@ -2,7 +2,7 @@
 Product   : Virtuoso(R) XStream Out
 Program   : @(#)$CDS: strmout version IC23.1-64b 07/08/2025 22:22 (cpgbld17) $
           : sub-version  IC23.1-64b.ISR15.37 
-Started at: 21-Aug-2026  16:05:15
+Started at: 22-Aug-2026  15:12:54
 User Name : root
 Host Name : msi
 Directory : /home/admin/git/agriculture-SoC/analog/cadence
@@ -10,6 +10,7 @@ CADENCE Design Systems, Inc.
 ********************************************************************************
 Info: Cellview Rev Num:99,  Tech Rev Num:59
 
+WARNING (XSTRM-20): Output Stream file '/home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Trim/DRC/Trim.gds.gz' already exists. It will be overwritten.
 INFO (XSTRM-217): Reading the layer map file, /home/admin/Documents/PDKs/sky130_release_0.1.0/libs/sky130_fd_pr_main/sky130_fd_pr_main.layermap
 WARNING (XSTRM-333): The '-enableColoring' option will be ignored during XStream Out. This is because there is no color entry in the layer map and the object map file.
 INFO (XSTRM-427): Based on current hardware configuration, running XStream Out translation in multi-threaded mode with 4 threads.
@@ -33,13 +34,13 @@ case                                    Preserve
 convertDot                              node
 
 INFO (XSTRM-180): You have not used the '-objectMap' option. The design has instance(s) of at least one of following OpenAccess objects: oaBlockage, oaBoundary, oaRow, and oaMarker. Any information about these objects will not be translated into the generated stream file. Use the '-objectMap' option to translate/preserve these objects using XStream.
-INFO (XSTRM-223): 1. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_787292315550.
-INFO (XSTRM-223): 2. Translating stdVia sky130_fd_pr_main/M1M2_C/layout as STRUCTURE M1M2_C_CDNS_787292315551.
-INFO (XSTRM-223): 3. Translating customVia sky130_fd_pr_main/polyConn/layout as STRUCTURE polyConn_CDNS_787292315550.
-INFO (XSTRM-223): 4. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787292315551.
-INFO (XSTRM-223): 5. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787292315552.
-INFO (XSTRM-223): 6. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787292315553.
-INFO (XSTRM-223): 7. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787292315554.
+INFO (XSTRM-223): 1. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_787375574930.
+INFO (XSTRM-223): 2. Translating stdVia sky130_fd_pr_main/M1M2_C/layout as STRUCTURE M1M2_C_CDNS_787375574931.
+INFO (XSTRM-223): 3. Translating customVia sky130_fd_pr_main/polyConn/layout as STRUCTURE polyConn_CDNS_787375574930.
+INFO (XSTRM-223): 4. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787375574931.
+INFO (XSTRM-223): 5. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787375574932.
+INFO (XSTRM-223): 6. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787375574933.
+INFO (XSTRM-223): 7. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787375574934.
 INFO (XSTRM-223): 8. Translating cellview sky130_analog_lib/sarcta__C0/layout as STRUCTURE sarcta__C0.
 INFO (XSTRM-223): 9. Translating cellview sky130_analog_lib/sarct__trim_array/layout as STRUCTURE sarct__trim_array.
 INFO (XSTRM-223): 10. Translating cellview sky130_analog_lib/Trim/layout as STRUCTURE Trim.
@@ -49,7 +50,7 @@ Summary of Objects Translated:
 	Array Instances:                        0
 	Polygons:                               0
 	Paths:                                  3
-	Rectangles:                             316
+	Rectangles:                             321
 	Lines:                                  0
 	Arcs:                                   0
 	Donuts:                                 0
@@ -62,13 +63,13 @@ Summary of Objects Translated:
 	Markers:                                0
 	Rows:                                   0
 	Stitch:                                 0
-	Standard Vias                           35
-	Custom Vias:                            18
+	Standard Vias                           33
+	Custom Vias:                            16
 	CdsGen Vias:                            0
-	Pathsegs:                               56
+	Pathsegs:                               63
 	Text:                                   0
 	TextDisplay:                            0
 	Cells:                                  10
 
-Elapsed Time: 0.6s   User Time: 0.1s   CPU Time: 0.0s   Peak VM: 34716KB
-INFO (XSTRM-234): Translation completed. '0' error(s) and '1' warning(s) found.
+Elapsed Time: 0.6s   User Time: 0.1s   CPU Time: 0.0s   Peak VM: 34676KB
+INFO (XSTRM-234): Translation completed. '0' error(s) and '2' warning(s) found.

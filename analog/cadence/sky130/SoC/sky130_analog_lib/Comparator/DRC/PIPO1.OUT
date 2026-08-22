@@ -1,9 +1,9 @@
-Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.26s.
+Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.19s.
 ********************************************************************************
 Product   : Virtuoso(R) XStream Out
 Program   : @(#)$CDS: strmout version IC23.1-64b 07/08/2025 22:22 (cpgbld17) $
           : sub-version  IC23.1-64b.ISR15.37 
-Started at: 21-Aug-2026  14:16:25
+Started at: 22-Aug-2026  19:22:40
 User Name : root
 Host Name : msi
 Directory : /home/admin/git/agriculture-SoC/analog/cadence
@@ -43,25 +43,25 @@ case                                    Preserve
 convertDot                              node
 
 INFO (XSTRM-180): You have not used the '-objectMap' option. The design has instance(s) of at least one of following OpenAccess objects: oaBlockage, oaBoundary, oaRow, and oaMarker. Any information about these objects will not be translated into the generated stream file. Use the '-objectMap' option to translate/preserve these objects using XStream.
-INFO (XSTRM-223): 1. Translating stdVia sky130_fd_pr_main/M1M2_C/layout as STRUCTURE M1M2_C_CDNS_787285785640.
-INFO (XSTRM-223): 2. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_787285785641.
-INFO (XSTRM-223): 3. Translating stdVia sky130_fd_pr_main/M1M2_C/layout as STRUCTURE M1M2_C_CDNS_787285785642.
-INFO (XSTRM-223): 4. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_787285785643.
-INFO (XSTRM-223): 5. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_787285785644.
-INFO (XSTRM-223): 6. Translating stdVia sky130_fd_pr_main/M4M5_C/layout as STRUCTURE M4M5_C_CDNS_787285785645.
-INFO (XSTRM-223): 7. Translating stdVia sky130_fd_pr_main/M3M4_C/layout as STRUCTURE M3M4_C_CDNS_787285785646.
-INFO (XSTRM-223): 8. Translating stdVia sky130_fd_pr_main/M2M3_C/layout as STRUCTURE M2M3_C_CDNS_787285785647.
-INFO (XSTRM-223): 9. Translating stdVia sky130_fd_pr_main/M1M2_C/layout as STRUCTURE M1M2_C_CDNS_787285785648.
-INFO (XSTRM-223): 10. Translating cellview sky130_fd_pr_main/pfet_01v8/layout as STRUCTURE pfet_01v8_CDNS_787285785640.
-INFO (XSTRM-223): 11. Translating customVia sky130_fd_pr_main/polyConn/layout as STRUCTURE polyConn_CDNS_787285785641.
-INFO (XSTRM-223): 12. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787285785642.
-INFO (XSTRM-223): 13. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787285785643.
-INFO (XSTRM-223): 14. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787285785644.
-INFO (XSTRM-223): 15. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787285785645.
+INFO (XSTRM-223): 1. Translating stdVia sky130_fd_pr_main/M1M2_C/layout as STRUCTURE M1M2_C_CDNS_787390560630.
+INFO (XSTRM-223): 2. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_787390560631.
+INFO (XSTRM-223): 3. Translating stdVia sky130_fd_pr_main/M1M2_C/layout as STRUCTURE M1M2_C_CDNS_787390560632.
+INFO (XSTRM-223): 4. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_787390560633.
+INFO (XSTRM-223): 5. Translating stdVia sky130_fd_pr_main/M4M5_C/layout as STRUCTURE M4M5_C_CDNS_787390560634.
+INFO (XSTRM-223): 6. Translating stdVia sky130_fd_pr_main/M3M4_C/layout as STRUCTURE M3M4_C_CDNS_787390560635.
+INFO (XSTRM-223): 7. Translating stdVia sky130_fd_pr_main/M2M3_C/layout as STRUCTURE M2M3_C_CDNS_787390560636.
+INFO (XSTRM-223): 8. Translating stdVia sky130_fd_pr_main/M1M2_C/layout as STRUCTURE M1M2_C_CDNS_787390560637.
+INFO (XSTRM-223): 9. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_787390560638.
+INFO (XSTRM-223): 10. Translating cellview sky130_fd_pr_main/pfet_01v8/layout as STRUCTURE pfet_01v8_CDNS_787390560630.
+INFO (XSTRM-223): 11. Translating customVia sky130_fd_pr_main/polyConn/layout as STRUCTURE polyConn_CDNS_787390560631.
+INFO (XSTRM-223): 12. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787390560632.
+INFO (XSTRM-223): 13. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787390560633.
+INFO (XSTRM-223): 14. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787390560634.
+INFO (XSTRM-223): 15. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787390560635.
 INFO (XSTRM-223): 16. Translating cellview sky130_analog_lib/sarcta__C0/layout as STRUCTURE sarcta__C0.
 INFO (XSTRM-223): 17. Translating cellview sky130_analog_lib/sarct__trim_array/layout as STRUCTURE sarct__trim_array.
 INFO (XSTRM-223): 18. Translating cellview sky130_analog_lib/Trim/layout as STRUCTURE Trim.
-INFO (XSTRM-223): 19. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787285785646.
+INFO (XSTRM-223): 19. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_787390560636.
 INFO (XSTRM-223): 20. Translating cellview sky130_analog_lib/Comparator/layout as STRUCTURE Comparator.
 
 Summary of Objects Translated:
@@ -69,7 +69,7 @@ Summary of Objects Translated:
 	Array Instances:                        0
 	Polygons:                               0
 	Paths:                                  9
-	Rectangles:                             548
+	Rectangles:                             563
 	Lines:                                  0
 	Arcs:                                   0
 	Donuts:                                 0
@@ -82,13 +82,13 @@ Summary of Objects Translated:
 	Markers:                                0
 	Rows:                                   0
 	Stitch:                                 0
-	Standard Vias                           74
-	Custom Vias:                            18
+	Standard Vias                           72
+	Custom Vias:                            16
 	CdsGen Vias:                            0
-	Pathsegs:                               156
+	Pathsegs:                               159
 	Text:                                   0
 	TextDisplay:                            0
 	Cells:                                  20
 
-Elapsed Time: 0.7s   User Time: 0.1s   CPU Time: 0.0s   Peak VM: 36100KB
+Elapsed Time: 0.6s   User Time: 0.1s   CPU Time: 0.0s   Peak VM: 36084KB
 INFO (XSTRM-234): Translation completed. '0' error(s) and '2' warning(s) found.

@@ -22,7 +22,6 @@
 40002 li1
 40003 met1
 40004 met2
-400ad CDR.x.2.via1:L262317
 40093 poly_not_rect
 40098 li1_not_rect
 4009a met1_not_rect
@@ -47,9 +46,7 @@
 401b1 polydiff
 401bc poly.12_b
 401bd poly.12_c
-401dc CDR.npc.2:L262620
 401df nsdm.ncore
-401e6 CDR.psd.2:L262630
 401e8 psd.5
 40029 ndiff
 4019c ndiff_actual
@@ -71,8 +68,6 @@
 40247 CDR.licon.17:_EPTMPL262727
 40203 poly_licon
 40256 li_outside_core
-4025a CDR.li.1b:L262746
-4025d CDR.li.3b:L262749
 402b0 vpp.13:met1_notcap
 402b2 vpp.14:met2_cap
 402b6 CDR.m1.2:L262838
@@ -81,11 +76,9 @@
 402c7 CDR.m1.7:m1.7_a
 402cc via1_not_mt
 402cd via1_neither
-402cf via1.1a:L262863
 402d8 CDR.via1.5a:via1.5a_a
 402de met2_not_huge
 402e4 CDR.m2.4a:_EPTMPL262884
-402ed CDR.m2.5:L262893
 402ef CDR.m2.7:m2.7_a
 40362 hvdifftap.18:hvdifftap.18_a
 4037c hvntm.4:hvntm.4_a

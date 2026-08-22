@@ -1,0 +1,13 @@
+
+
+*******************************************************************************
+* Sub-Circuit Netlist:                                                        *
+*                                                                             *
+* Library: sky130_analog_lib                                                  *
+* Cell   : Trim                                                               *
+* View   : schematic                                                          *
+* Last Time Saved: Aug  4 17:42:16 2026                                       *
+*******************************************************************************
+.subckt Trim Vss d<4> d<3> d<2> d<1> d<0> drain
+*.PININFO Vss:I d<4>:I d<3>:I d<2>:I d<1>:I d<0>:I drain:I 
+.ends Trim

@@ -1,0 +1,24 @@
+			*****************************************************
+			**                                                 **
+			**                L V S  R E P O R T               **
+			**                                                 **
+			*****************************************************
+
+
+Report File Name         : Comparator.rep
+ERC Summary File         : /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.sum
+LVS Comparison Report    : Comparator.rep.cls
+Layout Name              : /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.gds.gz ("Comparator")
+User Name                : root
+Creation Time            : Sat Aug 22 19:32:18 2026
+Current directory        : /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS
+Pegasus Version          : 23.26-s005 Thu Oct 17 16:37:42 PDT 2024
+
+
+			*****************************************************
+			**                                                 **
+			**            D E V E X T  R E P O R T             **
+			**                                                 **
+			*****************************************************
+
+

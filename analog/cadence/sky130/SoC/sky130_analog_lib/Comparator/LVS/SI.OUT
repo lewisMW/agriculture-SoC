@@ -1,0 +1,35 @@
+Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.17s.
+
+Running simulation in directory: "/home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/".
+
+
+Running netlist
+Begin Incremental Netlisting Aug 22 19:32:12 2026
+Loading sky130_fd_pr_main/libInit.il ...
+	Loading sky130_fd_pr_main/loadCxt.ile ... done!
+	Loading context 'sky130_fd_pr_main' from library 'sky130_fd_pr_main' ... done!
+	Loading context 'pdkUtils' from library 'sky130_fd_pr_main' ... done!
+	Loading sky130_fd_pr_main/libInitCktPro.il ... done!
+	Loading sky130_fd_pr_main/libInitCustomExit.il ... 	Loading Environment Settings ...
+done!
+Loaded sky130_fd_pr_main/libInit.il successfully!
+WARNING (OSSHNL-117): Ignoring switch view 'symbol' of cell 'pfet_01v8' in library 'sky130_fd_pr_main', as it does not contain
+any instance. To netlist this cell, add this switch view to the stop list or to
+ignore any specific instance set the property 'nlAction' to value "ignore" on
+this cell view.
+
+WARNING (OSSHNL-117): Ignoring switch view 'symbol' of cell 'nfet_01v8' in library 'sky130_fd_pr_main', as it does not contain
+any instance. To netlist this cell, add this switch view to the stop list or to
+ignore any specific instance set the property 'nlAction' to value "ignore" on
+this cell view.
+
+WARNING (OSSHNL-117): Ignoring switch view 'symbol' of cell 'cap' in library 'analogLib', as it does not contain
+any instance. To netlist this cell, add this switch view to the stop list or to
+ignore any specific instance set the property 'nlAction' to value "ignore" on
+this cell view.
+
+
+End netlisting Aug 22 19:32:12 2026
+
+
+CDL netlist completed successfully.
