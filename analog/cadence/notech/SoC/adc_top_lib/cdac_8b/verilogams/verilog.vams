@@ -44,7 +44,8 @@ module cdac_8b (vin, vout, sample, ctl, ctl_dum, vdd, vss );
 	// ----------------------------------------------------------------
 	// Capacitor array between comparator input and inverter
 	// ----------------------------------------------------------------
-	cap_array_8b #(.cu(cu)) c_array (.vtop(vout), .vbottom(n), .vbottom_dum(n_dum));
+	cap_array_8b
+ #(.cu(cu)) c_array (.vtop(vout), .vbottom(n), .vbottom_dum(n_dum));
 
 	// ----------------------------------------------------------------
 	// inverters between control lines and capacitors bottom plate

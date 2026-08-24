@@ -1,0 +1,18 @@
+--TIMESTAMP:	1787568259	Mon Aug 24 20:44:19 2026
+#
+* carray_8b *
+c_array
+#
+* inverter *
+invp_dum
+inv1
+inv2
+inv3
+inv4
+inv5
+inv6
+inv7
+inv8
+#
+* switch_adc *
+sw

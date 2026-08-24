@@ -4,15 +4,15 @@ convertPin	"geometry"
 hierDepth	32
 labelCase	"preserve"
 labelDepth	32
+layerMap	"/opt/pdk/sky130_release_0.1.0/libs/sky130_fd_pr_main/sky130_fd_pr_main.layermap"
 library	"sky130_analog_lib"
-logFile	"/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/PIPO1.LOG"
+logFile	"/root/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/PIPO1.LOG"
 maxVertices	2048
 pinAttNum	0
-replaceBusBitChar
-runDir	"/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS"
-strmFile	"/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/cap_array_8b.gds.gz"
+runDir	"/root/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS"
+strmFile	"/root/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/inverter.gds.gz"
 strmVersion	5
 techLib	"sky130_fd_pr_main"
-topCell	"cap_array_8b"
+topCell	"inverter"
 view	"layout"
 enableColoring

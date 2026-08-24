@@ -1,7 +1,7 @@
 avCompareRules(
 commandLineOptions((-lvs))
-commandLineOptions((schematic_primary "cap_array_8b" "-source_top_cell cap_array_8b"))
-commandLineOptions((layout_primary "cap_array_8b" "-top_cell cap_array_8b"))
+commandLineOptions((schematic_primary "inverter" "-source_top_cell inverter"))
+commandLineOptions((layout_primary "inverter" "-top_cell inverter"))
 ( pvsLvsRules ( text_depth "-primary" ))
 ( pvsLvsRules ( virtual_connect "no" "-colon" ))
 ( pvsLvsRules ( virtual_connect "yes" "-semicolon_as_colon" ))
@@ -13,14 +13,14 @@ commandLineOptions((layout_primary "cap_array_8b" "-top_cell cap_array_8b"))
 ( pvsLvsRules ( lvs_abort "-softchk" "no" ))
 ( pvsLvsRules ( lvs_abort "-supply_error" "no" ))
 ( pvsLvsRules ( lvs_find_shorts "no" ))
-( pvsLvsRules ( lvs_report_file "cap_array_8b.rep" ))
+( pvsLvsRules ( lvs_report_file "inverter.rep" ))
 ( pvsLvsRules ( lvs_report_max "50" "-mismatched_net_limit" "100" ))
 sectionLineLimit(50)
 lineLimit(20000)
 mismatchedNetLimit(100)
-( pvsLvsRules ( schematic_path "/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/cap_array_8b.cdl" "cdl" ))
+( pvsLvsRules ( schematic_path "/root/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/inverter.cdl" "cdl" ))
 ( pvsLvsRules ( layout_format "gdsii" ))
-( pvsLvsRules ( layout_path "/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/cap_array_8b.gds.gz" ))
+( pvsLvsRules ( layout_path "/root/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/inverter.gds.gz" ))
 ( pvsLvsRules ( layout_format "gdsii" ))
 ( pvsLvsRules ( layout_primary "TOPCELL" ))
 ( pvsLvsRules ( text_depth "-primary" ))
@@ -317,7 +317,7 @@ schematic( deleteCellPin( "cap_vpp_11p5x11p7_m1m4_noshield" "b" ))
 ( pvsLvsRules ( lvs_delete_cell_pin "cap_vpp_04p4x04p6_l1m1m2_noshield" "top" "-source" ))
 schematic( deleteCellPin( "cap_vpp_04p4x04p6_l1m1m2_noshield" "top" ))
 ( pvsLvsRules ( flow_data "lvs_flow" ))
-runName("cap_array_8b.rep")
+runName("inverter.rep")
 )
 avCompareRules(
 )
@@ -352,9 +352,9 @@ layout(genericDevice(emptySubckt))
 schematic(genericDevice(emptySubckt))
 verilogBusNameDiffIEEE(nil)
 verilogBusMapIEEE(nil)
-rootCell("cap_array_8b")
-schematic(netlist(cdl "/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/cap_array_8b.cdl"))
-layout(netlist(cdl "/home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/cap_array_8b.spi"))
+rootCell("inverter")
+schematic(netlist(cdl "/root/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/inverter.cdl"))
+layout(netlist(cdl "/root/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/LVS/inverter.spi"))
 lvsKeepData(no SPICE UI_DATA GDB_DATA)
 schematic(ignoreCase(t))
 layout(ignoreCase(t))
@@ -399,7 +399,7 @@ compareParameter(R percent("w" 0))
 compareParameter(R percent("l" 0))
 mergeParallel("nfet_20v0(MN)" merge
     language("
-             /* File: /home/hee/cadence/lib/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1319 */
+             /* File: /opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1319 */
              effective w,l,totalW,nf,m        \n
              w = sum((w * nf))       \n
              totalW = w       \n
@@ -411,7 +411,7 @@ mergeParallel("nfet_20v0(MN)" merge
     )
 mergeParallel("nfet_20v0_zvt(MN)" merge
     language("
-             /* File: /home/hee/cadence/lib/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1329 */
+             /* File: /opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1329 */
              effective w,l,totalW,nf,m        \n
              w = sum((w * nf))       \n
              totalW = w       \n
@@ -423,7 +423,7 @@ mergeParallel("nfet_20v0_zvt(MN)" merge
     )
 mergeParallel("pfet_20v0(MP)" merge
     language("
-             /* File: /home/hee/cadence/lib/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1338 */
+             /* File: /opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1338 */
              effective w,l,totalW,nf,m        \n
              w = sum((w * nf))       \n
              totalW = w       \n
@@ -436,7 +436,7 @@ mergeParallel("pfet_20v0(MP)" merge
 mergeParallel("npn_05v5(Q)" merge
     tolerance("Tolerance EA 0 ")
     language("
-             /* File: /home/hee/cadence/lib/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1422 */
+             /* File: /opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1422 */
              effective EA,M        \n
              M = sum(M)       \n
              EA_sum = sum(EA)       \n
@@ -448,7 +448,7 @@ combineTolerance("npn_05v5(Q)" parallel "EA" 0 0)
 mergeParallel("npn_11v0(Q)" merge
     tolerance("Tolerance EA 0 ")
     language("
-             /* File: /home/hee/cadence/lib/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1422 */
+             /* File: /opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1422 */
              effective EA,M        \n
              M = sum(M)       \n
              EA_sum = sum(EA)       \n
@@ -460,7 +460,7 @@ combineTolerance("npn_11v0(Q)" parallel "EA" 0 0)
 mergeParallel("pnp_05v5(Q)" merge
     tolerance("Tolerance EA 0 ")
     language("
-             /* File: /home/hee/cadence/lib/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1422 */
+             /* File: /opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1422 */
              effective EA,M        \n
              M = sum(M)       \n
              EA_sum = sum(EA)       \n
@@ -472,7 +472,7 @@ combineTolerance("pnp_05v5(Q)" parallel "EA" 0 0)
 mergeParallel(Q merge
     tolerance("Tolerance EA 0 ")
     language("
-             /* File: /home/hee/cadence/lib/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1422 */
+             /* File: /opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl 1422 */
              effective EA,M        \n
              M = sum(M)       \n
              EA_sum = sum(EA)       \n
@@ -761,4 +761,7 @@ exactSubTypes(nil)
 preserveBoxPorts(nil)
 spiceStrictWL(nil)
 )
-( pvsLvsRules ( cmdLineRuleFiles "/home/hee/cadence/lib/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl" ) )
+( pvsLvsRules ( cmdLineRuleFiles "/opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl" ) )
+avCompareRules(
+extractionRunData((cpu 9.) (all 27.))
+)

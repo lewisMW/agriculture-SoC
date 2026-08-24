@@ -1,0 +1,17 @@
+//Verilog-AMS HDL for adc_primitives_lib, capacitor, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module mim_cap_adc(top, bottom);
+parameter real c=1e-15 from [0:inf);
+parameter real gmin = 1e-12;
+
+inout top, bottom;
+electrical top, bottom;
+
+analog begin
+	I(top,bottom) <+ c*ddt(V(top,bottom));
+	I(top,bottom) <+ gmin*V(top,bottom);
+end
+endmodule

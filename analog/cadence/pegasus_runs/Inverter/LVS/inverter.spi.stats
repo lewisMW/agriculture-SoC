@@ -2,8 +2,8 @@
 * CDL Netlist:
 *
 * Cell Name: inverter
-* Netlisted: 2026-07-31 20:32:04
-* Pegasus 24.11-s021
+* Netlisted: 2026-08-18 16:46:43
+* Pegasus 24.12-s023
 * +++++++++++++++++++++++++++++++++++++++++++++++++++++
 *.DEVTMPLT 0 MN(nfet_01v8) nfet_01v8_rec nSourceDrain(D) nfet(G) nSourceDrain(S) pwell_all(B)
 *.DEVTMPLT 1 MP(pfet_01v8) pfet_01v8_rec pSourceDrain(D) pfet(G) pSourceDrain(S) nwell(B)

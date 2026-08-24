@@ -1,0 +1,23 @@
+##############################################################################################################
+#####  
+#####                                       Pegasus LVS COMPARISON
+#####  
+#####  Version                       :   24.12-s023
+#####  NVN Run Start                 :   Tue Aug 18 16:46:45 2026
+#####  Comparison Report File        :   inverter.rep.cls
+#####  Top Cell                      :   inverter  <vs>  inverter
+#####  
+#####  Run Result                    :   MATCH
+#####  
+#####  Layout Design                 :   sky130_analog_lib inverter layout
+#####  Schematic File                :   /root/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/inverter.cdl (cdl)
+#####  Rules File                    :   /opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
+#####  Pin Swap File                 :   inverter.rep.cps
+#####  
+#####  NVN CPU Time                  :   0h 0m 0s - (0s)                 
+#####  NVN Exec Time                 :   0h 0m 1s - (1s)                 
+#####  NVN Peak Memory Usage         :   269.28MB
+#####  
+##############################################################################################################
+
+
