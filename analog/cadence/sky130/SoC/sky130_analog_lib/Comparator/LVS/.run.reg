@@ -5,15 +5,16 @@
 "Run Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS
 "Current Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence
 "Cadence Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence/.cadence/
-"Job Signature" internal none IPVS_1787391130_30937
+"Job Signature" internal none IPVS_1787985000_29719
 "Pegasus Job Mode" internal none lvs
 "GUI Flow" internal none virtuoso6
 "GUI Preset" internal none /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/.preset.autosave
 "Pegasus Version" internal none 23.26-s005
 "Binary Name" internal none pegasusgui
 "Pegasus Build Date" internal none "Thu Oct 17 16:37:42 PDT 2024"
-"Pegasus Job Time" internal none 1787391130
+"Pegasus Job Time" internal none 1787985002
 "DFII version" internal none IC23.1.0
+"Rule File" input text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/.config.rul
 "Rule File" input text /home/admin/Documents/PDKs/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
 "Layout Scale" internal none 0.001
 "Layout TechLib" internal none sky130_fd_pr_main
@@ -64,7 +65,7 @@
 "Extraction Result" internal none CLEAN
 "ERC Result" internal none EMPTY
 "UI Data" internal none ENABLED
-"Pegasus Mode Info" internal none HLJDIKJBDOHPKAPOAOFJBECKBCFPCMPN
+"Pegasus Mode Info" internal none HLJDIKJBDOHPKAPOJNNLOPCDBPFBGEDH
 "Report MaxResults" internal none 1000
 "Binary Name" internal none Pegasus
 "Comparison Result" internal none MISMATCH
@@ -72,4 +73,4 @@
 "Pegasus Version" internal none 23.26-s005
 "Binary Name" internal none pegasusnvn
 "Pegasus Build Date" internal none "Thu Oct 17 16:37:42 PDT 2024"
-"Pegasus Job Time" internal none 1787391142
+"Pegasus Job Time" internal none 1787985015

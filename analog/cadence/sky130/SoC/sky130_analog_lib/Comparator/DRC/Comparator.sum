@@ -1,7 +1,7 @@
 ********************************************************************************
 *** Pegasus DRC SUMMARY
 ***
-Execute on Date/Time    : Sat Aug 22 19:22:45 2026
+Execute on Date/Time    : Sat Aug 29 15:51:50 2026
 Pegasus VERSION         : 23.26-s005 Thu Oct 17 16:37:42 PDT 2024
 Rule Deck Path          : /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC/.config.rul
 Rule Deck Title         :
@@ -36,7 +36,7 @@ LAYER cmm5_fill ............................ Total Original Geometry:          0
 LAYER cp1m_fill ............................ Total Original Geometry:          0 (         0)
 LAYER cli1m_fill ........................... Total Original Geometry:          0 (         0)
 LAYER diff_dg .............................. Total Original Geometry:         40 (       109)
-LAYER tap_dg ............................... Total Original Geometry:          0 (         0)
+LAYER tap_dg ............................... Total Original Geometry:          1 (         6)
 LAYER nwell ................................ Total Original Geometry:          1 (         6)
 LAYER dnwell ............................... Total Original Geometry:          0 (         0)
 LAYER pwbm ................................. Total Original Geometry:          0 (         0)
@@ -48,17 +48,17 @@ LAYER tunm ................................. Total Original Geometry:          0
 LAYER lvtn ................................. Total Original Geometry:          0 (         0)
 LAYER poly_dg .............................. Total Original Geometry:         58 (       185)
 LAYER hvntm ................................ Total Original Geometry:          0 (         0)
-LAYER nsdm ................................. Total Original Geometry:          5 (        15)
+LAYER nsdm ................................. Total Original Geometry:          6 (        21)
 LAYER psdm ................................. Total Original Geometry:          1 (         6)
 LAYER rpm .................................. Total Original Geometry:          0 (         0)
 LAYER urpm ................................. Total Original Geometry:          0 (         0)
 LAYER npc .................................. Total Original Geometry:          7 (        53)
-LAYER licon ................................ Total Original Geometry:         70 (       218)
-LAYER li_dg ................................ Total Original Geometry:        131 (       308)
-LAYER mcon ................................. Total Original Geometry:         26 (       141)
-LAYER m1_dg ................................ Total Original Geometry:         54 (       199)
-LAYER via1 ................................. Total Original Geometry:        264 (       409)
-LAYER m2_dg ................................ Total Original Geometry:         57 (       302)
+LAYER licon ................................ Total Original Geometry:         72 (       230)
+LAYER li_dg ................................ Total Original Geometry:        131 (       316)
+LAYER mcon ................................. Total Original Geometry:         28 (       156)
+LAYER m1_dg ................................ Total Original Geometry:         62 (       215)
+LAYER via1 ................................. Total Original Geometry:        284 (       429)
+LAYER m2_dg ................................ Total Original Geometry:         55 (       300)
 LAYER via2 ................................. Total Original Geometry:          4 (         8)
 LAYER m3_dg ................................ Total Original Geometry:          2 (         4)
 LAYER via3 ................................. Total Original Geometry:          4 (         8)
@@ -179,10 +179,10 @@ RULECHECK CDR.li.1a .................................... Total Result          0
 RULECHECK CDR.li.1b .................................... Total Result          0 (         0)
 RULECHECK CDR.li.1c .................................... Total Result          0 (         0)
 RULECHECK CDR.li.3a .................................... Total Result          0 (         0)
-RULECHECK CDR.li.3b .................................... Total Result          2 (         2)
+RULECHECK CDR.li.3b .................................... Total Result          0 (         0)
 RULECHECK CDR.li.3c .................................... Total Result          0 (         0)
 RULECHECK CDR.li.5 ..................................... Total Result          0 (         0)
-RULECHECK CDR.li.6 ..................................... Total Result          0 (         0)
+RULECHECK CDR.li.6 ..................................... Total Result          2 (         2)
 RULECHECK CDR.li.7 ..................................... Total Result          0 (         0)
 RULECHECK CDR.licon.1 .................................. Total Result          0 (         0)
 RULECHECK CDR.licon.11a ................................ Total Result          0 (         0)
@@ -601,10 +601,10 @@ RULECHECK nwell.1 ...................................... Total Result          0
 RULECHECK nwell.2a.lv_hv ............................... Total Result          0 (         0)
 RULECHECK nwell.2a.lv_uhv .............................. Total Result          0 (         0)
 RULECHECK nwell.2a.lv_vhv .............................. Total Result          0 (         0)
-RULECHECK nwell.4 ...................................... Total Result          1 (         6)
+RULECHECK nwell.4 ...................................... Total Result          0 (         0)
 RULECHECK nwell.5 ...................................... Total Result          0 (         0)
 RULECHECK nwell.6 ...................................... Total Result          0 (         0)
-RULECHECK nwell.ntap ................................... Total Result          1 (         6)
+RULECHECK nwell.ntap ................................... Total Result          0 (         0)
 RULECHECK pad.3 ........................................ Total Result          0 (         0)
 RULECHECK photo.2 ...................................... Total Result          0 (         0)
 RULECHECK photo.3 ...................................... Total Result          0 (         0)
@@ -758,6 +758,6 @@ RULECHECK x.pwell ...................................... Total Result          0
 ---
 Total CPU Time                    : 3(s)
 Total Real Time                   : 4(s)
-Total Original Geometry           : 735 (2021)
+Total Original Geometry           : 767 (2102)
 Total DRC RuleChecks              : 598
-Total DRC Results                 : 19 (29)
+Total DRC Results                 : 17 (17)

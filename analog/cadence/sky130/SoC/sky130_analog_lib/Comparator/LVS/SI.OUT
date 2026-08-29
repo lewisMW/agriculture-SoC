@@ -1,10 +1,10 @@
-Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.17s.
+Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.23s.
 
 Running simulation in directory: "/home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/".
 
 
 Running netlist
-Begin Incremental Netlisting Aug 22 19:32:12 2026
+Begin Incremental Netlisting Aug 29 16:30:04 2026
 Loading sky130_fd_pr_main/libInit.il ...
 	Loading sky130_fd_pr_main/loadCxt.ile ... done!
 	Loading context 'sky130_fd_pr_main' from library 'sky130_fd_pr_main' ... done!
@@ -29,7 +29,7 @@ ignore any specific instance set the property 'nlAction' to value "ignore" on
 this cell view.
 
 
-End netlisting Aug 22 19:32:12 2026
+End netlisting Aug 29 16:30:04 2026
 
 
 CDL netlist completed successfully.

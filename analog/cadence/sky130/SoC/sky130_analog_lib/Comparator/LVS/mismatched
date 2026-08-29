@@ -3,7 +3,7 @@
 #####                                       Pegasus LVS COMPARISON
 #####  
 #####  Version                       :   23.26-s005
-#####  NVN Run Start                 :   Sat Aug 22 19:32:22 2026
+#####  NVN Run Start                 :   Sat Aug 29 16:30:15 2026
 #####  ERC Summary File              :   Comparator.sum
 #####  Extraction Report File        :   Comparator.rep
 #####  Comparison Report File        :   Comparator.rep.cls
@@ -24,7 +24,8 @@
 #####  
 #####  Layout Design                 :   sky130_analog_lib Comparator layout
 #####  Schematic File                :   /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.cdl (cdl)
-#####  Rules File                    :   /home/admin/Documents/PDKs/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
+#####  Rules File                    :   /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/.config.rul
+#####                                :   /home/admin/Documents/PDKs/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
 #####  Pin Swap File                 :   Comparator.rep.cps
 #####  
 #####  Extraction CPU Time           :   0h 0m 1s - (1s)
@@ -32,10 +33,10 @@
 #####  Extraction Peak Memory Usage  :   25.00MB
 #####  NVN CPU Time                  :   0h 0m 0s - (0s)                 
 #####  NVN Exec Time                 :   0h 0m 1s - (1s)                 
-#####  NVN Peak Memory Usage         :   254.00MB
+#####  NVN Peak Memory Usage         :   254.01MB
 #####  LVS Total CPU Time            :   0h 0m 1s - (1s)                 
 #####  LVS Total Exec Time           :   0h 0m 3s - (3s)                 
-#####  LVS Total Peak Memory Usage   :   254.00MB
+#####  LVS Total Peak Memory Usage   :   254.01MB
 #####  
 ##############################################################################################################
 

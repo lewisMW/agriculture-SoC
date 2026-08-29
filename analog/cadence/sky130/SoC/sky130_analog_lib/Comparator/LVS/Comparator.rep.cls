@@ -3,7 +3,7 @@
 #####                                       Pegasus LVS COMPARISON
 #####  
 #####  Version                       :   23.26-s005
-#####  NVN Run Start                 :   Sat Aug 22 19:32:22 2026
+#####  NVN Run Start                 :   Sat Aug 29 16:30:15 2026
 #####  ERC Summary File              :   Comparator.sum
 #####  Extraction Report File        :   Comparator.rep
 #####  Comparison Report File        :   Comparator.rep.cls
@@ -24,7 +24,8 @@
 #####  
 #####  Layout Design                 :   sky130_analog_lib Comparator layout
 #####  Schematic File                :   /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.cdl (cdl)
-#####  Rules File                    :   /home/admin/Documents/PDKs/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
+#####  Rules File                    :   /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/.config.rul
+#####                                :   /home/admin/Documents/PDKs/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
 #####  Pin Swap File                 :   Comparator.rep.cps
 #####  
 #####  Extraction CPU Time           :   0h 0m 1s - (1s)
@@ -32,10 +33,10 @@
 #####  Extraction Peak Memory Usage  :   25.00MB
 #####  NVN CPU Time                  :   0h 0m 0s - (0s)                 
 #####  NVN Exec Time                 :   0h 0m 1s - (1s)                 
-#####  NVN Peak Memory Usage         :   254.00MB
+#####  NVN Peak Memory Usage         :   254.01MB
 #####  LVS Total CPU Time            :   0h 0m 1s - (1s)                 
 #####  LVS Total Exec Time           :   0h 0m 3s - (3s)                 
-#####  LVS Total Peak Memory Usage   :   254.00MB
+#####  LVS Total Peak Memory Usage   :   254.01MB
 #####  
 ##############################################################################################################
 
@@ -403,7 +404,7 @@ Cell                    |   lay   :   sch   |   lay   :   sch   |   lay   :   sc
 Total                   |      44 :       2 |      21 :       2 |      21 :        2
 ========================+=========+=========+=========+=========+=========+=========
 Pins                    |         :         |      *0 :      11 |      *0 :       11
-Nets                    |         :         |     *39 :       2 |       0 :        0
+Nets                    |         :         |     *32 :       2 |       0 :        0
 ========================+=========+=========+=========+=========+=========+=========
 
 +===[Comparator]==============================================================================================
@@ -491,108 +492,108 @@ Layout Model:                                  | Schematic Model: Trim
 ===============================================+==================================(mi 2)
                                                                                         
                                                                                         
-Layout Inst : X39/M0 @(4.160,11.770)           | Schematic Inst : ** missing inst **
-Layout Model: MP(PFET_01V8)                    | Schematic Model: 
+Layout Inst : X42/M0 @(7.395,5.865)            | Schematic Inst : ** missing inst **
+Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+==================================(mi 3)
                                                                                         
                                                                                         
-Layout Inst : X40/M0 @(5.430,11.770)           | Schematic Inst : ** missing inst **
-Layout Model: MP(PFET_01V8)                    | Schematic Model: 
+Layout Inst : X43/M0 @(8.505,5.865)            | Schematic Inst : ** missing inst **
+Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+==================================(mi 4)
                                                                                         
                                                                                         
-Layout Inst : X41/M0 @(8.220,11.770)           | Schematic Inst : ** missing inst **
-Layout Model: MP(PFET_01V8)                    | Schematic Model: 
+Layout Inst : X44/M1 @(9.050,1.700)            | Schematic Inst : ** missing inst **
+Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+==================================(mi 5)
                                                                                         
                                                                                         
-Layout Inst : X42/M0 @(9.490,11.770)           | Schematic Inst : ** missing inst **
-Layout Model: MP(PFET_01V8)                    | Schematic Model: 
+Layout Inst : X45/X50/M0 @(-10.665,8.620)      | Schematic Inst : ** missing inst **
+Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+==================================(mi 6)
                                                                                         
                                                                                         
-Layout Inst : X43/M0 @(12.280,11.770)          | Schematic Inst : ** missing inst **
-Layout Model: MP(PFET_01V8)                    | Schematic Model: 
+Layout Inst : X45/X51/M0 @(-10.665,7.130)      | Schematic Inst : ** missing inst **
+Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+==================================(mi 7)
                                                                                         
                                                                                         
-Layout Inst : X44/M0 @(13.550,11.770)          | Schematic Inst : ** missing inst **
-Layout Model: MP(PFET_01V8)                    | Schematic Model: 
+Layout Inst : X45/X52/M0 @(-10.665,10.690)     | Schematic Inst : ** missing inst **
+Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+==================================(mi 8)
                                                                                         
                                                                                         
-Layout Inst : X45/M0 @(7.395,5.865)            | Schematic Inst : ** missing inst **
+Layout Inst : X45/X49/M6 @(-10.665,2.160)      | Schematic Inst : ** missing inst **
 Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+==================================(mi 9)
                                                                                         
                                                                                         
-Layout Inst : X46/M0 @(8.505,5.865)            | Schematic Inst : ** missing inst **
+Layout Inst : X45/X53/M3 @(-10.665,12.180)     | Schematic Inst : ** missing inst **
 Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 10)
                                                                                         
                                                                                         
-Layout Inst : X47/M0 @(8.470,1.700)            | Schematic Inst : ** missing inst **
+Layout Inst : X46/X50/M0 @(28.420,8.620)       | Schematic Inst : ** missing inst **
 Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 11)
                                                                                         
                                                                                         
-Layout Inst : X48/X50/M0 @(-10.665,8.620)      | Schematic Inst : ** missing inst **
+Layout Inst : X46/X51/M0 @(28.420,7.130)       | Schematic Inst : ** missing inst **
 Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 12)
                                                                                         
                                                                                         
-Layout Inst : X48/X51/M0 @(-10.665,7.130)      | Schematic Inst : ** missing inst **
+Layout Inst : X46/X52/M0 @(28.420,10.690)      | Schematic Inst : ** missing inst **
 Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 13)
                                                                                         
                                                                                         
-Layout Inst : X48/X52/M0 @(-10.665,10.690)     | Schematic Inst : ** missing inst **
+Layout Inst : X46/X49/M6 @(28.420,2.160)       | Schematic Inst : ** missing inst **
 Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 14)
                                                                                         
                                                                                         
-Layout Inst : X48/X49/M6 @(-10.665,2.160)      | Schematic Inst : ** missing inst **
+Layout Inst : X46/X53/M3 @(28.420,12.180)      | Schematic Inst : ** missing inst **
 Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 15)
                                                                                         
                                                                                         
-Layout Inst : X48/X53/M3 @(-10.665,12.180)     | Schematic Inst : ** missing inst **
+Layout Inst : X47/M0 @(9.315,4.865)            | Schematic Inst : ** missing inst **
 Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 16)
                                                                                         
                                                                                         
-Layout Inst : X49/X50/M0 @(28.420,8.620)       | Schematic Inst : ** missing inst **
+Layout Inst : X48/M0 @(10.425,4.865)           | Schematic Inst : ** missing inst **
 Layout Model: MN(NFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 17)
                                                                                         
                                                                                         
-Layout Inst : X49/X51/M0 @(28.420,7.130)       | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
+Layout Inst : X49/M0 @(2.495,12.065)           | Schematic Inst : ** missing inst **
+Layout Model: MP(PFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 18)
                                                                                         
                                                                                         
-Layout Inst : X49/X52/M0 @(28.420,10.690)      | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
+Layout Inst : X50/M0 @(4.905,12.065)           | Schematic Inst : ** missing inst **
+Layout Model: MP(PFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 19)
                                                                                         
                                                                                         
-Layout Inst : X49/X49/M6 @(28.420,2.160)       | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
+Layout Inst : X51/M0 @(7.695,12.065)           | Schematic Inst : ** missing inst **
+Layout Model: MP(PFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 20)
                                                                                         
                                                                                         
-Layout Inst : X49/X53/M3 @(28.420,12.180)      | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
+Layout Inst : X52/M0 @(10.105,12.065)          | Schematic Inst : ** missing inst **
+Layout Model: MP(PFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 21)
                                                                                         
                                                                                         
-Layout Inst : X50/M0 @(9.315,4.865)            | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
+Layout Inst : X53/M0 @(12.895,12.065)          | Schematic Inst : ** missing inst **
+Layout Model: MP(PFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 22)
                                                                                         
                                                                                         
-Layout Inst : X51/M0 @(10.425,4.865)           | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
+Layout Inst : X54/M0 @(15.305,12.065)          | Schematic Inst : ** missing inst **
+Layout Model: MP(PFET_01V8)                    | Schematic Model: 
 ===============================================+=================================(mi 23)
 
 

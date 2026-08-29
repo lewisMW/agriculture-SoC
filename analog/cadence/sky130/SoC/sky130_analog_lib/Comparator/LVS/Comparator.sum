@@ -1,9 +1,9 @@
 ********************************************************************************
 *** Pegasus ERC SUMMARY
 ***
-Execute on Date/Time    : Sat Aug 22 19:32:17 2026
+Execute on Date/Time    : Sat Aug 29 16:30:09 2026
 Pegasus VERSION         : 23.26-s005 Thu Oct 17 16:37:42 PDT 2024
-Rule Deck Path          : /home/admin/Documents/PDKs/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
+Rule Deck Path          : /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/.config.rul
 Rule Deck Title         :
 Layout System           : GDSII
 Layout Path             : /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.gds.gz
@@ -28,7 +28,7 @@ ERC Results Database    :
 --- ORIGINAL LAYER STATISTICS
 ---
 LAYER diff ................................. Total Original Geometry:         40 (       109)
-LAYER tap .................................. Total Original Geometry:          0 (         0)
+LAYER tap .................................. Total Original Geometry:          1 (         6)
 LAYER nwell_in ............................. Total Original Geometry:          1 (         6)
 LAYER dnwell ............................... Total Original Geometry:          0 (         0)
 LAYER pwbm ................................. Total Original Geometry:          0 (         0)
@@ -36,17 +36,17 @@ LAYER hvtp ................................. Total Original Geometry:          0
 LAYER hvi .................................. Total Original Geometry:          0 (         0)
 LAYER lvtn ................................. Total Original Geometry:          0 (         0)
 LAYER poly_in .............................. Total Original Geometry:         58 (       185)
-LAYER nsdm ................................. Total Original Geometry:          5 (        15)
+LAYER nsdm ................................. Total Original Geometry:          6 (        21)
 LAYER psdm ................................. Total Original Geometry:          1 (         6)
 LAYER rpm .................................. Total Original Geometry:          0 (         0)
 LAYER urpm ................................. Total Original Geometry:          0 (         0)
 LAYER npc .................................. Total Original Geometry:          7 (        53)
-LAYER licon1 ............................... Total Original Geometry:         70 (       218)
-LAYER li1_in ............................... Total Original Geometry:        133 (       310)
-LAYER mcon ................................. Total Original Geometry:         26 (       141)
-LAYER met1_in .............................. Total Original Geometry:         54 (       199)
-LAYER via .................................. Total Original Geometry:        264 (       409)
-LAYER met2_in .............................. Total Original Geometry:         57 (       302)
+LAYER licon1 ............................... Total Original Geometry:         72 (       230)
+LAYER li1_in ............................... Total Original Geometry:        135 (       320)
+LAYER mcon ................................. Total Original Geometry:         28 (       156)
+LAYER met1_in .............................. Total Original Geometry:         64 (       219)
+LAYER via .................................. Total Original Geometry:        284 (       429)
+LAYER met2_in .............................. Total Original Geometry:         55 (       300)
 LAYER via2 ................................. Total Original Geometry:          4 (         8)
 LAYER met3_in .............................. Total Original Geometry:          2 (         4)
 LAYER via3_in .............................. Total Original Geometry:          4 (         8)
@@ -96,6 +96,6 @@ LAYER met5_res ............................. Total Original Geometry:          0
 ---
 Total CPU Time                    : 1(s)
 Total Real Time                   : 2(s)
-Total Original Geometry           : 732 (1983)
+Total Original Geometry           : 768 (2070)
 Total ERC RuleChecks              : 0
 Total ERC Results                 : 0 (0)

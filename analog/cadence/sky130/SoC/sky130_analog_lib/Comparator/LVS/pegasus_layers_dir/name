@@ -1,4 +1,5 @@
 3e9 diff
+3eb tap
 3ec nwell_in
 3f6 poly_in
 3f9 nsdm
@@ -39,12 +40,14 @@
 400ed nSourceDrain
 40066 _EPTMPL262246
 40063 _EPTMPL262243
+400e7 ntap
 40064 _EPTMPL262244
 40065 nsd1
 40069 nsd
 40067 _EPTMPL262247
 40068 psd1
 4006a psd
+400ee isolated_tap
 400f1 poly_licon1_pvsTmp2
 400f2 poly_licon1
 40030 met1_all
