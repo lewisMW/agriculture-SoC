@@ -42,7 +42,7 @@ module nanosoc_chip_pads (
   inout  wire          VSSIO,
   inout  wire          VDD,
   inout  wire          VSS,
-  inout  wire          VDDACC,
+  //inout  wire          VDDACC,
 
   input  wire          SE,
   input  wire          CLK, // input
@@ -327,12 +327,23 @@ sky130_ef_io__gpiov2_pad_wrapped uPAD_SWDCK_I (
 
 // GPI.I Port 0 x 16
 
+wire gpio_tie_hi_esd;
+wire gpio_tie_lo_esd;
+
+
 sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_00 (
+    // useful pins
     .INP_DIS(~pad_gpio_port0_z[00]),
     .IN(pad_gpio_port0_i[00]),
     .OUT(pad_gpio_port0_o[00]),
     .OE_N(pad_gpio_port0_z[00]),
-    .PAD(P0[00])
+    .PAD(P0[00]),
+    // other pins
+    .TIE_HI_ESD(gpio_tie_hi_esd),
+    .TIE_LO_ESD(gpio_tie_lo_esd),
+    .ENABLE_H(tiehi), // TODO this will basically always turn on gpio. correct?
+    .ENABLE_INP_H(gpio_tie_hi_esd) // enable
+    
    );
 
 sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_01 (

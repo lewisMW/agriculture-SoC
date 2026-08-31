@@ -72,8 +72,11 @@ create_rc_corner -name default_rc_corner\
    -post_route_cap 1\
    -post_route_cross_cap 1\
    -pre_route_clock_res 0\
-   -pre_route_clock_cap 0\
-   -qrc_tech ${sky130_dir}/qrcTechFile
+   -pre_route_clock_cap 0
+   # apparently the same info already exists in the techfile, so I might be
+   # able to get away without including this.
+   #-pre_route_clock_cap 0\
+   #-qrc_tech ${sky130_dir}/qrcTechFile
 
 
 

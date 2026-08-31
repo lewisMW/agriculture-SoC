@@ -8,7 +8,8 @@
 # Copyright (c) 2026, SoC Labs (www.soclabs.org)
 #------------------------------------------------------------------------------------
 # TODO this needs to be (2.920um w x 3.520um h) (right now too large, max 15mm^2)
-create_floorplan -die_size_by_io_height max -site CoreSite -core_size 3600 5200 50 50 50 50
+#create_floorplan -die_size_by_io_height max -site CoreSite -core_size 2920 3520 50 50 50 50
+create_floorplan -die_size_by_io_height max -site unithd -core_size 2920 3520 50 50 50 50
 
 
 read_io_file ../scripts/nanosoc_io_plan.io
@@ -24,5 +25,3 @@ create_place_halo -halo_deltas {4.8 4.8 2.4 4.8} -insts u_nanosoc_chip_u_system_
 create_place_halo -halo_deltas {4.8 4.8 2.4 4.8} -insts u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram
 create_place_halo -halo_deltas {4.8 4.8 2.4 4.8} -insts u_nanosoc_chip_u_system_u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
 create_place_halo -halo_deltas {4.8 4.8 2.4 4.8} -insts u_nanosoc_chip_u_system_u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram
-
-# TODO add the analog floorplan parts

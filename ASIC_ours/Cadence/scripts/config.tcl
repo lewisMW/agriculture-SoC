@@ -12,7 +12,7 @@ set io_lib_dir ${io_dir}/lib
 set sc_lib_dir ${sc_dir}/lib
 set sram_8k_lib_dir  ${sram_dir}/sky130_sram_8kbyte_1rw_32x2048_8
 
-set lib_search_path_list "$io_lib_dir $sc_lib_dir $sram_8k_lib_dir"
+set lib_search_path_list "$io_lib_dir /home/daniel/sky130_open_source $sram_8k_lib_dir"
 
 set BASE_LIB sky130_fd_sc_hd__ss_100C_1v60.lib
 set SRAM_LIB sky130_sram_8kbyte_1rw_32x2048_8_SS_1p8V_25C.lib
@@ -39,7 +39,7 @@ set OUT_DIR ../outputs
 
 set hdl_file_list $::env(SOCLABS_PROJECT_DIR)/imp/ASIC/nanosoc/flist/genus_flist.tcl
 # TODO we might need to slightly modify this
-set top_level_hdl $::env(SOCLABS_NANOSOC_TECH_DIR)/ASIC/nanosoc_chip_pads/sky130/nanosoc_chip_pads.v
+set top_level_hdl ../../nanosoc_chip_pads/nanosoc_chip_pads.v
 
 set constraints_file ../inputs/constraints.sdc
 
