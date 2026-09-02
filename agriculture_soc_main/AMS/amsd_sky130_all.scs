@@ -39,8 +39,12 @@ amsd {
 
     config cell=inverter use=spice
 
+    // The behavioural array is now sar_adc/carray_8b; the committed Spectre
+    // netlist still carries the pre-rename subckt name cap_array_8b. Bind by
+    // name across the rename until sky130_cells.scs is regenerated from
+    // sar_adc/carray_8b (then this becomes subckt=carray_8b).
     portmap subckt=cap_array_8b porttype=name
-    config cell=cap_array_8b use=spice
+    config cell=carray_8b use=spice
 
     portmap subckt=switch_adc porttype=name
     config cell=switch_adc use=spice

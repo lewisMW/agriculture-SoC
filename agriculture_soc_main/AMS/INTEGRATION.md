@@ -1,5 +1,17 @@
 # Executive Summary
 
+**3 Sep 2026 — rerouted to the consolidated `sar_adc` library.** The AMS flow
+(`sar_ams.flist`, `analog_views/`, `run_wrapper_ams.sh`) now reads every
+behavioural cell from `analog/cadence/sar_adc` (Hee's clean-up), with the
+integration fixes ported into that library's views (commit "sar_adc: port the
+AMS-integration fixes", cherry-pickable onto `analog-sky130-clean-up`). Renames
+to know: `cap_array_8b` → `carray_8b`, `capacitor_adc` → `mim_cap_adc`. The
+committed `spice/sky130_cells.scs` still uses subckt `cap_array_8b`;
+`amsd_sky130_all.scs` binds `carray_8b` to it by name until the netlists are
+regenerated from `sar_adc` (update `netlist_sky130.il` to `doNL("sar_adc" ...)`
+for `inverter`/`carray_8b` when doing so). The per-branch notes below predate
+this and refer to the old `notech`/`sky130_analog_lib` paths.
+
 Branch fix-ups:
 
 ## analog-sky130-dev (Hee) — cap_array_8b, cdac_8b, inverter (54e94e6)

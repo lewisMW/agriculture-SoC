@@ -6,24 +6,27 @@
 // the .vams sources need -ams, connect rules and a Spectre analog control
 // file, all added by makefile.simulate when AMS=yes.
 //
+// All cells come from the consolidated analog/cadence/sar_adc library
+// (one library, lowercase names, every view of a cell shares its ports).
+//
 // sar_ams_shim replaces dummy_adc inside adc_apb_wrapper_rev2 (`ifdef SAR_AMS).
 //-----------------------------------------------------------------------------
 
 // Digital sub-blocks of the SAR
-$(ACCELERATOR_DIR)/../analog/cadence/notech/SoC/adc_digital_lib/sarlogic/functional/verilog.v
-$(ACCELERATOR_DIR)/../analog/cadence/notech/SoC/adc_digital_lib/sr_latch/functional/verilog.v
+$(ACCELERATOR_DIR)/../analog/cadence/sar_adc/sarlogic/functional/verilog.v
+$(ACCELERATOR_DIR)/../analog/cadence/sar_adc/sr_latch/functional/verilog.v
 
 // Verilog-A cells. xrun does not recognise the .va extension, so these are
 // committed .vams symlinks to the OA veriloga.va cellview files.
-$(ACCELERATOR_DIR)/AMS/analog_views/capacitor_adc.vams
+$(ACCELERATOR_DIR)/AMS/analog_views/mim_cap_adc.vams
 $(ACCELERATOR_DIR)/AMS/analog_views/inverter.vams
-$(ACCELERATOR_DIR)/AMS/analog_views/cap_array_8b.vams
+$(ACCELERATOR_DIR)/AMS/analog_views/carray_8b.vams
 
 // Verilog-AMS cells
-$(ACCELERATOR_DIR)/../analog/cadence/notech/SoC/adc_analog_lib/switch_adc/verilogams/verilog.vams
-$(ACCELERATOR_DIR)/../analog/cadence/notech/SoC/adc_analog_lib/comparator/verilogams/verilog.vams
-$(ACCELERATOR_DIR)/../analog/cadence/notech/SoC/adc_top_lib/cdac_8b/verilogams/verilog.vams
-$(ACCELERATOR_DIR)/../analog/cadence/notech/SoC/adc_top_lib/sar/verilogams/verilog.vams
+$(ACCELERATOR_DIR)/../analog/cadence/sar_adc/switch_adc/verilogams/verilog.vams
+$(ACCELERATOR_DIR)/../analog/cadence/sar_adc/comparator/verilogams/verilog.vams
+$(ACCELERATOR_DIR)/../analog/cadence/sar_adc/cdac_8b/verilogams/verilog.vams
+$(ACCELERATOR_DIR)/../analog/cadence/sar_adc/sar/verilogams/verilog.vams
 
 // AMS shim presenting the dummy_adc digital interface around the real SAR
 $(ACCELERATOR_DIR)/AMS/sar_ams_shim.vams
