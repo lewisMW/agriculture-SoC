@@ -48,19 +48,20 @@ module fifo_apb_adc #(
         end
     end
 
+    // A write/read only actually happens when there is room / data. Mirror the
+    // gating used by the pointer logic so count can never over/underflow (the
+    // previous version incremented count on a write even when full).
+    wire do_wr = adc_wr_en & ~fifo_full;
+    wire do_rd = apb_rd_en & ~fifo_empty;
+
     // Counter Logic
     always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
+        if (!rst_n || fifo_clear)
             count <= 0;
-        end else if (fifo_clear) begin
-            count <= 0;
-        end else begin
-            case ({adc_wr_en, apb_rd_en})
-                2'b10: count <= count + 1;  // Write
-                2'b01: count <= count - 1;  // Read
-                default: count <= count;
-            endcase
-        end
+        else if (do_wr & ~do_rd)
+            count <= count + 1'b1;
+        else if (~do_wr & do_rd)
+            count <= count - 1'b1;
     end
 
     // Status Signals

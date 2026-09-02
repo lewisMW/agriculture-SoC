@@ -22,7 +22,7 @@ if [ -z $SOCLABS_DESIGN_ROOT ]; then
     fi
 
     # Source Top-Level Sourceme
-    source $SOCLABS_DESIGN_ROOT/set_env.sh
+    source $SOCLABS_DESIGN_ROOT/nanosoc/set_env.sh
 else
     # Set Environment Variable for Project Dir
     SEARCH_DIR=`pwd`
@@ -35,7 +35,7 @@ else
             SEARCH_DIR=$SEARCH_DIR/..
         fi
     done
-
+echo $SOCLABS_DESIGN_ROOT
     # If this Repo is root of workspace
     if [ $SOCLABS_PROJECT_DIR = $SOCLABS_DESIGN_ROOT ]; then
         echo "Design Workspace: $SOCLABS_DESIGN_ROOT" 

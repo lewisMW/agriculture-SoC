@@ -1,1 +1,4 @@
 adc_trigger_test
+fifo_drain_test
+rtc_time_test
+adc_autonomous_test

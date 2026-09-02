@@ -227,10 +227,14 @@ all_gcc:
 		$(USER_DEFINE) -T $(LINKER_SCRIPT) -o $(BOOTLOADER).o
 	# Generate disassembly code
 	$(GNU_OBJDUMP) -S $(BOOTLOADER).o > $(BOOTLOADER).lst
-	# Generate binary file
+# 	# Generate binary file
+# 	$(GNU_OBJCOPY) -S $(BOOTLOADER).o -O binary $(BOOTLOADER).bin
+# 	# Generate hex file
+# 	$(GNU_OBJCOPY) -S $(BOOTLOADER).o --adjust-vma -0x10000000 -O verilog $(BOOTLOADER).hex
+    # Generate binary file
 	$(GNU_OBJCOPY) -S $(BOOTLOADER).o -O binary $(BOOTLOADER).bin
-	# Generate hex file
-	$(GNU_OBJCOPY) -S $(BOOTLOADER).o --adjust-vma -0x10000000 --gap-fill 00 -O verilog $(BOOTLOADER).hex
+	# Generate hex file from binary
+	# $(GNU_OBJCOPY) -S $(BOOTLOADER).o --adjust-vma -0x10000000 --gap-fill 00 -O verilog $(BOOTLOADER).hex
 	# Format the hex file to match fromelf output
 	od -v -A n -t x1 --width=1  $(BOOTLOADER).bin > $(BOOTLOADER).hex
 
