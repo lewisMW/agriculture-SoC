@@ -6,8 +6,10 @@
 # Contributors
 #
 # David Flynn (d.w.flynn@soton.ac.uk)
+# Daniel Newbrook (d.newbrook@soton.ac.uk)
+# David Mapstone (d.mapstone@soton.ac.uk)
 #
-# Copyright (C) 2021-3, SoC Labs (www.soclabs.org)
+# Copyright (C) 2021-6, SoC Labs (www.soclabs.org)
 #-----------------------------------------------------------------------------
 include $(SOCLABS_PROJECT_DIR)/nanosoc.config
 
@@ -16,9 +18,6 @@ include $(SOCLABS_PROJECT_DIR)/nanosoc.config
 #-------------------------------------
 # Name of test directory - Default Test is Hello World
 TESTNAME   ?= hello
-
-# Simulator type (mti/vcs/xm)
-SIMULATOR   = mti
 
 # Is an accelerator subsystem present in the design?
 ACCELERATOR ?= yes
@@ -35,6 +34,13 @@ GATE ?= no
 # Are simulations to be run in fast mode? (i.e. RAMs preloaded)
 FAST_SIM ?= yes
 VCD_SIM ?= no
+
+#-------------------------------------
+# - AutoConfig Overloaded Variables
+#-------------------------------------
+include $(SOCLABS_PROJECT_DIR)/autoconfig
+export TOOL_CHAIN
+export SIMULATOR
 
 #-------------------------------------
 # - Directory Setups
@@ -80,34 +86,49 @@ ifeq ($(ACCELERATOR),yes)
 endif
 
 # Set variables for tesbench if fast simulation
-ifeq ($(FAST_SIM),yes)
-	DEFINES_VC += +define+FAST_SIM
-	NANOSOC_DEFINES += FAST_SIM
+ifeq ($(GATE), no)
+	ifeq ($(FAST_SIM),yes)
+		DEFINES_VC += +define+FAST_SIM
+		NANOSOC_DEFINES += FAST_SIM
+	endif
 endif
 
+ifeq ($(GATE),no)
 ifdef DMA_DMA350_INCLUDE
+	DMA_INCLUDE:=yes
 	ifdef DMA350_SMALL
+		DMA_TYPE:=350S
 		NANOSOC_DEFINES += DMAC_DMA350
 		FLIST_INCLUDES += $(SOCLABS_SLDMA350_TECH_DIR)/flist/sldma350_ahb_small.flist
 	endif
 	ifdef DMA350_DEFAULT
+		DMA_TYPE:=350
 		NANOSOC_DEFINES += DMAC_DMA350 DMA350_STREAM_2
 		FLIST_INCLUDES += $(SOCLABS_SLDMA350_TECH_DIR)/flist/sldma350_ahb.flist
 	endif
 	ifdef DMA350_BIG
+		DMA_TYPE:=350L
 		NANOSOC_DEFINES += DMAC_DMA350 DMA350_STREAM_2 DMA350_STREAM_3
 		FLIST_INCLUDES += $(SOCLABS_SLDMA350_TECH_DIR)/flist/sldma350_ahb_big.flist
 	endif
-else 
+else
 	ifdef DMA_0_PL230_INCLUDE
+		DMA_INCLUDE:=yes
+		DMA_TYPE:=230
 		NANOSOC_DEFINES += DMAC_0_PL230
 		FLIST_INCLUDES +=$(SOCLABS_SLDMA230_TECH_DIR)/flist/sldma230_ip.flist
 	endif 
 	ifdef DMA_1_PL230_INCLUDE
+		DMA_INCLUDE:=yes
+		DMA_TYPE:=230
 		NANOSOC_DEFINES += DMAC_1_PL230
 		FLIST_INCLUDES +=$(SOCLABS_SLDMA230_TECH_DIR)/flist/sldma230_ip.flist
 	endif
 endif
+endif
+
+export DMA_INCLUDE
+export DMA_TYPE
 
 ifdef ADC_0_INCLUDE
 	AMS = yes
@@ -140,45 +161,50 @@ ifdef SAR_AMS_INCLUDE
 	FLIST_INCLUDES += $(ACCELERATOR_DIR)/AMS/sar_ams.flist
 endif
 
+ifdef_any_of = $(filter-out yes,$(foreach v,$(1),$(origin $(v))))
+
+ifeq ($(GATE),no)
+ifneq ($(call ifdef_any_of,$(SNPS_PVT_VM_0_INCLUDE) $(SNPS_PVT_PD_0_INCLUDE) $(SNPS_PVT_TS_0_INCLUDE) $(SNPS_PVT_TS_1_INCLUDE) $(SNPS_PVT_TS_2_INCLUDE) $(SNPS_PVT_TS_3_INCLUDE) $(SNPS_PVT_TS_4_INCLUDE) $(SNPS_PVT_TS_5_INCLUDE)),)
+	SNPS_PVT_INC:=yes
+	FLIST_INCLUDES  += $(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/synopsys_28nm_slm_integration/flist/synopsys_pvt_ip.flist
+	ifeq ($(ASIC),no)
+		FLIST_INCLUDES += $(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/synopsys_28nm_slm_integration/flist/synopsys_pvt_VIP.flist
+	endif
+endif
 ifdef SNPS_PVT_TS_0_INCLUDE
 	NANOSOC_DEFINES += SNPS_PVT_MONITORING SNPS_PVT_TS_0_INCLUDE
-	FLIST_INCLUDES  += $(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/synopsys_28nm_slm_integration/flist/synopsys_pvt_ip.flist
 endif
 
 ifdef SNPS_PVT_TS_1_INCLUDE
 	NANOSOC_DEFINES += SNPS_PVT_MONITORING SNPS_PVT_TS_1_INCLUDE
-	FLIST_INCLUDES  += $(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/synopsys_28nm_slm_integration/flist/synopsys_pvt_ip.flist
 endif
 
 ifdef SNPS_PVT_TS_2_INCLUDE
 	NANOSOC_DEFINES += SNPS_PVT_MONITORING SNPS_PVT_TS_2_INCLUDE
-	FLIST_INCLUDES  += $(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/synopsys_28nm_slm_integration/flist/synopsys_pvt_ip.flist
 endif
 
 ifdef SNPS_PVT_TS_3_INCLUDE
 	NANOSOC_DEFINES += SNPS_PVT_MONITORING SNPS_PVT_TS_3_INCLUDE
-	FLIST_INCLUDES  += $(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/synopsys_28nm_slm_integration/flist/synopsys_pvt_ip.flist
 endif
 
 ifdef SNPS_PVT_TS_4_INCLUDE
 	NANOSOC_DEFINES += SNPS_PVT_MONITORING SNPS_PVT_TS_4_INCLUDE
-	FLIST_INCLUDES  += $(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/synopsys_28nm_slm_integration/flist/synopsys_pvt_ip.flist
 endif
 
 ifdef SNPS_PVT_TS_5_INCLUDE
 	NANOSOC_DEFINES += SNPS_PVT_MONITORING SNPS_PVT_TS_5_INCLUDE
-	FLIST_INCLUDES  += $(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/synopsys_28nm_slm_integration/flist/synopsys_pvt_ip.flist
 endif
 
 ifdef SNPS_PVT_PD_0_INCLUDE
 	NANOSOC_DEFINES += SNPS_PVT_MONITORING SNPS_PVT_PD_0_INCLUDE
-	FLIST_INCLUDES  += $(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/synopsys_28nm_slm_integration/flist/synopsys_pvt_ip.flist
 endif
 
 ifdef SNPS_PVT_VM_0_INCLUDE
 	NANOSOC_DEFINES += SNPS_PVT_MONITORING SNPS_PVT_VM_0_INCLUDE
-	FLIST_INCLUDES  += $(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/synopsys_28nm_slm_integration/flist/synopsys_pvt_ip.flist
 endif
+endif
+
+export SNPS_PVT_INC
 
 
 # ASIC MEMORY INCLUSION
@@ -187,7 +213,11 @@ ifeq ($(ASIC),yes)
 		FLIST_INCLUDES += $(SOCLABS_ASIC_LIB_TECH_DIR)/flist/asic_lib_ip_TSMC16nm.flist 
 	else ifeq ($(NODE),28)
 		FLIST_INCLUDES += $(SOCLABS_ASIC_LIB_TECH_DIR)/flist/asic_lib_ip_TSMC28nm.flist
-	else 
+	else ifeq ($(NODE),GF180)
+		FLIST_INCLUDES += $(SOCLABS_ASIC_LIB_TECH_DIR)/flist/asic_lib_ip_GF180.flist
+	else ifeq ($(NODE),SKY130)
+		FLIST_INCLUDES += $(SOCLABS_ASIC_LIB_TECH_DIR)/flist/asic_lib_ip_SKY130.flist
+	else
 		FLIST_INCLUDES += $(SOCLABS_ASIC_LIB_TECH_DIR)/flist/asic_lib_ip.flist
 	endif
 endif
@@ -205,13 +235,13 @@ else
 		DESIGN_VC            	?= $(SOCLABS_PROJECT_DIR)/flist/project/top_ASIC.flist
 		ARM_CORSTONE_101_DIR 	?= $(ARM_IP_LIBRARY_PATH)/latest/Corstone-101/logical
 		ARM_CORTEX_M0_DIR    	?= $(ARM_IP_LIBRARY_PATH)/latest/Cortex-M0/logical
-		NANOSOC_DEFINES      	+= ASIC_TEST_PORTS POWER_PINS 
+		NANOSOC_DEFINES      	+= ASIC_TEST_PORTS 
 	else
 		ifeq ($(GATE),yes)
 			DESIGN_VC		 	?= $(SOCLABS_PROJECT_DIR)/flist/project/top_GATE.flist
 			TBENCH_VC 		 	?= $(SOCLABS_PROJECT_DIR)/flist/project/top_GATE.flist
 			TB_TOP 				?= nanosoc_tb
-			NANOSOC_DEFINES 	+= GATE_SIM ARM_UD_MODEL INITIALISE_MEMORY
+			NANOSOC_DEFINES 	+= GATE_SIM ARM_UD_MODEL INITIALISE_MEMORY ARM_POWER_AWARE POWER_PINS MR74125_GATE_PW_SIM MR74127_GATE_PW_SIM
 		else
 			DESIGN_VC       	?= $(SOCLABS_PROJECT_DIR)/flist/project/top.flist
 			TBENCH_VC       	?= $(SOCLABS_PROJECT_DIR)/flist/project/top.flist

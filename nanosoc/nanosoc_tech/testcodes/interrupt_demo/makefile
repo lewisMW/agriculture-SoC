@@ -161,7 +161,10 @@ GNU_OBJCOPY = $(TARGET)-objcopy
 LINKER_SCRIPT_PATH = $(SOFTWARE_DIR)/common/scripts
 LINKER_SCRIPT = $(LINKER_SCRIPT_PATH)/cmsdk_cm0.ld
 
-GNU_CC_FLAGS = -g -O3 -mthumb $(CPU_TYPE)
+# GCC optimization specs
+GCC_SPEC_OPTS := --specs=nano.specs -Wl,--gc-sections
+
+GNU_CC_FLAGS = -g -O3 -mthumb $(CPU_TYPE) $(GCC_SPEC_OPTS)
 
 ifeq ($(COMPILE_BIGEND),1)
  # Big Endian

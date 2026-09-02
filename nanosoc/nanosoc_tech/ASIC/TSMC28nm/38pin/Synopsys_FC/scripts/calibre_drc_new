@@ -1,0 +1,18 @@
+*drcRulesFile: /home/dwn1c21/SoC-Labs/phys_ip/TSMC/28/CMOS/util/LOGIC_TopMz_DRC/CLN28HP_8M_5X2Z_002.22a.encrypt
+*drcRulesFileLastLoad: 1748354740
+*drcRunDir: /home/dwn1c21/SoC-Labs/TAPEOUT/feb2025/28nm/accelerator-project/nanosoc_tech/ASIC/TSMC28nm/38pin/Synopsys_FC/work/DRC
+*drcLayoutPaths: /home/dwn1c21/SoC-Labs/TAPEOUT/feb2025/28nm/accelerator-project/nanosoc_tech/ASIC/TSMC28nm/38pin/Synopsys_FC/outputs/nanosoc_chip_pads.gds
+*drcLayoutPrimary: nanosoc_chip_pads
+*drcResultsFile: DRC_RES.db
+*drcResultsCheckText: 1
+*drcResultsCheckTextValue: ALL
+*drcCellName: 0
+*drcDRCMaxResultsAll: 1
+*drcCreateCTOFile: 1
+*drcCreateDRCReport: 1
+*drcSummaryFile: DRC.rep
+*cmnResolution: 5
+*cmnRunHier: 0
+*cmnSlaveHosts: {use {}} {hostName {}} {cpuCount {}} {a32a64 {}} {rsh {}} {maxMem {}} {workingDir {}} {layerDir {}} {mgcLibPath {}} {launchName {}}
+*cmnLSFSlaveTbl: {use 1} {totalCpus 1} {minCpus 1} {architecture {{}}} {minMemory {{}}} {resourceOptions {{}}} {submitOptions {{}}}
+*cmnGridSlaveTbl: {use 1} {totalCpus 1} {minCpus 1} {architecture {{}}} {minMemory {{}}} {resourceOptions {{}}} {submitOptions {{}}}

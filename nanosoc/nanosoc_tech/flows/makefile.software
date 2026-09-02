@@ -12,11 +12,6 @@
 # Software Directory
 NANOSOC_SW_DIR     ?= $(SOCLABS_NANOSOC_TECH_DIR)/software
 
-# Default to DS-5 tool-chain; override on the command line with TOOL_CHAIN=gcc
-# (this is passed down via SW_MAKE_OPTIONS and overrides the testcode makefiles'
-# own setting, so it must be overridable here).
-TOOL_CHAIN ?= ds5
-
 # Software make options
 # - Pass onto the software makefile to define targetted CPU type
 # You can append additional make options for testcode here
@@ -45,28 +40,43 @@ DEBUGTESTER  = debugtester
 # Before simulation, bootrom and testcode need to be compiled.
 code : testcode bootrom debugtester
 
-# Compile bootloader
-# Note : The use of ls after compile allows the computing server to sync up
-bootrom:
-	@(cd $(TESTCODES_DIR)/$(BOOTLOADER) ;\
-	$(MAKE) all $(SW_MAKE_OPTIONS_ROM) ;\
-	echo Compile done ;\
-	ls > /dev/null ;\
-	echo Copy $(BOOTLOADER).hex ;\
-	while [ ! -e $(BOOTLOADER).hex ] ; do \
-		echo Wait for hex file ...; \
-		ls > /dev/null; \
-		sleep 5; \
-		done; \
-	if [ ! -e  $(BOOTLOADER).hex ] ; then \
-		echo Problem reading hex file ;\
-		exit 1; \
-	fi ;\
-	mkdir -p $(BOOTROM_BUILD_DIR)/verilog/ ;\
-	mkdir -p $(BOOTROM_BUILD_DIR)/bintxt/ ;\
-	python3 bootrom_gen.py -a $(BOOTROM_ADDRW) -i $(BOOTLOADER).hex -v $(BOOTROM_BUILD_DIR)/verilog/bootrom.v -b $(BOOTROM_BUILD_DIR)/bintxt/bootrom.bintxt )
-	mkdir -p $(SIM_TOP_DIR)/bootloader
-	cp $(BOOTROM_HEX)  $(SIM_TOP_DIR)/bootloader/$(BOOTLOADER).hex
+# Boot ROM generation
+#--------------------------------------------------------------------------------
+# Output files and directories
+BOOTROM_SV_DIR := $(BOOTROM_BUILD_DIR)/verilog
+BOOTROM_BIN_DIR:= $(BOOTROM_BUILD_DIR)/bintxt
+
+# Output files
+BOOTROM_SV     := $(BOOTROM_SV_DIR)/bootrom.sv
+BOOTROM_BIN    := $(BOOTROM_BIN_DIR)/bootrom.bintxt
+
+BOOTROM_SIM_DIR := $(SIM_TOP_DIR)/bootloader
+BOOTROM_SIM_HEX := $(BOOTROM_SIM_DIR)/$(BOOTLOADER).hex
+
+# Intermediate files
+BOOTLOADER_HEX := $(TESTCODES_DIR)/$(BOOTLOADER)/$(BOOTLOADER).hex
+BOOTROM_GEN_PY := $(SOCLABS_NANOSOC_TECH_DIR)/testcodes/bootloader/bootrom_gen.py
+
+bootrom: $(BOOTROM_SV) $(BOOTROM_BIN) $(BOOTROM_SIM_HEX)
+
+# Generate the Boot ROM Verilog and Binary Text files from the bootloader hex file
+$(BOOTROM_SV) $(BOOTROM_BIN): $(BOOTROM_HEX) $(BOOTROM_GEN_PY) | $(BOOTROM_SV_DIR) $(BOOTROM_BIN_DIR)
+	@echo "Generating Boot ROM Verilog and Binary Text files"
+	@echo "Toolchain: $(TOOL_CHAIN)"
+	@python3 $(BOOTROM_GEN_PY) -a $(BOOTROM_ADDRW) -i $(BOOTROM_HEX) -t $(TOOL_CHAIN) -v $(BOOTROM_SV) -b $(BOOTROM_BIN)
+
+# Copy the bootloader hex file to the simulation directory
+$(BOOTROM_SIM_HEX): $(BOOTLOADER_HEX) | $(SIM_TOP_DIR)/bootloader
+	@echo "Copying Boot ROM hex file to simulation directory"
+	@cp $(BOOTLOADER_HEX)  $(BOOTROM_SIM_HEX)
+
+# Create output directories if they do not exist
+$(BOOTROM_SV_DIR) $(BOOTROM_BIN_DIR) $(BOOTROM_SIM_DIR):
+	@mkdir -p $@
+
+# Compile bootloader in the testcodes/bootloader directory
+$(BOOTROM_HEX):
+	$(MAKE) -C $(TESTCODES_DIR)/$(BOOTLOADER) all_$(TOOL_CHAIN) $(SW_MAKE_OPTIONS_ROM)
 
 # Compile test code
 # Note : The use of ls after compile allows the computing server to sync up

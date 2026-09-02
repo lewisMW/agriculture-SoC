@@ -1,0 +1,170 @@
+CAPI=2:
+
+name : soclabs:nanosoc:hostio4:2.0.0
+
+##-----------------------------------------------------------------------------
+## 4 channel 8-bit hostio transfer over 4-bit data bus
+##
+##  SoC Testbench
+##
+## A joint work commissioned on behalf of SoC Labs,
+## under Arm Academic Access license.
+##
+## Contributors
+##
+## Design: David Flynn (dwflynn@soton.ac.uk)
+##
+## Packaging: Microsoft CoPilot AI agent support
+##
+## Copyright (c) 2024-6, SoC Labs (www.soclabs.org)
+##-----------------------------------------------------------------------------
+
+#provider : https://git.soton.ac.uk/soclabs/
+
+description: FuseSoc packaged simulation testbench for hostio4 IP and validation
+
+filesets:
+  rtl_cont:
+    file_type : systemVerilogSource
+    files:
+      - soc_rtl/hostio4_controller_axis_txport.sv
+      - soc_rtl/hostio4_controller_axis_rxport.sv
+      - soc_rtl/hostio4_controller_sync.sv
+      - soc_rtl/hostio4_controller_fsm.sv
+      - soc_rtl/hostio4_controller.sv
+
+  rtl_targ:
+    file_type : systemVerilogSource
+    files:
+      - target_rtl/hostio4_target_axis_txport.sv
+      - target_rtl/hostio4_target_axis_rxport.sv
+      - target_rtl/hostio4_target_sync.sv
+      - target_rtl/hostio4_target_fsm.sv
+      - target_rtl/hostio4_target.sv
+
+  tb:
+    file_type : verilogSource
+    files:
+      - tb/tb_hostio4.v
+      - tb/tb_hostio4_monitor.v
+      - tb/tb_axi_stream_io8_buffer.v
+      - tb/tb_axi_stream_io8_rxd_check_file.v
+      - tb/tb_axi_stream_io8_txd_from_file.v
+      - tb/tb_axi_stream_io8_rxd_to_file.v
+      - tb/asc-test.txt:
+         is_include_file: true
+      - tb/asc-test-ref.log:
+         is_include_file: true
+
+parameters:
+  ARM_UD_MODEL:
+    datatype      : int
+    description   : Gate level model flag to ARM libraries and memories
+    paramtype     : vlogdefine
+
+#  openlane: {files : [data/sky130.tcl : {file_type : tclSource}]}
+
+targets:
+  default:
+    description: dummy build target (no testbench)
+    filesets: [rtl_cont]
+
+  lint:
+    description: Lint tooling - not yet supported
+    default_tool : spyglass
+    filesets : [rtl_cont]
+    tools:
+      spyglass:
+           mode : +lint
+           spyglass_options:
+             - handlememory yes
+           rule_parameters:
+             - handle_static_caselabels yes
+           policy:
+             - waive -rule W415a
+             - waive -rule W426
+      modelsim:
+           mode : +lint
+    toplevel : hostio4_controller
+
+  fpga:
+    description: FPGA implementation
+    default_tool : vivado
+    filesets : [rtl_cont]
+    parameters:
+      - ARM_UD_MODEL=1
+    toplevel : hostio4_controller
+
+  sim:
+    description: RTL simulation testbench
+    default_tool : vcs
+    filesets : [rtl_cont, rtl_targ, tb]
+    parameters:
+      - ARM_UD_MODEL=1
+    tools:
+      vcs:
+        mode : +lint
+        vcs_options:
+          # Compile-time options passed to the vcs command
+          - -debug_access+pp
+          - -kdb -debug_access+all
+          - +lint
+          - -timescale=1ns/1ps
+          - +no_notifier
+          - +notimingcheck
+          - +define+ARM_UD_MODEL=1
+        run_options:
+          # Run-time options passed to the simulation itself
+          - -licqueue
+#          - -verdi
+      modelsim:
+        mode : +lint
+        mti_options:
+          - -timescale=1ns/1ps
+          - +no_notifier
+          - +notimingcheck
+        run_options:
+          # Run-time options passed to the simulation itself
+          - -licqueue
+    toplevel : tb_hostio4
+
+  sim_gui:
+    description: GUI interactive simulation testbench
+    default_tool : vcs
+    filesets : [rtl_cont, rtl_targ, tb]
+    parameters:
+      - ARM_UD_MODEL=1
+    tools:
+      vcs:
+        mode : +lint
+        vcs_options:
+          # Compile-time options passed to the vcs command
+          - -debug_access+pp
+          - -kdb -debug_access+all
+          - +lint
+          - -timescale=1ns/1ps
+          - +no_notifier
+          - +notimingcheck
+          - +define+ARM_UD_MODEL=1
+        run_options:
+          # Run-time options passed to the simulation itself
+          - -licqueue
+          - -verdi
+      modelsim:
+        mode : +lint
+        mti_options:
+          - -timescale=1ns/1ps
+          - +no_notifier
+          - +notimingcheck
+        run_options:
+          # Run-time options passed to the simulation itself
+          - -licqueue
+    toplevel : tb_hostio4
+
+
+  tb_nanosoc: &tb
+    description: testbench build
+    default_tool: vcs
+    filesets: [rtl_cont, rtl_targ, tb]
+    toplevel : tb_hostio4
+

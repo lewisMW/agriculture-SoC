@@ -32,9 +32,10 @@
 CPU_PRODUCT = CORTEX_M0
 
 # Shared software directory
-SOFTWARE_DIR = $(SOCLABS_NANOSOC_TECH_DIR)/software
-CMSIS_DIR    = $(SOFTWARE_DIR)/cmsis
-CORE_DIR     = $(CMSIS_DIR)/CMSIS/Include
+SOFTWARE_DIR 	= $(SOCLABS_NANOSOC_TECH_DIR)/software
+CMSIS_DIR    	= $(SOFTWARE_DIR)/cmsis
+CORE_DIR     	= $(CMSIS_DIR)/CMSIS/Include
+DATAIO_TEST_DIR = $(abspath .)
 
 ifeq ($(CPU_PRODUCT),CORTEX_M0PLUS)
   DEVICE_DIR   = $(CMSIS_DIR)/Device/ARM/CMSDK_CM0plus
@@ -138,7 +139,10 @@ GNU_OBJCOPY = arm-none-eabi-objcopy
 LINKER_SCRIPT_PATH = $(SOFTWARE_DIR)/common/scripts
 LINKER_SCRIPT = $(LINKER_SCRIPT_PATH)/cmsdk_cm0.ld
 
-GNU_CC_FLAGS = -g -O3 -mthumb $(CPU_TYPE)
+# GCC optimization specs
+GCC_SPEC_OPTS := --specs=nano.specs -Wl,--gc-sections
+
+GNU_CC_FLAGS = -g -O3 -mthumb $(CPU_TYPE) $(GCC_SPEC_OPTS)
 
 ifeq ($(COMPILE_BIGEND),1)
  # Big Endian
@@ -192,6 +196,7 @@ all_gcc:
 		$(TESTNAME).c \
 		$(SOFTWARE_DIR)/common/retarget/retarget.c \
 		$(SOFTWARE_DIR)/common/retarget/uart_stdout.c \
+		$(DATAIO_TEST_DIR)/dataio_functions.c \
 		$(DEVICE_DIR)/Source/$(SYSTEM_FILE).c \
 		-I $(DEVICE_DIR)/Include -I $(CORE_DIR) \
         -I $(SOFTWARE_DIR)/common/retarget  \

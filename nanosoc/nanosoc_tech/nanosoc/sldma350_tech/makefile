@@ -39,6 +39,8 @@ SIM_DIR      = $(SIM_TOP_DIR)/$(TESTNAME)
 
 config_dma_axi:
 	@$(ARM_IP_LIBRARY_PATH)/DMA-350/CG096-r0p0-00rel0/CG096-BU-50000-r0p0-00rel0/dma350/logical/generate --config ./config/cfg_dma_axi.yaml --output ./src/
+config_dma_axi_millisoc:
+	@$(ARM_IP_LIBRARY_PATH)/DMA-350/CG096-r0p0-00rel0/CG096-BU-50000-r0p0-00rel0/dma350/logical/generate --config ./config/cfg_dma_axi_millisoc.yaml --output ./src/
 config_dma_ahb:
 	@$(ARM_IP_LIBRARY_PATH)/DMA-350/CG096-r0p0-00rel0/CG096-BU-50000-r0p0-00rel0/dma350/logical/generate --config ./config/cfg_dma_ahb.yaml --output ./src/
 	@$(ARM_IP_LIBRARY_PATH)/DMA-350/CG096-r0p0-00rel0/PL417-BU-50000-r0p1-00rel0/xhb500/logical/generate --config ./config/cfg_xhb_axi_to_ahb.cfg --output ./src/

@@ -339,18 +339,22 @@ get_LR_and_branch
 void HardFault_Handler(void) __attribute__((naked));
 void HardFault_Handler(void)
 {
-  __asm("  movs   r0,#4\n"
-        "  mov    r1,lr\n"
-        "  tst    r0,r1\n"
-        "  beq    stacking_used_MSP\n"
-        "  mrs    r0,psp\n" /*  first parameter - stacking was using PSP */
-        "  ldr    r1,=HardFault_Handler_c  \n"
-        "  bx     r1\n"
-        "stacking_used_MSP:\n"
-        "  mrs    r0,msp\n" /*  first parameter - stacking was using PSP */
-        "  ldr    r1,=HardFault_Handler_c  \n"
-        "  bx     r1\n"
-        ".pool\n" );
+  __asm(
+    "  movs   r0,#4\n"
+    "  mov    r1,lr\n"
+    "  tst    r0,r1\n"
+    "  beq    stacking_used_MSP\n"
+    "  mrs    r0,psp\n" /*  first parameter - stacking was using PSP */
+    "  ldr    r1,=HardFault_Handler_c  \n"
+    "  bx     r1\n"
+    "stacking_used_MSP:\n"
+    "  mrs    r0,msp\n" /*  first parameter - stacking was using PSP */
+    "  ldr    r1,=HardFault_Handler_c  \n"
+    "  bx     r1\n"
+    ".pool\n"
+    : /* no outputs */
+    : "i" (HardFault_Handler_c)  /* input: immediate address of function */
+  );
 }
 
 #endif
