@@ -22,7 +22,7 @@ module nanosoc_system #(
     parameter    APB_DATA_W           = 32,  // APB Peripheral Data Width
     
     // Bootrom 0 Parameters
-    parameter    BOOTROM_ADDR_W       = 10,          // Size of Bootrom (Based on Address Width) - Default 1KB
+    parameter    BOOTROM_ADDR_W       = 11,          // Size of Bootrom (Based on Address Width) - Default 2KB
     
     // IMEM 0 Parameters
     parameter    IMEM_RAM_ADDR_W      = 14,          // Width of IMEM RAM Address - Default 16KB
@@ -52,7 +52,7 @@ module nanosoc_system #(
     parameter WIC                     = 1,   // Wake-up interrupt controller support
     parameter WICLINES                = 34,  // Supported WIC lines
     parameter WPT                     = 2,   // Number of DWT comparators
-    parameter RESET_ALL_REGS          = 0,   // Do not reset all registers
+    parameter RESET_ALL_REGS          = 1,   // Do not reset all registers
     parameter INCLUDE_JTAG            = 0,   // Do not Include JTAG feature
       
     // DMA Parameters  
@@ -690,7 +690,7 @@ module nanosoc_system #(
     wire             [ 7:0]  STD_TXD_TDATA;
     wire                     STD_TXD_TREADY;
 
-    wire FT1248MODE = P1_IN[7]; // added to support EXTIO mapping
+    wire FT1248MODE = P1_IN[7]; // added to support HOSTIO mapping
 
     // Sideband Wiring
     //--------------------------
@@ -807,7 +807,7 @@ wire       EXT_DAT_TXD_TVALID ;
 wire [7:0] EXT_DAT_TXD_TDATA  ;
 wire       EXT_DAT_TXD_TREADY ;
 
-/// See the AXI stream muxes by EXTIO interface (below)
+/// See the AXI stream muxes by HOSTIO interface (below)
 
     // Instantiation of FT1248 Controller
     socdebug_ft1248_control #(
@@ -1249,7 +1249,7 @@ wire       EXT_DAT_TXD_TREADY ;
     assign   FT_ADP_RXD_TDATA   = (FT1248MODE) ? ADP_RXD_TDATA     : 8'b00000000;
     assign   FT_ADP_TXD_TREADY  = (FT1248MODE) ? ADP_TXD_TREADY    : 1'b0;
 
-// EXTIO ADP output routing
+// HOSTIO ADP output routing
     assign   EXT_ADP_RXD_TVALID = (FT1248MODE) ? 1'b0              : ADP_RXD_TVALID;
     assign   EXT_ADP_RXD_TDATA  = (FT1248MODE) ? 8'b00000000       : ADP_RXD_TDATA;
     assign   EXT_ADP_TXD_TREADY = (FT1248MODE) ? 1'b0              : ADP_TXD_TREADY;
@@ -1279,7 +1279,7 @@ wire       ioreq2_o;
 wire       ioack_i ;
 
 
-extio8x4_axis_initiator u_extio8x4_axis_initiator
+hostio4_controller u_hostio4_controller
   (
   .clk             ( SYS_HCLK          ),
   .resetn          ( SYS_HRESETn       ),
@@ -1308,7 +1308,7 @@ extio8x4_axis_initiator u_extio8x4_axis_initiator
   );
 
  // --------------------------------------------------------------------------------
- // EXTIO8x4 stream interface - enabled when P1[7] input is low
+ // HOSTIO8x4 stream interface - enabled when P1[7] input is low
  //   default in previous testbenches was pullup (for FT1248, UART2)
  //
  //          v1 mapping was:    v2 config
@@ -1329,7 +1329,7 @@ extio8x4_axis_initiator u_extio8x4_axis_initiator
     assign  P0_OUTEN[15:0]   = SYS_P0_OUTEN[15:0];
 
 
-// PORT 1 [7] - low for EXTIO, high for FT1248/UART2
+// PORT 1 [7] - low for HOSTIO, high for FT1248/UART2
 
 // reassign PORT1[3:0] to FT1248x1 interface
     assign  FT_MISO_I       = (FT1248MODE) ? P1_IN[0] : 1'b0; // FT_MISO INPUT pad configuration

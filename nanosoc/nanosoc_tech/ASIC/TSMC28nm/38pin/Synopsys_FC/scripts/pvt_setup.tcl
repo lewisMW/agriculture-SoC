@@ -76,7 +76,7 @@ current_corner typical_corner
 read_sdc ../inputs/constraints_typical.sdc
 
 ## hold - FFGNP V=+10% T=-40 and 125, parasitics cworst cbest rcworst rcbest
-#         SSSGNP V=-10%, T=-40 and 125, parasitics cworst and rcworst
+#         SSGNP V=-10%, T=-40 and 125, parasitics cworst and rcworst
 current_corner hold_corner_ffgnp
 set_parasitic_parameters -early_spec cbest -early_temperature 125 -late_spec cworst -late_temperature -40 -library nanosoc_chip_pads.dlib
 set_operating_conditions -max_library cln28ht_pmk -max ffg_cbestt_min_0p99v_m40c -min_library cln28ht_pmk -min ffg_cbestt_min_0p99v_125c
@@ -97,6 +97,7 @@ set_voltage -corners hold_corner_ffgnp -object_list [get_supply_nets {VSS}] 0.0
 set_voltage -corners hold_corner_ffgnp -object_list [get_supply_nets {AGND}] 0.0
 set_voltage -corners hold_corner_ffgnp -object_list [get_supply_nets {VSSIO}] 0.0
 set_voltage -corners hold_corner_ffgnp -object_list [get_supply_nets {VDDIO}] 1.98
+set_voltage -corners hold_corner_ffgnp -object_list [get_supply_nets {POC}] 1.98
 
 
 current_corner hold_corner_ssgnp
@@ -119,6 +120,7 @@ set_voltage -corners hold_corner_ssgnp -object_list [get_supply_nets {VSS}] 0.0
 set_voltage -corners hold_corner_ssgnp -object_list [get_supply_nets {AGND}] 0.0
 set_voltage -corners hold_corner_ssgnp -object_list [get_supply_nets {VSSIO}] 0.0
 set_voltage -corners hold_corner_ssgnp -object_list [get_supply_nets {VDDIO}] 1.62
+set_voltage -corners hold_corner_ssgnp -object_list [get_supply_nets {POC}] 1.62
 
 
 ## setup SSGNP V=-10%, T=-40 parasitics cworst_t rcworst_t
@@ -148,6 +150,7 @@ set_voltage -corners setup_corner -object_list [get_supply_nets {VSS}] 0.0
 set_voltage -corners setup_corner -object_list [get_supply_nets {AGND}] 0.0
 set_voltage -corners setup_corner -object_list [get_supply_nets {VSSIO}] 0.0
 set_voltage -corners setup_corner -object_list [get_supply_nets {VDDIO}] 1.62
+set_voltage -corners setup_corner -object_list [get_supply_nets {POC}] 1.62
 
 
 ## max transition - SSGNP V=-10% T=-40 P=cworst_t rcworst_t
@@ -171,6 +174,7 @@ set_voltage -corners max_tran_corner -object_list [get_supply_nets {VSS}] 0.0
 set_voltage -corners max_tran_corner -object_list [get_supply_nets {AGND}] 0.0
 set_voltage -corners max_tran_corner -object_list [get_supply_nets {VSSIO}] 0.0
 set_voltage -corners max_tran_corner -object_list [get_supply_nets {VDDIO}] 1.62
+set_voltage -corners max_tran_corner -object_list [get_supply_nets {POC}] 1.62
 
 ## typical power - TT V=V T=85C P=ctypical
 current_corner typical_corner
@@ -193,6 +197,7 @@ set_voltage -corners typical_corner -object_list [get_supply_nets {VSS}] 0.0
 set_voltage -corners typical_corner -object_list [get_supply_nets {AGND}] 0.0
 set_voltage -corners typical_corner -object_list [get_supply_nets {VSSIO}] 0.0
 set_voltage -corners typical_corner -object_list [get_supply_nets {VDDIO}] 1.8
+set_voltage -corners typical_corner -object_list [get_supply_nets {POC}] 1.8
 
 # Max IR drop - FFG V=V T=125 P=cworst
 
@@ -217,6 +222,7 @@ set_voltage -corners em_corner -object_list [get_supply_nets {VSS}] 0.0
 set_voltage -corners em_corner -object_list [get_supply_nets {AGND}] 0.0
 set_voltage -corners em_corner -object_list [get_supply_nets {VSSIO}] 0.0
 set_voltage -corners em_corner -object_list [get_supply_nets {VDDIO}] 1.8
+set_voltage -corners em_corner -object_list [get_supply_nets {POC}] 1.8
 
 redirect -file ../reports/design_setup.report_scenarios.rpt {report_scenarios} 
 redirect -file ../reports/design_setup.report_pvt.rpt {report_pvt} 
