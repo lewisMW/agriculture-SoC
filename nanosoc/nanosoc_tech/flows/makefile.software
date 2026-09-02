@@ -67,8 +67,8 @@ bootrom: $(BOOTROM_SV) $(BOOTROM_BIN) $(BOOTROM_SIM_HEX)
 # Generate the Boot ROM Verilog and Binary Text files from the bootloader hex file
 $(BOOTROM_SV) $(BOOTROM_BIN): $(BOOTROM_HEX) $(BOOTROM_GEN_PY) | $(BOOTROM_SV_DIR) $(BOOTROM_BIN_DIR)
 	@echo "Generating Boot ROM Verilog and Binary Text files"
-	@echo "Toolchain: $(TOOL_CHAIN)"
-	@python3 $(BOOTROM_GEN_PY) -a $(BOOTROM_ADDRW) -i $(BOOTROM_HEX) -t $(TOOL_CHAIN) -v $(BOOTROM_SV) -b $(BOOTROM_BIN)
+	@echo "Toolchain: $(BOOTROM_TOOL_CHAIN)"
+	@python3 $(BOOTROM_GEN_PY) -a $(BOOTROM_ADDRW) -i $(BOOTROM_HEX) -t $(BOOTROM_TOOL_CHAIN) -v $(BOOTROM_SV) -b $(BOOTROM_BIN)
 
 # Copy the bootloader hex file to the simulation directory
 $(BOOTROM_SIM_HEX): $(BOOTLOADER_HEX) | $(SIM_TOP_DIR)/bootloader
@@ -81,7 +81,7 @@ $(BOOTROM_SV_DIR) $(BOOTROM_BIN_DIR) $(BOOTROM_SIM_DIR):
 
 # Compile bootloader in the testcodes/bootloader directory
 $(BOOTROM_HEX):
-	$(MAKE) -C $(TESTCODES_DIR)/$(BOOTLOADER) all_$(TOOL_CHAIN) $(SW_MAKE_OPTIONS_ROM)
+	$(MAKE) -C $(TESTCODES_DIR)/$(BOOTLOADER) all_$(BOOTROM_TOOL_CHAIN) $(SW_MAKE_OPTIONS_ROM)
 
 # Compile test code
 # Note : The use of ls after compile allows the computing server to sync up

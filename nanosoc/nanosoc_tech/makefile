@@ -38,7 +38,12 @@ VCD_SIM ?= no
 #-------------------------------------
 # - AutoConfig Overloaded Variables
 #-------------------------------------
-include $(SOCLABS_PROJECT_DIR)/autoconfig
+# autoconfig is optional: nothing in this repo generates it, and a hard
+# include makes every target fail with "No rule to make target autoconfig".
+# Defaults below apply when it is absent (TOOL_CHAIN defaults in
+# flows/makefile.software).
+-include $(SOCLABS_PROJECT_DIR)/autoconfig
+SIMULATOR ?= mti
 export TOOL_CHAIN
 export SIMULATOR
 
