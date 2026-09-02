@@ -1,0 +1,10 @@
+# Port Table (ports) 
+# Layout Primary inverter
+GND 1 GND 1135 85 met1
+OUT 10 OUT 2560 2035 met1
+IN 6 IN 65 2065 met1
+VDD 2 VDD 1285 4085 met1
+GND 1 GND 1135 85 met1_in
+OUT 10 OUT 2560 2035 met1_in
+IN 6 IN 65 2065 met1_in
+VDD 2 VDD 1285 4085 met1_in

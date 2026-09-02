@@ -1,0 +1,79 @@
+Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.22s.
+********************************************************************************
+Product   : Virtuoso(R) XStream Out
+Program   : @(#)$CDS: strmout version IC23.1-64b 02/25/2025 22:49 (cpgbld15) $
+          : sub-version  IC23.1-64b.ISR13.25 
+Started at: 31-Jul-2026  10:13:30
+User Name : hee
+Host Name : MrDonothing
+Directory : /home/hee/projects/agriculture-SoC/analog/cadence
+CADENCE Design Systems, Inc.
+********************************************************************************
+Info: Cellview Rev Num:99,  Tech Rev Num:59
+
+Loading sky130_fd_pr_main/libInit.il ...
+	Loading sky130_fd_pr_main/loadCxt.ile ... done!
+	Loading context 'sky130_fd_pr_main' from library 'sky130_fd_pr_main' ... done!
+	Loading context 'pdkUtils' from library 'sky130_fd_pr_main' ... done!
+	Loading sky130_fd_pr_main/libInitCktPro.il ... done!
+	Loading sky130_fd_pr_main/libInitCustomExit.il ... 	Loading Environment Settings ...
+done!
+Loaded sky130_fd_pr_main/libInit.il successfully!
+INFO (XSTRM-217): Reading the layer map file, /home/hee/cadence/lib/sky130_release_0.1.0/libs/sky130_fd_pr_main/sky130_fd_pr_main.layermap
+WARNING (XSTRM-333): The '-enableColoring' option will be ignored during XStream Out. This is because there is no color entry in the layer map and the object map file.
+INFO (XSTRM-427): Based on current hardware configuration, running XStream Out translation in multi-threaded mode with 4 threads.
+INFO (XSTRM-280): The output file will be a compressed file because the file name has extension .gz
+INFO (XSTRM-162): You have not used the '-viaMap' option. If the OpenAccess design has native oaVia instances, use the '-viaMap' option for preserving oaVia instances in a XStream Out - XStream In round trip. Using the '-viaMap' option improves performance and VM usage of applications using the Streamed-In design.
+
+Summary of Options :
+library                                 sky130_analog_lib
+strmFile                                /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/DRC/inverter.gds.gz
+topCell                                 inverter
+view                                    layout
+runDir                                  /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/DRC
+logFile                                 /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/DRC/PIPO1.LOG
+techLib                                 sky130_fd_pr_main
+hierDepth                               32
+maxVertices                             2048
+layerMap                                /home/hee/cadence/lib/sky130_release_0.1.0/libs/sky130_fd_pr_main/sky130_fd_pr_main.layermap
+userSkillFile                           /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/DRC/strmout.il
+labelDepth                              32
+case                                    Preserve
+convertDot                              node
+
+INFO (XSTRM-180): You have not used the '-objectMap' option. The design has instance(s) of at least one of following OpenAccess objects: oaBlockage, oaBoundary, oaRow, and oaMarker. Any information about these objects will not be translated into the generated stream file. Use the '-objectMap' option to translate/preserve these objects using XStream.
+WARNING (XSTRM-35): The objects in the layer-purpose pair 'areaid:drawing' are ignored. This is because the layer-purpose pair used in the design is not specified in the layer map file. Specify the layer-purpose pair in the layer map file and try again.
+INFO (XSTRM-223): 1. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_785456810120.
+INFO (XSTRM-223): 2. Translating customVia sky130_fd_pr_main/polyConn/layout as STRUCTURE polyConn_CDNS_785456810120.
+INFO (XSTRM-223): 3. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_785456810121.
+INFO (XSTRM-223): 4. Translating cellview sky130_fd_pr_main/pfet_01v8/layout as STRUCTURE pfet_01v8_CDNS_785456810122.
+INFO (XSTRM-223): 5. Translating cellview sky130_analog_lib/inverter/layout as STRUCTURE inverter.
+
+Summary of Objects Translated:
+	Scalar Instances:                       2
+	Array Instances:                        0
+	Polygons:                               0
+	Paths:                                  0
+	Rectangles:                             52
+	Lines:                                  0
+	Arcs:                                   0
+	Donuts:                                 0
+	Dots:                                   0
+	Ellipses:                               0
+	Boundaries:                             0
+	Area Blockages:                         0
+	Layer Blockages:                        0
+	Area Halos:                             0
+	Markers:                                0
+	Rows:                                   0
+	Stitch:                                 0
+	Standard Vias                           4
+	Custom Vias:                            1
+	CdsGen Vias:                            0
+	Pathsegs:                               10
+	Text:                                   0
+	TextDisplay:                            4
+	Cells:                                  5
+
+Elapsed Time: 1.0s   User Time: 0.2s   CPU Time: 0.1s   Peak VM: 34540KB
+INFO (XSTRM-234): Translation completed. '0' error(s) and '2' warning(s) found.

@@ -11,3 +11,7 @@ DEFINE adc_tb_lib ./notech/SoC/adc_tb_lib
 
 INCLUDE $SKY130/cds.lib
 DEFINE sky130_analog_lib ./sky130/SoC/sky130_analog_lib
+#Removed by ddDeleteObj: DEFINE SAR_ADC /root/agriculture-SoC/analog/cadence/SAR_ADC
+#Removed by ddDeleteObj: DEFINE soc_adc /root/agriculture-SoC/analog/cadence/soc_adc
+DEFINE sar_adc /root/agriculture-SoC/analog/cadence/sar_adc
+#Removed by ddDeleteObj: DEFINE sarAdc /root/agriculture-SoC/analog/cadence/sarAdc

@@ -1,0 +1,16 @@
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++
+* CDL Netlist:
+*
+* Cell Name: inverter
+* Netlisted: 2026-08-18 16:46:43
+* Pegasus 24.12-s023
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++
+*.DEVTMPLT 0 MN(nfet_01v8) nfet_01v8_rec nSourceDrain(D) nfet(G) nSourceDrain(S) pwell_all(B)
+*.DEVTMPLT 1 MP(pfet_01v8) pfet_01v8_rec pSourceDrain(D) pfet(G) pSourceDrain(S) nwell(B)
+
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++
+* subckt inverter
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++
+* N=11 EP=4 NDC=2 FDC=2 HDC=2
+* MN(nfet_01v8) $dt=0 element=M NDC=1 FDC=1 HDC=1
+* MP(pfet_01v8) $dt=1 element=M NDC=1 FDC=1 HDC=1

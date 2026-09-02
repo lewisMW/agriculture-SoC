@@ -1,0 +1,21 @@
+Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.15s.
+
+Running simulation in directory: "/root/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS/".
+
+
+Running netlist
+Begin Incremental Netlisting Aug 18 16:45:45 2026
+Loading sky130_fd_pr_main/libInit.il ...
+	Loading sky130_fd_pr_main/loadCxt.ile ... done!
+	Loading context 'sky130_fd_pr_main' from library 'sky130_fd_pr_main' ... done!
+	Loading context 'pdkUtils' from library 'sky130_fd_pr_main' ... done!
+	Loading sky130_fd_pr_main/libInitCktPro.il ... done!
+	Loading sky130_fd_pr_main/libInitCustomExit.il ... 	Loading Environment Settings ...
+done!
+Loaded sky130_fd_pr_main/libInit.il successfully!
+"ERROR (OSSHNL-503): Netlister failed to open netlist file '/root/agriculture-SoC/analog/cadence/pegasus_runs/cap_array_8b/LVS//netlist'. Netlisting has stopped. Ensure that you have right permissions in run directory and netlist again.\n\n"
+End netlisting Aug 18 16:45:45 2026
+ERROR (OSSHNL-514): Netlist generation failed because of the errors reported above. The netlist might not have been generated at all, or the generated netlist could be corrupt. Fix the reported errors and regenerate the netlist.
+
+
+CDL netlist did not complete.

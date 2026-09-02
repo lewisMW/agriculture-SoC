@@ -1,0 +1,283 @@
+
+
+***********************************************************
+* CDL produced by pvsBuildNetlist on Aug  4 06:28:33 2026 *
+***********************************************************
+
+
+*pvsViewList = auLvs schematic
+*pvsStopList = ("auLvs")
+*pvsSimName  = auLvs
+
+
+
+*.EXPAND_ON_M_FACTOR
+*.MEGA
+
+
+
+.subckt cap_array_8b vbottom<0> vbottom<1> vbottom<2> vbottom<3> vbottom<4>
++  vbottom<5> vbottom<6> vbottom<7> vbottom_dum vtop
+*PVSCELL netlisted from sky130_analog_lib cap_array_8b layout
+*.INHEXPR vbottom<4> vbottom<4> vbottom<4>
+  CC0 vtop vbottom<0> cap_mim_m3__base l=4u w=4u m=1
+  CC1.1 vtop vbottom<1> cap_mim_m3__base l=4u w=4u m=1
+  CC1.2 vtop vbottom<1> cap_mim_m3__base l=4u w=4u m=1
+  CC2.1 vtop vbottom<2> cap_mim_m3__base l=4u w=4u m=1
+  CC2.2 vtop vbottom<2> cap_mim_m3__base l=4u w=4u m=1
+  CC2.3 vtop vbottom<2> cap_mim_m3__base l=4u w=4u m=1
+  CC2.4 vtop vbottom<2> cap_mim_m3__base l=4u w=4u m=1
+  CC3.1 vtop vbottom<3> cap_mim_m3__base l=4u w=4u m=1
+  CC3.2 vtop vbottom<3> cap_mim_m3__base l=4u w=4u m=1
+  CC3.3 vtop vbottom<3> cap_mim_m3__base l=4u w=4u m=1
+  CC3.4 vtop vbottom<3> cap_mim_m3__base l=4u w=4u m=1
+  CC3.5 vtop vbottom<3> cap_mim_m3__base l=4u w=4u m=1
+  CC3.6 vtop vbottom<3> cap_mim_m3__base l=4u w=4u m=1
+  CC3.7 vtop vbottom<3> cap_mim_m3__base l=4u w=4u m=1
+  CC3.8 vtop vbottom<3> cap_mim_m3__base l=4u w=4u m=1
+  CC4.1 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.10 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.11 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.12 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.13 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.14 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.15 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.16 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.2 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.3 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.4 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.5 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.6 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.7 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.8 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC4.9 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=1
+  CC5.1 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.10 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.11 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.12 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.13 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.14 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.15 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.16 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.17 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.18 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.19 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.2 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.20 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.21 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.22 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.23 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.24 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.25 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.26 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.27 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.28 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.29 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.3 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.30 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.31 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.32 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.4 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.5 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.6 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.7 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.8 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC5.9 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=1
+  CC6.1 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.10 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.11 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.12 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.13 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.14 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.15 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.16 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.17 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.18 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.19 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.2 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.20 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.21 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.22 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.23 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.24 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.25 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.26 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.27 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.28 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.29 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.3 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.30 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.31 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.32 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.33 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.34 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.35 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.36 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.37 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.38 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.39 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.4 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.40 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.41 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.42 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.43 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.44 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.45 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.46 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.47 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.48 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.49 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.5 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.50 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.51 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.52 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.53 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.54 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.55 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.56 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.57 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.58 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.59 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.6 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.60 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.61 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.62 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.63 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.64 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.7 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.8 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC6.9 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=1
+  CC7.1 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.10 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.100 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.101 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.102 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.103 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.104 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.105 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.106 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.107 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.108 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.109 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.11 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.110 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.111 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.112 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.113 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.114 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.115 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.116 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.117 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.118 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.119 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.12 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.120 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.121 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.122 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.123 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.124 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.125 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.126 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.127 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.128 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.13 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.14 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.15 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.16 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.17 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.19 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.2 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.20 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.21 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.22 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.23 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.24 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.25 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.26 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.27 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.28 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.29 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.3 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.30 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.31 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.32 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.33 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.34 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.35 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.36 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.37 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.38 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.39 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.4 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.40 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.41 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.42 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.43 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.44 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.45 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.46 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.47 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.48 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.49 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.5 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.50 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.51 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.52 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.53 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.54 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.55 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.56 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.57 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.58 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.59 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.6 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.60 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.61 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.62 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.63 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.64 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.65 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.66 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.67 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.68 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.69 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.7 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.70 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.71 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.72 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.73 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.74 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.75 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.76 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.77 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.78 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.79 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.8 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.80 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.81 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.82 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.83 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.84 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.85 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.86 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.87 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.88 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.89 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.9 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.90 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.91 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.92 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.93 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.94 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.95 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.96 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.97 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.98 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC7.99 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=1
+  CC8 vtop vbottom_dum cap_mim_m3__base l=4u w=4u m=1
+.ends cap_array_8b
+
+
+***********************************************************
+*             Completed at Aug  4 06:28:33 2026           *
+***********************************************************
