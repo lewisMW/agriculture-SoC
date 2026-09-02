@@ -37,7 +37,19 @@ endif
 
 # XM verilog options
 XMSIM_OPTIONS  = -unbuffered -64bit -status -LICQUEUE -f xmsim.args -cdslib cds.lib -hdlvar hdl.var -NBASYNC
-XM_VC_OPTIONS  = -f $(TBENCH_VC) $(ADP_OPTIONS) 
+XM_VC_OPTIONS  = -f $(TBENCH_VC) $(ADP_OPTIONS)
+
+# XR (single-call xrun) options - the only Xcelium path that supports AMS.
+# With AMS=yes the Verilog-AMS sources are solved by Spectre: 1.8V connect
+# rules bridge logic<->electrical and the analog control file supplies the
+# transient analysis (mirrors the VCS -ad/-ams options above).
+AMS_ACF       ?= $(ACCELERATOR_DIR)/AMS/acf.scs
+AMS_CONNRULES ?= ConnRules_18V_full_fast
+AMS_CONNLIB   ?= $(AMSHOME)/tools.lnx86/affirma_ams/etc/connect_lib/ConnRules18.vams
+XRUN_OPTIONS   = -64bit -clean -licqueue -timescale 1ns/1ps -access +rwc
+ifdef AMS
+	XRUN_OPTIONS += -ams -discipline logic -amsconnrules $(AMS_CONNRULES) -analogcontrol $(AMS_ACF) $(AMS_CONNLIB)
+endif
 
 # Icarus Verilog options
 IVERILOG_OPTIONS = -g2005-sv -DVCD_SIM
@@ -90,6 +102,8 @@ sim: sim_$(SIMULATOR)
 compile_mti: NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
 compile_vcs: NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
 compile_xm:  NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
+compile_xr:  NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
+run_xr:      NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
 compile_iverilog: NANOSOC_DEFINES += IMEM_0_RAM_PRELOAD
 
 
@@ -143,6 +157,16 @@ run_xm : code compile_xm
 # Run simulation in interactive mode
 sim_xm : code compile_xm
 	cd $(SIM_DIR); xmsim -gui $(XMSIM_OPTIONS)
+
+# ------- XR (single-call xrun; use for AMS) -----------
+
+# Elaborate-only check
+compile_xr : bootrom gen_defs flist_vfiles_nanosoc
+	cd $(SIM_DIR); xrun $(XRUN_OPTIONS) -elaborate -f tbench.vc $(DEFINES_VC) $(ADP_OPTIONS) -top $(TB_TOP) | tee compile_xr.log
+
+# Compile + elaborate + run in one xrun invocation (batch)
+run_xr : code gen_defs flist_vfiles_nanosoc
+	cd $(SIM_DIR); xrun $(XRUN_OPTIONS) -f tbench.vc $(DEFINES_VC) $(ADP_OPTIONS) -top $(TB_TOP) | tee logs/run_$(TESTNAME).log
 
 # ------- MTI -----------
 

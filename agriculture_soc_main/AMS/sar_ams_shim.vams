@@ -1,0 +1,79 @@
+// -----------------------------------------------------------------------------
+// sar_ams_shim.vams
+//
+// Drop-in AMS replacement for dummy_adc: presents the same digital port list,
+// but instantiates the real behavioural SAR ADC
+// (analog/cadence/notech/SoC/adc_top_lib/sar/verilogams/verilog.vams).
+//
+// The shim owns everything the digital wrapper cannot express:
+//   - the analog supplies (vdd/vss) for the SAR,
+//   - a differential analog input on vp/vn (stand-in sensor stimulus; the
+//     wrapper's ANALOG_IN/amux path is digital-only, so it is not connected),
+//   - a clock divider, because the SAR needs ~11 clocks per conversion at a
+//     rate far below PCLK. The wrapper already synchronises `valid` back into
+//     the PCLK domain, so the slower ADC clock is safe.
+//
+// Requires the AMS flow (xrun -ams) with 1.8 V connect rules.
+// -----------------------------------------------------------------------------
+`timescale 1ns/1ps
+`include "constants.vams"
+`include "disciplines.vams"
+
+module sar_ams_shim #(
+    parameter RESULT_WIDTH = 8,
+    parameter CLK_DIV      = 4,        // PCLK cycles per SAR clock half-period
+    parameter real VDD_V   = 1.8,      // SAR supply
+    parameter real VCM_V   = 0.9,      // input common mode
+    parameter real VAMP_V  = 0.4,      // differential input amplitude
+    parameter real FIN_HZ  = 5.0e3     // input frequency
+)(
+    input  wire                    clk,
+    input  wire                    rstn,      // active-low
+    input  wire                    en,        // held high through the conversion
+    input  wire                    cal,       // calibration mode
+    input  wire                    ANALOG_IN, // digital placeholder, unused
+    output wire                    valid,
+    output wire [RESULT_WIDTH-1:0] result
+);
+
+    // ── Analog supplies and stand-in differential sensor input ──────────────
+    electrical vp, vn, vdd, vss;
+    ground vss;
+
+    analog begin
+        V(vdd) <+ VDD_V;
+        V(vp)  <+ VCM_V + VAMP_V*sin(2.0*`M_PI*FIN_HZ*$abstime);
+        V(vn)  <+ VCM_V - VAMP_V*sin(2.0*`M_PI*FIN_HZ*$abstime);
+    end
+
+    // ── Clock divider: PCLK -> sar_clk ──────────────────────────────────────
+    reg [15:0] div_cnt;
+    reg        sar_clk;
+
+    always @(posedge clk or negedge rstn) begin
+        if (!rstn) begin
+            div_cnt <= 16'd0;
+            sar_clk <= 1'b0;
+        end else if (div_cnt == CLK_DIV-1) begin
+            div_cnt <= 16'd0;
+            sar_clk <= ~sar_clk;
+        end else begin
+            div_cnt <= div_cnt + 16'd1;
+        end
+    end
+
+    // ── The real SAR ADC ────────────────────────────────────────────────────
+    sar u_sar (
+        .vp     (vp),
+        .vn     (vn),
+        .clk    (sar_clk),
+        .en     (en),
+        .cal    (cal),
+        .rstn   (rstn),
+        .valid  (valid),
+        .result (result),
+        .vdd    (vdd),
+        .vss    (vss)
+    );
+
+endmodule

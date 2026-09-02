@@ -89,3 +89,9 @@ ASIC_ours/Cadence/reports
 
 # Maestro auto-generated
 stimuliRemovedNames.xml
+
+# Compiled firmware images.
+nanosoc/system/testcodes/**/*.hex
+nanosoc/system/testcodes/**/*.lst
+nanosoc/system/testcodes/**/*.bin
+nanosoc/system/testcodes/**/*.o

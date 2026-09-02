@@ -103,6 +103,19 @@ wire APBACTIVE;
   //-------------------------------------------
   // Instantiate your accelerator/wrapper here
   //-------------------------------------------
+  // APB bridge <-> wrapper nets (declared before first use - strict Verilog)
+  wire [SYS_DATA_W-1:0] PWDATA;
+  wire PWRITE;
+  wire [SYS_DATA_W-1:0] PRDATA;
+  wire [ACC_ADDR_W-1:0] PADDR;
+  wire PREADY;
+  wire PSEL;
+  wire PENABLE;
+  wire PSLVERR;
+  wire [3:0] PSTRB;
+  wire [2:0] PPROT;
+  wire APBACTIVE;
+
   cmsdk_ahb_to_apb  #(
   .ADDRWIDTH(SYS_ADDR_W),
   .REGISTER_RDATA(1),

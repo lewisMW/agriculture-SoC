@@ -252,6 +252,25 @@ module adc_apb_wrapper_rev2 #(
     // --------------------------------------------------------------------------
     // Submodule instances
     // --------------------------------------------------------------------------
+`ifdef SENSING_DEBUG
+    // Trace of the sampling path. Enable with EXTRA_DEFINES=+define+SENSING_DEBUG.
+    always @(posedge PCLK) if (PRESETn) begin
+        if (write_enable)
+            $display("[SENS %0t] APB WR  addr=0x%03h data=0x%08h", $time, PADDR, PWDATA);
+        if (read_enable && (PADDR == STATUS_REG_ADDR))
+            $display("[SENS %0t] APB RD  status=0x%08h (fifo=%0d adc=%0d) cnt=%0d",
+                     $time, status_reg, status_reg[1:0], status_reg[3:2], u_fifo.count);
+        if (rtc_trig)
+            $display("[SENS %0t] rtc_trig      poll_en=%b cnt=%0d", $time, poll_enable_reg, u_fifo.count);
+        if (manual_trig)
+            $display("[SENS %0t] manual_trig   cnt=%0d", $time, u_fifo.count);
+        if (fifo_clear)
+            $display("[SENS %0t] fifo_clear    (cnt was %0d)", $time, u_fifo.count);
+        if (fifo_write_en)
+            $display("[SENS %0t] fifo_push     data=0x%02h cnt=%0d full=%b", $time, adc_sample, u_fifo.count, fifo_full);
+    end
+`endif
+
     fifo_apb_adc #(
         .DATA_WIDTH(SAMPLE_WIDTH),
         .DEPTH(16)
@@ -270,6 +289,24 @@ module adc_apb_wrapper_rev2 #(
     // NOTE: the real SAR ADC needs its own ~100 kHz clock (from the PLL / a
     // divider). Here the dummy shares PCLK; the adc_valid synchroniser above
     // makes swapping in the slow-clock block safe.
+    //
+    // With SAR_AMS defined (AMS flow, xrun -ams) the behavioural Verilog-AMS
+    // SAR is instantiated instead of the dummy; sar_ams_shim owns the analog
+    // supplies, the differential input and the ADC clock divider.
+`ifdef SAR_AMS
+    sar_ams_shim #(
+        .RESULT_WIDTH(SAMPLE_WIDTH),
+        .CLK_DIV(4)
+    ) u_adc (
+        .clk       (PCLK),
+        .rstn      (PRESETn),
+        .en        (adc_en),
+        .cal       (cal_reg),
+        .ANALOG_IN (analog_passthrough),
+        .valid     (adc_raw_valid),
+        .result    (adc_result)
+    );
+`else
     dummy_adc #(
         .RESULT_WIDTH(SAMPLE_WIDTH),
         .CONV_CYCLES(8),
@@ -283,6 +320,7 @@ module adc_apb_wrapper_rev2 #(
         .valid     (adc_raw_valid),
         .result    (adc_result)
     );
+`endif
 
     dummy_amux u_amux (
         .INPUT_SEL          (amux_reg[1:0]),
