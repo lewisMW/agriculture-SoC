@@ -47,9 +47,8 @@ module synopsys_PD_sensor_integration(
 //  PD Clock divider signals
 wire pd_enable;
 wire [7:0] pd_clock_div;
-reg [7:0]  pd_clock_counter;
 wire pd_clkg;
-reg  pd_slow_clock;
+wire pd_slow_clock;
 
 
 // PD Signals
@@ -169,7 +168,7 @@ always @(posedge PCLK or negedge PRESETn) begin
     end
 end
 
-always @(reg_read_en or reg_addr or data0 or pd_data or data2) begin
+always @(reg_read_en or reg_addr or data0 or pd_data or data2 or pd_ready_reg or pd_faultn or data2_write_ack or data0_write_ack) begin
     case(reg_read_en)
         1'b1: begin
             case(reg_addr[3:2])
@@ -189,23 +188,14 @@ end
 assign pd_enable = data0[1];
 assign pd_clock_div = data0[15:8];
 
-
-
-
 // PD Clock generation
 assign pd_clkg = PCLK & pd_enable;
-always @(posedge pd_clkg or negedge PRESETn) begin
-    if(~PRESETn) begin
-        pd_clock_counter <= 8'h00;
-        pd_slow_clock <= 1'b0;
-    end else begin
-        pd_clock_counter <= pd_clock_counter + 1;
-        if(pd_clock_counter == pd_clock_div) begin
-            pd_clock_counter <= 8'h00;
-            pd_slow_clock <= ~pd_slow_clock;
-        end
-    end
-end
+pvt_clk_div u_pd_clk_div(
+    .clk_i(pd_clkg),
+    .resetn(PRESETn),
+    .clk_div(pd_clock_div),
+    .clk_o(pd_slow_clock)
+);
 
 // CDC for APB write of registers 0 and 2
 always @(posedge pd_slow_clock or negedge PRESETn) begin

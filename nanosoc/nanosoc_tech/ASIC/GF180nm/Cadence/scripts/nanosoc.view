@@ -1,0 +1,48 @@
+# Version:1.0 MMMC View Definition File
+
+set gf180mcu_pdk_dir /home/dwn1c21/SoC-Labs/phys_ip/gf180mcuC
+
+create_rc_corner -name typical -T {25} -preRoute_res {1.0} -preRoute_cap {1.0} -preRoute_clkres {0.0} -preRoute_clkcap {0.0} -postRoute_res {1.0} -postRoute_cap {1.0} -postRoute_xcap {1.0} -postRoute_clkres {0.0} -postRoute_clkcap {0.0}
+create_rc_corner -name fast -T {-40} -preRoute_res {1.0} -preRoute_cap {1.0} -preRoute_clkres {0.0} -preRoute_clkcap {0.0} -postRoute_res {1.0} -postRoute_cap {1.0} -postRoute_xcap {1.0} -postRoute_clkres {0.0} -postRoute_clkcap {0.0}
+create_rc_corner -name slow -T {125} -preRoute_res {1.0} -preRoute_cap {1.0} -preRoute_clkres {0.0} -preRoute_clkcap {0.0} -postRoute_res {1.0} -postRoute_cap {1.0} -postRoute_xcap {1.0} -postRoute_clkres {0.0} -postRoute_clkcap {0.0}
+create_op_cond -name typical \
+    -library_file [list ${gf180mcu_pdk_dir}/libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__tt_025C_3v30.lib] \
+    -P {1} -V {3.3} -T {25}
+create_op_cond -name fast \
+    -library_file [list ${gf180mcu_pdk_dir}/libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__ff_n40C_3v60.lib] \
+    -P {1} -V {3.6} -T {-40}
+create_op_cond -name slow \
+    -library_file [list ${gf180mcu_pdk_dir}/libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__ss_125C_3v00.lib] \
+    -P {1} -V {3.0} -T {125}
+
+
+create_library_set -name typical \
+    -timing [list ${gf180mcu_pdk_dir}/libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__tt_025C_3v30.lib \
+    ${gf180mcu_pdk_dir}/libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__tt_025C_3v30.lib \
+    ${gf180mcu_pdk_dir}/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__tt_025C_3v30.lib]
+create_library_set -name fast \
+    -timing [list ${gf180mcu_pdk_dir}/libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__ff_n40C_3v60.lib \
+    ${gf180mcu_pdk_dir}/libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ff_n40C_3v63.lib \
+    ${gf180mcu_pdk_dir}/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ff_n40C_3v60.lib]
+create_library_set -name slow \
+    -timing [list ${gf180mcu_pdk_dir}/libs.ref/gf180mcu_fd_sc_mcu9t5v0/lib/gf180mcu_fd_sc_mcu9t5v0__ss_125C_3v00.lib \
+    ${gf180mcu_pdk_dir}/libs.ref/gf180mcu_fd_io/lib/gf180mcu_fd_io__ss_125C_2v97.lib \
+    ${gf180mcu_pdk_dir}/libs.ref/gf180mcu_fd_ip_sram/lib/gf180mcu_fd_ip_sram__sram512x8m8wm1__ss_125C_3v00.lib]
+
+
+create_constraint_mode -name typical -sdc_files {../inputs/constraints.sdc}
+
+create_delay_corner -name typical -library_set {typical} -rc_corner {typical}
+create_delay_corner -name fast -library_set {fast} -rc_corner {fast}
+create_delay_corner -name slow -library_set {slow} -rc_corner {slow}
+create_delay_corner -name ocv_corner\
+   -early_library_set {fast}\
+   -late_library_set {slow}\
+   -rc_corner typical
+
+create_analysis_view -name typical_view -constraint_mode typical -delay_corner typical
+create_analysis_view -name slow_view -constraint_mode typical -delay_corner slow
+create_analysis_view -name fast_view -constraint_mode typical -delay_corner fast
+create_analysis_view -name ocv_view -constraint_mode typical -delay_corner ocv_corner
+
+set_analysis_view -setup typical_view -hold typical_view
