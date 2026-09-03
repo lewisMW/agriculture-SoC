@@ -5,14 +5,14 @@ set sky130_open_dir    /opt/pdk/sky130A
 set sky130_digital_dir ${sky130_open_dir}/libs.ref/sky130_fd_sc_hd
 
 set io_dir      ${sky130_open_dir}/libs.ref/sky130_fd_io
-set sram_dir    /home/daniel/precompiled_mems/SKY130
+set sram_dir    /opt/pdk/sram_macros
 set sc_dir      ${sky130_digital_dir}
 
 set io_lib_dir ${io_dir}/lib
 set sc_lib_dir ${sc_dir}/lib
 set sram_8k_lib_dir  ${sram_dir}/sky130_sram_8kbyte_1rw_32x2048_8
 
-set lib_search_path_list "$io_lib_dir /home/daniel/sky130_open_source $sram_8k_lib_dir"
+set lib_search_path_list "$io_lib_dir $sc_lib_dir $sram_8k_lib_dir"
 
 set BASE_LIB sky130_fd_sc_hd__ss_100C_1v60.lib
 set SRAM_LIB sky130_sram_8kbyte_1rw_32x2048_8_SS_1p8V_25C.lib
