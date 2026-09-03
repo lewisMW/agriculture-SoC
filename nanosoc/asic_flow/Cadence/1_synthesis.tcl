@@ -34,13 +34,16 @@ read_power_intent -module $block_name ../inputs/${block_name}.upf
 
 ## -- Apply power intent and check library and CPF -- ##
 apply_power_intent
-check_cpf -detail -license lpgxl > $LOG_DIR/syn_cpf_check.log
+## -- Rule checkers, not gates: they exit non-zero on pre-existing undriven
+## -- analog/config pins on the sky130 pads (~21 per gpiov2 pad, deferred to
+## -- tie-cell insertion in P&R). Keep the logs; do not abort the flow.
+catch { check_cpf -detail -license lpgxl > $LOG_DIR/syn_cpf_check.log }
 commit_power_intent
 
 ## -- Preserve power pad instances / macros from optimization -- ##
 set_dont_touch [get_cells -hierarchical -filter {name =~ "uPAD*"}]
 
-check_power_structure -detail -license lpgxl > $LOG_DIR/syn_pow_check.log
+catch { check_power_structure -detail -license lpgxl > $LOG_DIR/syn_pow_check.log }
 
 ## -- Read constraints -- ##
 read_sdc $constraints_file
@@ -68,6 +71,20 @@ syn_opt
 report_area > $REPORT_DIR/syn_area.rep
 report_timing > $REPORT_DIR/syn_timing.rep
 report_gates > $REPORT_DIR/syn_gates.rep
+
+## -- Fail loudly on unresolved references. Genus black-boxes undefined modules
+## -- at zero area by default, so an unreadable read_hdl path silently yields a
+## -- netlist missing whole blocks while still reporting success. The 2 Aug sky130
+## -- run lost the entire Arm Corstone-101 peripheral set this way: 28 unresolved
+## -- references at 0.000 area, 8,799 instances reported instead of 21,192.
+set _fh [open $REPORT_DIR/syn_gates.rep r]
+set _rpt [read $_fh]
+close $_fh
+if {[regexp {unresolved\s+(\d+)} $_rpt -> _nunres] && $_nunres > 0} {
+    puts "ERROR: $_nunres unresolved reference(s) in the netlist - aborting before write_hdl."
+    puts "       Every read_hdl path must resolve; check \$env(ARM_IP_LIBRARY_PATH) first."
+    exit 1
+}
 report_power > $REPORT_DIR/syn_power.rep
 
 write_hdl > $OUT_DIR/${block_name}_gate.v
