@@ -5,13 +5,16 @@ export LANG=en_US
 unset CDSHOME
 unset AMSHOME
 unset SPECTREHOME
+unset PEGASUSHOME
 
 # ==============================================================
 # MODIFY. Put in the correct path names to the software installs.
 # ==============================================================
 export CDSHOME=/opt/cadence/installs/IC231  # latest ISR release specified in document
-export AMSHOME=/opt/cadence/installs/XCELIUM2309
+export AMSHOME=/opt/cadence/installs/XCELIUM2409
 export SPECTREHOME=/opt/cadence/installs/SPECTRE231
+# export ASSURAHOME=/opt/cadence/installs/ASSURA41
+export PEGASUSHOME=/opt/cadence/installs/PEGASUS241
 
 export LD_LIBRARY_PATH=${CDSHOME}/tools/lib:${SPECTREHOME}/tools.lnx86/lib:${AMSHOME}/tools/lib:${AMSHOME}/tools/affirma_ams/lib
 
@@ -19,6 +22,10 @@ export LD_LIBRARY_PATH=${CDSHOME}/tools/lib:${SPECTREHOME}/tools.lnx86/lib:${AMS
 export PATH=$PATH:${AMSHOME}/tools/dfII/bin:${AMSHOME}/tools/bin
 export PATH=$PATH:${CDSHOME}/tools/dfII/bin:${CDSHOME}/tools/bin
 export PATH=$PATH:${SPECTREHOME}/tools.lnx86/dfII/bin:${SPECTREHOME}/bin
+# export PATH=$PATH:${ASSURAHOME}/tools/dfII/bin:${ASSURAHOME}/tools/bin
+export PATH=$PATH:${PEGASUSHOME}/bin:${PEGASUSHOME}/tools/bin
 
 # Technology path
-export SKY130=~/cadence/lib/sky130_release_0.1.0/
+export SKY130=/opt/pdk/sky130_release_0.1.0/
+
+export PEGASUS_DRC=${SKY130}/Sky130_DRC

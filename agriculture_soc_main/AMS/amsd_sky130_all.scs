@@ -1,0 +1,56 @@
+// AMS control file: bind EVERY analog cell of the SAR to sky130 device-level
+// views - sampling switch, capacitor array, bit drivers AND comparator.
+// Supersedes amsd_sky130_full.scs (which stops short of the comparator).
+//
+// After this only sarlogic and sr_latch remain non-analog, and those are
+// genuinely digital - so this is the complete analog path at device level.
+//
+// Must be passed to xrun as a SOURCE FILE, not via -analogcontrol:
+//
+//   make ... SAR_AMS_INCLUDE=yes \
+//            XRUN_EXTRA_SRC=$(ACCELERATOR_DIR)/AMS/amsd_sky130_all.scs \
+//            AMS_ACF=$(ACCELERATOR_DIR)/AMS/acf_sky130.scs
+//
+// NEW vs the switch/CDAC-only configs: the behavioural comparator declares
+// clk/trima/trimb as `logic` and outp/outn as `reg`, i.e. DIGITAL, whereas the
+// sky130 Comparator is all-analog. So this configuration introduces the
+// design's first ANALOG->DIGITAL crossings (outp/outn feeding the SR latch),
+// on top of the digital->analog ones. Expect a non-zero "Number of A-to-D
+// events" in the log - previous runs were always 0.
+//
+// VERIFY in the Spectre "Circuit inventory": bsim4 count should jump by 22
+// (11 comparator FETs + 5 per Trim x 2) and worklib__comparator__vams__* must
+// be GONE. A passing test alone proves nothing.
+
+simulator lang=spectre
+
+// ---- sky130 models ---------------------------------------------------------
+simulator lang=spice
+.include "$SKY130/models/corners/tt.spice"
+.include "$SKY130/models/r+c/res_typical__cap_typical.spice"
+.include "$SKY130/models/r+c/res_typical__cap_typical__lin.spice"
+simulator lang=spectre
+
+// ---- device-level cells (Cadence-generated, SPECTRE syntax) ----------------
+include "$ACCELERATOR_DIR/AMS/spice/sky130_cells.scs"
+
+amsd {
+    // Each portmap applies to the config that FOLLOWS it - they are pairs.
+
+    config cell=inverter use=spice
+
+    // carray_8b (was cap_array_8b). AMSD requires the config cell name to
+    // match the subckt name - portmap orders ports, it does not rename - so
+    // the subckt in sky130_cells.scs was renamed by hand to carray_8b. That
+    // is the name a regeneration from sar_adc/carray_8b will produce anyway.
+    portmap subckt=carray_8b porttype=name
+    config cell=carray_8b use=spice
+
+    portmap subckt=switch_adc porttype=name
+    config cell=switch_adc use=spice
+
+    // comparator is an alias wrapper around the sky130 `Comparator` (whose
+    // ports differ only by case). Bind by name - the orders differ.
+    portmap subckt=comparator porttype=name
+    config cell=comparator use=spice
+}

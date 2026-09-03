@@ -1,0 +1,62 @@
+//Verilog-AMS HDL for "adc_top_lib", "cdac_8b" "verilogams"
+// ------------------------------------------------------------
+// Module: carray_8b
+// Description:
+//   8-bit binary-weighted capacitive DAC for SAR ADC.
+//   Bottom plates are driven by digital control signals.
+//   Top plate node: comparator input.
+//
+// Function:
+//   Implements charge redistribution DAC.
+//
+// Assumptions:
+//   - Ideal capacitors (no parasitics)
+//   - No mismatch
+//   - No charge injection modeled here
+//
+// Author: Hee
+// Date: 2026-02
+// ------------------------------------------------------------
+
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module cdac_8b (vin, vout, sample, ctl, ctl_dum, vdd, vss );
+	input vin; // analog input signal
+	input ctl_dum, sample;
+	input [7:0] ctl; // control bus coming form SAR FSM
+	inout vout, vdd, vss;
+	logic sample, ctl_dum;
+	logic [7:0] ctl;
+	electrical vin, vout, vdd, vss;
+
+	wire n_dum; 
+	wire [7:0] n;
+
+	parameter real cu=1f from (0:inf);
+
+	// ----------------------------------------------------------------
+	// Connects input to capacitors top plate
+	// ----------------------------------------------------------------
+	switch_adc sw (.p(vin), .n(vout), .ctrl(sample), .vdd(vdd), .vss(vss));
+
+	// ----------------------------------------------------------------
+	// Capacitor array between comparator input and inverter
+	// ----------------------------------------------------------------
+	carray_8b #(.cu(cu)) c_array (.vtop(vout), .vbottom(n), .vbottom_dum(n_dum));
+
+	// ----------------------------------------------------------------
+	// inverters between control lines and capacitors bottom plate
+	// ----------------------------------------------------------------
+	inverter invp_dum (.OUT(n_dum), .IN(ctl_dum), .VDD(vdd), .GND(vss));
+	inverter inv1 (.OUT(n[0]), .IN(ctl[0]), .VDD(vdd), .GND(vss));
+	inverter inv2 (.OUT(n[1]), .IN(ctl[1]), .VDD(vdd), .GND(vss));
+	inverter inv3 (.OUT(n[2]), .IN(ctl[2]), .VDD(vdd), .GND(vss));
+	inverter inv4 (.OUT(n[3]), .IN(ctl[3]), .VDD(vdd), .GND(vss));
+	inverter inv5 (.OUT(n[4]), .IN(ctl[4]), .VDD(vdd), .GND(vss));
+	inverter inv6 (.OUT(n[5]), .IN(ctl[5]), .VDD(vdd), .GND(vss));
+	inverter inv7 (.OUT(n[6]), .IN(ctl[6]), .VDD(vdd), .GND(vss));
+	inverter inv8 (.OUT(n[7]), .IN(ctl[7]), .VDD(vdd), .GND(vss));	
+
+endmodule

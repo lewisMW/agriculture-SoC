@@ -1,0 +1,24 @@
+                     *****************************************************
+                     **                                                 **
+                     **                L V S  R E P O R T               **
+                     **                                                 **
+                     *****************************************************
+
+
+Report File Name         : /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/LVS/inverter.rep
+ERC Summary File         : /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/LVS/inverter.sum
+LVS Comparison Report    : /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/LVS/inverter.rep.cls
+Layout Name              : /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/LVS/inverter.gds.gz ("inverter")
+User Name                : hee
+Creation Time            : Fri Jul 31 20:31:47 2026
+Current directory        : /home/hee/projects/agriculture-SoC/analog/cadence/pegasus_runs/Inverter/LVS
+Pegasus version          : 24.11-s021
+
+
+                     *****************************************************
+                     **                                                 **
+                     **            D E V E X T  R E P O R T             **
+                     **                                                 **
+                     *****************************************************
+
+

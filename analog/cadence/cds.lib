@@ -11,3 +11,4 @@ DEFINE adc_tb_lib ./notech/SoC/adc_tb_lib
 
 INCLUDE $SKY130/cds.lib
 DEFINE sky130_analog_lib ./sky130/SoC/sky130_analog_lib
+DEFINE sar_adc ./sar_adc

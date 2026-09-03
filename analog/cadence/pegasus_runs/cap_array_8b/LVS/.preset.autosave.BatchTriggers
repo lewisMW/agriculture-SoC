@@ -1,0 +1,10 @@
+# This Pegasus GUI file with batch triggers settings is created automatically to be used in internal flow.
+# Do not edit it unless you 100% sure what you do!
+
+# Pegasus Version 24.12-s023
+#ProjectDir "/root/agriculture-SoC/analog/cadence"
+
+[ virtuoso6.BatchTriggers.RunLVS ]
+BatchPostTrigger ""
+BatchPreTrigger  ""
+EnableTriggers   "FALSE"

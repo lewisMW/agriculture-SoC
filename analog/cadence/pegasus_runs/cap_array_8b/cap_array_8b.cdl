@@ -1,0 +1,43 @@
+*******************************************************************
+* CDL Produced by pegasusBuildNetlist on Fri Jul 31 09:50:13 2026 *
+*******************************************************************
+
+
+
+* File content...
+
+
+***********************************************************
+* CDL produced by pvsBuildNetlist on Jul 31 09:50:13 2026 *
+***********************************************************
+
+
+*pvsViewList = auLvs schematic
+*pvsStopList = ("auLvs")
+*pvsSimName  = auLvs
+
+
+
+*.EXPAND_ON_M_FACTOR
+*.MEGA
+
+
+
+.subckt cap_array_8b vbottom<0> vbottom<1> vbottom<2> vbottom<3> vbottom<4>
++  vbottom<5> vbottom<6> vbottom<7> vbottom_dum vtop
+*PVSCELL netlisted from sky130_analog_lib cap_array_8b schematic
+  CC0 vtop vbottom<0> cap_mim_m3__base l=4u w=4u m=1
+  CC1 vtop vbottom<1> cap_mim_m3__base l=4u w=4u m=2
+  CC2 vtop vbottom<2> cap_mim_m3__base l=4u w=4u m=4
+  CC3 vtop vbottom<3> cap_mim_m3__base l=4u w=4u m=8
+  CC4 vtop vbottom<4> cap_mim_m3__base l=4u w=4u m=16
+  CC5 vtop vbottom<5> cap_mim_m3__base l=4u w=4u m=32
+  CC6 vtop vbottom<6> cap_mim_m3__base l=4u w=4u m=64
+  CC7 vtop vbottom<7> cap_mim_m3__base l=4u w=4u m=128
+  CC8 vtop vbottom_dum cap_mim_m3__base l=4u w=4u m=1
+.ends cap_array_8b
+
+
+***********************************************************
+*             Completed at Jul 31 09:50:13 2026           *
+***********************************************************

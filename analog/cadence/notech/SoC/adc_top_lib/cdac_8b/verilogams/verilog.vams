@@ -39,24 +39,25 @@ module cdac_8b (vin, vout, sample, ctl, ctl_dum, vdd, vss );
 	// ----------------------------------------------------------------
 	// Connects input to capacitors top plate
 	// ----------------------------------------------------------------
-	switch_adc sw (.p(vin), .n(vout), .ctrl(sample));
+	switch_adc sw (.p(vin), .n(vout), .ctrl(sample), .vdd(vdd), .vss(vss));
 
 	// ----------------------------------------------------------------
 	// Capacitor array between comparator input and inverter
 	// ----------------------------------------------------------------
-	cap_array_8b #(.cu(cu)) c_array (.vtop(vout), .vbottom(n), .vbottom_dum(n_dum));
+	cap_array_8b
+ #(.cu(cu)) c_array (.vtop(vout), .vbottom(n), .vbottom_dum(n_dum));
 
 	// ----------------------------------------------------------------
 	// inverters between control lines and capacitors bottom plate
 	// ----------------------------------------------------------------
-	inverter invp_dum (.out(n_dum), .in(ctl_dum), .vdd(vdd), .vss(vss));
-	inverter inv1 (.out(n[0]), .in(ctl[0]), .vdd(vdd), .vss(vss));
-	inverter inv2 (.out(n[1]), .in(ctl[1]), .vdd(vdd), .vss(vss));
-	inverter inv3 (.out(n[2]), .in(ctl[2]), .vdd(vdd), .vss(vss));
-	inverter inv4 (.out(n[3]), .in(ctl[3]), .vdd(vdd), .vss(vss));
-	inverter inv5 (.out(n[4]), .in(ctl[4]), .vdd(vdd), .vss(vss));
-	inverter inv6 (.out(n[5]), .in(ctl[5]), .vdd(vdd), .vss(vss));
-	inverter inv7 (.out(n[6]), .in(ctl[6]), .vdd(vdd), .vss(vss));
-	inverter inv8 (.out(n[7]), .in(ctl[7]), .vdd(vdd), .vss(vss));	
+	inverter invp_dum (.OUT(n_dum), .IN(ctl_dum), .VDD(vdd), .GND(vss));
+	inverter inv1 (.OUT(n[0]), .IN(ctl[0]), .VDD(vdd), .GND(vss));
+	inverter inv2 (.OUT(n[1]), .IN(ctl[1]), .VDD(vdd), .GND(vss));
+	inverter inv3 (.OUT(n[2]), .IN(ctl[2]), .VDD(vdd), .GND(vss));
+	inverter inv4 (.OUT(n[3]), .IN(ctl[3]), .VDD(vdd), .GND(vss));
+	inverter inv5 (.OUT(n[4]), .IN(ctl[4]), .VDD(vdd), .GND(vss));
+	inverter inv6 (.OUT(n[5]), .IN(ctl[5]), .VDD(vdd), .GND(vss));
+	inverter inv7 (.OUT(n[6]), .IN(ctl[6]), .VDD(vdd), .GND(vss));
+	inverter inv8 (.OUT(n[7]), .IN(ctl[7]), .VDD(vdd), .GND(vss));	
 
 endmodule

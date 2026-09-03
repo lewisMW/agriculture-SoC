@@ -38,6 +38,6 @@
 // -f $(SOCLABS_WRAPPER_TECH_DIR)/flist/accelerator_wrapper_ip.flist
 
 // - Bootrom Code RTL
-$(SOCLABS_PROJECT_DIR)/system/src/bootrom/verilog/bootrom.v
+$(SOCLABS_PROJECT_DIR)/system/src/bootrom/verilog/bootrom.sv
 
 

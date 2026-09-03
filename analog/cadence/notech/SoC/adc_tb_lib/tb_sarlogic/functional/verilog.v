@@ -1,4 +1,4 @@
-//Verilog HDL for "adc_tb_lib", "tb_sarlogic" "functional"
+//Verilog HDL for "sar_adc", "tb_sarlogic" "functional"
 
 `timescale 1ns/1ps
 
