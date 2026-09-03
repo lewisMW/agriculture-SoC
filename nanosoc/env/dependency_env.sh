@@ -16,7 +16,7 @@
 
 # Default Arm IP location; a pre-set ARM_IP_LIBRARY_PATH wins (e.g. /opt/arm
 # on the Cadence machine).
-export ARM_IP_LIBRARY_PATH="${ARM_IP_LIBRARY_PATH:-/Users/lewismw/Documents/SoCs}"
+export ARM_IP_LIBRARY_PATH="${ARM_IP_LIBRARY_PATH:-/opt/arm}"
 # MAKE SURE to not have a forward slash or space at the end of the above line!!!
 
 # Accelerator Engine -- Add Your Accelerator Environment Variable HERE!

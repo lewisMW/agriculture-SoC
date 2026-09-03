@@ -25,6 +25,12 @@ route_design -global_detail
 
 report_intermediate_step 04_route $REPORT_DIR
 
+## -- Setup repair BEFORE hold. Without it, hold optimisation is free to load
+## -- setup-critical paths with delay buffers unopposed: measured -10.1 -> -52.9 ns
+## -- WNS, +21.6k cells and 237k DRCs on the sky130 flow.
+opt_design -post_route
+report_intermediate_step 04b_route_setupopt $REPORT_DIR
+
 opt_design -post_route -hold
 
 report_end_step 05_route_opt $REPORT_DIR
@@ -32,7 +38,12 @@ report_end_step 05_route_opt $REPORT_DIR
 write_db $block_name
 
 source ../scripts/filler.tcl
-source ../scripts/place_bondpads.tcl
+## -- Not every technology ships a place_bondpads.tcl (sky130 does not).
+if {[file exists ../scripts/place_bondpads.tcl]} {
+    source ../scripts/place_bondpads.tcl
+} else {
+    puts "NOTE: no ../scripts/place_bondpads.tcl for this technology - skipping."
+}
 
 
 exit
