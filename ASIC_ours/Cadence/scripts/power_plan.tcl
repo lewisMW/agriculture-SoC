@@ -1,7 +1,16 @@
 ### Connecting Global Nets
-connect_global_net VDD -type pg_pin -pin_base_name VDD -inst_base_name * 
+# No cell in this design has a pin named VDD or VSS. The sky130 standard cells use
+# VPWR/VGND plus VPB/VNB (n-well / p-substrate bias) and the OpenRAM macro uses
+# vccd1/vssd1. Connecting by the names VDD/VSS matched nothing and Innovus said so
+# (IMPDB-1221, twice). Names below match the gate netlist: .VPWR(VDD) .VPB(VDD)
+# .VGND(VSS) .VNB(VSS) .vccd1(VDD) .vssd1(VSS). VDDIO/VSSIO already matched the pads.
+connect_global_net VDD -type pg_pin -pin_base_name VPWR  -inst_base_name *
+connect_global_net VDD -type pg_pin -pin_base_name VPB   -inst_base_name *
+connect_global_net VSS -type pg_pin -pin_base_name VGND  -inst_base_name *
+connect_global_net VSS -type pg_pin -pin_base_name VNB   -inst_base_name *
+connect_global_net VDD -type pg_pin -pin_base_name vccd1 -inst_base_name *
+connect_global_net VSS -type pg_pin -pin_base_name vssd1 -inst_base_name *
 connect_global_net VDDIO -type pg_pin -pin_base_name VDDIO -inst_base_name * 
-connect_global_net VSS -type pg_pin -pin_base_name VSS -inst_base_name * 
 connect_global_net VSSIO -type pg_pin -pin_base_name VSSIO -inst_base_name * 
 
 
