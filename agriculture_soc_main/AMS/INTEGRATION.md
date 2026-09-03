@@ -6,11 +6,17 @@ behavioural cell from `analog/cadence/sar_adc` (Hee's clean-up), with the
 integration fixes ported into that library's views (commit "sar_adc: port the
 AMS-integration fixes", cherry-pickable onto `analog-sky130-clean-up`). Renames
 to know: `cap_array_8b` → `carray_8b`, `capacitor_adc` → `mim_cap_adc`. The
-committed `spice/sky130_cells.scs` still uses subckt `cap_array_8b`;
-`amsd_sky130_all.scs` binds `carray_8b` to it by name until the netlists are
-regenerated from `sar_adc` (update `netlist_sky130.il` to `doNL("sar_adc" ...)`
-for `inverter`/`carray_8b` when doing so). The per-branch notes below predate
-this and refer to the old `notech`/`sky130_analog_lib` paths.
+subckt in `spice/sky130_cells.scs` was renamed to `carray_8b` by hand (AMSD
+needs `config cell=` to match the subckt name; `portmap` does not rename);
+regenerating from `sar_adc/carray_8b` produces the same name (update
+`netlist_sky130.il` to `doNL("sar_adc" ...)` for `inverter`/`carray_8b`).
+Verified 3 Sep: all four demo Acts bit-identical to the 4 Aug baseline.
+Gotchas found on the way: `xrun -ams` cannot parse SystemVerilog (`-ams` and
+`-sv` are mutually exclusive), so the generated `bootrom.sv` must stay
+Verilog-2001; and non-interactive shells on the Cadence box need
+`LANG=en_US.UTF-8` or `filelist_compile.py` dies on the `©` in flist headers.
+The per-branch notes below predate this and refer to the old
+`notech`/`sky130_analog_lib` paths.
 
 Branch fix-ups:
 

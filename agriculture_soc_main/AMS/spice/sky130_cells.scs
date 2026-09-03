@@ -17,7 +17,7 @@
 
 // ---- cap_array_8b (schematic says m=128 on the MSB; Hee 2026-08-04 LAYOUT
 // ----   CDL has only 127 unit caps on bit 7 - schematic/layout disagree)
-subckt cap_array_8b vbottom\<7\> vbottom\<6\> vbottom\<5\> vbottom\<4\> \
+subckt carray_8b vbottom\<7\> vbottom\<6\> vbottom\<5\> vbottom\<4\> \
         vbottom\<3\> vbottom\<2\> vbottom\<1\> vbottom\<0\> vbottom_dum \
         vtop
     // OURS: `cu` exists only so this view accepts the same instantiation as the
@@ -34,7 +34,7 @@ subckt cap_array_8b vbottom\<7\> vbottom\<6\> vbottom\<5\> vbottom\<4\> \
     C2 (vtop vbottom\<2\>) cap_mim_m3_1 l=4u w=4u m=4
     C1 (vtop vbottom\<1\>) cap_mim_m3_1 l=4u w=4u m=2
     C0 (vtop vbottom\<0\>) cap_mim_m3_1 l=4u w=4u m=1
-ends cap_array_8b
+ends carray_8b
 
 // ---- inverter
 subckt inverter GND IN OUT VDD
