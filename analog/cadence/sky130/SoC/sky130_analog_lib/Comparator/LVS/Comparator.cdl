@@ -1,0 +1,53 @@
+*****************************************************************************
+* CDL Netlist:
+* Cell Name: Comparator
+* Netlisted on: Sep 12 15:12:09 2026
+*****************************************************************************
+
+*****************************************************************************
+* BIPOLAR Declarations
+*****************************************************************************
+*.BIPOLAR
+*.RESI = 2000.000000
+*.RESVAL
+*.CAPVAL
+*.DIOPERI
+*.DIOAREA
+*.SCALE METER
+
+
+*****************************************************************************
+* Parameter Statement
+*****************************************************************************
+.PARAM
+
+
+*******************************************************************************
+* Sub-Circuit Netlist:                                                        *
+*                                                                             *
+* Library: sky130_analog_lib                                                  *
+* Cell   : Trim                                                               *
+* View   : schematic                                                          *
+* Last Time Saved: Sep 12 15:00:14 2026                                       *
+*******************************************************************************
+.subckt Trim Vss d<4> d<3> d<2> d<1> d<0> drain
+*.PININFO Vss:I d<4>:I d<3>:I d<2>:I d<1>:I d<0>:I drain:I 
+.ends Trim
+
+
+*******************************************************************************
+* Main Circuit Netlist:                                                       *
+*                                                                             *
+* Library: sky130_analog_lib                                                  *
+* Cell   : Comparator                                                         *
+* View   : schematic                                                          *
+* Last Time Saved: Aug  5 14:00:21 2026                                       *
+*******************************************************************************
+.subckt Comparator Out_N Out_P Clk Trima<4> Trima<3> Trima<2> Trima<1> Trima<0>
++Trimb<4> Trimb<3> Trimb<2> Trimb<1> Trimb<0> Vdd Vn Vp Vss
+*.PININFO Out_N:O Out_P:O Clk:I Trima<4>:I Trima<3>:I Trima<2>:I Trima<1>:I
+*.PININFO Trima<0>:I Trimb<4>:I Trimb<3>:I Trimb<2>:I Trimb<1>:I Trimb<0>:I
+*.PININFO Vdd:I Vn:I Vp:I Vss:I 
+XI1 Vss Trimb<4> Trimb<3> Trimb<2> Trimb<1> Trimb<0> net3 Trim
+XI0 Vss Trima<4> Trima<3> Trima<2> Trima<1> Trima<0> net2 Trim
+.ends Comparator

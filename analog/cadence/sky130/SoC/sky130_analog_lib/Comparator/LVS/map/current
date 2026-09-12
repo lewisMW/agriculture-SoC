@@ -1,0 +1,16 @@
+( ( nil
+  version "2.1"
+  mapType "incremental"
+  blockName "Comparator"
+  repList "cdl schematic cmos_sch gate_sch cmos.sch gate.sch symbol"
+  stopList "cdl"
+  hierDelim "."
+  netlistDir "/home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/"
+ )
+( model
+( "sky130_analog_lib/Trim/schematic" "Trim" )
+( "sky130_analog_lib/Comparator/schematic" "Comparator" )
+ )
+( "Comparator" "ihnl/cds1/map" )
+( "Trim" "ihnl/cds0/map" )
+ )

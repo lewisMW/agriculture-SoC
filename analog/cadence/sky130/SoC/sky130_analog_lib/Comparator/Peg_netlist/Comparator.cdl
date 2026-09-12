@@ -1,0 +1,64 @@
+*******************************************************************
+* CDL Produced by pegasusBuildNetlist on Sat Sep 12 16:11:47 2026 *
+*******************************************************************
+
+
+
+* File content...
+
+
+***********************************************************
+* CDL produced by pvsBuildNetlist on Sep 12 16:11:48 2026 *
+***********************************************************
+
+
+*pvsViewList = auLvs schematic
+*pvsStopList = ("auLvs")
+*pvsSimName  = auLvs
+
+
+
+*.EXPAND_ON_M_FACTOR
+*.MEGA
+
+
+
+.subckt Trim Vss d<0> d<1> d<2> d<3> d<4> drain
+*PVSCELL netlisted from sky130_analog_lib Trim schematic
+  CC0 drain net3 cap c=1.25f
+  CC1 drain net16 cap c=1.25f
+  CC2 drain net12 cap c=1.25f
+  CC3 drain net8 cap c=1.25f
+  CC4 drain net4 cap c=1.25f
+  MNM0 net8 d<3> Vss Vss nfet_01v8 m=1 l=300n w=1u
+  MNM1 net12 d<2> Vss Vss nfet_01v8 m=1 l=300n w=1u
+  MNM2 net4 d<4> Vss Vss nfet_01v8 m=1 l=300n w=1u
+  MNM3 net16 d<1> Vss Vss nfet_01v8 m=1 l=300n w=1u
+  MNM4 net3 d<0> Vss Vss nfet_01v8 m=1 l=300n w=1u
+.ends Trim
+
+
+.subckt Comparator Clk Out_N Out_P Trima<0> Trima<1> Trima<2> Trima<3> Trima<4>
++  Trimb<0> Trimb<1> Trimb<2> Trimb<3> Trimb<4> Vdd Vn Vp Vss
+*PVSCELL netlisted from sky130_analog_lib Comparator schematic
+  XI0 Trim $PINS Vss=Vss d<0>=Trima<0> d<1>=Trima<1> d<2>=Trima<2> d<3>=Trima<3>
++  d<4>=Trima<4> drain=net2
+  XI1 Trim $PINS Vss=Vss d<0>=Trimb<0> d<1>=Trimb<1> d<2>=Trimb<2> d<3>=Trimb<3>
++  d<4>=Trimb<4> drain=net3
+  MNM0 Out_P Out_N net3 Vss nfet_01v8 m=1 l=300n w=1u
+  MNM1 Out_N Out_P net2 Vss nfet_01v8 m=1 l=300n w=1u
+  MNM2 net2 Vn net25 Vss nfet_01v8 m=1 l=300n w=1u
+  MNM3 net3 Vp net25 Vss nfet_01v8 m=1 l=300n w=1u
+  MNM4 net25 Clk Vss Vss nfet_01v8 m=1 l=300n w=1u
+  MPM0 Out_N Clk Vdd Vdd pfet_01v8 m=1 l=300n w=1u
+  MPM2 Out_N Out_P Vdd Vdd pfet_01v8 m=1 l=300n w=1u
+  MPM3 Out_P Out_N Vdd Vdd pfet_01v8 m=1 l=300n w=1u
+  MPM4 Out_P Clk Vdd Vdd pfet_01v8 m=1 l=300n w=1u
+  MPM5 net3 Clk Vdd Vdd pfet_01v8 m=1 l=300n w=1u
+  MPM6 net2 Clk Vdd Vdd pfet_01v8 m=1 l=300n w=1u
+.ends Comparator
+
+
+***********************************************************
+*             Completed at Sep 12 16:11:48 2026           *
+***********************************************************
