@@ -5,14 +5,14 @@
 "Run Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC
 "Current Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence
 "Cadence Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence/.cadence/
-"Job Signature" internal none IPVS_1787982703_29719
+"Job Signature" internal none IPVS_1788160656_62360
 "Pegasus Job Mode" internal none drc
 "GUI Flow" internal none virtuoso6
 "GUI Preset" internal none /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC/.preset.autosave
 "Pegasus Version" internal none 23.26-s005
 "Binary Name" internal none pegasusgui
 "Pegasus Build Date" internal none "Thu Oct 17 16:37:42 PDT 2024"
-"Pegasus Job Time" internal none 1787982705
+"Pegasus Job Time" internal none 1788160658
 "DFII version" internal none IC23.1.0
 "Run Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC
 "Pegasus Job Mode" internal none drc
@@ -35,7 +35,7 @@
 "Enable Coloring" input none yes
 "Layout ReplaceBusBitChar" input none nil
 "Layout NoConvertHalfWidthPath" input none nil
-"Job Signature" internal none IPVS_1787982703_29719
+"Job Signature" internal none IPVS_1788160656_62360
 "Do not check rules files before run" internal none ENABLED
 "Control File" input text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC/pegasusdrcctl
 "Pegasus Job Log" log text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC/pegasusuidrc.log
@@ -49,7 +49,7 @@
 "Pegasus Version" internal none 23.26-s005
 "Binary Name" internal none pegasusvirt
 "Pegasus Build Date" internal none "Thu Oct 17 16:37:42 PDT 2024"
-"Pegasus Job Time" internal none 1787982706
+"Pegasus Job Time" internal none 1788160659
 "Pegasus Job Mode" internal none drc
 "Rule File" input text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC/.config.rul
 "Rule File" input text /home/admin/Documents/PDKs/sky130_release_0.1.0/Sky130_DRC/sky130_rev_0.0_2.12.drc.pvl
@@ -78,9 +78,9 @@
 "ASCII DRC Report Database" output rdb /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC/Comparator.drc_errors.ascii
 "Run Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC/
 "UI Data" internal none ENABLED
-"Pegasus Mode Info" internal none HLJDIKJBDOHPKAPOFJENCOOLHNIDNHKF
+"Pegasus Mode Info" internal none DNLKFFFLILHFMFFDOMMPLPLLLPKHKDFE
 "Report MaxResults" internal none 1000
 "Pegasus Version" internal none 23.26-s005
 "Binary Name" internal none Pegasus
 "Pegasus Build Date" internal none "Thu Oct 17 16:37:42 PDT 2024"
-"Pegasus Job Time" internal none 1787982710
+"Pegasus Job Time" internal none 1788160666

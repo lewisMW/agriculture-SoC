@@ -5,16 +5,15 @@
 "Run Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS
 "Current Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence
 "Cadence Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence/.cadence/
-"Job Signature" internal none IPVS_1787985000_29719
+"Job Signature" internal none IPVS_1789193756_7986
 "Pegasus Job Mode" internal none lvs
 "GUI Flow" internal none virtuoso6
 "GUI Preset" internal none /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/.preset.autosave
 "Pegasus Version" internal none 23.26-s005
 "Binary Name" internal none pegasusgui
 "Pegasus Build Date" internal none "Thu Oct 17 16:37:42 PDT 2024"
-"Pegasus Job Time" internal none 1787985002
+"Pegasus Job Time" internal none 1789193759
 "DFII version" internal none IC23.1.0
-"Rule File" input text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/.config.rul
 "Rule File" input text /home/admin/Documents/PDKs/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
 "Layout Scale" internal none 0.001
 "Layout TechLib" internal none sky130_fd_pr_main
@@ -32,30 +31,18 @@
 "Enable Coloring" input none yes
 "Layout ReplaceBusBitChar" input none nil
 "Layout NoConvertHalfWidthPath" input none nil
-"Schematic Library Name" internal none sky130_analog_lib
-"Schematic Cell Name" internal none Comparator
-"Schematic View Name" internal none schematic
 "Schematic Top Cell" internal none Comparator
-"Schematic Netlist" output text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.cdl
+"Schematic Netlist" input text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/Peg_netlist/Comparator.cdl
 "Extracted Spice File" output text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.spi
 "Do not check rules files before run" internal none ENABLED
 "Control File" input text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/pegasuslvsctl
-"CDL Out Stop List" internal text cdl
-"CDL Out View List" internal text cdl schematic cmos_sch gate_sch cmos.sch gate.sch symbol
-"CDL Out Display Pin Information" internal none ENABLED
 "Pegasus Job Log" log text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/pegasusuilvs.log
 "It is Pegasus flow" internal none ENABLED
 "Pegasus Log Dir" internal none LOGS
 "PIPO Setup File I" internal text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/pipo1.setup
 "PIPO Log I" log text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/PIPO1.LOG
 "PIPO Output I" internal text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/PIPO1.OUT
-"SI Setup File" internal text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/si.env
-"SI Log" log text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/SI.LOG
-"SI Output" log text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/SI.OUT
-"SI OSS Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/
-"Simulator Mode" internal none cdl
 "Input Layout" input none OA: sky130_analog_lib Comparator layout
-"Input Schematic" input none OA: sky130_analog_lib Comparator schematic
 "Output Layout Cellmap I" internal text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/lay_cellMap.txt
 "Binary Name" internal none pegasusvirt
 "Comparison Report" output cls /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.rep.cls
@@ -65,7 +52,7 @@
 "Extraction Result" internal none CLEAN
 "ERC Result" internal none EMPTY
 "UI Data" internal none ENABLED
-"Pegasus Mode Info" internal none HLJDIKJBDOHPKAPOJNNLOPCDBPFBGEDH
+"Pegasus Mode Info" internal none ACFBHODLFBIMBBAMDHCBJIOPPHIPIILF
 "Report MaxResults" internal none 1000
 "Binary Name" internal none Pegasus
 "Comparison Result" internal none MISMATCH
@@ -73,4 +60,4 @@
 "Pegasus Version" internal none 23.26-s005
 "Binary Name" internal none pegasusnvn
 "Pegasus Build Date" internal none "Thu Oct 17 16:37:42 PDT 2024"
-"Pegasus Job Time" internal none 1787985015
+"Pegasus Job Time" internal none 1789193768

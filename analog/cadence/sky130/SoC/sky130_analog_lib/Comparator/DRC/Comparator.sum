@@ -1,7 +1,7 @@
 ********************************************************************************
 *** Pegasus DRC SUMMARY
 ***
-Execute on Date/Time    : Sat Aug 29 15:51:50 2026
+Execute on Date/Time    : Mon Aug 31 17:17:46 2026
 Pegasus VERSION         : 23.26-s005 Thu Oct 17 16:37:42 PDT 2024
 Rule Deck Path          : /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/DRC/.config.rul
 Rule Deck Title         :
@@ -54,11 +54,11 @@ LAYER rpm .................................. Total Original Geometry:          0
 LAYER urpm ................................. Total Original Geometry:          0 (         0)
 LAYER npc .................................. Total Original Geometry:          7 (        53)
 LAYER licon ................................ Total Original Geometry:         72 (       230)
-LAYER li_dg ................................ Total Original Geometry:        131 (       316)
+LAYER li_dg ................................ Total Original Geometry:        135 (       320)
 LAYER mcon ................................. Total Original Geometry:         28 (       156)
-LAYER m1_dg ................................ Total Original Geometry:         62 (       215)
+LAYER m1_dg ................................ Total Original Geometry:         64 (       219)
 LAYER via1 ................................. Total Original Geometry:        284 (       429)
-LAYER m2_dg ................................ Total Original Geometry:         55 (       300)
+LAYER m2_dg ................................ Total Original Geometry:         52 (       297)
 LAYER via2 ................................. Total Original Geometry:          4 (         8)
 LAYER m3_dg ................................ Total Original Geometry:          2 (         4)
 LAYER via3 ................................. Total Original Geometry:          4 (         8)
@@ -182,7 +182,7 @@ RULECHECK CDR.li.3a .................................... Total Result          0
 RULECHECK CDR.li.3b .................................... Total Result          0 (         0)
 RULECHECK CDR.li.3c .................................... Total Result          0 (         0)
 RULECHECK CDR.li.5 ..................................... Total Result          0 (         0)
-RULECHECK CDR.li.6 ..................................... Total Result          2 (         2)
+RULECHECK CDR.li.6 ..................................... Total Result          0 (         0)
 RULECHECK CDR.li.7 ..................................... Total Result          0 (         0)
 RULECHECK CDR.licon.1 .................................. Total Result          0 (         0)
 RULECHECK CDR.licon.11a ................................ Total Result          0 (         0)
@@ -756,8 +756,8 @@ RULECHECK x.pwell ...................................... Total Result          0
 --------------------------------------------------------------------------------
 --- SUMMARY
 ---
-Total CPU Time                    : 3(s)
-Total Real Time                   : 4(s)
-Total Original Geometry           : 767 (2102)
+Total CPU Time                    : 4(s)
+Total Real Time                   : 5(s)
+Total Original Geometry           : 770 (2107)
 Total DRC RuleChecks              : 598
-Total DRC Results                 : 17 (17)
+Total DRC Results                 : 15 (15)

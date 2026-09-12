@@ -3,7 +3,7 @@
 #####                                       Pegasus LVS COMPARISON
 #####  
 #####  Version                       :   23.26-s005
-#####  NVN Run Start                 :   Sat Aug 29 16:30:15 2026
+#####  NVN Run Start                 :   Sat Sep 12 16:16:08 2026
 #####  ERC Summary File              :   Comparator.sum
 #####  Extraction Report File        :   Comparator.rep
 #####  Comparison Report File        :   Comparator.rep.cls
@@ -18,25 +18,24 @@
 #####                                :      @     @
 #####  
 #####  Run Summary                   :   [ERROR] Connectivity Mismatches
-#####                                :   [WARN]  Top Cell Has Extra Pins
+#####                                :   [ERROR] Parameter Mismatches
 #####                                :   [INFO]  ERC Results: Empty
 #####                                :   [INFO]  Extraction Clean
 #####  
 #####  Layout Design                 :   sky130_analog_lib Comparator layout
-#####  Schematic File                :   /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.cdl (cdl)
-#####  Rules File                    :   /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/.config.rul
-#####                                :   /home/admin/Documents/PDKs/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
+#####  Schematic File                :   /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/Peg_netlist/Comparator.cdl (cdl)
+#####  Rules File                    :   /home/admin/Documents/PDKs/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
 #####  Pin Swap File                 :   Comparator.rep.cps
 #####  
 #####  Extraction CPU Time           :   0h 0m 1s - (1s)
 #####  Extraction Exec Time          :   0h 0m 2s - (2s)
 #####  Extraction Peak Memory Usage  :   25.00MB
 #####  NVN CPU Time                  :   0h 0m 0s - (0s)                 
-#####  NVN Exec Time                 :   0h 0m 1s - (1s)                 
-#####  NVN Peak Memory Usage         :   254.01MB
+#####  NVN Exec Time                 :   0h 0m 0s - (0s)                 
+#####  NVN Peak Memory Usage         :   262.44MB
 #####  LVS Total CPU Time            :   0h 0m 1s - (1s)                 
-#####  LVS Total Exec Time           :   0h 0m 3s - (3s)                 
-#####  LVS Total Peak Memory Usage   :   254.01MB
+#####  LVS Total Exec Time           :   0h 0m 2s - (2s)                 
+#####  LVS Total Peak Memory Usage   :   262.44MB
 #####  
 ##############################################################################################################
 
@@ -59,7 +58,7 @@ Total                                        |         1
 
 Cell Statistic Detail                        | Count
 ---------------------------------------------+----------
-Cells with parameter mismatches              |         0
+Cells with parameter mismatches              |         1
 Cells with mismatched instance subtypes      |         0
 Cells that have been blackboxed              |         0
 
@@ -70,10 +69,10 @@ Cells that have been blackboxed              |         0
 #
 ##############################################################################################################
 
-              |    Initial Pins    |    Compare Pins     |              | 
-Cell          |   lay   :   sch    |   lay   :    sch    | Status       | Detail
---------------+---------+----------+---------+-----------+--------------+-------------------------------------
-Comparator    |      *0 :       17 |      *0 :        11 | mismatch     | fatal pin mismatches, extra pins
+               |     Initial Pins     |     Compare Pins     |              | 
+Cell           |   lay    :    sch    |   lay    :    sch    | Status       | Detail
+---------------+----------+-----------+----------+-----------+--------------+-----------
+Comparator     |       *0 :        17 |       *0 :        17 | mismatch     | 
 
 
 ##############################################################################################################
@@ -96,7 +95,7 @@ LVS Rules Given in the Rules File
     layout_path                             /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.gds.gz
     layout_format                           gdsii
     layout_primary                          TOPCELL
-    schematic_path                          /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.cdl
+    schematic_path                          /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/Peg_netlist/Comparator.cdl
     schematic_format                        cdl
     lvs_delete_cell_pin                     cap_vpp_02p4x04p6_m1m2_noshield b -source
     lvs_delete_cell_pin                     cap_vpp_02p7x06p1_m1m2m3m4_shieldl1_fingercap b -source
@@ -382,7 +381,7 @@ Effective LVS Rule Values
                               #          Comparator  <vs>  Comparator          #
                               #                                                #
                               #            CONNECTIVITY MISMATCHES             #
-                              #                   EXTRA PINS                   #
+                              #              PARAMETER MISMATCHES              #
                               #                                                #
                               ##################################################
 
@@ -391,216 +390,218 @@ Effective LVS Rule Values
 +=============================================================================================================
 
 
-                        |     Original      |      Reduced      |     Unmatched     
-Cell                    |   lay   :   sch   |   lay   :   sch   |   lay   :   sch
-------------------------+---------+---------+---------+---------+---------+---------
-(MP [4 pins], -)        |         :         |         :         |         :         
- (MP(PFET_01V8), -)     |      *6 :       0 |      *6 :       0 |      *6 :        0
-(MN [4 pins], -)        |         :         |         :         |         :         
- (MN(NFET_01V8), -)     |     *38 :       0 |     *15 :       0 |     *15 :        0
-(-, Trim [7 pins])      |         :         |         :         |         :         
- (-, Trim())            |      *0 :       2 |      *0 :       2 |      *0 :        2
-------------------------+---------+---------+---------+---------+---------+---------
-Total                   |      44 :       2 |      21 :       2 |      21 :        2
-========================+=========+=========+=========+=========+=========+=========
-Pins                    |         :         |      *0 :      11 |      *0 :       11
-Nets                    |         :         |     *32 :       2 |       0 :        0
-========================+=========+=========+=========+=========+=========+=========
+                    |     Original      |      Reduced      |     Unmatched     
+Cell                |   lay   :   sch   |   lay   :   sch   |   lay   :   sch
+--------------------+---------+---------+---------+---------+---------+---------
+MP [4 pins]         |         :         |         :         |         :         
+ MP(PFET_01V8)      |       6 :       6 |       6 :       6 |       0 :        0
+MN [4 pins]         |         :         |         :         |         :         
+ MN(NFET_01V8)      |     *38 :      15 |      15 :      15 |       0 :        0
+(-, C [2 pins])     |         :         |         :         |         :         
+ (-, C(CAP))        |      *0 :      10 |      *0 :      10 |      *0 :       10
+--------------------+---------+---------+---------+---------+---------+---------
+Total               |      44 :      31 |      21 :      31 |       0 :       10
+====================+=========+=========+=========+=========+=========+=========
+Pins                |         :         |      *0 :      17 |      *0 :        1
+Nets                |         :         |     *31 :      13 |      *2 :        0
+====================+=========+=========+=========+=========+=========+=========
 
 +===[Comparator]==============================================================================================
 |                                      DEVICES REMOVED DURING REDUCTION                                       
 +=============================================================================================================
 
 
-                        |     Parallel      |      Series       |     Deleted Nets     
-Cell                    |   lay   :   sch   |   lay   :   sch   |    lay    :   sch
-------------------------+---------+---------+---------+---------+-----------+----------
-(MN [4 pins], -)        |         :         |         :         |           :          
- (MN(NFET_01V8), -)     |      23 :       - |       - :       - |         0 :         0
-------------------------+---------+---------+---------+---------+-----------+----------
+                   |     Parallel      |      Series       |     Deleted Nets     
+Cell               |   lay   :   sch   |   lay   :   sch   |    lay    :   sch
+-------------------+---------+---------+---------+---------+-----------+----------
+MN [4 pins]        |         :         |         :         |           :          
+ MN(NFET_01V8)     |      23 :       - |       - :       - |         0 :         0
+-------------------+---------+---------+---------+---------+-----------+----------
 
 +===[Comparator]==============================================================================================
-|                                                 EXTRA PINS                                                  
+|                                              SHORTS AND OPENS                                               
 +=============================================================================================================
-
-Side     | Pins
----------+------------------------------
-Sch      | Out_N Out_P Clk Vdd Vn Vp
-
-
-+===[Comparator]==============================================================================================
-|                                               MISMATCHED NETS                                               
-+=============================================================================================================
-                                                               
-                                                               
-Layout Net: ** missing net **     | Schematic Pin: Vss
-==================================+======================(mn 1)
-                                                               
-                                                               
-Layout Net: ** missing net **     | Schematic Pin: Trimb<0>
-==================================+======================(mn 2)
-                                                               
-                                                               
-Layout Net: ** missing net **     | Schematic Pin: Trimb<1>
-==================================+======================(mn 3)
-                                                               
-                                                               
-Layout Net: ** missing net **     | Schematic Pin: Trimb<2>
-==================================+======================(mn 4)
-                                                               
-                                                               
-Layout Net: ** missing net **     | Schematic Pin: Trimb<3>
-==================================+======================(mn 5)
-                                                               
-                                                               
-Layout Net: ** missing net **     | Schematic Pin: Trimb<4>
-==================================+======================(mn 6)
-                                                               
-                                                               
-Layout Net: ** missing net **     | Schematic Pin: Trima<0>
-==================================+======================(mn 7)
-                                                               
-                                                               
-Layout Net: ** missing net **     | Schematic Pin: Trima<1>
-==================================+======================(mn 8)
-                                                               
-                                                               
-Layout Net: ** missing net **     | Schematic Pin: Trima<2>
-==================================+======================(mn 9)
-                                                               
-                                                               
-Layout Net: ** missing net **     | Schematic Pin: Trima<3>
-==================================+=====================(mn 10)
-                                                               
-                                                               
-Layout Net: ** missing net **     | Schematic Pin: Trima<4>
-==================================+=====================(mn 11)
+                                           
+                                           
+Layout Net: 9      | Schematic Pin: Vss
+===================+================(sao 1)
+Layout Net: 12     |         OPEN
+===================+=======================
 
 
 +===[Comparator]==============================================================================================
 |                                            MISMATCHED INSTANCES                                             
 +=============================================================================================================
-                                                                                        
-                                                                                        
-Layout Inst : ** missing inst **               | Schematic Inst : XI1
-Layout Model:                                  | Schematic Model: Trim
-===============================================+==================================(mi 1)
-                                                                                        
-                                                                                        
-Layout Inst : ** missing inst **               | Schematic Inst : XI0
-Layout Model:                                  | Schematic Model: Trim
-===============================================+==================================(mi 2)
-                                                                                        
-                                                                                        
-Layout Inst : X42/M0 @(7.395,5.865)            | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+==================================(mi 3)
-                                                                                        
-                                                                                        
-Layout Inst : X43/M0 @(8.505,5.865)            | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+==================================(mi 4)
-                                                                                        
-                                                                                        
-Layout Inst : X44/M1 @(9.050,1.700)            | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+==================================(mi 5)
-                                                                                        
-                                                                                        
-Layout Inst : X45/X50/M0 @(-10.665,8.620)      | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+==================================(mi 6)
-                                                                                        
-                                                                                        
-Layout Inst : X45/X51/M0 @(-10.665,7.130)      | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+==================================(mi 7)
-                                                                                        
-                                                                                        
-Layout Inst : X45/X52/M0 @(-10.665,10.690)     | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+==================================(mi 8)
-                                                                                        
-                                                                                        
-Layout Inst : X45/X49/M6 @(-10.665,2.160)      | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+==================================(mi 9)
-                                                                                        
-                                                                                        
-Layout Inst : X45/X53/M3 @(-10.665,12.180)     | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 10)
-                                                                                        
-                                                                                        
-Layout Inst : X46/X50/M0 @(28.420,8.620)       | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 11)
-                                                                                        
-                                                                                        
-Layout Inst : X46/X51/M0 @(28.420,7.130)       | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 12)
-                                                                                        
-                                                                                        
-Layout Inst : X46/X52/M0 @(28.420,10.690)      | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 13)
-                                                                                        
-                                                                                        
-Layout Inst : X46/X49/M6 @(28.420,2.160)       | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 14)
-                                                                                        
-                                                                                        
-Layout Inst : X46/X53/M3 @(28.420,12.180)      | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 15)
-                                                                                        
-                                                                                        
-Layout Inst : X47/M0 @(9.315,4.865)            | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 16)
-                                                                                        
-                                                                                        
-Layout Inst : X48/M0 @(10.425,4.865)           | Schematic Inst : ** missing inst **
-Layout Model: MN(NFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 17)
-                                                                                        
-                                                                                        
-Layout Inst : X49/M0 @(2.495,12.065)           | Schematic Inst : ** missing inst **
-Layout Model: MP(PFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 18)
-                                                                                        
-                                                                                        
-Layout Inst : X50/M0 @(4.905,12.065)           | Schematic Inst : ** missing inst **
-Layout Model: MP(PFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 19)
-                                                                                        
-                                                                                        
-Layout Inst : X51/M0 @(7.695,12.065)           | Schematic Inst : ** missing inst **
-Layout Model: MP(PFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 20)
-                                                                                        
-                                                                                        
-Layout Inst : X52/M0 @(10.105,12.065)          | Schematic Inst : ** missing inst **
-Layout Model: MP(PFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 21)
-                                                                                        
-                                                                                        
-Layout Inst : X53/M0 @(12.895,12.065)          | Schematic Inst : ** missing inst **
-Layout Model: MP(PFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 22)
-                                                                                        
-                                                                                        
-Layout Inst : X54/M0 @(15.305,12.065)          | Schematic Inst : ** missing inst **
-Layout Model: MP(PFET_01V8)                    | Schematic Model: 
-===============================================+=================================(mi 23)
+                                                                   
+                                                                   
+Layout Inst : ** missing inst **     | Schematic Inst : XI0/CC0
+Layout Model:                        | Schematic Model: C(CAP)
+=====================================+=======================(mi 1)
+                                                                   
+                                                                   
+Layout Inst : ** missing inst **     | Schematic Inst : XI0/CC1
+Layout Model:                        | Schematic Model: C(CAP)
+=====================================+=======================(mi 2)
+                                                                   
+                                                                   
+Layout Inst : ** missing inst **     | Schematic Inst : XI0/CC2
+Layout Model:                        | Schematic Model: C(CAP)
+=====================================+=======================(mi 3)
+                                                                   
+                                                                   
+Layout Inst : ** missing inst **     | Schematic Inst : XI0/CC3
+Layout Model:                        | Schematic Model: C(CAP)
+=====================================+=======================(mi 4)
+                                                                   
+                                                                   
+Layout Inst : ** missing inst **     | Schematic Inst : XI0/CC4
+Layout Model:                        | Schematic Model: C(CAP)
+=====================================+=======================(mi 5)
+                                                                   
+                                                                   
+Layout Inst : ** missing inst **     | Schematic Inst : XI1/CC0
+Layout Model:                        | Schematic Model: C(CAP)
+=====================================+=======================(mi 6)
+                                                                   
+                                                                   
+Layout Inst : ** missing inst **     | Schematic Inst : XI1/CC1
+Layout Model:                        | Schematic Model: C(CAP)
+=====================================+=======================(mi 7)
+                                                                   
+                                                                   
+Layout Inst : ** missing inst **     | Schematic Inst : XI1/CC2
+Layout Model:                        | Schematic Model: C(CAP)
+=====================================+=======================(mi 8)
+                                                                   
+                                                                   
+Layout Inst : ** missing inst **     | Schematic Inst : XI1/CC3
+Layout Model:                        | Schematic Model: C(CAP)
+=====================================+=======================(mi 9)
+                                                                   
+                                                                   
+Layout Inst : ** missing inst **     | Schematic Inst : XI1/CC4
+Layout Model:                        | Schematic Model: C(CAP)
+=====================================+======================(mi 10)
 
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-++++++ 11 out of 11 pins were unmatched. 
-++++++ Further matching above this cell is disabled. 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++===[Comparator]==============================================================================================
+|                                       UNMATCHED SCHEMATIC PIN LABELS                                        
++=============================================================================================================
+
+Labeled Schematic Pin     | Matched Layout Pin     | Matched Layout Net
+--------------------------+------------------------+-----------------------
+Clk                       | ** missing pin **      | 7
+Out_N                     | ** missing pin **      | 3
+Out_P                     | ** missing pin **      | 4
+Trima<0>  .  .  .  .  .  .| ** missing pin **  .  .| X45/10
+Trima<1>                  | ** missing pin **      | X46/12
+Trima<2>  .  .  .  .  .  .| ** missing pin **  .  .| X45/12
+Trima<3>                  | ** missing pin **      | X45/11
+Trima<4>  .  .  .  .  .  .| ** missing pin **  .  .| X46/11
+Trimb<0>                  | ** missing pin **      | X45/X49/1
+Trimb<1>  .  .  .  .  .  .| ** missing pin **  .  .| X45/X53/1
+Trimb<2>                  | ** missing pin **      | X46/10
+Trimb<3>  .  .  .  .  .  .| ** missing pin **  .  .| X46/X49/1
+Trimb<4>                  | ** missing pin **      | X46/X53/1
+Vdd .  .  .  .  .  .  .  .| ** missing pin **  .  .| 8
+Vn                        | ** missing pin **      | 2
+Vp                        | ** missing pin **      | 5
+
+
++===[Comparator]==============================================================================================
+|                                       MISMATCHED INSTANCE PARAMETERS                                        
++=============================================================================================================
+
+
+                 Merged Instance Detail                  
+=========+=====================+=========================
+         |                     | 
+Side     | Master Instance     | Instances
+---------+---------------------+-----------------(midl 1)
+Lay      | <X45/X52/M0>        | X45/X52/M0
+         |                     +-------------------------
+         |                     | X45/X52/M1
+---------+---------------------+-----------------(midl 2)
+Lay      | <X46/X49/M6>        | X46/X49/M6
+         |                     +-------------------------
+         |                     | X46/X49/M7
+         |                     +-------------------------
+         |                     | X46/X49/M5
+         |                     +-------------------------
+         |                     | X46/X49/M0
+         |                     +-------------------------
+         |                     | X46/X49/M1
+         |                     +-------------------------
+         |                     | X46/X49/M3
+         |                     +-------------------------
+         |                     | X46/X49/M2
+         |                     +-------------------------
+         |                     | X46/X49/M4
+---------+---------------------+-----------------(midl 3)
+Lay      | <X46/X52/M0>        | X46/X52/M0
+         |                     +-------------------------
+         |                     | X46/X52/M1
+---------+---------------------+-----------------(midl 4)
+Lay      | <X46/X53/M3>        | X46/X53/M3
+         |                     +-------------------------
+         |                     | X46/X53/M1
+         |                     +-------------------------
+         |                     | X46/X53/M2
+         |                     +-------------------------
+         |                     | X46/X53/M0
+---------+---------------------+-----------------(midl 5)
+Lay      | <X45/X53/M3>        | X45/X53/M3
+         |                     +-------------------------
+         |                     | X45/X53/M1
+         |                     +-------------------------
+         |                     | X45/X53/M2
+         |                     +-------------------------
+         |                     | X45/X53/M0
+---------+---------------------+-----------------(midl 6)
+Lay      | <X45/X49/M6>        | X45/X49/M6
+         |                     +-------------------------
+         |                     | X45/X49/M7
+         |                     +-------------------------
+         |                     | X45/X49/M5
+         |                     +-------------------------
+         |                     | X45/X49/M1
+         |                     +-------------------------
+         |                     | X45/X49/M0
+         |                     +-------------------------
+         |                     | X45/X49/M3
+         |                     +-------------------------
+         |                     | X45/X49/M2
+         |                     +-------------------------
+         |                     | X45/X49/M4
+---------+---------------------+-----------------(midl 7)
+Lay      | <X44/M1>            | X44/M1
+         |                     +-------------------------
+         |                     | X44/M0
+
+
+Layout Instance                                  | Schematic Instance         |     Parameter Error     
+-------------------------------------------------+----------------------------+------------------(mip 1)
+<X45/X52/M0> @(-10.665,10.690) MN(NFET_01V8)     | XI0/MNM4 MN(NFET_01V8)     |                         
+w: 2 u                                           | w: 1 u                     | 100%                    
+-------------------------------------------------+----------------------------+------------------(mip 2)
+<X46/X49/M6> @(28.420,2.160) MN(NFET_01V8)       | XI1/MNM0 MN(NFET_01V8)     |                         
+w: 8 u                                           | w: 1 u                     | 700%                    
+-------------------------------------------------+----------------------------+------------------(mip 3)
+<X46/X52/M0> @(28.420,10.690) MN(NFET_01V8)      | XI1/MNM1 MN(NFET_01V8)     |                         
+w: 2 u                                           | w: 1 u                     | 100%                    
+-------------------------------------------------+----------------------------+------------------(mip 4)
+<X46/X53/M3> @(28.420,12.180) MN(NFET_01V8)      | XI1/MNM2 MN(NFET_01V8)     |                         
+w: 4 u                                           | w: 1 u                     | 300%                    
+-------------------------------------------------+----------------------------+------------------(mip 5)
+<X45/X53/M3> @(-10.665,12.180) MN(NFET_01V8)     | XI1/MNM3 MN(NFET_01V8)     |                         
+w: 4 u                                           | w: 1 u                     | 300%                    
+-------------------------------------------------+----------------------------+------------------(mip 6)
+<X45/X49/M6> @(-10.665,2.160) MN(NFET_01V8)      | XI1/MNM4 MN(NFET_01V8)     |                         
+w: 8 u                                           | w: 1 u                     | 700%                    
+-------------------------------------------------+----------------------------+------------------(mip 7)
+<X44/M1> @(9.050,1.700) MN(NFET_01V8)            | MNM4 MN(NFET_01V8)         |                         
+w: 2 u                                           | w: 1 u                     | 100%                    
+
 
 ##############################################################################################################
 #

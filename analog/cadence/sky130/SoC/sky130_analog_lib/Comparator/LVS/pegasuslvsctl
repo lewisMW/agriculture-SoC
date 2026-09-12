@@ -19,9 +19,7 @@ report_summary -erc "Comparator.sum" -replace;
 max_results -erc 1000;
 results_db -erc "/home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.erc_errors.ascii" -ascii;
 schematic_format cdl;
-schematic_path "/home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.cdl";
+schematic_path "/home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/Peg_netlist/Comparator.cdl";
 abort_on_layout_error yes;
 layout_format gdsii;
 layout_path "/home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.gds.gz";
-//=== Configurator controls ===
-//=== End of configurator controls ===
