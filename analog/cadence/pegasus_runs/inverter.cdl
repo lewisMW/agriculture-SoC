@@ -1,0 +1,35 @@
+*******************************************************************
+* CDL Produced by pegasusBuildNetlist on Mon Aug 31 17:31:30 2026 *
+*******************************************************************
+
+
+
+* File content...
+
+
+***********************************************************
+* CDL produced by pvsBuildNetlist on Aug 31 17:31:30 2026 *
+***********************************************************
+
+
+*pvsViewList = auLvs schematic
+*pvsStopList = ("auLvs")
+*pvsSimName  = auLvs
+
+
+
+*.EXPAND_ON_M_FACTOR
+*.MEGA
+
+
+
+.subckt inverter in out vdd vss
+*PVSCELL netlisted from sar_adc inverter schematic
+  MNM0 out in vss vss nfet_01v8 m=1 l=150n w=420n
+  MPM0 out in vdd vdd pfet_01v8 m=1 l=150n w=550n
+.ends inverter
+
+
+***********************************************************
+*             Completed at Aug 31 17:31:30 2026           *
+***********************************************************

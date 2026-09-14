@@ -1,0 +1,8 @@
+CADENCE IHNL11140
+$model
+sar_adc/inverter/schematic inverter
+$endmodel
+$net
+$endnet
+$param
+$endparam

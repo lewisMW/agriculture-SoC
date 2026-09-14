@@ -1,0 +1,6 @@
+# Port Table (ports) 
+# Layout Primary inverter
+vss 1 vss 1135 85 met1
+out 3 out 2560 2035 met1
+in 8 in 65 2065 met1
+vdd 2 vdd 1285 4085 met1

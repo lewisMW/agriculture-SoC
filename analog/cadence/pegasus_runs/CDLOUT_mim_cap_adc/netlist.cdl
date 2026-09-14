@@ -1,0 +1,32 @@
+
+
+***********************************************************
+* CDL produced by pvsBuildNetlist on Aug 31 17:43:57 2026 *
+***********************************************************
+
+
+*pvsViewList = auLvs schematic
+*pvsStopList = ("auLvs")
+*pvsSimName  = auLvs
+
+
+
+*.EXPAND_ON_M_FACTOR
+*.MEGA
+
+*.GLOBAL
++  gnd!
++  gnda!
+
+
+
+
+.subckt mim_cap_adc bottom top
+*PVSCELL netlisted from sar_adc mim_cap_adc schematic
+  CC0 top bottom cap_mim_m3__base l=4u w=4u m=1
+.ends mim_cap_adc
+
+
+***********************************************************
+*             Completed at Aug 31 17:43:57 2026           *
+***********************************************************

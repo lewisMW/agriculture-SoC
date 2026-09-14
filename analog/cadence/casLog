@@ -1,6 +1,8 @@
 
-*** Checking layout cellview 'sky130_analog_lib/cap_array_8b/layout' against source cellview 'sky130_analog_lib/cap_array_8b/schematic'. - Sat Aug  8 22:23:27 2026 ***
+*** Checking layout cellview 'sar_adc/inverter/layout' against source cellview 'sar_adc/inverter/schematic'. - Mon Aug 31 17:03:50 2026 ***
 
+INFO (LX-1359): Ignoring the 'tapExtension' parameter in schematic instance 'NM0' because its value is empty.
+INFO (LX-1359): Ignoring the 'tapExtension' parameter in schematic instance 'PM0' because its value is empty.
 
 *** Check Against Source complete. ***
 

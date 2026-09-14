@@ -1,0 +1,71 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-type"/>
+        <title>Html Report</title>
+        <script src="report.js"></script>
+        <style> body { background-color : Lavender } table{ border: 1px solid black; border-collapse: collapse; background-color : GhostWhite;} thead { background-color : lightGray } tfoot { border: 2px solid black; background-color : lightGray } td, th { padding : 10px ; border: 1px solid black } th.noTop { border-style: none solid solid solid} th.noBottom { border-style: solid solid none solid} .Red { background-color : #FF0000; } .Orange { background-color : #FFA500; } .Yellow { background-color : #FFFF00; } .LightGreen { background-color : #ADFF2F; } .Green { background-color : #00FF00; } .sort-by { display: inline-block; padding-left: 0.25rem; padding-right: 0.25rem; margin-bottom: 1px; vertical-align: middle;} .sort-by-asc, .sort-by-desc { display: block; width: 0; height: 0; margin: 0; margin-top: 1px; margin-bottom: 1px; border: solid 0.3rem transparent; background: transparent; cursor: pointer} .sort-by-asc { border-bottom: solid 0.5rem dimgray; border-top-width: 0;} .sort-by-desc { border-top: solid 0.5rem dimgray; border-bottom-width: 0;}</style>
+    </head>
+    <body class="page">
+        <h1 id="Top"></h1>
+        <hr/>
+        <h2 id="sar_adc inverter layout">sar_adc inverter layout</h2>
+        <a href="#Top">Top</a>
+        <p>
+            <pre>sar_adc inverter physConfig<br/>sar_adc inverter schematic</pre>
+        </p>
+        <h3>Summary</h3>
+        <table id="info0">
+            <thead>
+                <tr>
+                    <th/>
+                    <th>Bound</th>
+                    <th>Opens</th>
+                    <th>Shorts</th>
+                    <th>%Compliance</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <td data-value="Total">Total</td>
+                    <td data-value="10">10</td>
+                    <td data-value="1">1</td>
+                    <td data-value="0">0</td>
+                    <td class="LightGreen" data-value="93">93</td>
+                </tr>
+            </tfoot>
+            <tbody>
+                <tr>
+                    <td data-value="Terminals">Terminals</td>
+                    <td data-value="4">4</td>
+                    <td data-value=""/>
+                    <td data-value=""/>
+                    <td class="Green" data-value="100">100</td>
+                </tr>
+                <tr>
+                    <td data-value="Instances">Instances</td>
+                    <td data-value="2">2</td>
+                    <td data-value=""/>
+                    <td data-value=""/>
+                    <td class="Green" data-value="100">100</td>
+                </tr>
+                <tr>
+                    <td data-value="Nets">Nets</td>
+                    <td data-value="4">4</td>
+                    <td data-value="1">1</td>
+                    <td data-value="0">0</td>
+                    <td class="LightGreen" data-value="80">80</td>
+                </tr>
+            </tbody>
+        </table>
+        <br/>
+        <h3>INFOS:</h3>
+        <p>
+            <pre>INFO (BND-1105): Layout instances with unconnected terminals:<br/>                                          connected  unconnected  terminal  examples of unconnected instances<br/>    sky130_fd_pr_main  pfet_01v8  layout          0            1  B         PM0<br/>    Unconnected instance terminals can result in wrong bindings or unbound instances.<br/>    If these instance terminals should be connected, check that the extraction stop level<br/>    is deep enough to extract through route cells and off-pin connections.</pre>
+        </p>
+        <p>
+            <pre>INFO (BND-1107): Cell mapping<br/>                                          instances  permute  component  split   terminals<br/>                                                     rule     type       params  mapped<br/>    sky130_fd_pr_main  nfet_01v8  symbol          1  (p D S)  NMOS       fw l    B D G S<br/> -&gt; sky130_fd_pr_main  nfet_01v8  layout          1  (p D S)  NMOS       fw l    B D G S<br/>                                                                                 <br/>    sky130_fd_pr_main  pfet_01v8  symbol          1  (p D S)  PMOS       fw l    B D G S<br/> -&gt; sky130_fd_pr_main  pfet_01v8  layout          1  (p D S)  PMOS       fw l    B D G S<br/>                                                                                 </pre>
+        </p>
+    </body>
+</html>
