@@ -1,0 +1,8 @@
+//Verilog-AMS HDL for "Testench", "unit_step" "verilogams"
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module unit_step ( );
+
+endmodule

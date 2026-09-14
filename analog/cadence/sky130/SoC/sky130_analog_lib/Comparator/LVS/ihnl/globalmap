@@ -1,0 +1,9 @@
+CADENCE IHNL11140
+$model
+sky130_analog_lib/Trim/schematic Trim
+sky130_analog_lib/Comparator/schematic Comparator
+$endmodel
+$net
+$endnet
+$param
+$endparam

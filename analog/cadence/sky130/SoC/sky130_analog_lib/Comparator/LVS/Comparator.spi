@@ -1,0 +1,140 @@
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+* CDL Netlist:                                              *
+*                                                           *
+* Cell Name  : Comparator                                   *
+* Netlisted  : Sat Sep 12 16:16:02 2026                     *
+* Pegasus Version: 23.26-s005 Thu Oct 17 16:37:42 PDT 2024  *
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+*.LDD
+*.DEVTMPLT 0 R(res_generic_m1) met1_res met1(P) met1(N)
+*.DEVTMPLT 1 R(res_generic_m2) met2_res met2(P) met2(N)
+*.DEVTMPLT 2 R(res_generic_m3) met3_res met3(P) met3(N)
+*.DEVTMPLT 3 R(res_generic_m4) met4_res met4(P) met4(N)
+*.DEVTMPLT 4 R(res_generic_m5) met5_res met5(P) met5(N)
+*.DEVTMPLT 5 D(diode_pd2nw_05v5) diode_pd2nw_05v5_rec psd(PLUS) nwell(MINUS)
+*.DEVTMPLT 6 D(diode_pd2nw_05v5_hvt) diode_pd2nw_05v5_hvt_rec psd(PLUS) nwell(MINUS)
+*.DEVTMPLT 7 D(diode_pd2nw_05v5_lvt) diode_pd2nw_05v5_lvt_rec psd(PLUS) nwell(MINUS)
+*.DEVTMPLT 8 D(diode_pd2nw_11v0) diode_pd2nw_11v0_rec psd(PLUS) nwell(MINUS)
+*.DEVTMPLT 9 D(diode_pw2nd_05v5) diode_pw2nd_05v5_rec pwell_all(PLUS) nsd(MINUS)
+*.DEVTMPLT 10 D(diode_pw2nd_05v5_lvt) diode_pw2nd_05v5_lvt_rec pwell_all(PLUS) nsd(MINUS)
+*.DEVTMPLT 11 D(diode_pw2nd_05v5_nvt) diode_pw2nd_05v5_nvt_rec pwell_all(PLUS) nsd(MINUS)
+*.DEVTMPLT 12 D(diode_pw2nd_11v0) diode_pw2nd_11v0_rec pwell_all(PLUS) nsd(MINUS)
+*.DEVTMPLT 13 R(RES_GENERIC_ND) diff_res np_term(P) np_term(N)
+*.DEVTMPLT 14 R(RES_GENERIC_PD) diff_res pp_term(P) pp_term(N)
+*.DEVTMPLT 15 MN(nfet_01v8) nfet_01v8_rec nSourceDrain(D) nfet(G) nSourceDrain(S) pwell_all(B)
+*.DEVTMPLT 16 MP(pfet_01v8) pfet_01v8_rec pSourceDrain(D) pfet(G) pSourceDrain(S) nwell(B)
+*.DEVTMPLT 17 MP(pfet_01v8_lvt) lvtpfet_01v8_rec pSourceDrain(D) lvtpfet(G) pSourceDrain(S) nwell(B)
+*.DEVTMPLT 18 MN(nfet_01v8_lvt) lvtnfet_01v8_rec nSourceDrain(D) lvtnfet(G) nSourceDrain(S) pwell_all(B)
+*.DEVTMPLT 19 MP(pfet_01v8_hvt) hvtpfet_01v8_rec pSourceDrain(D) hvtpfet(G) pSourceDrain(S) nwell(B)
+*.DEVTMPLT 20 MN(nfet_03v3_nvt) HV_ngate_3v3 HV_source_drain(D) HV_FET_gate(G) HV_source_drain(S) pwell_all(B)
+*.DEVTMPLT 21 MN(nfet_05v0_nvt) HV_ngate_5v0 HV_source_drain(D) HV_FET_gate(G) HV_source_drain(S) pwell_all(B)
+*.DEVTMPLT 22 MN(nfet_g5v0d10v5) HV_ngate_5v10v HV_source_drain(D) HV_FET_gate(G) HV_source_drain(S) pwell_all(B)
+*.DEVTMPLT 23 MP(pfet_g5v0d10v5) HV_pgate_5v10v HV_source_drain(D) HV_FET_gate(G) HV_source_drain(S) nwell(B)
+*.DEVTMPLT 24 MN(nfet_20v0) nfet_v20_rec nfet_v20_drain(D) nfet_v20_gate(G) nfet_v20_source(S) pwell_all(B)
+*.DEVTMPLT 25 MN(nfet_20v0_zvt) nfet_v20_zvt_rec nfet_v20_drain(D) nfet_v20_gate(G) nfet_v20_source(S) pwell_all(B)
+*.DEVTMPLT 26 MP(pfet_20v0) pfet_v20_rec pfet_v20_drain(D) pfet_v20_gate(G) pfet_v20_source(S) nwell(B)
+*.DEVTMPLT 27 Q(npn_05v5) npn_rec npnC(C) npnB(B) npnE(E) pwell_all(BN)
+*.DEVTMPLT 28 Q(npn_11v0) hvnpn_rec npnC(C) npnB(B) hvnpnE(E) pwell_all(BN)
+*.DEVTMPLT 29 Q(pnp_05v5) pnp_rec pnpC(C) pnpB(B) pnpE(E) pwell_all(BN)
+*.DEVTMPLT 30 R(res_high_po_0p35) res_high_po_0p35_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 31 R(res_high_po_0p69) res_high_po_0p69_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 32 R(res_high_po_1p41) res_high_po_1p41_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 33 R(res_high_po_2p85) res_high_po_2p85_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 34 R(res_high_po_5p73) res_high_po_5p73_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 35 R(res_xhigh_po_0p35) res_xhigh_po_0p35_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 36 R(res_xhigh_po_0p69) res_xhigh_po_0p69_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 37 R(res_xhigh_po_1p41) res_xhigh_po_1p41_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 38 R(res_xhigh_po_2p85) res_xhigh_po_2p85_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 39 R(res_xhigh_po_5p73) res_xhigh_po_5p73_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 40 C(cap_mim_m3__base) capacitor top_plate(PLUS) bottom_plate(MINUS)
+
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+* Sub cell: nfet_01v8_CDNS_789193760322                     *
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+.subckt nfet_01v8_CDNS_789193760322 1 2 3 4
+** N=9 EP=4 FDC=1
+M0 4 1 3 2 nfet_01v8 L=3e-07 W=1e-06 $X=0 $Y=0 $dt=15
+.ends nfet_01v8_CDNS_789193760322
+
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+* Sub cell: nfet_01v8_CDNS_789193760323                     *
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+.subckt nfet_01v8_CDNS_789193760323 1 2 3 4
+** N=12 EP=4 FDC=2
+M0 4 1 3 2 nfet_01v8 L=3e-07 W=1e-06 $X=0 $Y=0 $dt=15
+M1 3 1 4 2 nfet_01v8 L=3e-07 W=1e-06 $X=580 $Y=0 $dt=15
+.ends nfet_01v8_CDNS_789193760323
+
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+* Sub cell: nfet_01v8_CDNS_789193760321                     *
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+.subckt nfet_01v8_CDNS_789193760321 2 3
+** N=34 EP=2 FDC=8
+M0 4 1 3 2 nfet_01v8 L=3e-07 W=1e-06 $X=0 $Y=0 $dt=15
+M1 3 1 4 2 nfet_01v8 L=3e-07 W=1e-06 $X=580 $Y=0 $dt=15
+M2 4 1 3 2 nfet_01v8 L=3e-07 W=1e-06 $X=1160 $Y=0 $dt=15
+M3 3 1 4 2 nfet_01v8 L=3e-07 W=1e-06 $X=1740 $Y=0 $dt=15
+M4 4 1 3 2 nfet_01v8 L=3e-07 W=1e-06 $X=2320 $Y=0 $dt=15
+M5 3 1 4 2 nfet_01v8 L=3e-07 W=1e-06 $X=2900 $Y=0 $dt=15
+M6 4 1 3 2 nfet_01v8 L=3e-07 W=1e-06 $X=3480 $Y=0 $dt=15
+M7 3 1 4 2 nfet_01v8 L=3e-07 W=1e-06 $X=4060 $Y=0 $dt=15
+.ends nfet_01v8_CDNS_789193760321
+
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+* Sub cell: nfet_01v8_CDNS_789193760324                     *
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+.subckt nfet_01v8_CDNS_789193760324 2 3
+** N=20 EP=2 FDC=4
+M0 4 1 3 2 nfet_01v8 L=3e-07 W=1e-06 $X=0 $Y=0 $dt=15
+M1 3 1 4 2 nfet_01v8 L=3e-07 W=1e-06 $X=580 $Y=0 $dt=15
+M2 4 1 3 2 nfet_01v8 L=3e-07 W=1e-06 $X=1160 $Y=0 $dt=15
+M3 3 1 4 2 nfet_01v8 L=3e-07 W=1e-06 $X=1740 $Y=0 $dt=15
+.ends nfet_01v8_CDNS_789193760324
+
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+* Sub cell: Trim                                            *
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+.subckt Trim 1 2
+** N=13 EP=2 FDC=16
+X49 1 2 nfet_01v8_CDNS_789193760321 $T=9165 2055 0 0 $X=8760 $Y=1545
+X50 11 1 2 7 nfet_01v8_CDNS_789193760322 $T=6185 2055 0 0 $X=5780 $Y=1545
+X51 12 1 2 8 nfet_01v8_CDNS_789193760322 $T=7675 2055 0 0 $X=7270 $Y=1545
+X52 10 1 2 6 nfet_01v8_CDNS_789193760323 $T=4115 2055 0 0 $X=3710 $Y=1545
+X53 1 2 nfet_01v8_CDNS_789193760324 $T=885 2055 0 0 $X=480 $Y=1545
+.ends Trim
+
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+* Sub cell: nfet_01v8_CDNS_789193760325                     *
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+.subckt nfet_01v8_CDNS_789193760325 1 2 3 4
+** N=9 EP=4 FDC=1
+M0 4 1 3 2 nfet_01v8 L=3e-07 W=1e-06 $X=0 $Y=0 $dt=15
+.ends nfet_01v8_CDNS_789193760325
+
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+* Sub cell: pfet_01v8_CDNS_789193760326                     *
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+.subckt pfet_01v8_CDNS_789193760326 1 3 4
+** N=11 EP=3 FDC=1
+M0 4 1 3 3 pfet_01v8 L=3e-07 W=1e-06 $X=0 $Y=0 $dt=16
+.ends pfet_01v8_CDNS_789193760326
+
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+* Sub cell: Comparator                                      *
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+.subckt Comparator
+** N=13 EP=0 FDC=44
+X42 4 12 1 3 nfet_01v8_CDNS_789193760322 $T=7395 5865 0 180 $X=6690 $Y=4715
+X43 2 12 13 1 nfet_01v8_CDNS_789193760322 $T=8505 5865 0 180 $X=7800 $Y=4715
+X44 7 12 9 13 nfet_01v8_CDNS_789193760323 $T=8470 1700 0 0 $X=8065 $Y=1190
+X45 12 9 Trim $T=-12720 14805 0 270 $X=-12705 $Y=-275
+X46 12 9 Trim $T=30475 14805 1 270 $X=18285 $Y=-275
+X47 5 12 13 6 nfet_01v8_CDNS_789193760325 $T=9315 4865 0 0 $X=8910 $Y=4715
+X48 3 12 6 4 nfet_01v8_CDNS_789193760325 $T=10425 4865 0 0 $X=10020 $Y=4715
+X49 7 8 1 pfet_01v8_CDNS_789193760326 $T=2495 12065 1 180 $X=1750 $Y=11555
+X50 7 8 3 pfet_01v8_CDNS_789193760326 $T=4905 12065 0 0 $X=3900 $Y=11555
+X51 4 8 3 pfet_01v8_CDNS_789193760326 $T=7695 12065 1 180 $X=6950 $Y=11555
+X52 3 8 4 pfet_01v8_CDNS_789193760326 $T=10105 12065 0 0 $X=9100 $Y=11555
+X53 7 8 4 pfet_01v8_CDNS_789193760326 $T=12895 12065 1 180 $X=12150 $Y=11555
+X54 7 8 6 pfet_01v8_CDNS_789193760326 $T=15305 12065 0 0 $X=14300 $Y=11555
+.ends Comparator
