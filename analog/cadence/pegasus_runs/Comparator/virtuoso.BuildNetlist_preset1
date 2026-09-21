@@ -1,0 +1,11 @@
+# This Pegasus GUI forms presets file is created automatically.
+# Do not edit it unless you 100% sure what you do!
+
+[ pvsgui.BuildNetlist ]
+OutputFile	"sky130/SoC/sky130_analog_lib/Comparator/Peg_netlist/Comparator.cdl"
+RunDir	"pegasus_runs/Comparator/"
+NetlistTopCellName	"Comparator"
+CreateEmptySubcircuits	"FALSE"
+AskMe	"FALSE"
+LibList	"sky130_analog_lib"
+ViewList	"schematic"
