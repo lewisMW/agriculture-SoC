@@ -11,17 +11,16 @@ lvs_abort -softchk no;
 lvs_abort -supply_error no;
 lvs_find_shorts no;
 sconnect_upper_shape_count no;
-lvs_report_file "inverter.rep";
+lvs_report_file "mim_cap_adc.rep";
 lvs_report_max 50 -mismatched_net_limit 100;
 lvs_run_erc_checks yes;
 lvs_report_opt -none;
-report_summary -erc "inverter.sum" -replace;
+report_summary -erc "mim_cap_adc.sum" -replace;
 max_results -erc 1000;
-results_db -erc "/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.erc_errors.ascii" -ascii;
-schematic_format cdl;
-schematic_path "/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.cdl";
+results_db -erc "/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.erc_errors.ascii" -ascii;
+schematic_path "/root/agriculture-SoC/analog/cadence/pegasus_runs/mim_cap_adc.cdl" cdl;
 abort_on_layout_error yes;
 layout_format gdsii;
-layout_path "/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.gds.gz";
+layout_path "/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.gds.gz";
 //=== Configurator controls ===
 //=== End of configurator controls ===

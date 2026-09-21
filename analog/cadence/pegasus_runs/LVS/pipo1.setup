@@ -1,6 +1,6 @@
 case	"preserve"
 convertDot	"node"
-convertPin	"geometry"
+convertPin	"geometryAndText"
 hierDepth	32
 labelCase	"preserve"
 labelDepth	32
@@ -10,9 +10,9 @@ logFile	"/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/PIPO1.LOG"
 maxVertices	2048
 pinAttNum	0
 runDir	"/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS"
-strmFile	"/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.gds.gz"
+strmFile	"/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.gds.gz"
 strmVersion	5
 techLib	"sky130_fd_pr_main"
-topCell	"inverter"
+topCell	"mim_cap_adc"
 view	"layout"
 enableColoring

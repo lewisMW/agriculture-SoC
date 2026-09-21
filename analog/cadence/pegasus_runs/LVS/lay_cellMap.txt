@@ -1,1 +1,1 @@
-sar_adc inverter layout inverter
+sar_adc mim_cap_adc layout mim_cap_adc

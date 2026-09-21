@@ -3,29 +3,31 @@
 #####                                       Pegasus LVS COMPARISON
 #####  
 #####  Version                       :   24.12-s023
-#####  NVN Run Start                 :   Mon Aug 31 18:15:05 2026
-#####  Comparison Report File        :   inverter.rep.cls
-#####  Top Cell                      :   inverter  <vs>  inverter
+#####  NVN Run Start                 :   Mon Sep 21 18:45:35 2026
+#####  Comparison Report File        :   mim_cap_adc.rep.cls
+#####  Top Cell                      :   mim_cap_adc  <vs>  mim_cap_adc
 #####  
-#####                                :      @     @     
-#####                                :       @   @      
-#####                                :        @ @       
-#####  Run Result                    :      NOT RUN
-#####                                :        @ @       
-#####                                :       @   @      
-#####                                :      @     @     
+#####                                :      @     @
+#####                                :       @   @ 
+#####                                :        @ @  
+#####  Run Result                    :     MISMATCH
+#####                                :        @ @  
+#####                                :       @   @ 
+#####                                :      @     @
 #####  
-#####  Run Summary                   :   [WARN]  Schematic Netlist Is Empty
+#####  Run Summary                   :   [ERROR] Parameter Mismatches
+#####                                :   [WARN]  Top Cell Has Extra Pins
+#####                                :   [INFO]  Connectivity Matches
 #####  
-#####  Layout Design                 :   sar_adc inverter layout
-#####  Schematic File                :   /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.cdl (cdl)
+#####  Layout Design                 :   sar_adc mim_cap_adc layout
+#####  Schematic File                :   /root/agriculture-SoC/analog/cadence/pegasus_runs/mim_cap_adc.cdl (cdl)
 #####  Rules File                    :   /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/.config.rul
 #####                                :   /opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
-#####  Pin Swap File                 :   inverter.rep.cps
+#####  Pin Swap File                 :   mim_cap_adc.rep.cps
 #####  
 #####  NVN CPU Time                  :   0h 0m 0s - (0s)                 
 #####  NVN Exec Time                 :   0h 0m 0s - (0s)                 
-#####  NVN Peak Memory Usage         :   263.57MB
+#####  NVN Peak Memory Usage         :   270.97MB
 #####  
 ##############################################################################################################
 
@@ -40,15 +42,15 @@ Cell Statistic Descriptions                  | Count
 ---------------------------------------------+----------
 Cells matched                                |         0
 Cells expanded                               |         0
-Cells not run                                |         1
-Cells which mismatch                         |         0
+Cells not run                                |         0
+Cells which mismatch                         |         1
 ---------------------------------------------+----------
 Total                                        |         1
 
 
 Cell Statistic Detail                        | Count
 ---------------------------------------------+----------
-Cells with parameter mismatches              |         0
+Cells with parameter mismatches              |         1
 Cells with mismatched instance subtypes      |         0
 Cells that have been blackboxed              |         0
 
@@ -59,10 +61,10 @@ Cells that have been blackboxed              |         0
 #
 ##############################################################################################################
 
-             |     Initial Pins     |     Compare Pins     |             | 
-Cell         |   lay    :    sch    |   lay    :    sch    | Status      | Detail
--------------+----------+-----------+----------+-----------+-------------+-----------
-inverter     |        4 :         4 |        4 :         4 | not run     | 
+               |    Initial Pins    |    Compare Pins    |              | 
+Cell           |   lay   :   sch    |   lay   :   sch    | Status       | Detail
+---------------+---------+----------+---------+----------+--------------+-------------------------------------
+mim_cap_adc    |       3 :        3 |       2 :        2 | mismatch     | extra pins, parameter mismatches
 
 
 ##############################################################################################################
@@ -74,19 +76,19 @@ inverter     |        4 :         4 |        4 :         4 | not run     |
 Command Line LVS Rule Values
 ----------------------------
 
-    layout_primary                          inverter {-top_cell inverter}
-    schematic_primary                       inverter {-source_top_cell inverter}
+    layout_primary                          mim_cap_adc {-top_cell mim_cap_adc}
+    schematic_primary                       mim_cap_adc {-source_top_cell mim_cap_adc}
 
 LVS Rules Given in the Rules File
 ---------------------------------
 
     lvs_abort                               -softchk                               no  
     lvs_abort                               -supply_error                          no  
-    layout_path                             /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.gds.gz
+    layout_path                             /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.gds.gz
     layout_format                           gdsii
     layout_primary                          TOPCELL
-    schematic_path                          /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.cdl
-    schematic_format                        cdl
+    schematic_path                          /root/agriculture-SoC/analog/cadence/pegasus_runs/mim_cap_adc.cdl
+                                            cdl
     lvs_delete_cell_pin                     cap_vpp_02p4x04p6_m1m2_noshield b -source
     lvs_delete_cell_pin                     cap_vpp_02p7x06p1_m1m2m3m4_shieldl1_fingercap b -source
     lvs_delete_cell_pin                     cap_vpp_02p7x11p1_m1m2m3m4_shieldl1_fingercap b -source
@@ -206,7 +208,7 @@ LVS Rules Given in the Rules File
     lvs_check_property                      R L L
     lvs_check_property                      C L L
     lvs_check_property                      C W W
-    lvs_report_file                         inverter.rep
+    lvs_report_file                         mim_cap_adc.rep
     lvs_report_max                          50 -mismatched_net_limit 100 
     lvs_short_equivalent_nodes              yes
     virtual_connect                         no  -colon
@@ -226,6 +228,7 @@ Default LVS Rule Values
     // layout_cpf_file                       
     // schematic_cpf_file                    
     schematic_case_sensitive                no
+    schematic_format                        cdl
     // hcell_file                            
     // hcell                                 
     // lvs_exclude_hcell                     
@@ -355,7 +358,7 @@ Effective LVS Rule Values
 -------------------------
 
     lvs_swap_non_cpoint_pins                yes -unbound_pin_threshold 10000
-    layout_primary                          inverter
+    layout_primary                          mim_cap_adc
     lvs_recognize_gates                     -none
     virtual_connect                         no  -report
 
@@ -368,39 +371,63 @@ Effective LVS Rule Values
 
                               ##################################################
                               #                                                #
-                              #       ------->>> $ NOT RUN $ <<<-------        #
+                              #       ------->>> $ MISMATCH $ <<<-------       #
                               #                                                #
-                              #            inverter  <vs>  inverter            #
+                              #         mim_cap_adc  <vs>  mim_cap_adc         #
                               #                                                #
+                              #              CONNECTIVITY MATCHES              #
+                              #              PARAMETER MISMATCHES              #
+                              #                   EXTRA PINS                   #
                               #                                                #
                               ##################################################
 
-+===[inverter]================================================================================================
++===[mim_cap_adc]=============================================================================================
 |                                                 STATISTICS                                                  
 +=============================================================================================================
 
 
-                        |     Original      |      Reduced      |     Unmatched     
-Cell                    |   lay   :   sch   |   lay   :   sch   |   lay   :   sch
-------------------------+---------+---------+---------+---------+---------+---------
-(MP [4 pins], -)        |         :         |         :         |         :         
- (MP(PFET_01V8), -)     |      *1 :       0 |      *1 :       0 |      *1 :        0
-(MN [4 pins], -)        |         :         |         :         |         :         
- (MN(NFET_01V8), -)     |      *1 :       0 |      *1 :       0 |      *1 :        0
-------------------------+---------+---------+---------+---------+---------+---------
-Total                   |       2 :       0 |       2 :       0 |       2 :        0
-========================+=========+=========+=========+=========+=========+=========
-Pins                    |         :         |       4 :       4 |       0 :        0
-Nets                    |         :         |       0 :       0 |       0 :        0
-========================+=========+=========+=========+=========+=========+=========
+                         |     Original      |      Reduced      |     Unmatched     
+Cell                     |   lay   :   sch   |   lay   :   sch   |   lay   :   sch
+-------------------------+---------+---------+---------+---------+---------+---------
+C [2 pins]               |         :         |         :         |         :         
+ C(CAP_MIM_M3__BASE)     |       1 :       1 |       1 :       1 |       0 :        0
+-------------------------+---------+---------+---------+---------+---------+---------
+Total                    |       1 :       1 |       1 :       1 |       0 :        0
+=========================+=========+=========+=========+=========+=========+=========
+Pins                     |         :         |       2 :       2 |       0 :        0
+Nets                     |         :         |       0 :       0 |       0 :        0
+=========================+=========+=========+=========+=========+=========+=========
 
-+===[inverter]================================================================================================
++===[mim_cap_adc]=============================================================================================
 |                                           INITIAL CORRESPONDENCES                                           
 +=============================================================================================================
 
 Type     | Name
----------+-------------------
-Pin      | in out vdd vss
+---------+---------------
+Pin      | bottom top
+
+
++===[mim_cap_adc]=============================================================================================
+|                                                 EXTRA PINS                                                  
++=============================================================================================================
+
+Side     | Pins
+---------+---------------
+Lay      | 3
+---------+---------------
+Sch      | vssa
+
+
++===[mim_cap_adc]=============================================================================================
+|                                       MISMATCHED INSTANCE PARAMETERS                                        
++=============================================================================================================
+
+
+Layout Instance                           | Schematic Instance          |     Parameter Error     
+------------------------------------------+-----------------------------+------------------(mip 1)
+C0 @(0.000,0.000) C(CAP_MIM_M3__BASE)     | CC0 C(CAP_MIM_M3__BASE)     |                         
+w: <missing>                              | w: 4 u                      | missing                 
+l: <missing>                              | l: 4 u                      | missing                 
 
 
 ##############################################################################################################

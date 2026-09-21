@@ -1,0 +1,5 @@
+# Port Table (ports) 
+# Layout Primary mim_cap_adc
+bottom 2 bottom 2000 -550 met3
+bottom 3 bottom 2000 -550 met2
+top 1 top 450 4250 met4

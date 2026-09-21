@@ -5,12 +5,12 @@
                      *****************************************************
 
 
-Report File Name         : /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.rep
-ERC Summary File         : /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.sum
-LVS Comparison Report    : /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.rep.cls
-Layout Name              : /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.gds.gz ("inverter")
+Report File Name         : /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.rep
+ERC Summary File         : /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.sum
+LVS Comparison Report    : /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.rep.cls
+Layout Name              : /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.gds.gz ("mim_cap_adc")
 User Name                : root
-Creation Time            : Mon Aug 31 18:14:43 2026
+Creation Time            : Mon Sep 21 18:45:17 2026
 Current directory        : /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS
 Pegasus version          : 24.12-s023
 
@@ -20,5 +20,15 @@ Pegasus version          : 24.12-s023
                      **            D E V E X T  R E P O R T             **
                      **                                                 **
                      *****************************************************
+
+
+Warnings and errors of connectivity for cell "mim_cap_adc"
+----------------------------------------------------------
+
+[WARN] Same label "bottom" for multiple nets, it is assigned to net 2 :
+    [1] Net 2 on layer 1145(met3_pin) at (2.000, -0.550)
+    [2] Net 3 on layer 1145(met3_pin) at (2.000, -0.550)
+
+[ERROR] Top level port name "bottom" on net 3 at (2.000, -0.550) already used on net 2, ignored.
 
 

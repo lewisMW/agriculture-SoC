@@ -1,0 +1,14 @@
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++
+* CDL Netlist:
+*
+* Cell Name: mim_cap_adc
+* Netlisted: 2026-09-21 18:45:32
+* Pegasus 24.12-s023
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++
+*.DEVTMPLT 0 C(cap_mim_m3__base) capacitor top_plate(PLUS) bottom_plate(MINUS)
+
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++
+* subckt mim_cap_adc
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++
+* N=4 EP=3 NDC=1 FDC=1 HDC=1
+* C(cap_mim_m3__base) $dt=0 element=C NDC=1 FDC=1 HDC=1

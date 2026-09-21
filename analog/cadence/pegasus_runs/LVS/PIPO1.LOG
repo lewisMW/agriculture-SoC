@@ -2,7 +2,7 @@
 Product   : Virtuoso(R) XStream Out
 Program   : @(#)$CDS: strmout version IC23.1-64b 01/13/2026 22:48 (cpgbld15) $
           : sub-version  IC23.1-64b.ISR17.40 
-Started at: 31-Aug-2026  18:14:32
+Started at: 21-Sep-2026  18:45:10
 User Name : root
 Host Name : cadence-vm
 Directory : /root/agriculture-SoC/analog/cadence
@@ -10,7 +10,7 @@ CADENCE Design Systems, Inc.
 ********************************************************************************
 Info: Cellview Rev Num:99,  Tech Rev Num:59
 
-WARNING (XSTRM-20): Output Stream file '/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.gds.gz' already exists. It will be overwritten.
+WARNING (XSTRM-20): Output Stream file '/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.gds.gz' already exists. It will be overwritten.
 INFO (XSTRM-217): Reading the layer map file, /opt/pdk/sky130_release_0.1.0/libs/sky130_fd_pr_main/sky130_fd_pr_main.layermap
 WARNING (XSTRM-333): The '-enableColoring' option will be ignored during XStream Out. This is because there is no color entry in the layer map and the object map file.
 INFO (XSTRM-427): Based on current hardware configuration, running XStream Out translation in multi-threaded mode with 4 threads.
@@ -19,8 +19,8 @@ INFO (XSTRM-162): You have not used the '-viaMap' option. If the OpenAccess desi
 
 Summary of Options :
 library                                 sar_adc
-strmFile                                /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.gds.gz
-topCell                                 inverter
+strmFile                                /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.gds.gz
+topCell                                 mim_cap_adc
 view                                    layout
 runDir                                  /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS
 logFile                                 /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/PIPO1.LOG
@@ -32,21 +32,18 @@ userSkillFile                           /root/agriculture-SoC/analog/cadence/peg
 labelDepth                              32
 case                                    Preserve
 convertDot                              node
+convertPin                              geometryAndText
 
 INFO (XSTRM-180): You have not used the '-objectMap' option. The design has instance(s) of at least one of following OpenAccess objects: oaBlockage, oaBoundary, oaRow, and oaMarker. Any information about these objects will not be translated into the generated stream file. Use the '-objectMap' option to translate/preserve these objects using XStream.
-WARNING (XSTRM-35): The objects in the layer-purpose pair 'areaid:drawing' are ignored. This is because the layer-purpose pair used in the design is not specified in the layer map file. Specify the layer-purpose pair in the layer map file and try again.
-INFO (XSTRM-223): 1. Translating stdVia sky130_fd_pr_main/L1M1_C/layout as STRUCTURE L1M1_C_CDNS_788164072330.
-INFO (XSTRM-223): 2. Translating customVia sky130_fd_pr_main/polyConn/layout as STRUCTURE polyConn_CDNS_788164072330.
-INFO (XSTRM-223): 3. Translating cellview sky130_fd_pr_main/nfet_01v8/layout as STRUCTURE nfet_01v8_CDNS_788164072331.
-INFO (XSTRM-223): 4. Translating cellview sky130_fd_pr_main/pfet_01v8/layout as STRUCTURE pfet_01v8_CDNS_788164072332.
-INFO (XSTRM-223): 5. Translating cellview sar_adc/inverter/layout as STRUCTURE inverter.
+INFO (XSTRM-223): 1. Translating cellview sky130_fd_pr_main/cap_mim_m3__base/layout as STRUCTURE cap_mim_m3__base_CDNS_789980310820.
+INFO (XSTRM-223): 2. Translating cellview sar_adc/mim_cap_adc/layout as STRUCTURE mim_cap_adc.
 
 Summary of Objects Translated:
-	Scalar Instances:                       2
+	Scalar Instances:                       1
 	Array Instances:                        0
 	Polygons:                               0
 	Paths:                                  0
-	Rectangles:                             52
+	Rectangles:                             71
 	Lines:                                  0
 	Arcs:                                   0
 	Donuts:                                 0
@@ -59,13 +56,13 @@ Summary of Objects Translated:
 	Markers:                                0
 	Rows:                                   0
 	Stitch:                                 0
-	Standard Vias                           4
-	Custom Vias:                            1
+	Standard Vias                           0
+	Custom Vias:                            0
 	CdsGen Vias:                            0
-	Pathsegs:                               10
+	Pathsegs:                               8
 	Text:                                   0
-	TextDisplay:                            4
-	Cells:                                  5
+	TextDisplay:                            0
+	Cells:                                  2
 
-Elapsed Time: 0.5s   User Time: 0.2s   CPU Time: 0.0s   Peak VM: 165912KB
-INFO (XSTRM-234): Translation completed. '0' error(s) and '3' warning(s) found.
+Elapsed Time: 0.5s   User Time: 0.2s   CPU Time: 0.1s   Peak VM: 164460KB
+INFO (XSTRM-234): Translation completed. '0' error(s) and '2' warning(s) found.

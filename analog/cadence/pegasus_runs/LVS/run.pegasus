@@ -7,10 +7,10 @@ pwd_d=`pwd`
 cd /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS ;\
 /opt/cadence/installs/PEGASUS241/bin/pegasus \
 	-lvs \
-	-top_cell inverter \
+	-top_cell mim_cap_adc \
 	-log_dir LOGS \
-	-source_top_cell inverter \
-	-spice /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/inverter.spi \
+	-source_top_cell mim_cap_adc \
+	-spice /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.spi \
 	-control /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/pegasuslvsctl \
 	-ui_data \
 	-gdb_data \
