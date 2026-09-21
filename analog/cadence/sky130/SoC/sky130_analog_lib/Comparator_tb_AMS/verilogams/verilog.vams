@@ -1,0 +1,48 @@
+//Verilog HDL for "adc_digital_lib", "tb_comparator_stimuli" "functional"
+`timescale 1ns/1ps
+module Comparator_tb_AMS (trima, trimb, clk);
+
+    output [4:0] trima, trimb;
+    output clk;
+
+    electrical [4:0] trima, trimb;
+    electrical clk;
+
+    reg [4:0] code_a, code_b;
+    reg clk_d;
+
+    parameter real freq_s = 100000;
+    parameter integer trimp = 16;
+    parameter integer trimn = 0;
+    parameter real vhigh = 1.8;
+
+    real time_step;
+
+    initial begin
+        clk_d = 1'b0;
+        time_step = 0.5e9 / freq_s;
+        forever #(time_step) clk_d = ~clk_d;
+    end
+
+    initial begin
+        code_a = trimp;
+        code_b = trimn;
+    end
+
+    analog begin
+        V(clk) <+ transition(clk_d ? vhigh : 0.0, 0, 1n);
+
+        V(trima[0]) <+ transition(code_a[0] ? vhigh : 0.0, 0, 1n);
+        V(trima[1]) <+ transition(code_a[1] ? vhigh : 0.0, 0, 1n);
+        V(trima[2]) <+ transition(code_a[2] ? vhigh : 0.0, 0, 1n);
+        V(trima[3]) <+ transition(code_a[3] ? vhigh : 0.0, 0, 1n);
+        V(trima[4]) <+ transition(code_a[4] ? vhigh : 0.0, 0, 1n);
+
+        V(trimb[0]) <+ transition(code_b[0] ? vhigh : 0.0, 0, 1n);
+        V(trimb[1]) <+ transition(code_b[1] ? vhigh : 0.0, 0, 1n);
+        V(trimb[2]) <+ transition(code_b[2] ? vhigh : 0.0, 0, 1n);
+        V(trimb[3]) <+ transition(code_b[3] ? vhigh : 0.0, 0, 1n);
+        V(trimb[4]) <+ transition(code_b[4] ? vhigh : 0.0, 0, 1n);
+    end
+
+endmodule

@@ -1,0 +1,9 @@
+# This Pegasus GUI file with batch triggers settings is created automatically to be used in internal flow.
+# Do not edit it unless you 100% sure what you do!
+
+# Pegasus Version 23.26-s005
+
+[ virtuoso6.BatchTriggers.RunDRC ]
+BatchPostTrigger ""
+BatchPreTrigger  ""
+EnableTriggers   "FALSE"
