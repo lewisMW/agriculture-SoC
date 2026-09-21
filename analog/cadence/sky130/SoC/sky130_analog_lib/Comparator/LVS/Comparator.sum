@@ -1,9 +1,9 @@
 ********************************************************************************
 *** Pegasus ERC SUMMARY
 ***
-Execute on Date/Time    : Sat Sep 12 16:16:01 2026
+Execute on Date/Time    : Mon Sep 14 18:25:57 2026
 Pegasus VERSION         : 23.26-s005 Thu Oct 17 16:37:42 PDT 2024
-Rule Deck Path          : /home/admin/Documents/PDKs/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
+Rule Deck Path          : /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/.config.rul
 Rule Deck Title         :
 Layout System           : GDSII
 Layout Path             : /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.gds.gz
