@@ -64,9 +64,8 @@ module synopsys_TS_sensor_integration(
 wire ts_enable;
 wire ts_pd;
 wire [7:0] ts_clock_div;
-reg [7:0]  ts_clock_counter;
 wire ts_clkg;
-reg  ts_slow_clock;
+wire  ts_slow_clock;
 wire ts_local_reset;
 
 // ts Signals
@@ -185,7 +184,7 @@ always @(posedge PCLK or negedge PRESETn) begin
     end
 end
 
-always @(reg_read_en or reg_addr or data0 or ts_data or data2) begin
+always @(reg_read_en or reg_addr or data0 or ts_data or data2 or ts_ready_reg or data2_write_ack or data0_write_ack) begin
     case(reg_read_en)
         1'b1: begin
             case(reg_addr[3:2])
@@ -207,19 +206,12 @@ assign ts_enable = data0[1];
 
 // ts Clock generation
 assign ts_clkg = PCLK & ts_enable;
-always @(posedge ts_clkg or negedge PRESETn) begin
-    if(~PRESETn) begin
-        ts_clock_counter <= 8'h00;
-        ts_slow_clock <= 1'b0;
-    end else begin
-        ts_clock_counter <= ts_clock_counter + 1;
-        if(ts_clock_counter == ts_clock_div) begin
-            ts_clock_counter <= 8'h00;
-            ts_slow_clock <= ~ts_slow_clock;
-        end
-    end
-end
-
+pvt_clk_div u_ts_clk_div(
+    .clk_i(ts_clkg),
+    .resetn(PRESETn),
+    .clk_div(ts_clock_div),
+    .clk_o(ts_slow_clock)
+);
 
 // CDC for APB write of registers 0 and 2
 always @(posedge ts_slow_clock or negedge PRESETn) begin

@@ -87,5 +87,11 @@ redirect -tee -file ../reports/antenna_rules.rpt {report_antenna_rules}
 
 set_ignored_layers -min_routing_layer M2  
 
+create_routing_rule width_and_spacing_rules \
+    -default_reference_rule \
+    -widths   [list M1 0.05 M2 0.05 M3 0.15 M4 0.15 M5 0.15 M6 0.15 M7 0.15 M8 0.5 M9 2 AP 2] \
+    -spacings [list M1 0.05 M2 0.05 M3 0.10 M4 0.15 M5 0.15 M6 0.15 M7 0.15 M8 0.5 M9 1 AP 2]
+
 create_routing_rule {NDR1} -default_reference_rule  -multiplier_width 2 -multiplier_spacing 2
 set_clock_routing_rules -rules NDR1 -clocks {clk swdclk} -min_routing_layer M2 -max_routing_layer M5
+

@@ -311,10 +311,10 @@ cmsdk_apb_slave_mux #(
 generate if(SNPS_PVT_TS_0_ENABLE==1)begin: gen_snps_PVT_ts0
     synopsys_TS_sensor_integration u_snps_PVT_ts0(
         .PCLK(PCLK),
-        .aRESETn(HRESETn),
+        .PRESETn(HRESETn),
 
         .PSELx(snps_PVT_ts0_psel),     
-        .PADDR(i_paddr[3:2]),    
+        .PADDR(i_paddr[3:0]),    
         .PENABLE(i_penable), 
         .PPROT(i_pprot), 
         .PSTRB(i_pstrb),
@@ -325,7 +325,11 @@ generate if(SNPS_PVT_TS_0_ENABLE==1)begin: gen_snps_PVT_ts0
         .PSLVERR(snps_PVT_ts0_pslverr),
 
         .ts_vcal(TS_VCAL),
-        .ts_an_test(TS_AN_TEST),
+        .ts_an_test_0(TS_AN_TEST[0]),
+        .ts_an_test_1(TS_AN_TEST[1]),
+        .ts_an_test_2(TS_AN_TEST[2]),
+        .ts_an_test_3(TS_AN_TEST[3]),
+
         .ts_vss_sense(TS_VSS_SENSE),
         .irq_ts_rdy(irq_ts_rdy[0])
     );
@@ -342,7 +346,7 @@ generate if(SNPS_PVT_TS_1_ENABLE==1)begin: gen_snps_PVT_ts1
         .aRESETn(HRESETn),
 
         .PSELx(snps_PVT_ts1_psel),     
-        .PADDR(i_paddr[3:2]),    
+        .PADDR(i_paddr[3:0]),    
         .PENABLE(i_penable), 
         .PPROT(i_pprot), 
         .PSTRB(i_pstrb),
@@ -369,12 +373,12 @@ generate if(SNPS_PVT_TS_2_ENABLE==1)begin: gen_snps_PVT_ts2
         .PCLK(PCLK),
         .aRESETn(HRESETn),
 
-        .PSELx(snps_PVT_ts2_psel),     
-        .PADDR(i_paddr[3:2]),    
-        .PENABLE(i_penable), 
-        .PPROT(i_pprot), 
+        .PSELx(snps_PVT_ts2_psel),
+        .PADDR(i_paddr[3:0]),
+        .PENABLE(i_penable),
+        .PPROT(i_pprot),
         .PSTRB(i_pstrb),
-        .PWRITE(i_pwrite),   
+        .PWRITE(i_pwrite),
         .PWDATA(i_pwdata),   
         .PRDATA(snps_PVT_ts2_prdata),   
         .PREADY(snps_PVT_ts2_pready),   
@@ -398,7 +402,7 @@ generate if(SNPS_PVT_TS_3_ENABLE==1)begin: gen_snps_PVT_ts3
         .aRESETn(HRESETn),
 
         .PSELx(snps_PVT_ts3_psel),     
-        .PADDR(i_paddr[3:2]),    
+        .PADDR(i_paddr[3:0]),    
         .PENABLE(i_penable), 
         .PPROT(i_pprot), 
         .PSTRB(i_pstrb),
@@ -426,7 +430,7 @@ generate if(SNPS_PVT_TS_4_ENABLE==1)begin: gen_snps_PVT_ts4
         .aRESETn(HRESETn),
 
         .PSELx(snps_PVT_ts4_psel),     
-        .PADDR(i_paddr[3:2]),    
+        .PADDR(i_paddr[3:0]),    
         .PENABLE(i_penable), 
         .PPROT(i_pprot), 
         .PSTRB(i_pstrb),
@@ -454,7 +458,7 @@ generate if(SNPS_PVT_TS_5_ENABLE==1)begin: gen_snps_PVT_ts5
         .aRESETn(HRESETn),
 
         .PSELx(snps_PVT_ts5_psel),     
-        .PADDR(i_paddr[3:2]),    
+        .PADDR(i_paddr[3:0]),    
         .PENABLE(i_penable), 
         .PPROT(i_pprot), 
         .PSTRB(i_pstrb),
@@ -479,9 +483,9 @@ end endgenerate
 generate if(SNPS_PVT_PD_0_ENABLE==1)begin: gen_snps_PVT_pd0
     synopsys_PD_sensor_integration u_snps_PVT_pd0(
         .PCLK(PCLK),
-        .aRESETn(HRESETn),
+        .PRESETn(HRESETn),
         .PSELx(snps_PVT_pd0_psel),     
-        .PADDR(i_paddr[3:2]),    
+        .PADDR(i_paddr[3:0]),    
         .PENABLE(i_penable), 
         .PPROT(i_pprot), 
         .PSTRB(i_pstrb),

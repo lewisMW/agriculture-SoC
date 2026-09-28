@@ -84,7 +84,27 @@ generate
       .RET1N (TIE_RET1N)
     );
   end
+  else if (AW==15) begin
+    rf_32k
+      u_rf_sp_hdf(
+    `ifdef POWER_PINS
+      .VDD(VDD),
+      .VSS(VSS),
+    `endif
+      .Q(RDATA32),
+      .CLK(CLK),
+      .CEN(CEN),
+      .WEN(WEN32),
+      .A(ADDR12),
+      .D(WDATA32),
+      .EMA(TIE_EMA),
+      .EMAW(TIE_EMAW),
+      .GWEN(GWEN),
+      .RET1N(TIE_RET1N)
+      );
+  end
+
 endgenerate
- 
+
 
 endmodule

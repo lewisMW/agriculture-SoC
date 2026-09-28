@@ -3,6 +3,36 @@
 \usepackage{tcolorbox,float}
 \usepackage{listings}
 
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+
 \makeatletter
 \newfloat{info@box}{tbp}{loi}[section]% 1: Name of float environment. 2: Default placement (top, bottom, ...). 3: File extension if written to an aux-file (like toc, lof, lot, loa, ...). 4: Numbering within <section/subsection/...>.
 \makeatother
@@ -282,5 +312,34 @@ please contact the soclabs team or raise an issue on the accelerator-project git
 
 
 \chapter{ASIC Flow}
+
+\section{Technology Selection}
+When taping out any design it is important to consider the technology node. The choice of node will impact the power, 
+performance and area (PPA) metrics. And along with area, the cost will also vary from node to node. Below we have compiled
+some metrics on nanosoc with different nodes and configurations
+
+\begin{table}[h]
+\small
+\begin{tabular}{llll}
+\hline
+\textbf{Technology Node} & \textbf{Configuration}                                                           & \textbf{\begin{tabular}[c]{@{}l@{}}Max \\ Freq (MHz)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}l@{}}Area\\ (mm\textsuperscript{2})\end{tabular}} \\ \hline
+TSMC 65nm (12-track)     & \begin{tabular}[c]{@{}l@{}}16kB IMEM and DMEM\\ 8kB EXPRAM L and H\end{tabular}  & 240                                                                     & 1.5                                                                             \\ \hline
+TSMC 65nm (12-track)     & \begin{tabular}[c]{@{}l@{}}16kB IMEM and DMEM\\ 16kB EXPRAM L and H\end{tabular} & 240                                                                     & 2                                                                               \\ \hline
+GF 180                   & \begin{tabular}[c]{@{}l@{}}4kB IMEM and DMEM\\ 2kB EXPRAM L and H\end{tabular}   & 50                                                                      & 6                                                                               \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Cadence ASIC Flow: TSMC 65nm}
+The following shows how to run the ASIC flow using Cadence Software for a TSMC 65nm implementation
+
+\begin{lstlisting}[language=bash]
+    make gen_memories
+    make flist_genus_nanosoc ASIC=yes ACCELERATOR=yes NODE=65
+    make cadence_synthesis ASIC=yes NODE=65
+    make cadence_pnr_setup ASIC=yes NODE=65
+\end{lstlisting}
+
+
+
 
 \end{document}

@@ -208,6 +208,7 @@ module adc_apb_wrapper_rev1 #(
     // --------------------------------------------------------------------------
     // Debug Output
     // --------------------------------------------------------------------------
+`ifdef SIMULATION
     always @(posedge PCLK) begin
         if (write_enable && (PADDR == PLL_CONTROL_ADDR))
             $display("PLL_CONTROL: %h", PWDATA);
@@ -216,6 +217,7 @@ module adc_apb_wrapper_rev1 #(
         if (write_enable && (PADDR == ADC_TRIGGER_ADDR))
             $display("ADC_TRIGGER: %h", PWDATA);
     end
+`endif
 
     // --------------------------------------------------------------------------
     // Instantiate ADC and AMUX modules.

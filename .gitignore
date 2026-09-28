@@ -8,6 +8,7 @@
 *.o
 *.fst
 paths.mk
+nanosoc/env/dependency_env.sh
 
 # ARM reference (downloaded, not source)
 AT510-MN-80001-r2p0-00rel0
@@ -26,6 +27,10 @@ xcelium.d/
 *.log
 *.log.*
 logs_*
+genus.cmd*
+genus.log*
+innovus.cmd*
+innovus.log*
 
 # Simulation output directories
 psf/
@@ -74,9 +79,19 @@ thumbnail_*.png
 # AHDL compiled simulation databases
 *.ahdlSimDB/
 
+# synthesis generated files
+ASIC_ours/Cadence/outputs
+ASIC_ours/Cadence/reports
+
 # Backup files (redundant with git)
 *.bak
 *.oa-
 
 # Maestro auto-generated
 stimuliRemovedNames.xml
+
+# Compiled firmware images.
+nanosoc/system/testcodes/**/*.hex
+nanosoc/system/testcodes/**/*.lst
+nanosoc/system/testcodes/**/*.bin
+nanosoc/system/testcodes/**/*.o
