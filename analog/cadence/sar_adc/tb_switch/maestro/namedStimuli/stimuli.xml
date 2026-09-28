@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stimuliset>
+    <namedstimuli>
+        <stimuliname>ctrl</stimuliname>
+        <timeStamp>24/03/2026;1:6:16:PM</timeStamp>
+        <simStopTime>1n</simStopTime>
+        <isourceResistorValue>1k</isourceResistorValue>
+        <libname></libname>
+        <srctype>bit</srctype>
+        <sourcetype>V</sourcetype>
+        <cdfinstname>vbit</cdfinstname>
+        <parameterset>
+            <parameter>
+                <cdfname>data</cdfname>
+                <prompt>Pattern Parameter data</prompt>
+                <datatype>string</datatype>
+                <value>010010</value>
+                <defvalue></defvalue>
+            </parameter>
+            <parameter>
+                <cdfname>rptstart</cdfname>
+                <prompt>Pattern Parameter rptstart</prompt>
+                <datatype>string</datatype>
+                <value>1</value>
+                <defvalue>1</defvalue>
+            </parameter>
+            <parameter>
+                <cdfname>rpttimes</cdfname>
+                <prompt>Pattern Parameter rpttimes</prompt>
+                <datatype>string</datatype>
+                <value>-1</value>
+                <defvalue>0</defvalue>
+            </parameter>
+            <parameter>
+                <cdfname>trigger</cdfname>
+                <prompt>Trigger</prompt>
+                <datatype>cyclic</datatype>
+                <value>Internal</value>
+                <defvalue>Internal</defvalue>
+            </parameter>
+            <parameter>
+                <cdfname>nPeriodicJitter</cdfname>
+                <prompt>Number of periodic jitters</prompt>
+                <datatype>string</datatype>
+                <value>0</value>
+                <defvalue>0</defvalue>
+            </parameter>
+            <parameter>
+                <cdfname>val1</cdfname>
+                <prompt>One value</prompt>
+                <datatype>string</datatype>
+                <value>1.8</value>
+                <defvalue></defvalue>
+            </parameter>
+            <parameter>
+                <cdfname>val0</cdfname>
+                <prompt>Zero value</prompt>
+                <datatype>string</datatype>
+                <value>0</value>
+                <defvalue></defvalue>
+            </parameter>
+            <parameter>
+                <cdfname>td</cdfname>
+                <prompt>Delay time</prompt>
+                <datatype>string</datatype>
+                <value>0</value>
+                <defvalue></defvalue>
+            </parameter>
+            <parameter>
+                <cdfname>per</cdfname>
+                <prompt>Period</prompt>
+                <datatype>string</datatype>
+                <value>100n</value>
+                <defvalue></defvalue>
+            </parameter>
+        </parameterset>
+    </namedstimuli>
+</stimuliset>
