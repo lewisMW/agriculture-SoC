@@ -1,9 +1,9 @@
-Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.15s.
+Virtuoso Framework License (111) was checked out successfully. Total checkout time was 0.66s.
 ********************************************************************************
 Product   : Virtuoso(R) XStream Out
 Program   : @(#)$CDS: strmout version IC23.1-64b 01/13/2026 22:48 (cpgbld15) $
           : sub-version  IC23.1-64b.ISR17.40 
-Started at: 21-Sep-2026  18:45:10
+Started at: 26-Sep-2026  10:01:47
 User Name : root
 Host Name : cadence-vm
 Directory : /root/agriculture-SoC/analog/cadence
@@ -22,7 +22,7 @@ done!
 Loaded sky130_fd_pr_main/libInit.il successfully!
 INFO (XSTRM-217): Reading the layer map file, /opt/pdk/sky130_release_0.1.0/libs/sky130_fd_pr_main/sky130_fd_pr_main.layermap
 WARNING (XSTRM-333): The '-enableColoring' option will be ignored during XStream Out. This is because there is no color entry in the layer map and the object map file.
-INFO (XSTRM-427): Based on current hardware configuration, running XStream Out translation in multi-threaded mode with 4 threads.
+INFO (XSTRM-427): Based on current hardware configuration, running XStream Out translation in multi-threaded mode with 3 threads.
 INFO (XSTRM-280): The output file will be a compressed file because the file name has extension .gz
 INFO (XSTRM-162): You have not used the '-viaMap' option. If the OpenAccess design has native oaVia instances, use the '-viaMap' option for preserving oaVia instances in a XStream Out - XStream In round trip. Using the '-viaMap' option improves performance and VM usage of applications using the Streamed-In design.
 
@@ -44,7 +44,7 @@ convertDot                              node
 convertPin                              geometryAndText
 
 INFO (XSTRM-180): You have not used the '-objectMap' option. The design has instance(s) of at least one of following OpenAccess objects: oaBlockage, oaBoundary, oaRow, and oaMarker. Any information about these objects will not be translated into the generated stream file. Use the '-objectMap' option to translate/preserve these objects using XStream.
-INFO (XSTRM-223): 1. Translating cellview sky130_fd_pr_main/cap_mim_m3__base/layout as STRUCTURE cap_mim_m3__base_CDNS_789980310820.
+INFO (XSTRM-223): 1. Translating cellview sky130_fd_pr_main/cap_mim_m3__base/layout as STRUCTURE cap_mim_m3__base_CDNS_790380907150.
 INFO (XSTRM-223): 2. Translating cellview sar_adc/mim_cap_adc/layout as STRUCTURE mim_cap_adc.
 
 Summary of Objects Translated:
@@ -73,5 +73,5 @@ Summary of Objects Translated:
 	TextDisplay:                            0
 	Cells:                                  2
 
-Elapsed Time: 0.5s   User Time: 0.2s   CPU Time: 0.1s   Peak VM: 164460KB
+Elapsed Time: 5.8s   User Time: 0.1s   CPU Time: 0.0s   Peak VM: 89704KB
 INFO (XSTRM-234): Translation completed. '0' error(s) and '2' warning(s) found.

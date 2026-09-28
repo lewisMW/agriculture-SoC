@@ -2,22 +2,18 @@
 #####  
 #####                                       Pegasus LVS COMPARISON
 #####  
-#####  Version                       :   24.12-s023
-#####  NVN Run Start                 :   Mon Sep 21 18:45:35 2026
+#####  Version                       :   23.26-s005
+#####  NVN Run Start                 :   Sat Sep 26 10:01:58 2026
+#####  ERC Summary File              :   mim_cap_adc.sum
+#####  Extraction Report File        :   mim_cap_adc.rep
 #####  Comparison Report File        :   mim_cap_adc.rep.cls
 #####  Top Cell                      :   mim_cap_adc  <vs>  mim_cap_adc
 #####  
-#####                                :      @     @
-#####                                :       @   @ 
-#####                                :        @ @  
-#####  Run Result                    :     MISMATCH
-#####                                :        @ @  
-#####                                :       @   @ 
-#####                                :      @     @
+#####  Run Result                    :   MATCH
 #####  
-#####  Run Summary                   :   [ERROR] Parameter Mismatches
-#####                                :   [WARN]  Top Cell Has Extra Pins
-#####                                :   [INFO]  Connectivity Matches
+#####  Run Summary                   :   [INFO]  ERC Results: Empty
+#####                                :   [INFO]  Extraction Clean
+#####                                :   [INFO]  Unconnected Corresponding Top Cell Pin(s) Exists
 #####  
 #####  Layout Design                 :   sar_adc mim_cap_adc layout
 #####  Schematic File                :   /root/agriculture-SoC/analog/cadence/pegasus_runs/mim_cap_adc.cdl (cdl)
@@ -25,9 +21,15 @@
 #####                                :   /opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
 #####  Pin Swap File                 :   mim_cap_adc.rep.cps
 #####  
+#####  Extraction CPU Time           :   0h 0m 1s - (1s)
+#####  Extraction Exec Time          :   0h 0m 6s - (6s)
+#####  Extraction Peak Memory Usage  :   22.00MB
 #####  NVN CPU Time                  :   0h 0m 0s - (0s)                 
-#####  NVN Exec Time                 :   0h 0m 0s - (0s)                 
-#####  NVN Peak Memory Usage         :   270.97MB
+#####  NVN Exec Time                 :   0h 0m 1s - (1s)                 
+#####  NVN Peak Memory Usage         :   271.27MB
+#####  LVS Total CPU Time            :   0h 0m 1s - (1s)                 
+#####  LVS Total Exec Time           :   0h 0m 7s - (7s)                 
+#####  LVS Total Peak Memory Usage   :   271.27MB
 #####  
 ##############################################################################################################
 
@@ -40,17 +42,17 @@
 
 Cell Statistic Descriptions                  | Count
 ---------------------------------------------+----------
-Cells matched                                |         0
+Cells matched                                |         1
 Cells expanded                               |         0
 Cells not run                                |         0
-Cells which mismatch                         |         1
+Cells which mismatch                         |         0
 ---------------------------------------------+----------
 Total                                        |         1
 
 
 Cell Statistic Detail                        | Count
 ---------------------------------------------+----------
-Cells with parameter mismatches              |         1
+Cells with parameter mismatches              |         0
 Cells with mismatched instance subtypes      |         0
 Cells that have been blackboxed              |         0
 
@@ -61,10 +63,10 @@ Cells that have been blackboxed              |         0
 #
 ##############################################################################################################
 
-               |    Initial Pins    |    Compare Pins    |              | 
-Cell           |   lay   :   sch    |   lay   :   sch    | Status       | Detail
----------------+---------+----------+---------+----------+--------------+-------------------------------------
-mim_cap_adc    |       3 :        3 |       2 :        2 | mismatch     | extra pins, parameter mismatches
+                |     Initial Pins     |     Compare Pins     |            | 
+Cell            |   lay    :    sch    |   lay    :    sch    | Status     | Detail
+----------------+----------+-----------+----------+-----------+------------+-----------
+mim_cap_adc     |        3 :         3 |        3 :         3 | match      | 
 
 
 ##############################################################################################################
@@ -263,8 +265,6 @@ Default LVS Rule Values
     lvs_spice                               no  -show_neg_param_warning
     lvs_spice                               no  -scale_x_parameters
     lvs_spice                               yes -strict_subckts_order
-    lvs_spice                               no  -ignore_higher_include_for_inst_master
-    lvs_spice                               no  -ignore_black_box_connect
     // lvs_spice_option                      
     lvs_reverse_wl                          no
     // lvs_spice_multiplier_name             
@@ -369,65 +369,39 @@ Effective LVS Rule Values
 #
 ##############################################################################################################
 
-                              ##################################################
-                              #                                                #
-                              #       ------->>> $ MISMATCH $ <<<-------       #
-                              #                                                #
-                              #         mim_cap_adc  <vs>  mim_cap_adc         #
-                              #                                                #
-                              #              CONNECTIVITY MATCHES              #
-                              #              PARAMETER MISMATCHES              #
-                              #                   EXTRA PINS                   #
-                              #                                                #
-                              ##################################################
+                              +------------------------------------------------+
+                              |                                                |
+                              |        ------->>>   MATCH   <<<-------         |
+                              |                                                |
+                              |         mim_cap_adc  <vs>  mim_cap_adc         |
+                              |                                                |
+                              |                                                |
+                              +------------------------------------------------+
 
 +===[mim_cap_adc]=============================================================================================
 |                                                 STATISTICS                                                  
 +=============================================================================================================
 
 
-                         |     Original      |      Reduced      |     Unmatched     
-Cell                     |   lay   :   sch   |   lay   :   sch   |   lay   :   sch
--------------------------+---------+---------+---------+---------+---------+---------
-C [2 pins]               |         :         |         :         |         :         
- C(CAP_MIM_M3__BASE)     |       1 :       1 |       1 :       1 |       0 :        0
--------------------------+---------+---------+---------+---------+---------+---------
-Total                    |       1 :       1 |       1 :       1 |       0 :        0
-=========================+=========+=========+=========+=========+=========+=========
-Pins                     |         :         |       2 :       2 |       0 :        0
-Nets                     |         :         |       0 :       0 |       0 :        0
-=========================+=========+=========+=========+=========+=========+=========
+                         |     Original      |     Reduced      
+Cell                     |   lay   :   sch   |   lay   :  sch
+-------------------------+---------+---------+---------+--------
+C [2 pins]               |         :         |         :        
+ C(CAP_MIM_M3__BASE)     |       1 :       1 |       1 :       1
+-------------------------+---------+---------+---------+--------
+Total                    |       1 :       1 |       1 :       1
+=========================+=========+=========+=========+========
+Pins                     |         :         |       3 :       3
+Nets                     |         :         |       0 :       0
+=========================+=========+=========+=========+========
 
 +===[mim_cap_adc]=============================================================================================
 |                                           INITIAL CORRESPONDENCES                                           
 +=============================================================================================================
 
 Type     | Name
----------+---------------
-Pin      | bottom top
-
-
-+===[mim_cap_adc]=============================================================================================
-|                                                 EXTRA PINS                                                  
-+=============================================================================================================
-
-Side     | Pins
----------+---------------
-Lay      | 3
----------+---------------
-Sch      | vssa
-
-
-+===[mim_cap_adc]=============================================================================================
-|                                       MISMATCHED INSTANCE PARAMETERS                                        
-+=============================================================================================================
-
-
-Layout Instance                           | Schematic Instance          |     Parameter Error     
-------------------------------------------+-----------------------------+------------------(mip 1)
-C0 @(0.000,0.000) C(CAP_MIM_M3__BASE)     | CC0 C(CAP_MIM_M3__BASE)     |                         
-w: <missing>                              | w: 4 u                      | missing                 
-l: <missing>                              | l: 4 u                      | missing                 
+---------+---------------------------------
+Pin      | bottom top vssa<unconnected>
 
 
 ##############################################################################################################

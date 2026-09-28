@@ -2,24 +2,18 @@
 # Do not attempt to modify this file as any change may lead
 # to Pegasus GUI Tools malfunction.
 # 
-# This Pegasus GUI File Index Registry was created automatically
-# Do not attempt to modify this file as any change may lead
-# to Pegasus GUI Tools malfunction.
-# 
 "Run Directory" internal none /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS
 "Current Directory" internal none /root/agriculture-SoC/analog/cadence
 "Cadence Directory" internal none /root/agriculture-SoC/analog/cadence/.cadence/
-"Job Signature" internal none IPVS_1789980309_2542
+"Job Signature" internal none IPVS_1790380899_20265
 "Pegasus Job Mode" internal none lvs
 "GUI Flow" internal none virtuoso6
 "GUI Preset" internal none /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/.preset.autosave
-"Pegasus Version" internal none 24.12-s023
+"Pegasus Version" internal none 23.26-s005
 "Binary Name" internal none pegasusgui
-"Pegasus Build Date" internal none "Tue Apr 15 18:48:35 PDT 2025"
-"Pegasus Job Time" internal none 1789980309
+"Pegasus Build Date" internal none "Thu Oct 17 16:37:42 PDT 2024"
+"Pegasus Job Time" internal none 1790380900
 "DFII version" internal none IC23.1.0
-"Run Directory" internal none /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS
-"Pegasus Job Mode" internal none lvs
 "Rule File" input text /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/.config.rul
 "Rule File" input text /opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
 "Layout Scale" internal none 0.001
@@ -39,54 +33,35 @@
 "Enable Coloring" input none yes
 "Layout ReplaceBusBitChar" input none nil
 "Layout NoConvertHalfWidthPath" input none nil
-"Layout FlattenPCells" input none nil
 "Schematic Data is in Control File" internal none ENABLED
 "Schematic Top Cell" internal none mim_cap_adc
+"Check Schematic" internal none ENABLED
 "Extracted Spice File" output text /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.spi
 "Do not check rules files before run" internal none ENABLED
 "Control File" input text /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/pegasuslvsctl
 "Pegasus Job Log" log text /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/pegasusuilvs.log
 "It is Pegasus flow" internal none ENABLED
 "Pegasus Log Dir" internal none LOGS
-"PIPO Setup File I" internal text  /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/pipo1.setup
-"PIPO Log I" log text  /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/PIPO1.LOG
-"PIPO Output I" internal text  /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/PIPO1.OUT
+"PIPO Setup File I" internal text /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/pipo1.setup
+"PIPO Log I" log text /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/PIPO1.LOG
+"PIPO Output I" internal text /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/PIPO1.OUT
 "Input Layout" input none OA: sar_adc mim_cap_adc layout
 "Output Layout Cellmap I" internal text /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/lay_cellMap.txt
-"Pegasus Version" internal none 24.12-s023
 "Binary Name" internal none pegasusvirt
-"Pegasus Build Date" internal none "Tue Apr 15 18:48:35 PDT 2025"
-"Pegasus Job Time" internal none 1789980310
-"ERC Result" internal none EMPTY
-"ERC Summary" output text /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.sum
-"Extracted Spice File" output text /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.spi
-"Extraction Report" output erc /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.rep
-"LVS Report Options" internal none none
-"Layout GDSII" input none /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.gds.gz
-"Layout Top Cell" internal none mim_cap_adc
-"Pegasus Job Mode" internal none lvs
-"Report MaxResults" internal none 1000
-"Rule File" input text /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/.config.rul
-"Rule File" input text /opt/pdk/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
-"Run Directory" internal none /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/
-"Extraction Result" internal none ERRORS
-"Schematic Top Cell" internal none mim_cap_adc
-"LVS Run Name" internal none mim_cap_adc.rep
-"Schematic Netlist" input text /root/agriculture-SoC/analog/cadence/pegasus_runs/mim_cap_adc.cdl
-"UI Data" internal none ENABLED
 "Comparison Report" output cls /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.rep.cls
-"Pegasus Mode Info" internal none ACFBHODLFBIMBBAMOBAAMHPDEDBNBLAG
-"Keep Layers Database" output rdb .keep_layers.cdb
-"Pegasus Version" internal none 24.12-s023
-"Binary Name" internal none pegasus
-"Pegasus Build Date" internal none "Sat Apr 12 10:51:00 AEST 2025"
-"Pegasus Job Time" internal none 1789980340
-"Schematic Netlist" input text /root/agriculture-SoC/analog/cadence/pegasus_runs/mim_cap_adc.cdl
-"Comparison Result" internal none MISMATCH
-"Run Directory" internal none /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/
+"Extraction Report" output erc /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.rep
+"LVS Report Options" internal none -none
+"ERC Summary" output text /root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.sum
+"Extraction Result" internal none CLEAN
+"ERC Result" internal none EMPTY
 "UI Data" internal none ENABLED
+"Pegasus Mode Info" internal none HLFKIMPMPLLEALHIIFHJEJMMDJDMPMDL
+"Report MaxResults" internal none 1000
+"Binary Name" internal none Pegasus
+"Schematic Netlist" input text /root/agriculture-SoC/analog/cadence/pegasus_runs/mim_cap_adc.cdl
+"Comparison Result" internal none MATCH
 "LVS Run Name" internal none mim_cap_adc.rep
-"Pegasus Version" internal none 24.12-s023
+"Pegasus Version" internal none 23.26-s005
 "Binary Name" internal none pegasusnvn
-"Pegasus Build Date" internal none "Tue Apr 15 18:48:35 PDT 2025"
-"Pegasus Job Time" internal none 1789980335
+"Pegasus Build Date" internal none "Thu Oct 17 16:37:42 PDT 2024"
+"Pegasus Job Time" internal none 1790380918
