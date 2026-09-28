@@ -86,10 +86,36 @@ module accelerator_subsystem #(
   // Interrupts
   output wire   [IRQ_NUM-1:0]      EXP_IRQ
 );
+
+
+wire [SYS_DATA_W-1:0] PWDATA;
+wire PWRITE;
+wire [SYS_DATA_W-1:0] PRDATA;
+wire [ACC_ADDR_W-1:0] PADDR;
+wire PREADY;
+wire PSEL;
+wire PENABLE;
+wire PSLVERR;
+wire [3:0] PSTRB;
+wire [2:0] PPROT;
+wire APBACTIVE;
   
   //-------------------------------------------
   // Instantiate your accelerator/wrapper here
   //-------------------------------------------
+  // APB bridge <-> wrapper nets (declared before first use - strict Verilog)
+  wire [SYS_DATA_W-1:0] PWDATA;
+  wire PWRITE;
+  wire [SYS_DATA_W-1:0] PRDATA;
+  wire [ACC_ADDR_W-1:0] PADDR;
+  wire PREADY;
+  wire PSEL;
+  wire PENABLE;
+  wire PSLVERR;
+  wire [3:0] PSTRB;
+  wire [2:0] PPROT;
+  wire APBACTIVE;
+
   cmsdk_ahb_to_apb  #(
   .ADDRWIDTH(SYS_ADDR_W),
   .REGISTER_RDATA(1),
@@ -126,25 +152,50 @@ module accelerator_subsystem #(
   /*input  wire*/.PREADY(PREADY),    // Ready for each APB slave
   /*input  wire*/.PSLVERR(PSLVERR));  // Error state for each APB slave
 
-wire [SYS_DATA_W-1:0] PWDATA;
-wire PWRITE;
-wire [SYS_DATA_W-1:0] PRDATA;
-wire [ACC_ADDR_W-1:0] PADDR;
-wire PREADY;
-wire PSEL;
-wire PENABLE;
-wire PSLVERR;
-wire [3:0] PSTRB;
-wire [2:0] PPROT;
-wire APBACTIVE;
 
-adc_apb_wrapper_rev1 #(
+// ---------------------------------------------------------------------------
+// RTC support signals for the sensing peripheral (mirrors agriculture_soc.v).
+// The nanosoc integration only exposes HCLK/HRESETn here, so the wrapper's
+// CLK1HZ and nPOR must be generated locally — otherwise they float and the RTC
+// never ticks or leaves power-on reset (autonomous polling + passthrough dead).
+// ---------------------------------------------------------------------------
+
+// Power-on reset for the RTC. Ideally this survives a warm HRESETn pulse (so RTC
+// time persists across a system reset), but nanosoc only exposes HRESETn at this
+// boundary, so we drive nPOR from HRESETn: the RTC comes out of power-on reset at
+// boot and runs. (A POR that truly survives a warm reset needs a dedicated signal
+// from the reset controller — a later refinement; not exercised by the tests.)
+wire nPOR = HRESETn;
+
+// ~1 Hz tick for the RTC, divided from HCLK. Reset from HRESETn so clk1hz_ctr /
+// clk1hz_reg initialise cleanly (no X-propagation) and CLK1HZ starts toggling
+// immediately after reset deasserts. CLK1HZ_DIV sets the half-period divide;
+// this value is sim-friendly. For real hardware set it to (HCLK_hz / 2).
+localparam [31:0] CLK1HZ_DIV = 32'd50;
+reg  [31:0] clk1hz_ctr;
+reg         clk1hz_reg;
+always @(posedge HCLK or negedge HRESETn) begin
+   if (~HRESETn) begin
+      clk1hz_ctr <= 32'd0;
+      clk1hz_reg <= 1'b0;
+   end else if (clk1hz_ctr >= (CLK1HZ_DIV - 32'd1)) begin
+      clk1hz_ctr <= 32'd0;
+      clk1hz_reg <= ~clk1hz_reg;
+   end else begin
+      clk1hz_ctr <= clk1hz_ctr + 32'd1;
+   end
+end
+wire clk1hz = clk1hz_reg;
+
+adc_apb_wrapper_rev2 #(
    .ADDR_WIDTH(ACC_ADDR_W),
    .DATA_WIDTH(SYS_DATA_W)
 ) sensor_wrapper (
    // Clock and Reset
    .PCLK(HCLK),
+   .CLK1HZ(clk1hz),      // ~1 Hz RTC tick (divided from HCLK)
    .PRESETn(HRESETn),
+   .nPOR(nPOR),          // power-on reset (survives warm HRESETn; keeps RTC time)
    // Address and Control
    .PSEL(PSEL),
    .PADDR(PADDR),

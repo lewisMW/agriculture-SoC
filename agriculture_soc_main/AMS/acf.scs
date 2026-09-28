@@ -1,0 +1,5 @@
+// Spectre analog control file for the Xcelium AMS flow (SIMULATOR=xr AMS=yes).
+// The stop time is only an upper bound - the digital $finish (testcode
+// completion) ends the co-simulation.
+simulator lang=spectre
+tran1 tran start=0 stop=50m method=trap

@@ -49,7 +49,8 @@ module nanosoc_sysio_decode #(
   parameter BASEADDR_GPIO1       = 32'h4001_1000,
   // Sysctrl base address
   parameter BASEADDR_SYSCTRL     = 32'h4001_f000,
-  parameter BASEADDR_ADC         = 32'h4002_0000
+  parameter BASEADDR_ADC         = 32'h4002_0000,
+  parameter BASEADDR_PVT         = 32'h4002_1000
 )(
     // System Address
     input wire                  hsel,
@@ -62,6 +63,9 @@ module nanosoc_sysio_decode #(
     output wire                 sysctrl_hsel,
   `ifdef AMS_PERIPHERALS
     output wire                 adcsys_hsel,
+  `endif
+  `ifdef SNPS_PVT_MONITORING
+    output wire                 pvtsys_hsel,
   `endif
     // Default slave
     output wire                 defslv_hsel
@@ -89,20 +93,40 @@ module nanosoc_sysio_decode #(
   assign adcsys_hsel  = hsel & (haddr[31:12]==
                         BASEADDR_ADC[31:12]);     // 0x40020000
 `endif
+`ifdef SNPS_PVT_MONITORING
+  assign pvtsys_hsel  = hsel & (haddr[31:12]==
+                        BASEADDR_PVT[31:12]);     // 0x40020000
+`endif
+
   // ----------------------------------------------------------
   // Default slave decode logic
   // ----------------------------------------------------------
-`ifdef AMS_PERIPHERALS
-  assign defslv_hsel  = ~(apbsys_hsel |
-                          gpio0_hsel   | gpio1_hsel  |
-                          sysctrl_hsel | adcsys_hsel
-                         );
-`else
-  assign defslv_hsel  = ~(apbsys_hsel |
-                          gpio0_hsel   | gpio1_hsel  |
-                          sysctrl_hsel
-                         );
 
+
+`ifdef AMS_PERIPHERALS
+  `ifdef SNPS_PVT_MONITORING
+    assign defslv_hsel  = ~(apbsys_hsel |
+                            gpio0_hsel   | gpio1_hsel  |
+                            sysctrl_hsel | adcsys_hsel | pvtsys_hsel
+                          );
+  `else
+    assign defslv_hsel  = ~(apbsys_hsel |
+                            gpio0_hsel   | gpio1_hsel  |
+                            sysctrl_hsel | adcsys_hsel
+                          );
+  `endif
+`else
+  `ifdef SNPS_PVT_MONITORING
+    assign defslv_hsel  = ~(apbsys_hsel |
+                            gpio0_hsel   | gpio1_hsel  |
+                            sysctrl_hsel | pvtsys_hsel
+                          );
+  `else
+    assign defslv_hsel  = ~(apbsys_hsel |
+                            gpio0_hsel   | gpio1_hsel  |
+                            sysctrl_hsel
+                          );
+  `endif
 `endif
 
 endmodule

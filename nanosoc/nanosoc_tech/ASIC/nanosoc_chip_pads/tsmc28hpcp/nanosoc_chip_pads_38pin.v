@@ -38,18 +38,12 @@
 `include "gen_defines.v"
 
 module nanosoc_chip_pads (
-  inout  wire          VDDIO,
-  inout  wire          VSSIO,
-  inout  wire          VDD,
-  inout  wire          VSS,
-  inout  wire          VDDACC,
-
   input  wire          SE,
   input  wire          CLK, // input
   input  wire          TEST, // input
   input  wire          NRST,  // active low reset
-  inout  wire  [7:0]  P0,
-  inout  wire  [7:0]  P1,
+  inout  wire  [7:0]   P0,
+  inout  wire  [7:0]   P1,
   inout  wire          SWDIO,
   input  wire          SWDCK);
 
@@ -68,7 +62,7 @@ wire        pad_swdio_i;
 wire        pad_swdio_o;
 wire        pad_swdio_e;
 wire        pad_swdio_z;
-wire [15:0] pad_gpio_port0_i ; 
+wire [15:0] pad_gpio_port0_i ;
 wire [15:0] pad_gpio_port0_o ;
 wire [15:0] pad_gpio_port0_e ;
 wire [15:0] pad_gpio_port0_z ;
@@ -89,7 +83,7 @@ wire [GPIO_TIO-1:0] soc_bist_in; //soc test status outputs
 wire [GPIO_TIO-1:0] soc_bist_out; //soc test status outputs
 wire        soc_alt_mode; // ALT MODE = UART
 wire        soc_uart_rxd_i; // UART RXD
-wire        soc_uart_txd_o = 1'b1; // UART TXD
+wire        soc_uart_txd_o; // UART TXD
 wire        soc_swd_mode; // SWD mode
 wire        soc_swd_clk_i; // SWDCLK
 wire        soc_swd_dio_i; // SWDIO tristate input
@@ -178,11 +172,6 @@ nanosoc_chip_cfg #(
 );
 
   nanosoc_chip u_nanosoc_chip (
-`ifdef POWER_PINS
-  .VDD        (VDD),
-  .VSS        (VSS),
-  .VDDACC     (VDDACC),
-`endif
 //`ifdef ASIC_TEST_PORTS
   .diag_mode   (soc_diag_mode     ),
   .diag_ctrl   (soc_diag_ctrl     ),
@@ -269,13 +258,13 @@ PVSS1DGZ_V_G uPAD_VSS_3(
    .VSS(VSS)
    );
 // Accelerator Power supplies
-PVDD1DGZ_H_G uPAD_VDDACC_0(
+PVDD1ANA_H_G uPAD_VDDACC_0(
    .VDD(VDDACC)
    );
-PVDD1DGZ_V_G uPAD_VDDACC_1(
+PVDD1ANA_H_G uPAD_VDDACC_1(
    .VDD(VDDACC)
    );
-PVDD1DGZ_H_G uPAD_VDDACC_2(
+PVDD1ANA_H_G uPAD_VDDACC_2(
    .VDD(VDDACC)
    );
 

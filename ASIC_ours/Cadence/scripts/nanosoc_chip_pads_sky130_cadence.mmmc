@@ -1,0 +1,120 @@
+set io_dir      /opt/pdk/sky130A/libs.ref/sky130_fd_io
+set sram_dir    /home/daniel/precompiled_mems/SKY130
+set sky130_dir  /home/daniel/sky130_cadence
+set sc_dir      /home/daniel/sky130_cadence/sky130_scl_9T_0.1.2/sky130_scl_9T
+set sc_tech_dir /home/daniel/sky130_cadence/sky130_scl_9T_0.1.2/sky130_scl_9T_tech
+
+set io_lib_dir ${io_dir}/lib
+set sc_lib_dir ${sc_dir}/lib
+set sc_techlib_dir ${sc_tech_dir}/lib
+set sram_8k_lib_dir  ${sram_dir}/sky130_sram_8kbyte_1rw_32x2048_8
+
+set io_max_libs [list \
+   ${io_lib_dir}/sky130_ef_io__gpiov2_pad_wrapped_ss_ss_100C_1v60_3v00.lib \
+   ${io_lib_dir}/sky130_ef_io__vccd_lvc_clamped3_pad_ss_100C_1v60_3v00_3v00.lib \
+   ${io_lib_dir}/sky130_ef_io__vccd_lvc_clamped_pad_ss_100C_1v60_3v00_3v00.lib \
+   ${io_lib_dir}/sky130_ef_io__vdda_hvc_clamped_pad_ss_100C_1v60_3v00_3v00.lib \
+   ${io_lib_dir}/sky130_ef_io__vddio_hvc_clamped_pad_ss_100C_1v60_3v00_3v00.lib \
+   ${io_lib_dir}/sky130_ef_io__vssa_hvc_clamped_pad_ss_100C_1v60_3v00_3v00.lib \
+   ${io_lib_dir}/sky130_ef_io__vssd_lvc_clamped3_pad_ss_100C_1v60_3v00.lib \
+   ${io_lib_dir}/sky130_ef_io__vssd_lvc_clamped_pad_ss_100C_1v60_3v00.lib \
+   ${io_lib_dir}/sky130_ef_io__vssio_hvc_clamped_pad_ss_100C_1v60_3v00_3v00.lib \
+]
+set io_typical_libs [list \
+   ${io_lib_dir}/sky130_ef_io__gpiov2_pad_wrapped_tt_tt_025C_1v80_3v30.lib \
+   ${io_lib_dir}/sky130_ef_io__vccd_lvc_clamped3_pad_tt_025C_1v80_3v30_3v30.lib \
+   ${io_lib_dir}/sky130_ef_io__vccd_lvc_clamped_pad_tt_025C_1v80_3v30_3v30.lib \
+   ${io_lib_dir}/sky130_ef_io__vdda_hvc_clamped_pad_tt_025C_1v80_3v30_3v30.lib \
+   ${io_lib_dir}/sky130_ef_io__vddio_hvc_clamped_pad_tt_025C_1v80_3v30_3v30.lib \
+   ${io_lib_dir}/sky130_ef_io__vssa_hvc_clamped_pad_tt_025C_1v80_3v30_3v30.lib \
+   ${io_lib_dir}/sky130_ef_io__vssd_lvc_clamped3_pad_tt_025C_1v80_3v30.lib \
+   ${io_lib_dir}/sky130_ef_io__vssd_lvc_clamped_pad_tt_025C_1v80_3v30.lib \
+   ${io_lib_dir}/sky130_ef_io__vssio_hvc_clamped_pad_tt_025C_1v80_3v30_3v30.lib \
+]
+
+set io_min_libs [list \
+   ${io_lib_dir}/sky130_ef_io__gpiov2_pad_wrapped_ff_ff_n40C_1v95_5v50.lib \
+   ${io_lib_dir}/sky130_ef_io__vssa_hvc_clamped_pad_ff_n40C_1v95_5v50_5v50.lib \
+   ${io_lib_dir}/sky130_ef_io__vccd_lvc_clamped3_pad_ff_n40C_1v95_5v50_5v50.lib \
+   ${io_lib_dir}/sky130_ef_io__vssd_lvc_clamped3_pad_ff_n40C_1v95_5v50.lib \
+   ${io_lib_dir}/sky130_ef_io__vccd_lvc_clamped_pad_ff_n40C_1v95_5v50_5v50.lib \
+   ${io_lib_dir}/sky130_ef_io__vssd_lvc_clamped_pad_ff_n40C_1v95_5v50.lib \
+   ${io_lib_dir}/sky130_ef_io__vdda_hvc_clamped_pad_ff_n40C_1v95_5v50_5v50.lib \
+   ${io_lib_dir}/sky130_ef_io__vssio_hvc_clamped_pad_ff_n40C_1v95_5v50_5v50.lib \
+   ${io_lib_dir}/sky130_ef_io__vddio_hvc_clamped_pad_ff_n40C_1v95_5v50_5v50.lib \
+]
+
+
+create_library_set -name default_libset_max\
+   -timing\
+    [list ${sc_lib_dir}/sky130_ss_1.62_125_nldm.lib \
+    ${sram_8k_lib_dir}/sky130_sram_8kbyte_1rw_32x2048_8_SS_1p8V_25C.lib \
+    {*}$io_max_libs \
+    ${sc_techlib_dir}/sky130_scl_9T_phyCells.lib ]
+
+create_library_set -name default_libset_min\
+   -timing\
+    [list ${sc_lib_dir}/sky130_ff_1.98_0_nldm.lib \
+    ${sram_8k_lib_dir}/sky130_sram_8kbyte_1rw_32x2048_8_FF_1p8V_25C.lib \
+    {*}$io_min_libs \
+    ${sc_techlib_dir}/sky130_scl_9T_phyCells.lib ]
+
+create_library_set -name typical_libset\
+   -timing\
+    [list ${sc_lib_dir}/sky130_tt_1.8_25_nldm.lib \
+    ${sram_8k_lib_dir}/sky130_sram_8kbyte_1rw_32x2048_8_TT_1p8V_25C.lib \
+    {*}$io_typical_libs \
+    ${sc_techlib_dir}/sky130_scl_9T_phyCells.lib ]
+
+create_timing_condition -name default_mapping_tc_2\
+   -library_sets [list default_libset_min]
+create_timing_condition -name default_mapping_tc_1\
+   -library_sets [list default_libset_max]
+create_timing_condition -name typical_mapping\
+   -library_sets [list typical_libset]
+
+# got the qrcTechFile from https://github.com/stineje/sky130_cds
+# there's two, but there are the same
+create_rc_corner -name default_rc_corner\
+   -pre_route_res 1\
+   -post_route_res 1\
+   -pre_route_cap 1\
+   -post_route_cap 1\
+   -post_route_cross_cap 1\
+   -pre_route_clock_res 0\
+   -pre_route_clock_cap 0\
+   -qrc_tech ${sky130_dir}/qrcTechFile
+
+
+
+create_delay_corner -name default_delay_corner_max\
+   -timing_condition {default_mapping_tc_1}\
+   -rc_corner default_rc_corner
+
+create_delay_corner -name default_delay_corner_ocv\
+   -early_timing_condition {default_mapping_tc_2}\
+   -late_timing_condition {default_mapping_tc_1}\
+   -early_rc_corner default_rc_corner \
+   -late_rc_corner default_rc_corner
+
+create_delay_corner -name default_delay_corner_min\
+   -timing_condition default_mapping_tc_2\
+   -rc_corner default_rc_corner
+
+create_delay_corner -name typical_delay_corner\
+   -timing_condition typical_mapping\
+   -rc_corner default_rc_corner
+
+create_constraint_mode -name default_constraint_mode\
+   -sdc_files\
+    [list ../inputs/constraints.sdc]
+
+create_analysis_view -name default_analysis_view_setup -constraint_mode default_constraint_mode -delay_corner default_delay_corner_max
+create_analysis_view -name default_analysis_view_hold -constraint_mode default_constraint_mode -delay_corner default_delay_corner_min
+
+create_analysis_view -name typical_analysis_view_setup -constraint_mode default_constraint_mode -delay_corner default_delay_corner_ocv
+create_analysis_view -name typical_analysis_view_hold -constraint_mode default_constraint_mode -delay_corner default_delay_corner_ocv
+
+create_analysis_view -name typical_analysis_view -constraint_mode default_constraint_mode -delay_corner typical_delay_corner
+
+set_analysis_view -setup [list default_analysis_view_setup typical_analysis_view] -hold [list default_analysis_view_hold typical_analysis_view]
