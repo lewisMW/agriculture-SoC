@@ -40,6 +40,13 @@ netlist/
 run*/
 results/
 
+# Pegasus DRC/LVS run output and Virtuoso check logs
+pegasus_runs/
+analog/cadence/**/DRC/
+analog/cadence/**/LVS/
+CheckAndUpdateLogs/
+XLComplianceLogs/
+
 # Simulation data files
 *.raw
 *.ic
