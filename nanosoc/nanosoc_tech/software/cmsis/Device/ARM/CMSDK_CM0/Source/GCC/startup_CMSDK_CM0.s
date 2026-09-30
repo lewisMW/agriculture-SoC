@@ -115,10 +115,10 @@ __isr_vector:
     .long   TIMER0_Handler              /* 16+ 8: TIMER 0 handler            */
     .long   TIMER1_Handler              /* 16+ 9: TIMER 1 handler            */
     .long   DUALTIMER_HANDLER           /* 16+10: Dual timer 2 handler       */
-    .long   0                           /* 16+11: Reserved                   */
-    .long   UARTOVF0_Handler            /* 16+12: UART 0 Overflow Handler    */
-    .long   UARTOVF1_Handler            /* 16+13: UART 1 Overflow Handler    */
-    .long   UARTOVF2_Handler            /* 16+14: UART 2 Overflow Handler    */
+    .long   EXP0_Handler                /* 16+11: Reserved                   */
+    .long   EXP1_Handler                /* 16+12: UART 0 Overflow Handler    */
+    .long   EXP2_Handler                /* 16+13: UART 1 Overflow Handler    */
+    .long   EXP3_Handler                /* 16+14: UART 2 Overflow Handler    */
     .long   DMA_Handler                 /* 16+15: DMA done + error Handler   */
     .long   PORT0_0_Handler             /* 16+16: GPIO Port 0 pin 0 Handler  */
     .long   PORT0_1_Handler             /* 16+17: GPIO Port 0 pin 1 Handler  */
@@ -239,9 +239,10 @@ Reset_Handler:
     def_default_handler    TIMER0_Handler
     def_default_handler    TIMER1_Handler
     def_default_handler    DUALTIMER_HANDLER
-    def_default_handler    UARTOVF0_Handler
-    def_default_handler    UARTOVF1_Handler
-    def_default_handler    UARTOVF2_Handler
+    def_default_handler    EXP0_Handler
+    def_default_handler    EXP1_Handler
+    def_default_handler    EXP2_Handler
+    def_default_handler    EXP3_Handler
     def_default_handler    DMA_Handler
     def_default_handler    PORT0_0_Handler
     def_default_handler    PORT0_1_Handler

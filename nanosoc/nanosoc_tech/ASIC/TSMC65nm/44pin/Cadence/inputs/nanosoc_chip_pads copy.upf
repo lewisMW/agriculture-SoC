@@ -1,0 +1,223 @@
+set_design_top nanosoc_chip_pads
+
+#######################################
+# Create Supply Ports
+#######################################
+# Top Port Supplies 
+create_supply_port VDD 
+create_supply_net VDD
+connect_supply_net VDD -ports VDD 
+
+create_supply_port VSS 
+create_supply_net VSS 
+connect_supply_net VSS -ports VSS 
+
+create_supply_port VDDACC
+create_supply_net VDDACC
+connect_supply_net VDDACC -ports VDDACC
+
+create_supply_port VDDIO 
+create_supply_net VDDIO
+connect_supply_net VDDIO -ports VDDIO
+
+create_supply_port VSSIO 
+create_supply_net VSSIO
+connect_supply_net VSSIO -ports VSSIO
+
+#######################################
+# Create Gated Supply Nets
+#######################################
+create_supply_net VDD_CPU_SYS
+create_supply_net VDD_CPU_DBG
+
+#######################################
+# Create Supply Sets
+######################################
+create_supply_set SS_TOP -function {power VDD} -function {ground VSS}
+create_supply_set SS_IO  -function {power VDDIO} -function {ground VSSIO}
+create_supply_set SS_ACC -function {power VDDACC} -function {ground VSS}
+
+create_supply_set SS_CPU_SYS -function {power VDD_CPU_SYS} -function {ground VSS}
+create_supply_set SS_CPU_DBG -function {power VDD_CPU_DBG} -function {ground VSS}
+
+#######################################
+# Create Power Domains
+######################################
+create_power_domain PD_TOP -include_scope -supply {primary SS_TOP}
+
+create_power_domain PD_ACC -supply {primary SS_ACC} \
+    -elements u_nanosoc_chip/u_system/u_ss_expansion/u_region_exp/u_ss_accelerator
+
+create_power_domain PD_CPU_SYS -supply {primary SS_CPU_SYS} \
+    -elements u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_slcorem0_integration/u_cortexm0/u_top/u_sys
+
+create_power_domain PD_CPU_DBG -supply {primary SS_CPU_DBG} \
+    -elements { u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_slcorem0_integration/u_cortexm0/u_top/u_dbg \
+                u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_slcorem0_integration/u_dap/u_ap}
+
+#######################################
+# Create Switches
+######################################
+create_power_switch switch_cpu_sys -domain PD_CPU_SYS \
+            -input_supply_port {VDD             VDD} \
+            -output_supply_port {VDD_CPU_SYS     VDD_CPU_SYS} \
+            -control_port {SYSPWRDOWN   u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_core_prmu/u_cortexm0_pmu/SYSPWRDOWN} \
+            -on_state {on_state VDD {!SYSPWRDOWN}} \
+            -off_state {off_state   { SYSPWRDOWN}}
+
+create_power_switch switch_cpu_dbg -domain PD_CPU_DBG \
+            -input_supply_port  {VDD     VDD} \
+            -output_supply_port {VDD_CPU_DBG VDD_CPU_DBG} \
+	        -control_port {DBGPWRDOWN u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_core_prmu/u_cortexm0_pmu/DBGPWRDOWN} \
+            -on_state  {on_state  VDD {!DBGPWRDOWN}} \
+            -off_state {off_state     { DBGPWRDOWN}}
+
+#######################################
+# Set Isolation
+#######################################
+set_isolation iso_cpu_low1 -domain PD_CPU_SYS \
+                -isolation_power_net VDD \
+                -isolation_ground_net VSS \
+                -clamp_value 0 \
+                -applies_to outputs
+
+# The signals that need to be clamped HIGH
+set_isolation iso_cpu_high1 -domain PD_CPU_SYS \
+                -isolation_power_net VDD \
+                -isolation_ground_net VSS \
+                -clamp_value 1 \
+                -elements {u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_slcorem0_integration/u_cortexm0/u_top/u_sys/sleeping_o \
+                           u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_slcorem0_integration/u_cortexm0/u_top/u_sys/sleep_deep_o \
+                           u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_slcorem0_integration/u_cortexm0/u_top/u_sys/hprot_o[1]}
+
+set_isolation_control iso_cpu_low1 -domain PD_CPU_SYS \
+                -isolation_signal u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_core_prmu/u_cortexm0_pmu/SYSISOLATEn \
+                -isolation_sense low \
+                -location parent
+
+set_isolation_control iso_cpu_high1 -domain PD_CPU_SYS \
+                -isolation_signal u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_core_prmu/u_cortexm0_pmu/SYSISOLATEn \
+                -isolation_sense low \
+                -location parent
+
+set_isolation         iso_cpu_low2 -domain PD_CPU_DBG \
+                -isolation_power_net VDD \
+                -isolation_ground_net VSS \
+                -clamp_value 0 \
+                -applies_to outputs
+
+set_isolation_control iso_cpu_low2 -domain PD_CPU_DBG \
+                -isolation_signal u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_core_prmu/u_cortexm0_pmu/DBGISOLATEn \
+                -isolation_sense low \
+                -location parent
+
+
+################################################################################
+# Set Level Shift 
+################################################################################
+
+
+
+################################################################################
+# Set Retention 
+################################################################################
+
+set_retention drff -domain PD_CPU_SYS -retention_power_net VDD -retention_ground_net VSS
+set_retention_control drff -domain PD_CPU_SYS -save_signal {u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_core_prmu/u_cortexm0_pmu/SYSRETAINn high} \
+                           -restore_signal {u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_core_prmu/u_cortexm0_pmu/SYSRETAINn low}
+
+map_retention_cell drff -domain PD_CPU_SYS -lib_cell_type DRFF
+
+################################################################################
+# Connect PG nets to macros
+################################################################################
+
+connect_supply_net VDD -ports u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom/VDDE
+connect_supply_net VSS -ports u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom/VSSE
+
+connect_supply_net VDD -ports u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_rf_sp_hdf/VDD
+connect_supply_net VSS -ports u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_rf_sp_hdf/VSS
+
+connect_supply_net VDD -ports u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_rf_sp_hdf/VDD
+connect_supply_net VSS -ports u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_rf_sp_hdf/VSS
+
+connect_supply_net VDD -ports u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_rf_sp_hdf/VDD
+connect_supply_net VSS -ports u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_rf_sp_hdf/VSS
+
+connect_supply_net VDD -ports u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_rf_sp_hdf/VDD
+connect_supply_net VSS -ports u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_rf_sp_hdf/VSS
+
+connect_supply_net VDD -ports uPAD_VDD_0/VDD
+connect_supply_net VDD -ports uPAD_VDD_1/VDD
+connect_supply_net VDD -ports uPAD_VDD_2/VDD
+connect_supply_net VDD -ports uPAD_VDD_3/VDD
+
+connect_supply_net VSS -ports uPAD_VSS_0/VSS
+connect_supply_net VSS -ports uPAD_VSS_1/VSS
+connect_supply_net VSS -ports uPAD_VSS_2/VSS
+connect_supply_net VSS -ports uPAD_VSS_3/VSS
+
+connect_supply_net VDDACC -ports uPAD_VDDACC_0/VDD 
+connect_supply_net VDDACC -ports uPAD_VDDACC_1/VDD 
+connect_supply_net VDDACC -ports uPAD_VDDACC_2/VDD 
+
+connect_supply_net VDDIO -ports uPAD_VDDIO_0/VDDPST 
+connect_supply_net VDDIO -ports uPAD_VDDIO_2/VDDPST 
+connect_supply_net VDDIO -ports uPAD_VDDIO_3/VDDPST 
+
+connect_supply_net VSSIO -ports uPAD_VSSIO_0/VSSPST
+connect_supply_net VSSIO -ports uPAD_VSSIO_1/VSSPST
+
+#######################################
+# Add Power States
+######################################
+add_port_state VSS              -state {ON_SLOW 0.0}
+add_port_state VSS              -state {ON_TYP  0.0}
+add_port_state VSS              -state {ON_FAST 0.0}
+add_port_state VDD              -state {ON_SLOW 1.08}
+add_port_state VDD              -state {ON_TYP  1.20}
+add_port_state VDD              -state {ON_FAST 1.32}
+add_port_state VDDACC           -state {ON_SLOW 1.08}
+add_port_state VDDACC           -state {ON_TYP  1.20}
+add_port_state VDDACC           -state {ON_FAST 1.32}
+add_port_state VDDIO            -state {ON_SLOW 2.97}
+add_port_state VDDIO            -state {ON_TYP  3.30}
+add_port_state VDDIO            -state {ON_FAST 3.63}
+
+
+add_port_state switch_cpu_sys/VDD_CPU_SYS -state {ON_SLOW 1.08}
+add_port_state switch_cpu_sys/VDD_CPU_SYS -state {ON_TYP  1.20}
+add_port_state switch_cpu_sys/VDD_CPU_SYS -state {ON_FAST 1.32}
+add_port_state switch_cpu_sys/VDD_CPU_SYS -state {OFF off}
+
+add_port_state switch_cpu_dbg/VDD_CPU_DBG -state {ON_SLOW 1.08}
+add_port_state switch_cpu_dbg/VDD_CPU_DBG -state {ON_TYP  1.20}
+add_port_state switch_cpu_dbg/VDD_CPU_DBG -state {ON_FAST 1.32}
+add_port_state switch_cpu_dbg/VDD_CPU_DBG -state {OFF off}
+
+
+create_pst top_pst -supplies {\
+    VSS \
+    VDD \
+    VDDACC \
+    VDDIO \
+    switch_cpu_sys/VDD_CPU_SYS \
+    switch_cpu_dbg/VDD_CPU_DBG \
+    }
+
+# VDD_CPU_DBG ---------------------------------------------------------------------------------------+    
+# VDD_CPU_SYS ------------------------------------------------------------------------------+        |    
+# VDDIO     -----------------------------------------------------------------------+        |        |    
+# VDDACC    --------------------------------------------------------------+        |        |        |    
+# VDD       -----------------------------------------------------+        |        |        |        |    
+# VSS       --------------------------------------------+        |        |        |        |        |    
+#                                                       |        |        |        |        |        |    
+add_pst_state all_on_slow -pst top_pst -state       {ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  }
+add_pst_state all_on_typ -pst top_pst -state        {ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   }
+add_pst_state all_on_fast -pst top_pst -state       {ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  }
+add_pst_state cpu_run_slow -pst top_pst -state      {ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  OFF      }
+add_pst_state cpu_run_typ  -pst top_pst -state      {ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   OFF      }
+add_pst_state cpu_run_fast -pst top_pst -state      {ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  OFF      }
+add_pst_state cpu_slp_slow -pst top_pst -state      {ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  OFF      OFF      }
+add_pst_state cpu_slp_typ  -pst top_pst -state      {ON_TYP   ON_TYP   ON_TYP   ON_TYP   OFF      OFF      }
+add_pst_state cpu_slp_fast -pst top_pst -state      {ON_FAST  ON_FAST  ON_FAST  ON_FAST  OFF      OFF      }

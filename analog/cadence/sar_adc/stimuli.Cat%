@@ -1,0 +1,5 @@
+TDMCHECKPOINT="1.0"
+keepEmptyCategory type="unknown"
+sar_adc/tb_cap_array_stimuli type="cell"
+sar_adc/tb_cdac_8b_stimuli type="cell"
+sar_adc/tb_comparator_stimuli type="cell"

@@ -10,7 +10,7 @@ connect_global_net VDD -type pg_pin -pin_base_name VDD -inst_base_name *
 connect_global_net VDDIO -type pg_pin -pin_base_name VDDIO -inst_base_name * 
 connect_global_net VSS -type pg_pin -pin_base_name VSS -inst_base_name * 
 connect_global_net VSSIO -type pg_pin -pin_base_name VSSIO -inst_base_name * 
-connect_global_net VDDACC -type pg_pin -pin_base_name VDD -inst_base_name {} -hinst u_nanosoc_chip_u_system/u_ss_expansion_u_region_exp_u_ss_accelerator -override
+connect_global_net VDDACC -type pg_pin -pin_base_name VDD -inst_base_name {} -hinst u_nanosoc_chip/u_system_u_ss_expansion_u_region_exp_u_ss_accelerator -override
 ### Top and Bottom Metal Declartions
 set_db add_rings_stacked_via_top_layer M8
 set_db add_rings_stacked_via_bottom_layer M1 
@@ -44,7 +44,7 @@ add_stripes -nets {VDD VDDACC VSS} -layer M6 -direction vertical -width 1.8 -spa
 deselect_obj -all
 
 # Connect Accelerator region
-select_obj u_nanosoc_chip_u_system/u_ss_expansion_u_region_exp_u_ss_accelerator
+select_obj u_nanosoc_chip/u_system_u_ss_expansion_u_region_exp_u_ss_accelerator
 set_db add_stripes_ignore_block_check true
 set_db add_stripes_break_at none
 set_db add_stripes_route_over_rows_only false
@@ -70,7 +70,7 @@ add_stripes -nets {VDDACC VSS} -layer M9 -direction horizontal -width 2 -spacing
 deselect_obj -all
 
 # connect Macros
-select_obj [ list u_nanosoc_chip_u_system/u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_rf_sp_hdf u_nanosoc_chip_u_system/u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_rf_sp_hdf u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_rf_sp_hdf u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_rf_sp_hdf u_nanosoc_chip_u_system/u_ss_cpu_u_region_bootrom_0_u_bootrom_cpu_0_u_bootrom_u_sl_rom]
+select_obj [ list u_nanosoc_chip/u_system_u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_rf_sp_hdf u_nanosoc_chip/u_system_u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_rf_sp_hdf u_nanosoc_chip/u_system_u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_rf_sp_hdf u_nanosoc_chip/u_system_u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_rf_sp_hdf u_nanosoc_chip/u_system_u_ss_cpu_u_region_bootrom_0_u_bootrom_cpu_0_u_bootrom_u_sl_rom]
 set_db add_stripes_ignore_block_check false
 set_db add_stripes_break_at none
 set_db add_stripes_route_over_rows_only false
@@ -82,5 +82,10 @@ deselect_obj -all
 
 # Add END CAPS
 add_endcaps -start_row_cap ENDCAPTIE2_A12TR -end_row_cap ENDCAPTIE2_A12TR -prefix ENDCAP
-add_endcaps -power_domain ACCEL -start_row_cap ENDCAPTIE2_A12TR -end_row_cap ENDCAPTIE2_A12TR -prefix ENDCAP
+add_endcaps -power_domain PD_ACC -start_row_cap ENDCAPTIE2_A12TR -end_row_cap ENDCAPTIE2_A12TR -prefix ENDCAP
+
+route_special -connect {pad_pin pad_ring} -layer_change_range { M1(1) AP(10) } -block_pin_target nearest_target -pad_pin_port_connect {all_port all_geom} -pad_pin_target nearest_target -allow_jogging 1 -crossover_via_layer_range { M1(1) AP(10) } -nets { VDD VSS VDDACC } -allow_layer_change 1 -pad_pin_width 6 -target_via_layer_range { M1(1) AP(10) }
+set_db route_special_via_connect_to_shape { padring stripe }
+route_special -connect {block_pin core_pin floating_stripe} -layer_change_range { M1(1) AP(10) } -block_pin_target nearest_target -pad_pin_port_connect {all_port one_geom} -pad_pin_target nearest_target -core_pin_target first_after_row_end -floating_stripe_target {block_ring pad_ring ring stripe ring_pin block_pin followpin} -allow_jogging 1 -power_domains { PD_ACC } -crossover_via_layer_range { M1(1) AP(10) } -nets { VDDACC VSS } -allow_layer_change 1 -block_pin use_lef -target_via_layer_range { M1(1) AP(10) }
+route_special -connect {block_pin core_pin floating_stripe} -layer_change_range { M1(1) AP(10) } -block_pin_target nearest_target -pad_pin_port_connect {all_port one_geom} -pad_pin_target nearest_target -core_pin_target first_after_row_end -floating_stripe_target {block_ring pad_ring ring stripe ring_pin block_pin followpin} -allow_jogging 1 -power_domains { PD_TOP } -crossover_via_layer_range { M1(1) AP(10) } -nets { VDD VSS } -allow_layer_change 1 -block_pin use_lef -target_via_layer_range { M1(1) AP(10) }
 

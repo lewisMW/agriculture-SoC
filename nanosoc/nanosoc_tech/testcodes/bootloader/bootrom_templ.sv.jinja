@@ -1,0 +1,56 @@
+//------------------------------------------------------------------------------------
+// Auto-generated synthesizable Bootrom
+//
+// Generated from bootrom_gen.py
+//
+// A joint work commissioned on behalf of SoC Labs, under Arm Academic Access license.
+//
+// Contributors
+//
+// David Flynn (d.w.flynn@soton.ac.uk)
+// David Mapstone (d.a.mapstone@soton.ac.uk)
+//    Date:    {{ date }}
+// Copyright (c) 2021-5, SoC Labs (www.soclabs.org)
+//------------------------------------------------------------------------------------
+module bootrom (
+    input  logic clk,
+    input  logic en,
+    input  logic [{{ word_address_width }}-1:0] word_addr,
+    output logic [{{ data_width }}-1:0] out_data 
+);
+
+// Generate the Bootrom Contents
+logic [{{ data_width }}-1:0] rdata;
+
+always_comb begin
+    case (word_addr)
+{# Loop to create each entry in the bootrom from the hex data and add indention #}
+{%- for hex_entry in hex_data -%}
+{{ (
+    "{0}'h{1:0{w}x} : rdata = {2}'h{3:08x}; // 0x{4:04x}"
+    .format(
+        word_address_width,
+        hex_entry.index,
+        data_width,
+        hex_entry.word,
+        hex_entry.index * 4,
+        w=3
+    )
+) | indent(8, true) }}
+{% endfor -%}
+{{ (
+    "default : rdata = {0}'h0;"
+    .format(
+        data_width,
+    )
+) | indent(8, true) }}
+    endcase
+end
+
+// Clock the output of the rom using the enable
+always_ff @(posedge clk) begin
+    if (en) begin
+        out_data <= rdata;
+    end
+end
+endmodule

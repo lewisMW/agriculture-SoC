@@ -27,7 +27,9 @@ module fifo_apb_adc #(
 
     // Write Logic
     always @(posedge clk or negedge rst_n) begin
-        if (!rst_n || fifo_clear) begin
+        if (!rst_n) begin
+            wr_ptr <= 0;
+        end else if (fifo_clear) begin
             wr_ptr <= 0;
         end else if (adc_wr_en && !fifo_full) begin
             fifo_mem[wr_ptr] <= adc_data;
@@ -37,7 +39,9 @@ module fifo_apb_adc #(
 
     // Read Logic
     always @(posedge clk or negedge rst_n) begin
-        if (!rst_n || fifo_clear) begin
+        if (!rst_n) begin
+            rd_ptr <= 0;
+        end else if (fifo_clear) begin
             rd_ptr <= 0;
         end else if (apb_rd_en && !fifo_empty) begin
             rd_ptr <= rd_ptr + 1;

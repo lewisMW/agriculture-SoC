@@ -1,0 +1,21 @@
+--pcdbVlog file, Rev:1.0
+
+--TIMESTAMP: 1787292351
+
+#CELL
+* cdac_8b *
+cdacp
+cdacn
+
+#CELL
+* comparator *
+comp
+
+#CELL
+* sr_latch *
+u_latch
+
+#CELL
+* sarlogic *
+fsm
+

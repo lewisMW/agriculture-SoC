@@ -178,11 +178,6 @@ nanosoc_chip_cfg #(
 );
 
   nanosoc_chip u_nanosoc_chip (
-`ifdef POWER_PINS
-  .VDD        (VDD),
-  .VSS        (VSS),
-  .VDDACC     (VDDACC),
-`endif
 //`ifdef ASIC_TEST_PORTS
   .diag_mode   (soc_diag_mode     ),
   .diag_ctrl   (soc_diag_ctrl     ),
@@ -272,14 +267,14 @@ PVSS1CDG uPAD_VSS_3(
    .VSS(VSS)
    );
 // Accelerator Power supplies
-PVDD1CDG uPAD_VDDACC_0(
-   .VDD(VDDACC)
+PVDD1ANA uPAD_VDDACC_0(
+   .AVDD(VDDACC)
    );
-PVDD1CDG uPAD_VDDACC_1(
-   .VDD(VDDACC)
+PVDD1ANA uPAD_VDDACC_1(
+   .AVDD(VDDACC)
    );
-PVDD1CDG uPAD_VDDACC_2(
-   .VDD(VDDACC)
+PVDD1ANA uPAD_VDDACC_2(
+   .AVDD(VDDACC)
    );
 
 // Clock, Reset and Serial Wire Debug ports

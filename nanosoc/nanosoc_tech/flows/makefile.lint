@@ -39,3 +39,8 @@ lint_xm: bootrom gen_defs
 	@rm -rf $(LINT_DIR) 
 	@mkdir -p $(LINT_DIR)
 	@cd $(LINT_DIR); xrun -hal -f $(DESIGN_VC) $(DEFINES_VC) +debug "-timescale 1ns/1ps" -top $(LINT_TOP) $(HAL_BLACK_BOX) $(HAL_WAIVE) $(LINT_NOCHECK)
+
+lint_spyglass: bootrom gen_defs flist_dc_nanosoc
+	@rm -rf $(LINT_DIR) 
+	@mkdir -p $(LINT_DIR)
+	@cd $(LINT_DIR); vc_static_shell -f $(LINT_INFO_DIR)/spyglass.tcl

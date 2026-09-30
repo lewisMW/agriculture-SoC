@@ -18,9 +18,13 @@
 // =============    NanoSoC IP search path    =============
 // NanoSoC Chip Pads Level
 $(SOCLABS_NANOSOC_TECH_DIR)/nanosoc/nanosoc_chip/pads/glib/verilog/nanosoc_chip_pads.v
-$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_axis_initiator.v
-$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_ifsm.v
-$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_sync.v
+
+// Hostio4 SoC IP
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/soc_rtl/hostio4_controller.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/soc_rtl/hostio4_controller_fsm.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/soc_rtl/hostio4_controller_sync.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/soc_rtl/hostio4_controller_axis_rxport.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/soc_rtl/hostio4_controller_axis_txport.v
 
 // Include NanoSoC IP 
 -f $(SOCLABS_NANOSOC_TECH_DIR)/flist/nanosoc_ip.flist
