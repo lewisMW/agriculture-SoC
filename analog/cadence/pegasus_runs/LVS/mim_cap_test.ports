@@ -1,0 +1,5 @@
+# SVDB: Port Table (ports)
+# SVDB: Layout Primary mim_cap_test
+vssa 3 vssa 7450 1430 met2
+bottom 1 bottom 7595 5670 met3
+top 2 top 7605 11580 met4

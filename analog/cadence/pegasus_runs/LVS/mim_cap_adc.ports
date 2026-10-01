@@ -1,5 +1,34 @@
 # SVDB: Port Table (ports)
 # SVDB: Layout Primary mim_cap_adc
+bottom 3 bottom -550 -250 met3
+bottom 3 bottom -550 2000 met3
+bottom 3 bottom -550 4250 met3
+bottom 3 bottom -250 -550 met3
+bottom 3 bottom -250 4550 met3
 bottom 3 bottom 2000 -550 met3
+bottom 3 bottom 2000 4550 met3
+bottom 3 bottom 4250 -550 met3
+bottom 3 bottom 4250 4550 met3
+bottom 3 bottom 4550 -250 met3
+bottom 3 bottom 4550 2000 met3
+bottom 3 bottom 4550 4250 met3
+vssa 4 vssa -550 -250 met2
+vssa 4 vssa -550 2000 met2
+vssa 4 vssa -550 4250 met2
+vssa 4 vssa -250 -550 met2
+vssa 4 vssa -250 4550 met2
 vssa 4 vssa 2000 -550 met2
+vssa 4 vssa 2000 4550 met2
+vssa 4 vssa 4250 -550 met2
+vssa 4 vssa 4250 4550 met2
+vssa 4 vssa 4550 -250 met2
+vssa 4 vssa 4550 2000 met2
+vssa 4 vssa 4550 4250 met2
+top 2 top -250 450 met4
+top 2 top -250 3550 met4
+top 2 top 450 -250 met4
 top 2 top 450 4250 met4
+top 2 top 3550 -250 met4
+top 2 top 3550 4250 met4
+top 2 top 4250 450 met4
+top 2 top 4250 3550 met4

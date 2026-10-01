@@ -1,0 +1,389 @@
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+* CDL Netlist:                                              *
+*                                                           *
+* Cell Name  : carray_8b                                    *
+* Netlisted  : Wed Sep 30 23:41:18 2026                     *
+* Pegasus Version: 23.26-s005 Thu Oct 17 16:37:42 PDT 2024  *
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+*.LDD
+*.DEVTMPLT 0 R(res_generic_m1) met1_res met1(P) met1(N)
+*.DEVTMPLT 1 R(res_generic_m2) met2_res met2(P) met2(N)
+*.DEVTMPLT 2 R(res_generic_m3) met3_res met3(P) met3(N)
+*.DEVTMPLT 3 R(res_generic_m4) met4_res met4(P) met4(N)
+*.DEVTMPLT 4 R(res_generic_m5) met5_res met5(P) met5(N)
+*.DEVTMPLT 5 D(diode_pd2nw_05v5) diode_pd2nw_05v5_rec psd(PLUS) nwell(MINUS)
+*.DEVTMPLT 6 D(diode_pd2nw_05v5_hvt) diode_pd2nw_05v5_hvt_rec psd(PLUS) nwell(MINUS)
+*.DEVTMPLT 7 D(diode_pd2nw_05v5_lvt) diode_pd2nw_05v5_lvt_rec psd(PLUS) nwell(MINUS)
+*.DEVTMPLT 8 D(diode_pd2nw_11v0) diode_pd2nw_11v0_rec psd(PLUS) nwell(MINUS)
+*.DEVTMPLT 9 D(diode_pw2nd_05v5) diode_pw2nd_05v5_rec pwell_all(PLUS) nsd(MINUS)
+*.DEVTMPLT 10 D(diode_pw2nd_05v5_lvt) diode_pw2nd_05v5_lvt_rec pwell_all(PLUS) nsd(MINUS)
+*.DEVTMPLT 11 D(diode_pw2nd_05v5_nvt) diode_pw2nd_05v5_nvt_rec pwell_all(PLUS) nsd(MINUS)
+*.DEVTMPLT 12 D(diode_pw2nd_11v0) diode_pw2nd_11v0_rec pwell_all(PLUS) nsd(MINUS)
+*.DEVTMPLT 13 R(RES_GENERIC_ND) diff_res np_term(P) np_term(N)
+*.DEVTMPLT 14 R(RES_GENERIC_PD) diff_res pp_term(P) pp_term(N)
+*.DEVTMPLT 15 MN(nfet_01v8) nfet_01v8_rec nSourceDrain(D) nfet(G) nSourceDrain(S) pwell_all(B)
+*.DEVTMPLT 16 MP(pfet_01v8) pfet_01v8_rec pSourceDrain(D) pfet(G) pSourceDrain(S) nwell(B)
+*.DEVTMPLT 17 MP(pfet_01v8_lvt) lvtpfet_01v8_rec pSourceDrain(D) lvtpfet(G) pSourceDrain(S) nwell(B)
+*.DEVTMPLT 18 MN(nfet_01v8_lvt) lvtnfet_01v8_rec nSourceDrain(D) lvtnfet(G) nSourceDrain(S) pwell_all(B)
+*.DEVTMPLT 19 MP(pfet_01v8_hvt) hvtpfet_01v8_rec pSourceDrain(D) hvtpfet(G) pSourceDrain(S) nwell(B)
+*.DEVTMPLT 20 MN(nfet_03v3_nvt) HV_ngate_3v3 HV_source_drain(D) HV_FET_gate(G) HV_source_drain(S) pwell_all(B)
+*.DEVTMPLT 21 MN(nfet_05v0_nvt) HV_ngate_5v0 HV_source_drain(D) HV_FET_gate(G) HV_source_drain(S) pwell_all(B)
+*.DEVTMPLT 22 MN(nfet_g5v0d10v5) HV_ngate_5v10v HV_source_drain(D) HV_FET_gate(G) HV_source_drain(S) pwell_all(B)
+*.DEVTMPLT 23 MP(pfet_g5v0d10v5) HV_pgate_5v10v HV_source_drain(D) HV_FET_gate(G) HV_source_drain(S) nwell(B)
+*.DEVTMPLT 24 MN(nfet_20v0) nfet_v20_rec nfet_v20_drain(D) nfet_v20_gate(G) nfet_v20_source(S) pwell_all(B)
+*.DEVTMPLT 25 MN(nfet_20v0_zvt) nfet_v20_zvt_rec nfet_v20_drain(D) nfet_v20_gate(G) nfet_v20_source(S) pwell_all(B)
+*.DEVTMPLT 26 MP(pfet_20v0) pfet_v20_rec pfet_v20_drain(D) pfet_v20_gate(G) pfet_v20_source(S) nwell(B)
+*.DEVTMPLT 27 Q(npn_05v5) npn_rec npnC(C) npnB(B) npnE(E) pwell_all(BN)
+*.DEVTMPLT 28 Q(npn_11v0) hvnpn_rec npnC(C) npnB(B) hvnpnE(E) pwell_all(BN)
+*.DEVTMPLT 29 Q(pnp_05v5) pnp_rec pnpC(C) pnpB(B) pnpE(E) pwell_all(BN)
+*.DEVTMPLT 30 R(res_high_po_0p35) res_high_po_0p35_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 31 R(res_high_po_0p69) res_high_po_0p69_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 32 R(res_high_po_1p41) res_high_po_1p41_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 33 R(res_high_po_2p85) res_high_po_2p85_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 34 R(res_high_po_5p73) res_high_po_5p73_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 35 R(res_xhigh_po_0p35) res_xhigh_po_0p35_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 36 R(res_xhigh_po_0p69) res_xhigh_po_0p69_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 37 R(res_xhigh_po_1p41) res_xhigh_po_1p41_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 38 R(res_xhigh_po_2p85) res_xhigh_po_2p85_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 39 R(res_xhigh_po_5p73) res_xhigh_po_5p73_rec prec_resistor_term(PLUS) prec_resistor_term(MINUS) pwell_all(B)
+*.DEVTMPLT 40 C(cap_mim_m3__base) capacitor top_plate(PLUS) bottom_plate(MINUS)
+
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+* Sub cell: mim_cap_adc                                     *
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+.subckt mim_cap_adc bottom top vssa
+** N=3 EP=3 FDC=1
+C0 top bottom L=4e-06 W=4e-06 m=1 $[cap_mim_m3__base] $X=0 $Y=0 $dt=40
+.ends mim_cap_adc
+
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+* Sub cell: carray_8b                                       *
+* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
+.subckt carray_8b vbottom<0> vbottom<1> vbottom<2> vbottom<3> vbottom<4> vbottom<5> vbottom<6> vbottom<7> vbottom_dum vssa
++ vtop
+** N=21 EP=11 FDC=324
+X35 vssa vssa vssa mim_cap_adc $T=1410 1620 0 0 $X=710 $Y=920
+X36 vssa vssa vssa mim_cap_adc $T=1410 10420 0 0 $X=710 $Y=9720
+X37 vssa vssa vssa mim_cap_adc $T=1410 19220 0 0 $X=710 $Y=18520
+X38 vssa vssa vssa mim_cap_adc $T=1410 28020 0 0 $X=710 $Y=27320
+X39 vssa vssa vssa mim_cap_adc $T=1410 36820 0 0 $X=710 $Y=36120
+X40 vssa vssa vssa mim_cap_adc $T=1410 45620 0 0 $X=710 $Y=44920
+X41 vssa vssa vssa mim_cap_adc $T=1410 54420 0 0 $X=710 $Y=53720
+X42 vssa vssa vssa mim_cap_adc $T=1410 63220 0 0 $X=710 $Y=62520
+X43 vssa vssa vssa mim_cap_adc $T=1410 72020 0 0 $X=710 $Y=71320
+X44 vssa vssa vssa mim_cap_adc $T=1410 80820 0 0 $X=710 $Y=80120
+X45 vssa vssa vssa mim_cap_adc $T=1410 89620 0 0 $X=710 $Y=88920
+X46 vssa vssa vssa mim_cap_adc $T=1410 98420 0 0 $X=710 $Y=97720
+X47 vssa vssa vssa mim_cap_adc $T=1410 107220 0 0 $X=710 $Y=106520
+X48 vssa vssa vssa mim_cap_adc $T=1410 116020 0 0 $X=710 $Y=115320
+X49 vssa vssa vssa mim_cap_adc $T=1410 124820 0 0 $X=710 $Y=124120
+X50 vssa vssa vssa mim_cap_adc $T=1410 133620 0 0 $X=710 $Y=132920
+X51 vssa vssa vssa mim_cap_adc $T=1410 142420 0 0 $X=710 $Y=141720
+X52 vssa vssa vssa mim_cap_adc $T=1410 151220 0 0 $X=710 $Y=150520
+X53 vssa vssa vssa mim_cap_adc $T=10210 1620 0 0 $X=9510 $Y=920
+X54 vbottom<7> vtop vssa mim_cap_adc $T=10210 10420 0 0 $X=9510 $Y=9720
+X55 vbottom<7> vtop vssa mim_cap_adc $T=10210 19220 0 0 $X=9510 $Y=18520
+X56 vbottom<7> vtop vssa mim_cap_adc $T=10210 28020 0 0 $X=9510 $Y=27320
+X57 vbottom<7> vtop vssa mim_cap_adc $T=10210 36820 0 0 $X=9510 $Y=36120
+X58 vbottom<7> vtop vssa mim_cap_adc $T=10210 45620 0 0 $X=9510 $Y=44920
+X59 vbottom<7> vtop vssa mim_cap_adc $T=10210 54420 0 0 $X=9510 $Y=53720
+X60 vbottom<7> vtop vssa mim_cap_adc $T=10210 63220 0 0 $X=9510 $Y=62520
+X61 vbottom<7> vtop vssa mim_cap_adc $T=10210 72020 0 0 $X=9510 $Y=71320
+X62 vbottom<7> vtop vssa mim_cap_adc $T=10210 80820 0 0 $X=9510 $Y=80120
+X63 vbottom<7> vtop vssa mim_cap_adc $T=10210 89620 0 0 $X=9510 $Y=88920
+X64 vbottom<7> vtop vssa mim_cap_adc $T=10210 98420 0 0 $X=9510 $Y=97720
+X65 vbottom<7> vtop vssa mim_cap_adc $T=10210 107220 0 0 $X=9510 $Y=106520
+X66 vbottom<7> vtop vssa mim_cap_adc $T=10210 116020 0 0 $X=9510 $Y=115320
+X67 vbottom<7> vtop vssa mim_cap_adc $T=10210 124820 0 0 $X=9510 $Y=124120
+X68 vbottom<7> vtop vssa mim_cap_adc $T=10210 133620 0 0 $X=9510 $Y=132920
+X69 vbottom<7> vtop vssa mim_cap_adc $T=10210 142420 0 0 $X=9510 $Y=141720
+X70 vssa vssa vssa mim_cap_adc $T=10210 151220 0 0 $X=9510 $Y=150520
+X71 vssa vssa vssa mim_cap_adc $T=19010 1620 0 0 $X=18310 $Y=920
+X72 vbottom<7> vtop vssa mim_cap_adc $T=19010 10420 0 0 $X=18310 $Y=9720
+X73 vbottom<7> vtop vssa mim_cap_adc $T=19010 19220 0 0 $X=18310 $Y=18520
+X74 vbottom<7> vtop vssa mim_cap_adc $T=19010 28020 0 0 $X=18310 $Y=27320
+X75 vbottom<7> vtop vssa mim_cap_adc $T=19010 36820 0 0 $X=18310 $Y=36120
+X76 vbottom<7> vtop vssa mim_cap_adc $T=19010 45620 0 0 $X=18310 $Y=44920
+X77 vbottom<7> vtop vssa mim_cap_adc $T=19010 54420 0 0 $X=18310 $Y=53720
+X78 vbottom<7> vtop vssa mim_cap_adc $T=19010 63220 0 0 $X=18310 $Y=62520
+X79 vbottom<7> vtop vssa mim_cap_adc $T=19010 72020 0 0 $X=18310 $Y=71320
+X80 vbottom<7> vtop vssa mim_cap_adc $T=19010 80820 0 0 $X=18310 $Y=80120
+X81 vbottom<7> vtop vssa mim_cap_adc $T=19010 89620 0 0 $X=18310 $Y=88920
+X82 vbottom<7> vtop vssa mim_cap_adc $T=19010 98420 0 0 $X=18310 $Y=97720
+X83 vbottom<7> vtop vssa mim_cap_adc $T=19010 107220 0 0 $X=18310 $Y=106520
+X84 vbottom<7> vtop vssa mim_cap_adc $T=19010 116020 0 0 $X=18310 $Y=115320
+X85 vbottom<7> vtop vssa mim_cap_adc $T=19010 124820 0 0 $X=18310 $Y=124120
+X86 vbottom<7> vtop vssa mim_cap_adc $T=19010 133620 0 0 $X=18310 $Y=132920
+X87 vbottom<7> vtop vssa mim_cap_adc $T=19010 142420 0 0 $X=18310 $Y=141720
+X88 vssa vssa vssa mim_cap_adc $T=19010 151220 0 0 $X=18310 $Y=150520
+X89 vssa vssa vssa mim_cap_adc $T=27810 1620 0 0 $X=27110 $Y=920
+X90 vbottom<7> vtop vssa mim_cap_adc $T=27810 10420 0 0 $X=27110 $Y=9720
+X91 vbottom<7> vtop vssa mim_cap_adc $T=27810 19220 0 0 $X=27110 $Y=18520
+X92 vbottom<7> vtop vssa mim_cap_adc $T=27810 28020 0 0 $X=27110 $Y=27320
+X93 vbottom<7> vtop vssa mim_cap_adc $T=27810 36820 0 0 $X=27110 $Y=36120
+X94 vbottom<7> vtop vssa mim_cap_adc $T=27810 45620 0 0 $X=27110 $Y=44920
+X95 vbottom<7> vtop vssa mim_cap_adc $T=27810 54420 0 0 $X=27110 $Y=53720
+X96 vbottom<7> vtop vssa mim_cap_adc $T=27810 63220 0 0 $X=27110 $Y=62520
+X97 vbottom<7> vtop vssa mim_cap_adc $T=27810 72020 0 0 $X=27110 $Y=71320
+X98 vbottom<7> vtop vssa mim_cap_adc $T=27810 80820 0 0 $X=27110 $Y=80120
+X99 vbottom<7> vtop vssa mim_cap_adc $T=27810 89620 0 0 $X=27110 $Y=88920
+X100 vbottom<6> vtop vssa mim_cap_adc $T=27810 98420 0 0 $X=27110 $Y=97720
+X101 vbottom<6> vtop vssa mim_cap_adc $T=27810 107220 0 0 $X=27110 $Y=106520
+X102 vbottom<6> vtop vssa mim_cap_adc $T=27810 116020 0 0 $X=27110 $Y=115320
+X103 vbottom<6> vtop vssa mim_cap_adc $T=27810 124820 0 0 $X=27110 $Y=124120
+X104 vbottom<7> vtop vssa mim_cap_adc $T=27810 133620 0 0 $X=27110 $Y=132920
+X105 vbottom<7> vtop vssa mim_cap_adc $T=27810 142420 0 0 $X=27110 $Y=141720
+X106 vssa vssa vssa mim_cap_adc $T=27810 151220 0 0 $X=27110 $Y=150520
+X107 vssa vssa vssa mim_cap_adc $T=36610 1620 0 0 $X=35910 $Y=920
+X108 vbottom<7> vtop vssa mim_cap_adc $T=36610 10420 0 0 $X=35910 $Y=9720
+X109 vbottom<7> vtop vssa mim_cap_adc $T=36610 19220 0 0 $X=35910 $Y=18520
+X110 vbottom<6> vtop vssa mim_cap_adc $T=36610 28020 0 0 $X=35910 $Y=27320
+X111 vbottom<6> vtop vssa mim_cap_adc $T=36610 36820 0 0 $X=35910 $Y=36120
+X112 vbottom<6> vtop vssa mim_cap_adc $T=36610 45620 0 0 $X=35910 $Y=44920
+X113 vbottom<6> vtop vssa mim_cap_adc $T=36610 54420 0 0 $X=35910 $Y=53720
+X114 vbottom<6> vtop vssa mim_cap_adc $T=36610 63220 0 0 $X=35910 $Y=62520
+X115 vbottom<6> vtop vssa mim_cap_adc $T=36610 72020 0 0 $X=35910 $Y=71320
+X116 vbottom<6> vtop vssa mim_cap_adc $T=36610 80820 0 0 $X=35910 $Y=80120
+X117 vbottom<6> vtop vssa mim_cap_adc $T=36610 89620 0 0 $X=35910 $Y=88920
+X118 vbottom<6> vtop vssa mim_cap_adc $T=36610 98420 0 0 $X=35910 $Y=97720
+X119 vbottom<6> vtop vssa mim_cap_adc $T=36610 107220 0 0 $X=35910 $Y=106520
+X120 vbottom<6> vtop vssa mim_cap_adc $T=36610 116020 0 0 $X=35910 $Y=115320
+X121 vbottom<6> vtop vssa mim_cap_adc $T=36610 124820 0 0 $X=35910 $Y=124120
+X122 vbottom<7> vtop vssa mim_cap_adc $T=36610 133620 0 0 $X=35910 $Y=132920
+X123 vbottom<7> vtop vssa mim_cap_adc $T=36610 142420 0 0 $X=35910 $Y=141720
+X124 vssa vssa vssa mim_cap_adc $T=36610 151220 0 0 $X=35910 $Y=150520
+X125 vssa vssa vssa mim_cap_adc $T=45410 1620 0 0 $X=44710 $Y=920
+X126 vbottom<7> vtop vssa mim_cap_adc $T=45410 10420 0 0 $X=44710 $Y=9720
+X127 vbottom<7> vtop vssa mim_cap_adc $T=45410 19220 0 0 $X=44710 $Y=18520
+X128 vbottom<6> vtop vssa mim_cap_adc $T=45410 28020 0 0 $X=44710 $Y=27320
+X129 vbottom<6> vtop vssa mim_cap_adc $T=45410 36820 0 0 $X=44710 $Y=36120
+X130 vbottom<5> vtop vssa mim_cap_adc $T=45410 45620 0 0 $X=44710 $Y=44920
+X131 vbottom<5> vtop vssa mim_cap_adc $T=45410 54420 0 0 $X=44710 $Y=53720
+X132 vbottom<5> vtop vssa mim_cap_adc $T=45410 63220 0 0 $X=44710 $Y=62520
+X133 vbottom<5> vtop vssa mim_cap_adc $T=45410 72020 0 0 $X=44710 $Y=71320
+X134 vbottom<5> vtop vssa mim_cap_adc $T=45410 80820 0 0 $X=44710 $Y=80120
+X135 vbottom<5> vtop vssa mim_cap_adc $T=45410 89620 0 0 $X=44710 $Y=88920
+X136 vbottom<5> vtop vssa mim_cap_adc $T=45410 98420 0 0 $X=44710 $Y=97720
+X137 vbottom<5> vtop vssa mim_cap_adc $T=45410 107220 0 0 $X=44710 $Y=106520
+X138 vbottom<6> vtop vssa mim_cap_adc $T=45410 116020 0 0 $X=44710 $Y=115320
+X139 vbottom<6> vtop vssa mim_cap_adc $T=45410 124820 0 0 $X=44710 $Y=124120
+X140 vbottom<7> vtop vssa mim_cap_adc $T=45410 133620 0 0 $X=44710 $Y=132920
+X141 vbottom<7> vtop vssa mim_cap_adc $T=45410 142420 0 0 $X=44710 $Y=141720
+X142 vssa vssa vssa mim_cap_adc $T=45410 151220 0 0 $X=44710 $Y=150520
+X143 vssa vssa vssa mim_cap_adc $T=54210 1620 0 0 $X=53510 $Y=920
+X144 vbottom<7> vtop vssa mim_cap_adc $T=54210 10420 0 0 $X=53510 $Y=9720
+X145 vbottom<7> vtop vssa mim_cap_adc $T=54210 19220 0 0 $X=53510 $Y=18520
+X146 vbottom<6> vtop vssa mim_cap_adc $T=54210 28020 0 0 $X=53510 $Y=27320
+X147 vbottom<6> vtop vssa mim_cap_adc $T=54210 36820 0 0 $X=53510 $Y=36120
+X148 vbottom<5> vtop vssa mim_cap_adc $T=54210 45620 0 0 $X=53510 $Y=44920
+X149 vbottom<5> vtop vssa mim_cap_adc $T=54210 54420 0 0 $X=53510 $Y=53720
+X150 vbottom<5> vtop vssa mim_cap_adc $T=54210 63220 0 0 $X=53510 $Y=62520
+X151 vbottom<4> vtop vssa mim_cap_adc $T=54210 72020 0 0 $X=53510 $Y=71320
+X152 vbottom<4> vtop vssa mim_cap_adc $T=54210 80820 0 0 $X=53510 $Y=80120
+X153 vbottom<4> vtop vssa mim_cap_adc $T=54210 89620 0 0 $X=53510 $Y=88920
+X154 vbottom<4> vtop vssa mim_cap_adc $T=54210 98420 0 0 $X=53510 $Y=97720
+X155 vbottom<5> vtop vssa mim_cap_adc $T=54210 107220 0 0 $X=53510 $Y=106520
+X156 vbottom<6> vtop vssa mim_cap_adc $T=54210 116020 0 0 $X=53510 $Y=115320
+X157 vbottom<6> vtop vssa mim_cap_adc $T=54210 124820 0 0 $X=53510 $Y=124120
+X158 vbottom<7> vtop vssa mim_cap_adc $T=54210 133620 0 0 $X=53510 $Y=132920
+X159 vbottom<7> vtop vssa mim_cap_adc $T=54210 142420 0 0 $X=53510 $Y=141720
+X160 vssa vssa vssa mim_cap_adc $T=54210 151220 0 0 $X=53510 $Y=150520
+X161 vssa vssa vssa mim_cap_adc $T=63010 1620 0 0 $X=62310 $Y=920
+X162 vbottom<7> vtop vssa mim_cap_adc $T=63010 10420 0 0 $X=62310 $Y=9720
+X163 vbottom<7> vtop vssa mim_cap_adc $T=63010 19220 0 0 $X=62310 $Y=18520
+X164 vbottom<6> vtop vssa mim_cap_adc $T=63010 28020 0 0 $X=62310 $Y=27320
+X165 vbottom<6> vtop vssa mim_cap_adc $T=63010 36820 0 0 $X=62310 $Y=36120
+X166 vbottom<5> vtop vssa mim_cap_adc $T=63010 45620 0 0 $X=62310 $Y=44920
+X167 vbottom<4> vtop vssa mim_cap_adc $T=63010 54420 0 0 $X=62310 $Y=53720
+X168 vbottom<3> vtop vssa mim_cap_adc $T=63010 63220 0 0 $X=62310 $Y=62520
+X169 vbottom<3> vtop vssa mim_cap_adc $T=63010 72020 0 0 $X=62310 $Y=71320
+X170 vbottom<3> vtop vssa mim_cap_adc $T=63010 80820 0 0 $X=62310 $Y=80120
+X171 vbottom<3> vtop vssa mim_cap_adc $T=63010 89620 0 0 $X=62310 $Y=88920
+X172 vbottom<4> vtop vssa mim_cap_adc $T=63010 98420 0 0 $X=62310 $Y=97720
+X173 vbottom<5> vtop vssa mim_cap_adc $T=63010 107220 0 0 $X=62310 $Y=106520
+X174 vbottom<6> vtop vssa mim_cap_adc $T=63010 116020 0 0 $X=62310 $Y=115320
+X175 vbottom<6> vtop vssa mim_cap_adc $T=63010 124820 0 0 $X=62310 $Y=124120
+X176 vbottom<7> vtop vssa mim_cap_adc $T=63010 133620 0 0 $X=62310 $Y=132920
+X177 vbottom<7> vtop vssa mim_cap_adc $T=63010 142420 0 0 $X=62310 $Y=141720
+X178 vssa vssa vssa mim_cap_adc $T=63010 151220 0 0 $X=62310 $Y=150520
+X179 vssa vssa vssa mim_cap_adc $T=71810 1620 0 0 $X=71110 $Y=920
+X180 vbottom<7> vtop vssa mim_cap_adc $T=71810 10420 0 0 $X=71110 $Y=9720
+X181 vbottom<7> vtop vssa mim_cap_adc $T=71810 19220 0 0 $X=71110 $Y=18520
+X182 vbottom<6> vtop vssa mim_cap_adc $T=71810 28020 0 0 $X=71110 $Y=27320
+X183 vbottom<6> vtop vssa mim_cap_adc $T=71810 36820 0 0 $X=71110 $Y=36120
+X184 vbottom<5> vtop vssa mim_cap_adc $T=71810 45620 0 0 $X=71110 $Y=44920
+X185 vbottom<4> vtop vssa mim_cap_adc $T=71810 54420 0 0 $X=71110 $Y=53720
+X186 vbottom<2> vtop vssa mim_cap_adc $T=71810 63220 0 0 $X=71110 $Y=62520
+X187 vbottom<1> vtop vssa mim_cap_adc $T=71810 72020 0 0 $X=71110 $Y=71320
+X188 vbottom_dum vtop vssa mim_cap_adc $T=71810 80820 0 0 $X=71110 $Y=80120
+X189 vbottom<2> vtop vssa mim_cap_adc $T=71810 89620 0 0 $X=71110 $Y=88920
+X190 vbottom<4> vtop vssa mim_cap_adc $T=71810 98420 0 0 $X=71110 $Y=97720
+X191 vbottom<5> vtop vssa mim_cap_adc $T=71810 107220 0 0 $X=71110 $Y=106520
+X192 vbottom<6> vtop vssa mim_cap_adc $T=71810 116020 0 0 $X=71110 $Y=115320
+X193 vbottom<6> vtop vssa mim_cap_adc $T=71810 124820 0 0 $X=71110 $Y=124120
+X194 vbottom<7> vtop vssa mim_cap_adc $T=71810 133620 0 0 $X=71110 $Y=132920
+X195 vbottom<7> vtop vssa mim_cap_adc $T=71810 142420 0 0 $X=71110 $Y=141720
+X196 vssa vssa vssa mim_cap_adc $T=71810 151220 0 0 $X=71110 $Y=150520
+X197 vssa vssa vssa mim_cap_adc $T=80610 1620 0 0 $X=79910 $Y=920
+X198 vbottom<7> vtop vssa mim_cap_adc $T=80610 10420 0 0 $X=79910 $Y=9720
+X199 vbottom<7> vtop vssa mim_cap_adc $T=80610 19220 0 0 $X=79910 $Y=18520
+X200 vbottom<6> vtop vssa mim_cap_adc $T=80610 28020 0 0 $X=79910 $Y=27320
+X201 vbottom<6> vtop vssa mim_cap_adc $T=80610 36820 0 0 $X=79910 $Y=36120
+X202 vbottom<5> vtop vssa mim_cap_adc $T=80610 45620 0 0 $X=79910 $Y=44920
+X203 vbottom<4> vtop vssa mim_cap_adc $T=80610 54420 0 0 $X=79910 $Y=53720
+X204 vbottom<2> vtop vssa mim_cap_adc $T=80610 63220 0 0 $X=79910 $Y=62520
+X205 vbottom<0> vtop vssa mim_cap_adc $T=80610 72020 0 0 $X=79910 $Y=71320
+X206 vbottom<1> vtop vssa mim_cap_adc $T=80610 80820 0 0 $X=79910 $Y=80120
+X207 vbottom<2> vtop vssa mim_cap_adc $T=80610 89620 0 0 $X=79910 $Y=88920
+X208 vbottom<4> vtop vssa mim_cap_adc $T=80610 98420 0 0 $X=79910 $Y=97720
+X209 vbottom<5> vtop vssa mim_cap_adc $T=80610 107220 0 0 $X=79910 $Y=106520
+X210 vbottom<6> vtop vssa mim_cap_adc $T=80610 116020 0 0 $X=79910 $Y=115320
+X211 vbottom<6> vtop vssa mim_cap_adc $T=80610 124820 0 0 $X=79910 $Y=124120
+X212 vbottom<7> vtop vssa mim_cap_adc $T=80610 133620 0 0 $X=79910 $Y=132920
+X213 vbottom<7> vtop vssa mim_cap_adc $T=80610 142420 0 0 $X=79910 $Y=141720
+X214 vssa vssa vssa mim_cap_adc $T=80610 151220 0 0 $X=79910 $Y=150520
+X215 vssa vssa vssa mim_cap_adc $T=89410 1620 0 0 $X=88710 $Y=920
+X216 vbottom<7> vtop vssa mim_cap_adc $T=89410 10420 0 0 $X=88710 $Y=9720
+X217 vbottom<7> vtop vssa mim_cap_adc $T=89410 19220 0 0 $X=88710 $Y=18520
+X218 vbottom<6> vtop vssa mim_cap_adc $T=89410 28020 0 0 $X=88710 $Y=27320
+X219 vbottom<6> vtop vssa mim_cap_adc $T=89410 36820 0 0 $X=88710 $Y=36120
+X220 vbottom<5> vtop vssa mim_cap_adc $T=89410 45620 0 0 $X=88710 $Y=44920
+X221 vbottom<4> vtop vssa mim_cap_adc $T=89410 54420 0 0 $X=88710 $Y=53720
+X222 vbottom<3> vtop vssa mim_cap_adc $T=89410 63220 0 0 $X=88710 $Y=62520
+X223 vbottom<3> vtop vssa mim_cap_adc $T=89410 72020 0 0 $X=88710 $Y=71320
+X224 vbottom<3> vtop vssa mim_cap_adc $T=89410 80820 0 0 $X=88710 $Y=80120
+X225 vbottom<3> vtop vssa mim_cap_adc $T=89410 89620 0 0 $X=88710 $Y=88920
+X226 vbottom<4> vtop vssa mim_cap_adc $T=89410 98420 0 0 $X=88710 $Y=97720
+X227 vbottom<5> vtop vssa mim_cap_adc $T=89410 107220 0 0 $X=88710 $Y=106520
+X228 vbottom<6> vtop vssa mim_cap_adc $T=89410 116020 0 0 $X=88710 $Y=115320
+X229 vbottom<6> vtop vssa mim_cap_adc $T=89410 124820 0 0 $X=88710 $Y=124120
+X230 vbottom<7> vtop vssa mim_cap_adc $T=89410 133620 0 0 $X=88710 $Y=132920
+X231 vbottom<7> vtop vssa mim_cap_adc $T=89410 142420 0 0 $X=88710 $Y=141720
+X232 vssa vssa vssa mim_cap_adc $T=89410 151220 0 0 $X=88710 $Y=150520
+X233 vssa vssa vssa mim_cap_adc $T=98210 1620 0 0 $X=97510 $Y=920
+X234 vbottom<7> vtop vssa mim_cap_adc $T=98210 10420 0 0 $X=97510 $Y=9720
+X235 vbottom<7> vtop vssa mim_cap_adc $T=98210 19220 0 0 $X=97510 $Y=18520
+X236 vbottom<6> vtop vssa mim_cap_adc $T=98210 28020 0 0 $X=97510 $Y=27320
+X237 vbottom<6> vtop vssa mim_cap_adc $T=98210 36820 0 0 $X=97510 $Y=36120
+X238 vbottom<5> vtop vssa mim_cap_adc $T=98210 45620 0 0 $X=97510 $Y=44920
+X239 vbottom<4> vtop vssa mim_cap_adc $T=98210 54420 0 0 $X=97510 $Y=53720
+X240 vbottom<4> vtop vssa mim_cap_adc $T=98210 63220 0 0 $X=97510 $Y=62520
+X241 vbottom<4> vtop vssa mim_cap_adc $T=98210 72020 0 0 $X=97510 $Y=71320
+X242 vbottom<4> vtop vssa mim_cap_adc $T=98210 80820 0 0 $X=97510 $Y=80120
+X243 vbottom<5> vtop vssa mim_cap_adc $T=98210 89620 0 0 $X=97510 $Y=88920
+X244 vbottom<5> vtop vssa mim_cap_adc $T=98210 98420 0 0 $X=97510 $Y=97720
+X245 vbottom<5> vtop vssa mim_cap_adc $T=98210 107220 0 0 $X=97510 $Y=106520
+X246 vbottom<6> vtop vssa mim_cap_adc $T=98210 116020 0 0 $X=97510 $Y=115320
+X247 vbottom<6> vtop vssa mim_cap_adc $T=98210 124820 0 0 $X=97510 $Y=124120
+X248 vbottom<7> vtop vssa mim_cap_adc $T=98210 133620 0 0 $X=97510 $Y=132920
+X249 vbottom<7> vtop vssa mim_cap_adc $T=98210 142420 0 0 $X=97510 $Y=141720
+X250 vssa vssa vssa mim_cap_adc $T=98210 151220 0 0 $X=97510 $Y=150520
+X251 vssa vssa vssa mim_cap_adc $T=107010 1620 0 0 $X=106310 $Y=920
+X252 vbottom<7> vtop vssa mim_cap_adc $T=107010 10420 0 0 $X=106310 $Y=9720
+X253 vbottom<7> vtop vssa mim_cap_adc $T=107010 19220 0 0 $X=106310 $Y=18520
+X254 vbottom<6> vtop vssa mim_cap_adc $T=107010 28020 0 0 $X=106310 $Y=27320
+X255 vbottom<6> vtop vssa mim_cap_adc $T=107010 36820 0 0 $X=106310 $Y=36120
+X256 vbottom<5> vtop vssa mim_cap_adc $T=107010 45620 0 0 $X=106310 $Y=44920
+X257 vbottom<5> vtop vssa mim_cap_adc $T=107010 54420 0 0 $X=106310 $Y=53720
+X258 vbottom<5> vtop vssa mim_cap_adc $T=107010 63220 0 0 $X=106310 $Y=62520
+X259 vbottom<5> vtop vssa mim_cap_adc $T=107010 72020 0 0 $X=106310 $Y=71320
+X260 vbottom<5> vtop vssa mim_cap_adc $T=107010 80820 0 0 $X=106310 $Y=80120
+X261 vbottom<5> vtop vssa mim_cap_adc $T=107010 89620 0 0 $X=106310 $Y=88920
+X262 vbottom<5> vtop vssa mim_cap_adc $T=107010 98420 0 0 $X=106310 $Y=97720
+X263 vbottom<5> vtop vssa mim_cap_adc $T=107010 107220 0 0 $X=106310 $Y=106520
+X264 vbottom<6> vtop vssa mim_cap_adc $T=107010 116020 0 0 $X=106310 $Y=115320
+X265 vbottom<6> vtop vssa mim_cap_adc $T=107010 124820 0 0 $X=106310 $Y=124120
+X266 vbottom<7> vtop vssa mim_cap_adc $T=107010 133620 0 0 $X=106310 $Y=132920
+X267 vbottom<7> vtop vssa mim_cap_adc $T=107010 142420 0 0 $X=106310 $Y=141720
+X268 vssa vssa vssa mim_cap_adc $T=107010 151220 0 0 $X=106310 $Y=150520
+X269 vssa vssa vssa mim_cap_adc $T=115810 1620 0 0 $X=115110 $Y=920
+X270 vbottom<7> vtop vssa mim_cap_adc $T=115810 10420 0 0 $X=115110 $Y=9720
+X271 vbottom<7> vtop vssa mim_cap_adc $T=115810 19220 0 0 $X=115110 $Y=18520
+X272 vbottom<6> vtop vssa mim_cap_adc $T=115810 28020 0 0 $X=115110 $Y=27320
+X273 vbottom<6> vtop vssa mim_cap_adc $T=115810 36820 0 0 $X=115110 $Y=36120
+X274 vbottom<6> vtop vssa mim_cap_adc $T=115810 45620 0 0 $X=115110 $Y=44920
+X275 vbottom<6> vtop vssa mim_cap_adc $T=115810 54420 0 0 $X=115110 $Y=53720
+X276 vbottom<6> vtop vssa mim_cap_adc $T=115810 63220 0 0 $X=115110 $Y=62520
+X277 vbottom<6> vtop vssa mim_cap_adc $T=115810 72020 0 0 $X=115110 $Y=71320
+X278 vbottom<6> vtop vssa mim_cap_adc $T=115810 80820 0 0 $X=115110 $Y=80120
+X279 vbottom<6> vtop vssa mim_cap_adc $T=115810 89620 0 0 $X=115110 $Y=88920
+X280 vbottom<6> vtop vssa mim_cap_adc $T=115810 98420 0 0 $X=115110 $Y=97720
+X281 vbottom<6> vtop vssa mim_cap_adc $T=115810 107220 0 0 $X=115110 $Y=106520
+X282 vbottom<6> vtop vssa mim_cap_adc $T=115810 116020 0 0 $X=115110 $Y=115320
+X283 vbottom<6> vtop vssa mim_cap_adc $T=115810 124820 0 0 $X=115110 $Y=124120
+X284 vbottom<7> vtop vssa mim_cap_adc $T=115810 133620 0 0 $X=115110 $Y=132920
+X285 vbottom<7> vtop vssa mim_cap_adc $T=115810 142420 0 0 $X=115110 $Y=141720
+X286 vssa vssa vssa mim_cap_adc $T=115810 151220 0 0 $X=115110 $Y=150520
+X287 vssa vssa vssa mim_cap_adc $T=124610 1620 0 0 $X=123910 $Y=920
+X288 vbottom<7> vtop vssa mim_cap_adc $T=124610 10420 0 0 $X=123910 $Y=9720
+X289 vbottom<7> vtop vssa mim_cap_adc $T=124610 19220 0 0 $X=123910 $Y=18520
+X290 vbottom<6> vtop vssa mim_cap_adc $T=124610 28020 0 0 $X=123910 $Y=27320
+X291 vbottom<6> vtop vssa mim_cap_adc $T=124610 36820 0 0 $X=123910 $Y=36120
+X292 vbottom<6> vtop vssa mim_cap_adc $T=124610 45620 0 0 $X=123910 $Y=44920
+X293 vbottom<6> vtop vssa mim_cap_adc $T=124610 54420 0 0 $X=123910 $Y=53720
+X294 vbottom<7> vtop vssa mim_cap_adc $T=124610 63220 0 0 $X=123910 $Y=62520
+X295 vbottom<7> vtop vssa mim_cap_adc $T=124610 72020 0 0 $X=123910 $Y=71320
+X296 vbottom<7> vtop vssa mim_cap_adc $T=124610 80820 0 0 $X=123910 $Y=80120
+X297 vbottom<7> vtop vssa mim_cap_adc $T=124610 89620 0 0 $X=123910 $Y=88920
+X298 vbottom<7> vtop vssa mim_cap_adc $T=124610 98420 0 0 $X=123910 $Y=97720
+X299 vbottom<7> vtop vssa mim_cap_adc $T=124610 107220 0 0 $X=123910 $Y=106520
+X300 vbottom<7> vtop vssa mim_cap_adc $T=124610 116020 0 0 $X=123910 $Y=115320
+X301 vbottom<7> vtop vssa mim_cap_adc $T=124610 124820 0 0 $X=123910 $Y=124120
+X302 vbottom<7> vtop vssa mim_cap_adc $T=124610 133620 0 0 $X=123910 $Y=132920
+X303 vbottom<7> vtop vssa mim_cap_adc $T=124610 142420 0 0 $X=123910 $Y=141720
+X304 vssa vssa vssa mim_cap_adc $T=124610 151220 0 0 $X=123910 $Y=150520
+X305 vssa vssa vssa mim_cap_adc $T=133410 1620 0 0 $X=132710 $Y=920
+X306 vbottom<7> vtop vssa mim_cap_adc $T=133410 10420 0 0 $X=132710 $Y=9720
+X307 vbottom<7> vtop vssa mim_cap_adc $T=133410 19220 0 0 $X=132710 $Y=18520
+X308 vbottom<7> vtop vssa mim_cap_adc $T=133410 28020 0 0 $X=132710 $Y=27320
+X309 vbottom<7> vtop vssa mim_cap_adc $T=133410 36820 0 0 $X=132710 $Y=36120
+X310 vbottom<7> vtop vssa mim_cap_adc $T=133410 45620 0 0 $X=132710 $Y=44920
+X311 vbottom<7> vtop vssa mim_cap_adc $T=133410 54420 0 0 $X=132710 $Y=53720
+X312 vbottom<7> vtop vssa mim_cap_adc $T=133410 63220 0 0 $X=132710 $Y=62520
+X313 vbottom<7> vtop vssa mim_cap_adc $T=133410 72020 0 0 $X=132710 $Y=71320
+X314 vbottom<7> vtop vssa mim_cap_adc $T=133410 80820 0 0 $X=132710 $Y=80120
+X315 vbottom<7> vtop vssa mim_cap_adc $T=133410 89620 0 0 $X=132710 $Y=88920
+X316 vbottom<7> vtop vssa mim_cap_adc $T=133410 98420 0 0 $X=132710 $Y=97720
+X317 vbottom<7> vtop vssa mim_cap_adc $T=133410 107220 0 0 $X=132710 $Y=106520
+X318 vbottom<7> vtop vssa mim_cap_adc $T=133410 116020 0 0 $X=132710 $Y=115320
+X319 vbottom<7> vtop vssa mim_cap_adc $T=133410 124820 0 0 $X=132710 $Y=124120
+X320 vbottom<7> vtop vssa mim_cap_adc $T=133410 133620 0 0 $X=132710 $Y=132920
+X321 vbottom<7> vtop vssa mim_cap_adc $T=133410 142420 0 0 $X=132710 $Y=141720
+X322 vssa vssa vssa mim_cap_adc $T=133410 151220 0 0 $X=132710 $Y=150520
+X323 vssa vssa vssa mim_cap_adc $T=142210 1620 0 0 $X=141510 $Y=920
+X324 vbottom<7> vtop vssa mim_cap_adc $T=142210 10420 0 0 $X=141510 $Y=9720
+X325 vbottom<7> vtop vssa mim_cap_adc $T=142210 19220 0 0 $X=141510 $Y=18520
+X326 vbottom<7> vtop vssa mim_cap_adc $T=142210 28020 0 0 $X=141510 $Y=27320
+X327 vbottom<7> vtop vssa mim_cap_adc $T=142210 36820 0 0 $X=141510 $Y=36120
+X328 vbottom<7> vtop vssa mim_cap_adc $T=142210 45620 0 0 $X=141510 $Y=44920
+X329 vbottom<7> vtop vssa mim_cap_adc $T=142210 54420 0 0 $X=141510 $Y=53720
+X330 vbottom<7> vtop vssa mim_cap_adc $T=142210 63220 0 0 $X=141510 $Y=62520
+X331 vbottom<7> vtop vssa mim_cap_adc $T=142210 72020 0 0 $X=141510 $Y=71320
+X332 vbottom<7> vtop vssa mim_cap_adc $T=142210 80820 0 0 $X=141510 $Y=80120
+X333 vbottom<7> vtop vssa mim_cap_adc $T=142210 89620 0 0 $X=141510 $Y=88920
+X334 vbottom<7> vtop vssa mim_cap_adc $T=142210 98420 0 0 $X=141510 $Y=97720
+X335 vbottom<7> vtop vssa mim_cap_adc $T=142210 107220 0 0 $X=141510 $Y=106520
+X336 vbottom<7> vtop vssa mim_cap_adc $T=142210 116020 0 0 $X=141510 $Y=115320
+X337 vbottom<7> vtop vssa mim_cap_adc $T=142210 124820 0 0 $X=141510 $Y=124120
+X338 vbottom<7> vtop vssa mim_cap_adc $T=142210 133620 0 0 $X=141510 $Y=132920
+X339 vbottom<7> vtop vssa mim_cap_adc $T=142210 142420 0 0 $X=141510 $Y=141720
+X340 vssa vssa vssa mim_cap_adc $T=142210 151220 0 0 $X=141510 $Y=150520
+X341 vssa vssa vssa mim_cap_adc $T=151010 1620 0 0 $X=150310 $Y=920
+X342 vssa vssa vssa mim_cap_adc $T=151010 10420 0 0 $X=150310 $Y=9720
+X343 vssa vssa vssa mim_cap_adc $T=151010 19220 0 0 $X=150310 $Y=18520
+X344 vssa vssa vssa mim_cap_adc $T=151010 28020 0 0 $X=150310 $Y=27320
+X345 vssa vssa vssa mim_cap_adc $T=151010 36820 0 0 $X=150310 $Y=36120
+X346 vssa vssa vssa mim_cap_adc $T=151010 45620 0 0 $X=150310 $Y=44920
+X347 vssa vssa vssa mim_cap_adc $T=151010 54420 0 0 $X=150310 $Y=53720
+X348 vssa vssa vssa mim_cap_adc $T=151010 63220 0 0 $X=150310 $Y=62520
+X349 vssa vssa vssa mim_cap_adc $T=151010 72020 0 0 $X=150310 $Y=71320
+X350 vssa vssa vssa mim_cap_adc $T=151010 80820 0 0 $X=150310 $Y=80120
+X351 vssa vssa vssa mim_cap_adc $T=151010 89620 0 0 $X=150310 $Y=88920
+X352 vssa vssa vssa mim_cap_adc $T=151010 98420 0 0 $X=150310 $Y=97720
+X353 vssa vssa vssa mim_cap_adc $T=151010 107220 0 0 $X=150310 $Y=106520
+X354 vssa vssa vssa mim_cap_adc $T=151010 116020 0 0 $X=150310 $Y=115320
+X355 vssa vssa vssa mim_cap_adc $T=151010 124820 0 0 $X=150310 $Y=124120
+X356 vssa vssa vssa mim_cap_adc $T=151010 133620 0 0 $X=150310 $Y=132920
+X357 vssa vssa vssa mim_cap_adc $T=151010 142420 0 0 $X=150310 $Y=141720
+X358 vssa vssa vssa mim_cap_adc $T=151010 151220 0 0 $X=150310 $Y=150520
+.ends carray_8b

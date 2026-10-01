@@ -2,7 +2,7 @@
 * CDL Netlist:                                              *
 *                                                           *
 * Cell Name  : mim_cap_adc                                  *
-* Netlisted  : Sat Sep 26 10:01:54 2026                     *
+* Netlisted  : Tue Sep 29 20:07:44 2026                     *
 * Pegasus Version: 23.26-s005 Thu Oct 17 16:37:42 PDT 2024  *
 * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
 *.LDD
@@ -53,5 +53,5 @@
 * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++ *
 .subckt mim_cap_adc bottom top vssa
 ** N=4 EP=3 FDC=1
-C0 top bottom L=4e-06 W=4e-06 $[cap_mim_m3__base] $X=0 $Y=0 $dt=40
+C0 top bottom L=4e-06 W=4e-06 m=1 $[cap_mim_m3__base] $X=0 $Y=0 $dt=40
 .ends mim_cap_adc

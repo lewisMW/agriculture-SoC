@@ -10,9 +10,9 @@ logFile	"/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/PIPO1.LOG"
 maxVertices	2048
 pinAttNum	0
 runDir	"/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS"
-strmFile	"/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.gds.gz"
+strmFile	"/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/carray_8b.gds.gz"
 strmVersion	5
 techLib	"sky130_fd_pr_main"
-topCell	"mim_cap_adc"
+topCell	"carray_8b"
 view	"layout"
 enableColoring

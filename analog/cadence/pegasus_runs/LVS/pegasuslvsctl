@@ -11,16 +11,16 @@ lvs_abort -softchk no;
 lvs_abort -supply_error no;
 lvs_find_shorts no;
 sconnect_upper_shape_count no;
-lvs_report_file "mim_cap_adc.rep";
+lvs_report_file "carray_8b.rep";
 lvs_report_max 50 -mismatched_net_limit 100;
 lvs_run_erc_checks yes;
 lvs_report_opt -none;
-report_summary -erc "mim_cap_adc.sum" -replace;
+report_summary -erc "carray_8b.sum" -replace;
 max_results -erc 1000;
-results_db -erc "/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.erc_errors.ascii" -ascii;
-schematic_path "/root/agriculture-SoC/analog/cadence/pegasus_runs/mim_cap_adc.cdl" cdl;
+results_db -erc "/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/carray_8b.erc_errors.ascii" -ascii;
+schematic_path "/root/agriculture-SoC/analog/cadence/pegasus_runs/carray_8b.cdl" cdl;
 abort_on_layout_error yes;
 layout_format gdsii;
-layout_path "/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/mim_cap_adc.gds.gz";
+layout_path "/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/carray_8b.gds.gz";
 //=== Configurator controls ===
 //=== End of configurator controls ===

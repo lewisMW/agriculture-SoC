@@ -1,0 +1,16 @@
+# SVDB: Port Table (ports)
+# SVDB: Layout Primary carray_8b
+vbottom<0> 6 vbottom<0> 86510 155 met2
+vbottom<7> 9 vbottom<7> 113260 155 met2
+vbottom_dum 3 vbottom_dum 69910 155 met2
+vbottom_dum 3 vbottom_dum 69910 180 met2
+vbottom<2> 4 vbottom<2> 77710 155 met2
+vbottom<5> 7 vbottom<5> 95660 155 met2
+vssa 10 vssa 29452 150 met2
+vbottom<4> 1 vbottom<4> 60460 155 met2
+vbottom<1> 5 vbottom<1> 78710 155 met2
+vbottom<1> 5 vbottom<1> 78735 160 met2
+vbottom<3> 2 vbottom<3> 87810 145 met2
+vbottom<3> 2 vbottom<3> 87830 135 met2
+vtop 11 vtop 16535 156675 met2
+vbottom<6> 8 vbottom<6> 104460 155 met2

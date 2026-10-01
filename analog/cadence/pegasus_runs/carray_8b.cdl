@@ -1,0 +1,340 @@
+*******************************************************************
+* CDL Produced by pegasusBuildNetlist on Wed Sep 30 23:37:31 2026 *
+*******************************************************************
+
+
+
+* File content...
+
+
+***********************************************************
+* CDL produced by pvsBuildNetlist on Sep 30 23:37:31 2026 *
+***********************************************************
+
+
+*pvsViewList = auLvs schematic
+*pvsStopList = ("auLvs")
+*pvsSimName  = auLvs
+
+
+
+*.EXPAND_ON_M_FACTOR
+*.MEGA
+
+
+
+.subckt mim_cap_adc bottom top vssa
+*PVSCELL netlisted from sar_adc mim_cap_adc schematic
+  CC0 top bottom cap_mim_m3__base l=4u w=4u m=1
+.ends mim_cap_adc
+
+
+.subckt mim_cap_128bank bottom top vssa
+*PVSCELL netlisted from sar_adc mim_cap_128bank schematic
+  XC0 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC1 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC10 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC100 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC101 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC102 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC103 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC104 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC105 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC106 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC107 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC108 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC109 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC11 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC110 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC111 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC112 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC113 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC114 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC115 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC116 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC117 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC118 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC119 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC12 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC120 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC121 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC122 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC123 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC124 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC125 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC126 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC127 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC13 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC14 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC15 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC16 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC17 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC18 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC19 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC2 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC20 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC21 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC22 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC23 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC24 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC25 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC26 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC27 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC28 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC29 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC3 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC30 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC31 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC32 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC33 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC34 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC35 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC36 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC37 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC38 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC39 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC4 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC40 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC41 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC42 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC43 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC44 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC45 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC46 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC47 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC48 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC49 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC5 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC50 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC51 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC52 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC53 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC54 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC55 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC56 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC57 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC58 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC59 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC6 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC60 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC61 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC62 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC63 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC64 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC65 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC66 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC67 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC68 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC69 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC7 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC70 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC71 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC72 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC73 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC74 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC75 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC76 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC77 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC78 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC79 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC8 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC80 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC81 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC82 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC83 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC84 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC85 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC86 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC87 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC88 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC89 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC9 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC90 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC91 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC92 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC93 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC94 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC95 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC96 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC97 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC98 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC99 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+.ends mim_cap_128bank
+
+
+.subckt mim_cap_64bank bottom top vssa
+*PVSCELL netlisted from sar_adc mim_cap_64bank schematic
+  XC0 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC1 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC10 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC11 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC12 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC13 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC14 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC15 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC16 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC17 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC18 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC19 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC2 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC20 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC21 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC22 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC23 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC24 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC25 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC26 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC27 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC28 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC29 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC3 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC30 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC31 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC32 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC33 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC34 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC35 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC36 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC37 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC38 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC39 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC4 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC40 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC41 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC42 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC43 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC44 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC45 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC46 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC47 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC48 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC49 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC5 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC50 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC51 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC52 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC53 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC54 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC55 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC56 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC57 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC58 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC59 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC6 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC60 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC61 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC62 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC63 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC7 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC8 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC9 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+.ends mim_cap_64bank
+
+
+.subckt mim_cap_32bank bottom top vssa
+*PVSCELL netlisted from sar_adc mim_cap_32bank schematic
+  XC0 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC1 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC10 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC11 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC12 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC13 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC14 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC15 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC16 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC17 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC18 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC19 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC2 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC20 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC21 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC22 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC23 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC24 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC25 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC26 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC27 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC28 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC29 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC3 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC30 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC31 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC4 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC5 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC6 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC7 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC8 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC9 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+.ends mim_cap_32bank
+
+
+.subckt mim_cap_16bank bottom top vssa
+*PVSCELL netlisted from sar_adc mim_cap_16bank schematic
+  XC0 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC1 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC10 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC11 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC12 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC13 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC14 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC15 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC2 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC3 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC4 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC5 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC6 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC7 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC8 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC9 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+.ends mim_cap_16bank
+
+
+.subckt mim_cap_8bank bottom top vssa
+*PVSCELL netlisted from sar_adc mim_cap_8bank schematic
+  XC0 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC1 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC2 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC3 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC4 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC5 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC6 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC7 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+.ends mim_cap_8bank
+
+
+.subckt mim_cap_4bank bottom top vssa
+*PVSCELL netlisted from sar_adc mim_cap_4bank schematic
+  XC0 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC1 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC2 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC3 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+.ends mim_cap_4bank
+
+
+.subckt mim_cap_2bank bottom top vssa
+*PVSCELL netlisted from sar_adc mim_cap_2bank schematic
+  XC0 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+  XC1 mim_cap_adc $PINS bottom=bottom top=top vssa=vssa
+.ends mim_cap_2bank
+
+
+.subckt carray_8b vbottom<0> vbottom<1> vbottom<2> vbottom<3> vbottom<4> vbottom<5>
++  vbottom<6> vbottom<7> vbottom_dum vssa vtop
+*PVSCELL netlisted from sar_adc carray_8b schematic
+  XC7 mim_cap_128bank $PINS bottom=vbottom<7> top=vtop vssa=vssa
+  XC4 mim_cap_16bank $PINS bottom=vbottom<4> top=vtop vssa=vssa
+  XC1 mim_cap_2bank $PINS bottom=vbottom<1> top=vtop vssa=vssa
+  XC5 mim_cap_32bank $PINS bottom=vbottom<5> top=vtop vssa=vssa
+  XC10 mim_cap_4bank $PINS bottom=vssa top=vssa vssa=vssa
+  XC2 mim_cap_4bank $PINS bottom=vbottom<2> top=vtop vssa=vssa
+  XC6 mim_cap_64bank $PINS bottom=vbottom<6> top=vtop vssa=vssa
+  XC9 mim_cap_64bank $PINS bottom=vssa top=vssa vssa=vssa
+  XC3 mim_cap_8bank $PINS bottom=vbottom<3> top=vtop vssa=vssa
+  XC0 mim_cap_adc $PINS bottom=vbottom<0> top=vtop vssa=vssa
+  XC8 mim_cap_adc $PINS bottom=vbottom_dum top=vtop vssa=vssa
+.ends carray_8b
+
+
+***********************************************************
+*             Completed at Sep 30 23:37:31 2026           *
+***********************************************************

@@ -1,0 +1,406 @@
+*****************************************************************************
+* CDL Netlist:
+* Cell Name: carray_8b
+* Netlisted on: Sep 30 23:40:48 2026
+*****************************************************************************
+
+*****************************************************************************
+* BIPOLAR Declarations
+*****************************************************************************
+*.BIPOLAR
+*.RESI = 2000.000000
+*.RESVAL
+*.CAPVAL
+*.DIOPERI
+*.DIOAREA
+*.SCALE METER
+
+
+*****************************************************************************
+* Parameter Statement
+*****************************************************************************
+.PARAM
+
+
+*******************************************************************************
+* Sub-Circuit Netlist:                                                        *
+*                                                                             *
+* Library: sar_adc                                                            *
+* Cell   : mim_cap_adc                                                        *
+* View   : schematic                                                          *
+* Last Time Saved: Sep 26 09:57:33 2026                                       *
+*******************************************************************************
+.subckt mim_cap_adc bottom top vssa
+*.PININFO bottom:B top:B vssa:B 
+.ends mim_cap_adc
+
+
+*******************************************************************************
+* Sub-Circuit Netlist:                                                        *
+*                                                                             *
+* Library: sar_adc                                                            *
+* Cell   : mim_cap_128bank                                                    *
+* View   : schematic                                                          *
+* Last Time Saved: Sep 12 13:12:05 2026                                       *
+*******************************************************************************
+.subckt mim_cap_128bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B 
+XC127 bottom top vssa mim_cap_adc
+XC126 bottom top vssa mim_cap_adc
+XC125 bottom top vssa mim_cap_adc
+XC124 bottom top vssa mim_cap_adc
+XC123 bottom top vssa mim_cap_adc
+XC122 bottom top vssa mim_cap_adc
+XC121 bottom top vssa mim_cap_adc
+XC120 bottom top vssa mim_cap_adc
+XC119 bottom top vssa mim_cap_adc
+XC118 bottom top vssa mim_cap_adc
+XC117 bottom top vssa mim_cap_adc
+XC116 bottom top vssa mim_cap_adc
+XC115 bottom top vssa mim_cap_adc
+XC114 bottom top vssa mim_cap_adc
+XC113 bottom top vssa mim_cap_adc
+XC112 bottom top vssa mim_cap_adc
+XC111 bottom top vssa mim_cap_adc
+XC110 bottom top vssa mim_cap_adc
+XC109 bottom top vssa mim_cap_adc
+XC108 bottom top vssa mim_cap_adc
+XC107 bottom top vssa mim_cap_adc
+XC106 bottom top vssa mim_cap_adc
+XC105 bottom top vssa mim_cap_adc
+XC104 bottom top vssa mim_cap_adc
+XC103 bottom top vssa mim_cap_adc
+XC102 bottom top vssa mim_cap_adc
+XC101 bottom top vssa mim_cap_adc
+XC100 bottom top vssa mim_cap_adc
+XC99 bottom top vssa mim_cap_adc
+XC98 bottom top vssa mim_cap_adc
+XC97 bottom top vssa mim_cap_adc
+XC96 bottom top vssa mim_cap_adc
+XC95 bottom top vssa mim_cap_adc
+XC94 bottom top vssa mim_cap_adc
+XC93 bottom top vssa mim_cap_adc
+XC92 bottom top vssa mim_cap_adc
+XC91 bottom top vssa mim_cap_adc
+XC90 bottom top vssa mim_cap_adc
+XC89 bottom top vssa mim_cap_adc
+XC88 bottom top vssa mim_cap_adc
+XC87 bottom top vssa mim_cap_adc
+XC86 bottom top vssa mim_cap_adc
+XC85 bottom top vssa mim_cap_adc
+XC84 bottom top vssa mim_cap_adc
+XC83 bottom top vssa mim_cap_adc
+XC82 bottom top vssa mim_cap_adc
+XC81 bottom top vssa mim_cap_adc
+XC80 bottom top vssa mim_cap_adc
+XC79 bottom top vssa mim_cap_adc
+XC78 bottom top vssa mim_cap_adc
+XC77 bottom top vssa mim_cap_adc
+XC76 bottom top vssa mim_cap_adc
+XC75 bottom top vssa mim_cap_adc
+XC74 bottom top vssa mim_cap_adc
+XC73 bottom top vssa mim_cap_adc
+XC72 bottom top vssa mim_cap_adc
+XC71 bottom top vssa mim_cap_adc
+XC70 bottom top vssa mim_cap_adc
+XC69 bottom top vssa mim_cap_adc
+XC68 bottom top vssa mim_cap_adc
+XC67 bottom top vssa mim_cap_adc
+XC66 bottom top vssa mim_cap_adc
+XC65 bottom top vssa mim_cap_adc
+XC64 bottom top vssa mim_cap_adc
+XC63 bottom top vssa mim_cap_adc
+XC62 bottom top vssa mim_cap_adc
+XC61 bottom top vssa mim_cap_adc
+XC60 bottom top vssa mim_cap_adc
+XC59 bottom top vssa mim_cap_adc
+XC58 bottom top vssa mim_cap_adc
+XC57 bottom top vssa mim_cap_adc
+XC56 bottom top vssa mim_cap_adc
+XC55 bottom top vssa mim_cap_adc
+XC54 bottom top vssa mim_cap_adc
+XC53 bottom top vssa mim_cap_adc
+XC52 bottom top vssa mim_cap_adc
+XC51 bottom top vssa mim_cap_adc
+XC50 bottom top vssa mim_cap_adc
+XC49 bottom top vssa mim_cap_adc
+XC48 bottom top vssa mim_cap_adc
+XC47 bottom top vssa mim_cap_adc
+XC46 bottom top vssa mim_cap_adc
+XC45 bottom top vssa mim_cap_adc
+XC44 bottom top vssa mim_cap_adc
+XC43 bottom top vssa mim_cap_adc
+XC42 bottom top vssa mim_cap_adc
+XC41 bottom top vssa mim_cap_adc
+XC40 bottom top vssa mim_cap_adc
+XC39 bottom top vssa mim_cap_adc
+XC38 bottom top vssa mim_cap_adc
+XC37 bottom top vssa mim_cap_adc
+XC36 bottom top vssa mim_cap_adc
+XC35 bottom top vssa mim_cap_adc
+XC34 bottom top vssa mim_cap_adc
+XC33 bottom top vssa mim_cap_adc
+XC32 bottom top vssa mim_cap_adc
+XC31 bottom top vssa mim_cap_adc
+XC30 bottom top vssa mim_cap_adc
+XC29 bottom top vssa mim_cap_adc
+XC28 bottom top vssa mim_cap_adc
+XC27 bottom top vssa mim_cap_adc
+XC26 bottom top vssa mim_cap_adc
+XC25 bottom top vssa mim_cap_adc
+XC24 bottom top vssa mim_cap_adc
+XC23 bottom top vssa mim_cap_adc
+XC22 bottom top vssa mim_cap_adc
+XC21 bottom top vssa mim_cap_adc
+XC20 bottom top vssa mim_cap_adc
+XC19 bottom top vssa mim_cap_adc
+XC18 bottom top vssa mim_cap_adc
+XC17 bottom top vssa mim_cap_adc
+XC16 bottom top vssa mim_cap_adc
+XC15 bottom top vssa mim_cap_adc
+XC14 bottom top vssa mim_cap_adc
+XC13 bottom top vssa mim_cap_adc
+XC12 bottom top vssa mim_cap_adc
+XC11 bottom top vssa mim_cap_adc
+XC10 bottom top vssa mim_cap_adc
+XC9 bottom top vssa mim_cap_adc
+XC8 bottom top vssa mim_cap_adc
+XC7 bottom top vssa mim_cap_adc
+XC6 bottom top vssa mim_cap_adc
+XC5 bottom top vssa mim_cap_adc
+XC4 bottom top vssa mim_cap_adc
+XC3 bottom top vssa mim_cap_adc
+XC2 bottom top vssa mim_cap_adc
+XC1 bottom top vssa mim_cap_adc
+XC0 bottom top vssa mim_cap_adc
+.ends mim_cap_128bank
+
+
+*******************************************************************************
+* Sub-Circuit Netlist:                                                        *
+*                                                                             *
+* Library: sar_adc                                                            *
+* Cell   : mim_cap_64bank                                                     *
+* View   : schematic                                                          *
+* Last Time Saved: Sep 12 13:02:41 2026                                       *
+*******************************************************************************
+.subckt mim_cap_64bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B 
+XC63 bottom top vssa mim_cap_adc
+XC62 bottom top vssa mim_cap_adc
+XC61 bottom top vssa mim_cap_adc
+XC60 bottom top vssa mim_cap_adc
+XC59 bottom top vssa mim_cap_adc
+XC58 bottom top vssa mim_cap_adc
+XC57 bottom top vssa mim_cap_adc
+XC56 bottom top vssa mim_cap_adc
+XC55 bottom top vssa mim_cap_adc
+XC54 bottom top vssa mim_cap_adc
+XC53 bottom top vssa mim_cap_adc
+XC52 bottom top vssa mim_cap_adc
+XC51 bottom top vssa mim_cap_adc
+XC50 bottom top vssa mim_cap_adc
+XC49 bottom top vssa mim_cap_adc
+XC48 bottom top vssa mim_cap_adc
+XC47 bottom top vssa mim_cap_adc
+XC46 bottom top vssa mim_cap_adc
+XC45 bottom top vssa mim_cap_adc
+XC44 bottom top vssa mim_cap_adc
+XC43 bottom top vssa mim_cap_adc
+XC42 bottom top vssa mim_cap_adc
+XC41 bottom top vssa mim_cap_adc
+XC40 bottom top vssa mim_cap_adc
+XC39 bottom top vssa mim_cap_adc
+XC38 bottom top vssa mim_cap_adc
+XC37 bottom top vssa mim_cap_adc
+XC36 bottom top vssa mim_cap_adc
+XC35 bottom top vssa mim_cap_adc
+XC34 bottom top vssa mim_cap_adc
+XC33 bottom top vssa mim_cap_adc
+XC32 bottom top vssa mim_cap_adc
+XC31 bottom top vssa mim_cap_adc
+XC30 bottom top vssa mim_cap_adc
+XC29 bottom top vssa mim_cap_adc
+XC28 bottom top vssa mim_cap_adc
+XC27 bottom top vssa mim_cap_adc
+XC26 bottom top vssa mim_cap_adc
+XC25 bottom top vssa mim_cap_adc
+XC24 bottom top vssa mim_cap_adc
+XC23 bottom top vssa mim_cap_adc
+XC22 bottom top vssa mim_cap_adc
+XC21 bottom top vssa mim_cap_adc
+XC20 bottom top vssa mim_cap_adc
+XC19 bottom top vssa mim_cap_adc
+XC18 bottom top vssa mim_cap_adc
+XC17 bottom top vssa mim_cap_adc
+XC16 bottom top vssa mim_cap_adc
+XC15 bottom top vssa mim_cap_adc
+XC14 bottom top vssa mim_cap_adc
+XC13 bottom top vssa mim_cap_adc
+XC12 bottom top vssa mim_cap_adc
+XC11 bottom top vssa mim_cap_adc
+XC10 bottom top vssa mim_cap_adc
+XC9 bottom top vssa mim_cap_adc
+XC8 bottom top vssa mim_cap_adc
+XC7 bottom top vssa mim_cap_adc
+XC6 bottom top vssa mim_cap_adc
+XC5 bottom top vssa mim_cap_adc
+XC4 bottom top vssa mim_cap_adc
+XC3 bottom top vssa mim_cap_adc
+XC2 bottom top vssa mim_cap_adc
+XC1 bottom top vssa mim_cap_adc
+XC0 bottom top vssa mim_cap_adc
+.ends mim_cap_64bank
+
+
+*******************************************************************************
+* Sub-Circuit Netlist:                                                        *
+*                                                                             *
+* Library: sar_adc                                                            *
+* Cell   : mim_cap_32bank                                                     *
+* View   : schematic                                                          *
+* Last Time Saved: Sep 12 12:57:02 2026                                       *
+*******************************************************************************
+.subckt mim_cap_32bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B 
+XC31 bottom top vssa mim_cap_adc
+XC30 bottom top vssa mim_cap_adc
+XC29 bottom top vssa mim_cap_adc
+XC28 bottom top vssa mim_cap_adc
+XC27 bottom top vssa mim_cap_adc
+XC26 bottom top vssa mim_cap_adc
+XC25 bottom top vssa mim_cap_adc
+XC24 bottom top vssa mim_cap_adc
+XC23 bottom top vssa mim_cap_adc
+XC22 bottom top vssa mim_cap_adc
+XC21 bottom top vssa mim_cap_adc
+XC20 bottom top vssa mim_cap_adc
+XC19 bottom top vssa mim_cap_adc
+XC18 bottom top vssa mim_cap_adc
+XC17 bottom top vssa mim_cap_adc
+XC16 bottom top vssa mim_cap_adc
+XC15 bottom top vssa mim_cap_adc
+XC14 bottom top vssa mim_cap_adc
+XC13 bottom top vssa mim_cap_adc
+XC12 bottom top vssa mim_cap_adc
+XC11 bottom top vssa mim_cap_adc
+XC10 bottom top vssa mim_cap_adc
+XC9 bottom top vssa mim_cap_adc
+XC8 bottom top vssa mim_cap_adc
+XC7 bottom top vssa mim_cap_adc
+XC6 bottom top vssa mim_cap_adc
+XC5 bottom top vssa mim_cap_adc
+XC4 bottom top vssa mim_cap_adc
+XC3 bottom top vssa mim_cap_adc
+XC2 bottom top vssa mim_cap_adc
+XC1 bottom top vssa mim_cap_adc
+XC0 bottom top vssa mim_cap_adc
+.ends mim_cap_32bank
+
+
+*******************************************************************************
+* Sub-Circuit Netlist:                                                        *
+*                                                                             *
+* Library: sar_adc                                                            *
+* Cell   : mim_cap_16bank                                                     *
+* View   : schematic                                                          *
+* Last Time Saved: Sep 12 12:54:12 2026                                       *
+*******************************************************************************
+.subckt mim_cap_16bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B 
+XC15 bottom top vssa mim_cap_adc
+XC14 bottom top vssa mim_cap_adc
+XC13 bottom top vssa mim_cap_adc
+XC12 bottom top vssa mim_cap_adc
+XC11 bottom top vssa mim_cap_adc
+XC10 bottom top vssa mim_cap_adc
+XC9 bottom top vssa mim_cap_adc
+XC8 bottom top vssa mim_cap_adc
+XC7 bottom top vssa mim_cap_adc
+XC6 bottom top vssa mim_cap_adc
+XC5 bottom top vssa mim_cap_adc
+XC4 bottom top vssa mim_cap_adc
+XC3 bottom top vssa mim_cap_adc
+XC2 bottom top vssa mim_cap_adc
+XC1 bottom top vssa mim_cap_adc
+XC0 bottom top vssa mim_cap_adc
+.ends mim_cap_16bank
+
+
+*******************************************************************************
+* Sub-Circuit Netlist:                                                        *
+*                                                                             *
+* Library: sar_adc                                                            *
+* Cell   : mim_cap_8bank                                                      *
+* View   : schematic                                                          *
+* Last Time Saved: Sep 12 12:51:20 2026                                       *
+*******************************************************************************
+.subckt mim_cap_8bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B 
+XC7 bottom top vssa mim_cap_adc
+XC6 bottom top vssa mim_cap_adc
+XC5 bottom top vssa mim_cap_adc
+XC4 bottom top vssa mim_cap_adc
+XC3 bottom top vssa mim_cap_adc
+XC2 bottom top vssa mim_cap_adc
+XC1 bottom top vssa mim_cap_adc
+XC0 bottom top vssa mim_cap_adc
+.ends mim_cap_8bank
+
+
+*******************************************************************************
+* Sub-Circuit Netlist:                                                        *
+*                                                                             *
+* Library: sar_adc                                                            *
+* Cell   : mim_cap_4bank                                                      *
+* View   : schematic                                                          *
+* Last Time Saved: Sep 12 12:48:56 2026                                       *
+*******************************************************************************
+.subckt mim_cap_4bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B 
+XC3 bottom top vssa mim_cap_adc
+XC2 bottom top vssa mim_cap_adc
+XC1 bottom top vssa mim_cap_adc
+XC0 bottom top vssa mim_cap_adc
+.ends mim_cap_4bank
+
+
+*******************************************************************************
+* Sub-Circuit Netlist:                                                        *
+*                                                                             *
+* Library: sar_adc                                                            *
+* Cell   : mim_cap_2bank                                                      *
+* View   : schematic                                                          *
+* Last Time Saved: Sep 28 17:22:37 2026                                       *
+*******************************************************************************
+.subckt mim_cap_2bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B 
+XC1 bottom top vssa mim_cap_adc
+XC0 bottom top vssa mim_cap_adc
+.ends mim_cap_2bank
+
+
+*******************************************************************************
+* Main Circuit Netlist:                                                       *
+*                                                                             *
+* Library: sar_adc                                                            *
+* Cell   : carray_8b                                                          *
+* View   : schematic                                                          *
+* Last Time Saved: Sep 30 19:36:21 2026                                       *
+*******************************************************************************
+.subckt carray_8b vbottom<7> vbottom<6> vbottom<5> vbottom<4> vbottom<3>
++vbottom<2> vbottom<1> vbottom<0> vbottom_dum vssa vtop
+*.PININFO vbottom<7>:B vbottom<6>:B vbottom<5>:B vbottom<4>:B vbottom<3>:B
+*.PININFO vbottom<2>:B vbottom<1>:B vbottom<0>:B vbottom_dum:B vssa:B vtop:B 
+XC7 vbottom<7> vtop vssa mim_cap_128bank
+XC8 vbottom_dum vtop vssa mim_cap_adc
+XC0 vbottom<0> vtop vssa mim_cap_adc
+XC9 vssa vssa vssa mim_cap_64bank
+XC6 vbottom<6> vtop vssa mim_cap_64bank
+XC5 vbottom<5> vtop vssa mim_cap_32bank
+XC4 vbottom<4> vtop vssa mim_cap_16bank
+XC3 vbottom<3> vtop vssa mim_cap_8bank
+XC10 vssa vssa vssa mim_cap_4bank
+XC2 vbottom<2> vtop vssa mim_cap_4bank
+XC1 vbottom<1> vtop vssa mim_cap_2bank
+.ends carray_8b
