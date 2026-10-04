@@ -154,9 +154,27 @@ wire nPOR = HRESETn;
 
 // ~1 Hz tick for the RTC, divided from HCLK. Reset from HRESETn so clk1hz_ctr /
 // clk1hz_reg initialise cleanly (no X-propagation) and CLK1HZ starts toggling
-// immediately after reset deasserts. CLK1HZ_DIV sets the half-period divide;
-// this value is sim-friendly. For real hardware set it to (HCLK_hz / 2).
-localparam [31:0] CLK1HZ_DIV = 32'd50;
+// immediately after reset deasserts. CLK1HZ_DIV sets the half-period divide:
+// CLK1HZ = HCLK / (2 * CLK1HZ_DIV).
+//
+// Three-way selection (priority order):
+//   1. `SENSING_CLK1HZ_DIV — explicit override for any flow (pass as a
+//      verilog_define / +define+SENSING_CLK1HZ_DIV=<n>).
+//   2. `SYNTHESIS — defined automatically by Vivado synthesis (and Genus/DC):
+//      true 1 Hz for the ZCU104 FPGA build, where HCLK = PS pl_clk0 =
+//      39.473682 MHz (the block design requests 40 MHz; 39.473682 is the
+//      actual IOPLL output — see fpga/targets/pynq_zcu104 nanosoc_design.tcl,
+//      PSU__CRL_APB__PL0_REF_CTRL__ACT_FREQMHZ). If the fabric clock ever
+//      changes, or for an ASIC target with a different HCLK, use override (1).
+//   3. Simulation default (50): CLK1HZ = HCLK/100, so RTC "seconds" pass fast
+//      enough for testbenches/firmware sims to see autonomous samples.
+`ifdef SENSING_CLK1HZ_DIV
+localparam [31:0] CLK1HZ_DIV = `SENSING_CLK1HZ_DIV;
+`elsif SYNTHESIS
+localparam [31:0] CLK1HZ_DIV = 32'd19_736_841; // 39_473_682 Hz / 2 -> 1 Hz
+`else
+localparam [31:0] CLK1HZ_DIV = 32'd50;         // sim-fast: CLK1HZ = HCLK/100
+`endif
 reg  [31:0] clk1hz_ctr;
 reg         clk1hz_reg;
 always @(posedge HCLK or negedge HRESETn) begin
