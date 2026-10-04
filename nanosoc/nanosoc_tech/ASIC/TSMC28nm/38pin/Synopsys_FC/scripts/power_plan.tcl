@@ -27,9 +27,36 @@ create_pg_region {pg_accel} -voltage_area {ACCEL}
 # create_pg_region {pg_sys} -voltage_area {PD_SYS}
 commit_upf
 
+
+
 connect_pg_net -create_nets_only
 connect_pg_net -automatic
-connect_pg_net -net {VDDACC} [get_pins -design [current_block] -quiet -physical_context {uPAD_VDDACC_*/VDD}]
+
+connect_pg_net -net POC [get_pins io_filler_*/POC]
+connect_pg_net -net POC [get_pins uPAD*/POC]
+
+connect_pg_net -net VDD [get_pins io_filler_*/VDD]
+connect_pg_net -net VDD [get_pins uPAD*/VDD]
+
+connect_pg_net -net VDDIO [get_pins io_filler_*/VDDPST]
+connect_pg_net -net VDDIO [get_pins uPAD*/VDDPST]
+
+connect_pg_net -net VSSIO [get_pins io_filler_*/VSSPST]
+connect_pg_net -net VSSIO [get_pins uPAD*/VSSPST]
+
+connect_pg_net -net VSS [get_pins io_filler_*/VSS]
+connect_pg_net -net VSS [get_pins uPAD*/VSS]
+
+
+connect_pg_net -net {VDDACC} [get_pins -design [current_block] -quiet -physical_context {uPAD_VDDACC_*/AVDD}]
+
+connect_pg_net -net POC [get_pins __added_corner_cell_*/POC]
+connect_pg_net -net VDD [get_pins __added_corner_cell_*/VDD]
+connect_pg_net -net VDDIO [get_pins __added_corner_cell_*/VDDPST]
+connect_pg_net -net VSSIO [get_pins __added_corner_cell_*/VSSPST]
+connect_pg_net -net VSS [get_pins __added_corner_cell_*/VSS]
+
+
 connect_pg_net -net {VDDACC} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_expansion/u_region_exp/u_ss_accelerator/*/VDD}]
 connect_pg_net -net {VDD} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom/VDD}]
 connect_pg_net -net {VDD} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_sram/VDD}]
@@ -42,8 +69,20 @@ connect_pg_net -net {VSS} [get_pins -design [current_block] -quiet -physical_con
 connect_pg_net -net {VSS} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_sram/VSS}]
 connect_pg_net -net {VSS} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_sram/VSS}]
 
+set_related_supply_net -object [get_pins u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom/*] -ground VSS -power VDD
+
+# Synopsys PVT
+connect_pg_net -net {VDD} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_systemctrl/u_region_sysio/u_nanosoc_sysio_snps_pvt_ss/gen_snps_PVT_ts0.u_snps_PVT_ts0/u_synopsys_ts/VDD}]
+connect_pg_net -net {VDD} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_systemctrl/u_region_sysio/u_nanosoc_sysio_snps_pvt_ss/gen_snps_PVT_ts0.u_snps_PVT_ts0/u_synopsys_ts/VDDA}]
+connect_pg_net -net {VSS} [get_pins -design [current_block] -quiet -physical_context {u_nanosoc_chip/u_system/u_ss_systemctrl/u_region_sysio/u_nanosoc_sysio_snps_pvt_ss/gen_snps_PVT_ts0.u_snps_PVT_ts0/u_synopsys_ts/VSS}]
+connect_pg_net -net {VSS} [get_pins {u_nanosoc_chip/u_system/u_ss_systemctrl/u_region_sysio/u_nanosoc_sysio_snps_pvt_ss/gen_snps_PVT_pd0.u_snps_PVT_pd0/u_synopsys_pd/VSS}]
+connect_pg_net -net {VDD} [get_pins {u_nanosoc_chip/u_system/u_ss_systemctrl/u_region_sysio/u_nanosoc_sysio_snps_pvt_ss/gen_snps_PVT_pd0.u_snps_PVT_pd0/u_synopsys_pd/VDD}]
+connect_pg_net -net {VSS} [get_pins {u_nanosoc_chip/u_system/u_ss_systemctrl/u_region_sysio/u_nanosoc_sysio_snps_pvt_ss/gen_snps_PVT_pd0.u_snps_PVT_pd0/u_synopsys_pd/VDDA}]
+
+
 connect_pg_net -net {VDDIO} [get_pins -design [current_block] -quiet -physical_context {uPAD_VDDIO_*/VDDPST}]
 connect_pg_net -net {VSSIO} [get_pins -design [current_block] -quiet -physical_context {uPAD_VSSIO_*/VSSPST}]
+
 
 #----------------------------------------------------
 # 	Create Power supply Ring
@@ -96,6 +135,24 @@ create_pg_mesh_pattern macro_straps -layers {{{vertical_layer : M5} {width : 0.2
 set_pg_strategy macro_mesh -macros {u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_sram u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_sram u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_sram u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_sram} -pattern {{name: macro_straps} {nets: {VDD VSS}}} -extension {{{stop : first_target}}}
 # set_pg_strategy macro_mesh -polygon {{135.000 1341.965} {975.980 1531.500}} -pattern {{name: macro_straps} {nets: {VDD VSS}}} -extension {{{stop : first_target}}}
 compile_pg -strategies macro_mesh
+
+set_app_options -name plan.pgroute.hmpin_connection_target_layers -value AP
+create_pg_macro_conn_pattern snps_pd_conn -pin_conn_type scattered_pin -nets {VDD VSS} \
+ 	-layers {M6 M7} -width {4 4} -pin_layers {M6} 
+set_pg_strategy snps_pd_strat -macros {u_nanosoc_chip/u_system/u_ss_systemctrl/u_region_sysio/u_nanosoc_sysio_snps_pvt_ss/gen_snps_PVT_pd0.u_snps_PVT_pd0/u_synopsys_pd} \
+ 	-pattern {{name: snps_pd_conn} {nets: {VDD VSS}}} -extension {{{stop : first_target}}{{stop : pad_ring}}}
+compile_pg -strategies snps_pd_strat 
+
+
+set_app_options -name plan.pgroute.hmpin_connection_target_layers -value AP
+create_pg_macro_conn_pattern snps_ts_conn -pin_conn_type scattered_pin -nets {VDD VSS} \
+ 	-layers {M6 M7} -width {4 4} -pin_layers {M6} 
+
+set_pg_strategy snps_ts_strat -macros {u_nanosoc_chip/u_system/u_ss_systemctrl/u_region_sysio/u_nanosoc_sysio_snps_pvt_ss/gen_snps_PVT_ts0.u_snps_PVT_ts0/u_synopsys_ts} \
+ 	-pattern {{name: snps_ts_conn} {nets: {VDD VSS}}} -extension {{{stop : first_target}}{{stop : pad_ring}}}
+
+compile_pg -strategies snps_ts_strat 
+
 
 #----------------------------------------------------
 # Std Cell rails

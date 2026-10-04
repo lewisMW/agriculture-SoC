@@ -1,0 +1,56 @@
+//Verilog-AMS HDL Testbench for ADC
+`include "constants.vams"
+`include "disciplines.vams"
+`timescale 1ns / 1ps
+
+module adc_testbench (clk, enable, cal, rst);
+
+    output clk;
+    output enable;
+    output cal;
+    output rst;
+
+    wire clk;
+    reg  enable;
+    reg  cal;
+    reg  rst;
+
+    parameter real CLK_CYCLE = 1000;
+
+    //--------------------------------------------------
+    // Instantiate your clock generator
+    //--------------------------------------------------
+    clock #(.cycle(CLK_CYCLE)) clk_gen (.clk(clk));
+
+    //--------------------------------------------------
+    // Reset: toggle every 20 clock cycles
+    //--------------------------------------------------
+    initial begin
+        rst = 1'b1;
+        forever begin
+            #(CLK_CYCLE * 100);
+            rst = ~rst;
+        end
+    end
+
+    //--------------------------------------------------
+    // Calibration: toggle every 30 clock cycles
+    //--------------------------------------------------
+    initial begin
+        cal = 1'b0;
+        forever begin
+            #(CLK_CYCLE * 100);
+            cal = ~cal;
+        end
+    end
+
+    //--------------------------------------------------
+    // Enable: turn on after first reset & cal settle
+    //--------------------------------------------------
+    initial begin
+        enable = 1'b0;
+        #(CLK_CYCLE * 100);
+        enable = 1'b1;
+    end
+
+endmodule

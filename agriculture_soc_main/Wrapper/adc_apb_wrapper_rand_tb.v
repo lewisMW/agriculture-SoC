@@ -52,7 +52,7 @@ module adc_apb_wrapper_rand_tb;
     localparam A_ALARMO  = 12'h224;
     localparam A_RTCCTRL = 12'h228;
 
-    adc_apb_wrapper_rev1 #(.ADDR_WIDTH(ADDR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) uut (
+    adc_apb_wrapper_rev2 #(.ADDR_WIDTH(ADDR_WIDTH), .DATA_WIDTH(DATA_WIDTH)) uut (
         .PCLK(PCLK), .CLK1HZ(CLK1HZ), .PRESETn(PRESETn), .nPOR(nPOR),
         .PSEL(PSEL), .PADDR(PADDR), .PENABLE(PENABLE), .PWRITE(PWRITE),
         .PWDATA(PWDATA), .PRDATA(PRDATA), .PREADY(PREADY), .PSLVERR(PSLVERR),

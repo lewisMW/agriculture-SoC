@@ -1,0 +1,107 @@
+set_design_top nanosoc_chip_pads
+
+#######################################
+# Create Supply Ports
+#######################################
+# Top Port Supplies 
+create_supply_port VDD 
+create_supply_net VDD
+connect_supply_net VDD -ports VDD 
+
+create_supply_port VSS 
+create_supply_net VSS 
+connect_supply_net VSS -ports VSS 
+
+# create_supply_port VDDACC
+# create_supply_net VDDACC
+# connect_supply_net VDDACC -ports VDDACC
+
+create_supply_port VDDIO 
+create_supply_net VDDIO
+connect_supply_net VDDIO -ports VDDIO
+
+create_supply_port VSSIO 
+create_supply_net VSSIO
+connect_supply_net VSSIO -ports VSSIO
+
+#connect_supply_net VDD -ports uPAD_VDD_0/VCCD_PAD
+#connect_supply_net VDD -ports uPAD_VDD_1/VCCD_PAD
+#connect_supply_net VDD -ports uPAD_VDD_2/VCCD_PAD
+#connect_supply_net VDD -ports uPAD_VDD_3/VCCD_PAD
+
+for {set i 0} {$i < 4} {incr i} {
+  create_supply_port uPAD_VDD_${i}/VCCD_PAD
+  connect_supply_net VDD -ports uPAD_VDD_${i}/VCCD_PAD
+  create_supply_port uPAD_VDDIO_${i}/VDDIO_PAD
+  connect_supply_net VDDIO -ports uPAD_VDDIO_${i}/VDDIO_PAD
+  create_supply_port uPAD_VSS_${i}/VSSD_PAD
+  connect_supply_net VSS -ports uPAD_VSS_${i}/VSSD_PAD
+  create_supply_port uPAD_VSSIO_${i}/VSSIO_PAD
+  connect_supply_net VSSIO -ports uPAD_VSSIO_${i}/VSSIO_PAD
+}
+
+# connect_supply_net VDDACC -ports uPAD_VDDACC_0/ASIG5V
+# connect_supply_net VDDACC -ports uPAD_VDDACC_1/ASIG5V
+# connect_supply_net VDDACC -ports uPAD_VDDACC_2/ASIG5V
+
+# Supply ports for the memories. They are under a different name for some reason.
+create_supply_net VCCD1
+connect_supply_net VCCD1 -ports VDD
+
+#######################################
+# Create Supply Sets
+######################################
+create_supply_set SS_TOP -function {power VDD} -function {ground VSS}
+create_supply_set SS_IO  -function {power VDDIO} -function {ground VSSIO}
+# create_supply_set SS_ACC -function {power VDDACC} -function {ground VSS}
+
+#######################################
+# Create Power Domains
+######################################
+create_power_domain PD_TOP -include_scope -supply {primary SS_TOP}
+
+# create_power_domain PD_ACC -supply {primary SS_ACC} \
+#     -elements u_nanosoc_chip/u_system/u_ss_expansion/u_region_exp/u_ss_accelerator
+
+#######################################
+# Add Power States
+######################################
+add_port_state VSS              -state {ON_SLOW 0.0}
+add_port_state VSS              -state {ON_TYP  0.0}
+add_port_state VSS              -state {ON_FAST 0.0}
+# add_port_state VDD              -state {ON_SLOW 1.08}
+# add_port_state VDD              -state {ON_TYP  1.20}
+# add_port_state VDD              -state {ON_FAST 1.32}
+add_port_state VDD              -state {ON_SLOW 1.44}
+add_port_state VDD              -state {ON_TYP  1.60}
+add_port_state VDD              -state {ON_FAST 1.76}
+# add_port_state VDDACC           -state {ON_SLOW 1.08}
+# add_port_state VDDACC           -state {ON_TYP  1.20}
+# add_port_state VDDACC           -state {ON_FAST 1.32}
+add_port_state VDDIO            -state {ON_SLOW 2.97}
+add_port_state VDDIO            -state {ON_TYP  3.30}
+add_port_state VDDIO            -state {ON_FAST 3.63}
+add_port_state VSSIO            -state {ON_SLOW 0}
+add_port_state VSSIO            -state {ON_TYP  0}
+add_port_state VSSIO            -state {ON_FAST 0}
+
+add_power_state SS_TOP          -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.44} && ground == `{FULL_ON, 0.0}}}
+add_power_state SS_TOP          -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.60} && ground == `{FULL_ON, 0.0}}}
+add_power_state SS_TOP          -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.76} && ground == `{FULL_ON, 0.0}}}
+add_power_state SS_IO           -state ON_SLOW {-supply_expr {power == `{FULL_ON, 2.97} && ground == `{FULL_ON, 0.0}}}
+add_power_state SS_IO           -state ON_TYP  {-supply_expr {power == `{FULL_ON, 3.30} && ground == `{FULL_ON, 0.0}}}
+add_power_state SS_IO           -state ON_FAST {-supply_expr {power == `{FULL_ON, 3.63} && ground == `{FULL_ON, 0.0}}}
+
+create_pst top_pst -supplies {\
+    VSS \
+    VDD \
+    VDDIO \
+    VSSIO \
+    }
+
+#    VDDACC \
+ 
+
+add_pst_state all_on_slow -pst top_pst -state       {ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  } 
+add_pst_state all_on_typ -pst top_pst -state        {ON_TYP   ON_TYP   ON_TYP   ON_TYP   } 
+add_pst_state all_on_fast -pst top_pst -state       {ON_FAST  ON_FAST  ON_FAST  ON_FAST  } 

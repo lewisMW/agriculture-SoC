@@ -152,12 +152,12 @@ int main (void)
 {
   // STDOUT init
   UartStdOutInit();
-  UartPuts("\nSoCLabs NanoSoC'25 ARM-CM0+ADP+");
+  UartPuts("\nSoCLabs NanoSoC'26 ARM-CM0+ADP+");
   if (CMSDK_GPIO1->DATA & 0x80) // high if FT1248, low if EXTIO
     UartPuts("FT1+U38400");
   else
-    UartPuts("EXTIO-DMA");
-  UartPuts(" 20250412\n");
+    UartPuts("HOSTIO4-DMA");
+  UartPuts(" 20260306\n");
   FlashLoader();
   return 0;
 }

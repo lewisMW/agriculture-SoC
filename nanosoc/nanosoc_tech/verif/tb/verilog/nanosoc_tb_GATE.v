@@ -50,11 +50,11 @@ module nanosoc_tb;
   wire [15:0] P0;      // Port 0
   wire [15:0] P1;      // Port 1
 
-  wire        VDDIO;
-  wire        VSSIO;
-  wire        VDD;
-  wire        VSS;
-  wire        VDDACC;
+  supply1        VDDIO;
+  supply0        VSSIO;
+  supply1        VDD;
+  supply0        VSS;
+  supply1        VDDACC;
   
   //Debug tester signals
   wire        nTRST;
@@ -109,10 +109,35 @@ SROM_Ax32
   );
 */
 
+ // --------------------------------------------------------------------------------
+ // Cortex-M0/Cortex-M0+ Microcontroller
+ // --------------------------------------------------------------------------------
+
+
+  nanosoc_chip_pads
+   u_nanosoc_chip_pads (
+`ifdef POWER_PINS
+  .VDDIO      (VDDIO),
+  .VSSIO      (VSSIO),
+  .VDD        (VDD),
+  .VSS        (VSS),
+  .VDDACC     (VDDACC),
+`endif
+  .SE         (1'b0),
+  .CLK        (CLK),  // input
+  .TEST       (TEST),  // input
+  .NRST       (NRST),   // active low reset
+  .P0         (P0[7:0]),
+  .P1         (P1[7:0]),
+  .SWDIO      (SWDIOTMS),
+  .SWDCK      (SWCLKTCK)
+  );
+
+
 `ifdef SDF_SIM
 initial
-  $sdf_annotate ( "../../../imp/ASIC/nanosoc/netlist/nanosoc_chip_pads_gate.sdf"
-                 , u_nanosoc_chip_pads
+  $sdf_annotate ( "../../../imp/ASIC/nanosoc/outputs/nanosoc_chip_pads_gate_typical.sdf"
+                 , nanosoc_tb.u_nanosoc_chip_pads
                  ,
                  , "sdf_annotate.log"
                  , "MAXIMUM"
@@ -126,65 +151,24 @@ initial begin
   end
 `endif // VCD_SIM
 
- // --------------------------------------------------------------------------------
- // Cortex-M0/Cortex-M0+ Microcontroller
- // --------------------------------------------------------------------------------
-
-`ifdef SDF_SIM
-  nanosoc_chip_pads
-   u_nanosoc_chip_pads (
-`ifdef POWER_PINS
-  .VDDIO      (VDDIO),
-  .VSSIO      (VSSIO),
-  .VDD        (VDD),
-  .VSS        (VSS),
-  .VDDACC     (VDDACC),
-`endif
-  .SE         (1'b0),
-  .CLK        (CLK),  // input
-  .TEST       (TEST),  // input
-  .NRST       (NRST),   // active low reset
-  .P0         (P0[7:0]),
-  .P1         (P1[7:0]),
-  .SWDIO      (SWDIOTMS),
-  .SWDCK      (SWCLKTCK)
-  );
-`else
-  nanosoc_chip_pads
-   u_nanosoc_chip_pads (
-`ifdef POWER_PINS
-  .VDDIO      (VDDIO),
-  .VSSIO      (VSSIO),
-  .VDD        (VDD),
-  .VSS        (VSS),
-  .VDDACC     (VDDACC),
-`endif
-  .SE         (1'b0),
-  .CLK        (CLK),  // input
-  .TEST       (TEST),  // input
-  .NRST       (NRST),   // active low reset
-  .P0         (P0[7:0]),
-  .P1         (P1[7:0]),
-  .SWDIO      (SWDIOTMS),
-  .SWDCK      (SWCLKTCK)
-  );
-`endif
 //-----------------------------------------------------------------------------
 // Abstract : Simple clock and power on reset generator
 //-----------------------------------------------------------------------------
 
   reg osc_q;
   reg [15:0] shifter;
-  
+  reg TEST_NPOR;
   initial
     begin
+      TEST_NPOR <= 1'b0;
       osc_q     <= 1'b1;
       shifter   <= 16'h0000;
-      #(3 * CLOCK_PHASE) osc_q <= 1'b0;
+      #(3 * 10) osc_q <= 1'b0;
+      TEST_NPOR <= 1'b1;
     end
 
   always @(osc_q)
-   #CLOCK_PHASE
+   #10
        osc_q <= !osc_q;
 
   assign CLK = osc_q;
@@ -228,7 +212,7 @@ initial begin
   pullup(P1[ 5]);
   pullup(P1[ 6]);
 //  pullup(P1[ 7]); // FT1248 mode
-  pulldown(P1[ 7]); // EXTIO mode
+  pulldown(P1[ 7]); // HOSTIO mode
   pullup(P1[ 8]);
   pullup(P1[ 9]);
   pullup(P1[10]);
@@ -245,7 +229,7 @@ initial begin
 `endif
 
  // --------------------------------------------------------------------------------
- // EXTIO8x4 stream interface - enabled when P1[7] is low
+ // HOSTIO4 stream interface - enabled when P1[7] is low
  //   default in previous testbenches was pullup (for FT1248, UART2)
  //
  //          v1 mapping was:    v2 config
@@ -291,7 +275,7 @@ wire end_sim = test_done & !FT1248MODE & !ioreq1 & !ioreq2 & !ioack;
       $stop;
     end
 
-extio8x4_axis_target u_extio8x4_axis_target
+hostio4_target u_hostio4_target
   (
   .clk             ( CLK             ),
   .resetn          ( NRST            ),

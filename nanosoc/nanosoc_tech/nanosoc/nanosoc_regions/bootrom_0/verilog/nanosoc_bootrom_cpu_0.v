@@ -11,7 +11,7 @@
 
 module nanosoc_bootrom_cpu_0 #(
     parameter    SYS_DATA_W     = 32,  // System Data Width
-    parameter    BOOTROM_ADDR_W = 10   // Size of Bootrom (Based on Address Width) - Default 1KB
+    parameter    BOOTROM_ADDR_W = 11   // Size of Bootrom (Based on Address Width) - Default 2KB
 )(
   input  wire                      HCLK,      // Clock
   input  wire                      HSEL,      // Device select
@@ -35,10 +35,10 @@ module nanosoc_bootrom_cpu_0 #(
   // Bootrom Instantiation
   //------------------------
   bootrom u_bootrom (
-    .CLK     (HCLK),
-    .EN      (EN),
-    .W_ADDR  (HADDR[BOOTROM_ADDR_W-1:2]),
-    .RDATA   (HRDATA)
+    .clk        (HCLK),
+    .en         (EN),
+    .word_addr  (HADDR[BOOTROM_ADDR_W-1:2]),
+    .out_data   (HRDATA)
   );
   
   // Output Signal Response Constant other than Data

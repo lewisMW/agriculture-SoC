@@ -23,8 +23,8 @@
  */
 /* Linker script to configure memory regions.
  * Need modifying for a specific board.
- *   FLASH.ORIGIN: starting address of boot loader
- *   FLASH.LENGTH: length of flash
+ *   BOOTROM.ORIGIN: starting address of boot loader
+ *   BOOTROM.LENGTH: length of flash
  *   RAM.ORIGIN: starting address of RAM bank 0
  *   RAM.LENGTH: length of RAM bank 0
  */
@@ -33,8 +33,8 @@ INCLUDE "lib-nosys.ld"
 
 MEMORY
 {
-  FLASH (rx) : ORIGIN = 0x10000000, LENGTH =  0x1000 /*  4K */
-  RAM (rwx)  : ORIGIN = 0x30000000, LENGTH = 0x3C00 /* 15K */
+  BOOTROM (rx) : ORIGIN = 0x10000000, LENGTH = 0x2000 /*  2K */
+  RAM (rwx)    : ORIGIN = 0x30000000, LENGTH = 0x3C00 /* 15K */
 }
 
-INCLUDE "sections.ld"
+INCLUDE "sections_bootloader.ld"

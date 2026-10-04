@@ -43,6 +43,8 @@ set_clock_uncertainty -setup $INTER_CLOCK_UNCERTAINTY -rise_from [get_clocks $EX
 #create_generated_clock -source [get_ports CLK] -name "$HCLK" -multiply_by 1 [get_pins u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_core_prmu/u_cortexm0_pmu/u_hclk/CLKOUT]
 #create_generated_clock -source [get_ports CLK] -name "$DCLK" -multiply_by 1 [get_pins u_nanosoc_chip/u_system/u_ss_cpu/u_cpu_0/u_core_prmu/u_cortexm0_pmu/u_dclk/CLKOUT]
 
+create_generated_clock -source [get_ports CLK] -name "SNPS_TS_CLK" -divide_by 120 [get_pins u_nanosoc_chip/u_system/u_ss_systemctrl/u_region_sysio/u_nanosoc_sysio_snps_pvt_ss/gen_snps_PVT_ts0.u_snps_PVT_ts0/u_ts_clk_div/clk_o ]
+create_generated_clock -source [get_ports CLK] -name "SNPS_PD_CLK" -divide_by 30  [get_pins u_nanosoc_chip/u_system/u_ss_systemctrl/u_region_sysio/u_nanosoc_sysio_snps_pvt_ss/gen_snps_PVT_pd0.u_snps_PVT_pd0/u_pd_clk_div/clk_o ]
 
 ### Multicycle path through asynchronous clock domains
 set_multicycle_path 2 -setup -end -from [get_clocks $SWDCLK] -to [get_clocks $EXTCLK]

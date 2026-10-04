@@ -8,7 +8,7 @@ module dummy_amux
     input wire clk,
     input wire reset
 );
-
+`ifdef SIMULATION
     reg [$clog2(AMUX_INPUTS)-1:0] INPUT_SEL_PREV;
 
     // TODO: Implement the AMUX logic here  
@@ -19,5 +19,8 @@ module dummy_amux
             INPUT_SEL_PREV <= INPUT_SEL;
         end
     end
+`else // SIMULATION
+
+`endif
     
 endmodule

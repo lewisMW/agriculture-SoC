@@ -44,26 +44,95 @@
 #endif
 
 #include <stdio.h>
+#include <stdint.h>
 #include "uart_stdout.h"
 
 #define HW32_REG(ADDRESS)  (*((volatile unsigned long  *)(ADDRESS)))
 #define HW16_REG(ADDRESS)  (*((volatile unsigned short *)(ADDRESS)))
 #define HW8_REG(ADDRESS)   (*((volatile unsigned char  *)(ADDRESS)))
 
+
+typedef struct {
+  volatile uint32_t RUN_CTRL:8;
+  volatile uint32_t CLK_DIV:8;
+  volatile uint32_t FAULTn:8;
+  volatile uint32_t READY:8;
+
+  volatile uint32_t DATA:16;
+  volatile uint32_t REG0_ACK:8;
+  volatile uint32_t REG2_ACK:8;
+
+  volatile uint32_t CONFIG1:8;
+  volatile uint32_t CONFIG2:8;
+  volatile uint32_t CONFIG3:8;
+  volatile uint32_t LD_CFG:8;
+
+  volatile uint32_t ID:32;
+} snps_pd_TypeDef;
+
+enum{
+  PD_CHAIN_NONE = 0,
+  PD_CHAIN_BUILT_IN = 6,
+  PD_CHAIN_LVT = 1,
+  PD_CHAIN_SVT = 3,
+  PD_CHAIN_HVT = 5,
+  PD_CHAIN_THICK_OX = 7
+};
+
+enum{
+  PD_PRE_16 = 0,
+  PD_PRE_32 = 1,
+  PD_PRE_64 = 2,
+  PD_PRE_4 = 3
+};
+
+enum{
+  PD_W_255 = 0,
+  PD_W_127 = 1,
+  PD_W_63 = 2,
+  PD_W_31 = 3
+};
+
+uint8_t snps_pd_prescaler=16;
+uint8_t snps_pd_window=255;
+float snps_pd_fclk = 4.5454545;
+extern uint32_t SystemCoreClock;     /*!< System Clock Frequency (Core Clock)  */
+
+
+typedef struct {
+  volatile uint32_t RUN_CTRL:8;
+  volatile uint32_t CLK_DIV:8;
+  volatile uint32_t RESETn:8;
+  volatile uint32_t READY:8;
+
+  volatile uint32_t DATA:16;
+  volatile uint32_t REG0_ACK:8;
+  volatile uint32_t REG2_ACK:8;
+
+  volatile uint32_t CAL:8;
+  volatile uint32_t SIG_EN:8;
+  volatile uint32_t TM_AN:16;
+
+  volatile uint32_t ID:32;
+} snps_ts_TypeDef;
+
+const float SNPS_TS_K = 81.1;
+const float SNPS_TS_Y = 237.5;
+
 int snps_pvt_ts_detect(void);
 int snps_pvt_pd_detect(void);
 int ts0_check_registers(void);
 int pd0_check_registers(void);
 
-#if defined ( __CC_ARM   )
-__asm void          address_test_write(unsigned int addr, unsigned int wdata);
-__asm unsigned int  address_test_read(unsigned int addr);
-#else
-      void          address_test_write(unsigned int addr, unsigned int wdata);
-      unsigned int  address_test_read(unsigned int addr);
-#endif
+void snps_pvt_ts_enable(void);
+void snps_pvt_ts_run(void);
+void snps_pvt_ts_clr_ready(void);
+void snps_pvt_ts_disable(void);
+
+void snps_pvt_pd_ld_config(uint8_t chain, uint8_t pre, uint8_t window);
+void snps_pvt_pd_set_clk_div(uint8_t clk_div);
+
 void                HardFault_Handler_c(unsigned int * hardfault_args, unsigned lr_value);
-int                 APB_test_slave_Check(unsigned int offset);
 
 /* Global variables */
 volatile int hardfault_occurred;
@@ -80,6 +149,10 @@ volatile int temp_data;
 #define SNPS_TS_5_BASE        (SNPS_PVT_BASE + 0x0050UL)
 #define SNPS_PD_0_BASE        (SNPS_PVT_BASE + 0x0060UL)
 #define SNPS_VM_0_BASE        (SNPS_PVT_BASE + 0x0060UL)
+
+#define SNPS_PD   ((snps_pd_TypeDef *) SNPS_PD_0_BASE)
+#define SNPS_TS_0 ((snps_ts_TypeDef *) SNPS_TS_0_BASE)
+
 
 int main (void)
 {
@@ -116,113 +189,88 @@ int main (void)
 
 int ts0_check_registers(void)
 {
-  uint32_t ts0_reg;
+  uint16_t data;
+  int i;
   float temperature;
-  float K=81.1;
-  float Y=237.5;
-  puts("Testing status read/write access \n");
-  ts0_reg = address_test_read(SNPS_TS_0_BASE + 0x000);
-  printf("Status after reset: 0x%08X \n", ts0_reg);
-  ts0_reg = ts0_reg ^ 1;
-  address_test_write(SNPS_TS_0_BASE, ts0_reg);
-  ts0_reg = address_test_read(SNPS_TS_0_BASE);
-  printf("Status register after enable: 0x%08X \n", ts0_reg);
-  while(!(address_test_read(SNPS_TS_0_BASE)&0x10)){;}
-  printf("TS reset released \n");
-  ts0_reg = address_test_read(SNPS_TS_0_BASE);
-  ts0_reg = ts0_reg ^ 2;
-  address_test_write(SNPS_TS_0_BASE, ts0_reg);
-  printf("TS Run enabled \n");
-  while(!(address_test_read(SNPS_TS_0_BASE)&0x1000000)){;}
-  ts0_reg = address_test_read(SNPS_TS_0_BASE + 0x04);
-  temperature = (ts0_reg*Y/4094) - K;
 
-  printf("Temperature read data: 0x%08X = %f\n", ts0_reg,temperature);
+  printf("Testing status read/write access \n");
+  printf("CTRL after reset: 0x%x \n", SNPS_TS_0->RUN_CTRL);
 
-  // Clear ready reg
-  ts0_reg = address_test_read(SNPS_TS_0_BASE);
-  ts0_reg = ts0_reg ^ 0x8;
-  address_test_write(SNPS_TS_0_BASE, ts0_reg);
-  ts0_reg = address_test_read(SNPS_TS_0_BASE);
-  printf("Status register after clear ready: 0x%08X \n", ts0_reg);
+  printf("Enable TS clock and power up \n");
+  snps_pvt_ts_enable();
 
-  // Enable continuous running
-  ts0_reg = ts0_reg ^ 0x4;
-  address_test_write(SNPS_TS_0_BASE, ts0_reg);
-  printf("TS Run continuous enabled \n");
+  printf("TS Run once \n");
+  snps_pvt_ts_run();
 
-  while(!(address_test_read(SNPS_TS_0_BASE)&0x1000000)){;}
-  ts0_reg = address_test_read(SNPS_TS_0_BASE + 0x04);
-  temperature = (ts0_reg*Y/4094) - K;
+  printf("Wait for conversion \n");
+  while(SNPS_TS_0->READY==0){;}
+  snps_pvt_ts_clr_ready();
 
-  printf("Temperature 1 read data: 0x%08X = %f\n", ts0_reg,temperature);
-  // Clear ready reg
-  ts0_reg = address_test_read(SNPS_TS_0_BASE);
-  ts0_reg = ts0_reg ^ 0x8;
-  address_test_write(SNPS_TS_0_BASE, ts0_reg);
-  
-  while(!(address_test_read(SNPS_TS_0_BASE)&0x1000000)){;}
-  ts0_reg = address_test_read(SNPS_TS_0_BASE + 0x04);
-  temperature = (ts0_reg*Y/4094) - K;
+  data = SNPS_TS_0->DATA;
+  temperature = (data*SNPS_TS_Y/4094) - SNPS_TS_K;
 
-  printf("Temperature 2 read data: 0x%08X = %f\n", ts0_reg,temperature);
-
-  // Clear ready and continuous read
-  ts0_reg = address_test_read(SNPS_TS_0_BASE);
-  ts0_reg = ts0_reg ^ 0xC;
-  address_test_write(SNPS_TS_0_BASE, ts0_reg);
-  ts0_reg = address_test_read(SNPS_TS_0_BASE);
+  printf("Temperature read data: 0x%08X = %f\n", data,temperature);
 
 
+  snps_pvt_ts_disable();
   return 0;
 }
 
 int pd0_check_registers(void){
   uint32_t pd0_reg;
   uint32_t pd2_reg;
+  uint8_t pd_run_ctrl;
+
   float frequency;
-  int prescaler = 32;
-  int window_size = 63;
-  float f_clk = 6;
-  puts("Testing PD0 status read/write access \n");
-  pd2_reg = address_test_read(SNPS_PD_0_BASE + 0x008);
-  printf("Config regs after reset: 0x%08X \n", pd2_reg);
+
+  puts("Testing PD0 reg read access \n");
+
+  printf("Config1 after reset: 0x%08X \n", SNPS_PD->CONFIG1);
+  printf("Config2 after reset: 0x%08X \n", SNPS_PD->CONFIG2);
+  printf("Config3 after reset: 0x%08X \n", SNPS_PD->CONFIG3);
 
   // Enable PD
-  pd0_reg = address_test_read(SNPS_PD_0_BASE);
-  pd0_reg = pd0_reg ^ 1;
-  address_test_write(SNPS_PD_0_BASE, pd0_reg);
-  pd0_reg = address_test_read(SNPS_PD_0_BASE);
-  printf("Status register after enable: 0x%08X \n", pd0_reg);
-  while(!(address_test_read(SNPS_PD_0_BASE)&0x10)){;}
-  printf("PD reset released \n");
+  printf("Enable Clock...\n");
+  snps_pvt_pd_set_clk_div(0x0A);
+  SNPS_PD->RUN_CTRL = 2;
 
-  pd2_reg = pd2_reg ^ 0x1000000;
-  address_test_write(SNPS_PD_0_BASE + 0x008, pd2_reg);
-  pd2_reg = address_test_read(SNPS_PD_0_BASE + 0x008);
-  printf("Config regs after config load: 0x%08X \n", pd2_reg);
-  pd2_reg = pd2_reg ^ 0x1000000;
-  address_test_write(SNPS_PD_0_BASE + 0x008, pd2_reg);
+  printf("Load defaults...\n");
+  SNPS_PD->LD_CFG=1;
+  while(SNPS_PD->REG2_ACK==0){;}
+  while(SNPS_PD->REG2_ACK!=0){;}
+  
+  SNPS_PD->LD_CFG=0;
+  while(SNPS_PD->REG2_ACK==0){;}
+  while(SNPS_PD->REG2_ACK!=0){;}
 
-  pd0_reg = address_test_read(SNPS_PD_0_BASE);
-  pd0_reg = pd0_reg ^ 2;
-  address_test_write(SNPS_PD_0_BASE, pd0_reg);
-  printf("PD Run enabled \n");
-  while(!(address_test_read(SNPS_PD_0_BASE)&0x1000000)){;}
-  pd0_reg = address_test_read(SNPS_PD_0_BASE + 0x04); // Read Data register
-  frequency = pd0_reg * prescaler * f_clk / window_size;
+  printf("Run once...\n");
+  pd_run_ctrl = SNPS_PD->RUN_CTRL;
+  pd_run_ctrl = pd_run_ctrl ^ 1;
+  SNPS_PD->RUN_CTRL = pd_run_ctrl;
+  while(SNPS_PD->REG0_ACK==0){;}
+  while(SNPS_PD->REG0_ACK!=0){;}
+  printf("2\n");
+  pd_run_ctrl = SNPS_PD->RUN_CTRL;
+  pd_run_ctrl = pd_run_ctrl ^ 1;
+  SNPS_PD->RUN_CTRL = pd_run_ctrl;
+  while(SNPS_PD->REG0_ACK==0){;}
+  while(SNPS_PD->REG0_ACK!=0){;}
+
+  printf("Wait for conversion...\n");
+  while(SNPS_PD->READY==0){;}
+
+  
+  pd0_reg = SNPS_PD->DATA; // Read Data register
+  frequency = pd0_reg * snps_pd_prescaler * snps_pd_fclk / snps_pd_window;
 
   printf("PD read data: 0x%08X = %f \n", pd0_reg, frequency);
   // Clear ready reg
-  pd0_reg = address_test_read(SNPS_PD_0_BASE);
-  pd0_reg = pd0_reg ^ 0x8;
-  address_test_write(SNPS_PD_0_BASE, pd0_reg);
-
+  pd_run_ctrl = SNPS_PD->RUN_CTRL;
+  pd_run_ctrl = pd_run_ctrl ^ 0x8;
+  SNPS_PD->RUN_CTRL = pd_run_ctrl;
 
   // Disable PD0
-  pd0_reg = address_test_read(SNPS_PD_0_BASE);
-  pd0_reg = pd0_reg ^ 1;
-  address_test_write(SNPS_PD_0_BASE,pd0_reg);
+  SNPS_PD->RUN_CTRL = 0;
   printf("Disabled PD0 \n");
   return 0;
 }
@@ -235,7 +283,7 @@ int snps_pvt_ts_detect(void)
   puts("Detect if TS0 is present...");
   hardfault_occurred = 0;
   hardfault_expected = 1;
-  rdata = address_test_read(SNPS_TS_0_BASE+ 0xC);
+  rdata = SNPS_TS_0->ID;
   printf("TS0 ID: 0x%08X\n", rdata);
   hardfault_expected = 0;
   result = hardfault_occurred? 1 : 0;
@@ -256,7 +304,7 @@ int snps_pvt_pd_detect(void)
   puts("Detect if PD0 is present...");
   hardfault_occurred = 0;
   hardfault_expected = 1;
-  rdata = address_test_read(SNPS_PD_0_BASE+ 0xC);
+  rdata = SNPS_PD->ID;
   printf("PD0 ID: 0x%08X\n", rdata);
   hardfault_expected = 0;
   result = hardfault_occurred? 1 : 0;
@@ -270,51 +318,106 @@ int snps_pvt_pd_detect(void)
 }
 
 
+void snps_pvt_ts_enable(void){
+  int i;
+  // Set enable bit high
+  SNPS_TS_0->RUN_CTRL = 2;
+  // Wait for enable acknowledgment
+  while((SNPS_TS_0->REG0_ACK)==0){;}
+  while((SNPS_TS_0->REG0_ACK)==1){;}
+  // Wait 50us for power up
+  for(i=0;i<3000;i++){;}
+  // Release reset
+  SNPS_TS_0->RESETn=1;
+  // Wait for reset acknowledgement
+  while((SNPS_TS_0->REG0_ACK)==0){;}
+  while((SNPS_TS_0->REG0_ACK)==1){;}
 
-#if defined ( __CC_ARM   )
-/* Test function for write - for ARM / Keil */
-__asm void address_test_write(unsigned int addr, unsigned int wdata)
-{
-  STR    R1,[R0]
-  DSB    ; Ensure bus fault occurred before leaving this subroutine
-  BX     LR
+  return;
+}
+void snps_pvt_ts_run(void){
+  // Set run register
+  SNPS_TS_0->RUN_CTRL = 3;
+  while((SNPS_TS_0->REG0_ACK)==0){;}
+  while((SNPS_TS_0->REG0_ACK)==1){;}
+  // Clear run register
+  SNPS_TS_0->RUN_CTRL = 2;
+  while((SNPS_TS_0->REG0_ACK)==0){;}
+  while((SNPS_TS_0->REG0_ACK)==1){;}
+  return;
 }
 
-#else
-/* Test function for write - for gcc */
-void address_test_write(unsigned int addr, unsigned int wdata) __attribute__((naked));
-void address_test_write(unsigned int addr, unsigned int wdata)
-{
-  __asm("  str   r1,[r0]\n"
-        "  dsb          \n"
-        "  bx    lr     \n"
-  );
+void snps_pvt_ts_clr_ready(void){
+  SNPS_TS_0->RUN_CTRL = SNPS_TS_0->RUN_CTRL | (1<<3);
+  while((SNPS_TS_0->REG0_ACK)==0){;}
+  while((SNPS_TS_0->REG0_ACK)==1){;}
+  SNPS_TS_0->RUN_CTRL = SNPS_TS_0->RUN_CTRL & 7;
+  while((SNPS_TS_0->REG0_ACK)==0){;}
+  while((SNPS_TS_0->REG0_ACK)==1){;}
+  return;
 }
-#endif
 
-/* Test function for read */
-#if defined ( __CC_ARM   )
-/* Test function for read - for ARM / Keil */
-__asm unsigned int address_test_read(unsigned int addr)
-{
-  LDR    R1,[R0]
-  DSB    ; Ensure bus fault occurred before leaving this subroutine
-  MOVS   R0, R1
-  BX     LR
+void snps_pvt_ts_disable(void){
+  // Set reset
+  SNPS_TS_0->RESETn=0;
+  // Enable set to 0
+  SNPS_TS_0->RUN_CTRL = 0;
+  return;
 }
-#else
-/* Test function for read - for gcc */
-unsigned int  address_test_read(unsigned int addr) __attribute__((naked));
-unsigned int  address_test_read(unsigned int addr)
-{
-  __asm("  ldr   r1,[r0]\n"
-        "  dsb          \n"
-        "  movs  r0, r1 \n"
-        "  bx    lr     \n"
-  );
-}
-#endif
 
+void snps_pvt_pd_ld_config(uint8_t chain, uint8_t pre, uint8_t window){
+  // Set config registers
+  SNPS_PD->CONFIG2 = chain << 5;
+  SNPS_PD->CONFIG3 = (window << 4) + pre;
+  // Set load config
+  SNPS_PD->LD_CFG=1;
+  // Wait for acknowledgement
+  while(SNPS_PD->REG2_ACK==0){;}
+  while(SNPS_PD->REG2_ACK!=0){;}
+  // Set load config 0
+  SNPS_PD->LD_CFG=0;
+  // Wait for acknowledgement
+  while(SNPS_PD->REG2_ACK==0){;}
+  while(SNPS_PD->REG2_ACK!=0){;}
+
+  // Update global variables
+  switch (pre) {
+    case 0:
+      snps_pd_prescaler = 16;
+      break;
+    case 1:
+      snps_pd_prescaler = 32;
+      break;
+    case 2:
+      snps_pd_prescaler = 64;
+      break;
+    case 3:
+      snps_pd_prescaler = 4;
+      break;
+  }
+
+  switch (window) {
+    case 0:
+      snps_pd_window = 255;
+      break;
+    case 1:
+      snps_pd_window = 127;
+      break;
+    case 2:
+      snps_pd_window = 63;
+      break;
+    case 3:
+      snps_pd_window = 31;
+      break;
+    }
+  return;
+}
+
+void snps_pvt_pd_set_clk_div(uint8_t clk_div){
+  SNPS_PD->CLK_DIV=clk_div; // 240MHz / 
+  snps_pd_fclk = SystemCoreClock / clk_div;
+  return;
+}
 
 #if defined ( __CC_ARM   )
 /* ARM or Keil toolchain */

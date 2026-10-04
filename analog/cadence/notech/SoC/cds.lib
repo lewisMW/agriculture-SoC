@@ -8,3 +8,4 @@ DEFINE adc_analog_lib ./adc_analog_lib
 DEFINE adc_digital_lib ./adc_digital_lib
 DEFINE adc_top_lib ./adc_top_lib
 DEFINE adc_tb_lib ./adc_tb_lib
+DEFINE testbench_simulations ./testbench_simulations

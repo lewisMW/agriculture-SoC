@@ -9,11 +9,11 @@ module sarlogic (
 	input comp,
 	input cal,
 	output valid,
-	output reg [7:0] result,
+	output [7:0] result,
 	output sample,
 	output [7:0] ctlp,
 	output [7:0] ctln,
-	output [4:0] trim,
+	output [4:0] trima,
 	output [4:0] trimb,
 	output reg clkc);
 
@@ -27,6 +27,7 @@ module sarlogic (
 	reg [3:0] cal_count;
 	reg [3:0] cal_itt;
 	reg res_valid;
+	reg [7:0] dig_result;
 
 	parameter sInit = 0, sWait=1, sSample=2, sConv=3, sDone=4, sCal=5;
 	
@@ -34,7 +35,7 @@ module sarlogic (
         state <= sInit;
         mask <= 0;
         trim_mask <= 0;
-        result <= 0;
+        dig_result <= 0;
         co_clk <= 0;
         en_co_clk <= 0;
         cal_itt <= 0;
@@ -51,16 +52,16 @@ module sarlogic (
 	always @(posedge clk or negedge rstn) begin
 		if (!rstn) begin
 			state <= sInit;
-            mask <= 0;
-            trim_mask <= 0;
-            result <= 0;
-            co_clk <= 0;
-            en_co_clk <= 0;
-            cal_itt <= 0;
-            cal_count <= 7;
-            trim_val <= 0;
-            calibrate <= 0;
-            res_valid <= 0;
+			mask <= 0;
+			trim_mask <= 0;
+			dig_result <= 0;
+			co_clk <= 0;
+			en_co_clk <= 0;
+			cal_itt <= 0;
+			cal_count <= 7;
+			trim_val <= 0;
+			calibrate <= 0;
+			res_valid <= 0;
 		end else begin
 			case (state)
 				// Initial state of fsm.
@@ -72,7 +73,7 @@ module sarlogic (
 				// Waiting for trigger at en input.
 				sWait : begin
 					if(en) begin
-						result <= 0;
+						dig_result <= 0;
 						cal_itt <= 0;
 						cal_count <= 7;
 						state <= sSample;
@@ -96,9 +97,9 @@ module sarlogic (
 				end
 
 				// Conversion stage. 
-				// Result bus changes depending on comp input
+				// dig_result bus changes depending on comp input
 				sConv : begin
-					if (comp) result <= result | mask;
+					if (comp) dig_result <= dig_result | mask;
 					mask <= mask >> 1;
 					if (mask[0]) begin
 						state <= sDone;
@@ -134,7 +135,7 @@ module sarlogic (
 				end
 
 				// Finished either calibrating or converting
-				// result can be read
+				// dig_result can be read
 				sDone : begin
 					state <= sWait;
 					res_valid <= 1;
@@ -143,10 +144,11 @@ module sarlogic (
 		end
 	end
 
-	assign trim = (trim_val | trim_mask); // adding an extra 1 in n-1 after each itt.
+	assign result = dig_result;
+	assign trima = (trim_val | trim_mask); // adding an extra 1 in n-1 after each itt.
 	assign trimb = ~(trim_val | trim_mask); // complement of trim
 	assign sample = (state==sSample) || (state==sCal); // sample trigger (remain on during cal)
-	assign valid = (1 && res_valid); // result is valid and ready to be read
-	assign ctlp = result | mask; // ctl signals for non inverter dac. extra 1 in n-1
-	assign ctln = ~(result | mask); // ctl signals for inverter dac
+	assign valid = (1 && res_valid); // dig_result is valid and ready to be read
+	assign ctlp = dig_result | mask; // ctl signals for non inverter dac. extra 1 in n-1
+	assign ctln = ~(dig_result | mask); // ctl signals for inverter dac
 endmodule

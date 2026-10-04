@@ -1,0 +1,90 @@
+set_design_top nanosoc_chip_pads
+
+#######################################
+# Create Supply Ports
+#######################################
+# Top Port Supplies 
+create_supply_port VDD 
+create_supply_net VDD
+connect_supply_net VDD -ports VDD 
+
+create_supply_port VSS 
+create_supply_net VSS 
+connect_supply_net VSS -ports VSS 
+
+# create_supply_port VDDACC
+# create_supply_net VDDACC
+# connect_supply_net VDDACC -ports VDDACC
+
+create_supply_port VDDIO 
+create_supply_net VDDIO
+connect_supply_net VDDIO -ports VDDIO
+
+create_supply_port VSSIO 
+create_supply_net VSSIO
+connect_supply_net VSSIO -ports VSSIO
+
+connect_supply_net VDD -ports uPAD_VDD_0/DVDD
+connect_supply_net VDD -ports uPAD_VDD_1/DVDD
+connect_supply_net VDD -ports uPAD_VDD_2/DVDD
+connect_supply_net VDD -ports uPAD_VDD_3/DVDD
+
+connect_supply_net VDDIO -ports uPAD_VDDIO_0/DVDD
+connect_supply_net VDDIO -ports uPAD_VDDIO_2/DVDD
+connect_supply_net VDDIO -ports uPAD_VDDIO_3/DVDD
+
+connect_supply_net VSSIO -ports uPAD_VSSIO_0/DVSS
+connect_supply_net VSSIO -ports uPAD_VSSIO_1/DVSS
+
+connect_supply_net VSS -ports uPAD_VSS_0/DVSS
+connect_supply_net VSS -ports uPAD_VSS_1/DVSS
+connect_supply_net VSS -ports uPAD_VSS_2/DVSS
+connect_supply_net VSS -ports uPAD_VSS_3/DVSS
+
+# connect_supply_net VDDACC -ports uPAD_VDDACC_0/ASIG5V
+# connect_supply_net VDDACC -ports uPAD_VDDACC_1/ASIG5V
+# connect_supply_net VDDACC -ports uPAD_VDDACC_2/ASIG5V
+
+#######################################
+# Create Supply Sets
+######################################
+create_supply_set SS_TOP -function {power VDD} -function {ground VSS}
+create_supply_set SS_IO  -function {power VDDIO} -function {ground VSSIO}
+# create_supply_set SS_ACC -function {power VDDACC} -function {ground VSS}
+
+#######################################
+# Create Power Domains
+######################################
+create_power_domain PD_TOP -include_scope -supply {primary SS_TOP}
+
+# create_power_domain PD_ACC -supply {primary SS_ACC} \
+#     -elements u_nanosoc_chip/u_system/u_ss_expansion/u_region_exp/u_ss_accelerator
+
+#######################################
+# Add Power States
+######################################
+add_port_state VSS              -state {ON_SLOW 0.0}
+add_port_state VSS              -state {ON_TYP  0.0}
+add_port_state VSS              -state {ON_FAST 0.0}
+add_port_state VDD              -state {ON_SLOW 1.08}
+add_port_state VDD              -state {ON_TYP  1.20}
+add_port_state VDD              -state {ON_FAST 1.32}
+# add_port_state VDDACC           -state {ON_SLOW 1.08}
+# add_port_state VDDACC           -state {ON_TYP  1.20}
+# add_port_state VDDACC           -state {ON_FAST 1.32}
+add_port_state VDDIO            -state {ON_SLOW 2.97}
+add_port_state VDDIO            -state {ON_TYP  3.30}
+add_port_state VDDIO            -state {ON_FAST 3.63}
+
+create_pst top_pst -supplies {\
+    VSS \
+    VDD \
+    VDDIO \
+    }
+
+#    VDDACC \
+ 
+
+add_pst_state all_on_slow -pst top_pst -state       {ON_SLOW  ON_SLOW  ON_SLOW  } 
+add_pst_state all_on_typ -pst top_pst -state        {ON_TYP   ON_TYP   ON_TYP   } 
+add_pst_state all_on_fast -pst top_pst -state       {ON_FAST  ON_FAST  ON_FAST  } 

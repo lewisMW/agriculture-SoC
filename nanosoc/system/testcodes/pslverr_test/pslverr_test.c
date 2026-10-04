@@ -6,7 +6,7 @@
  * collides with an autonomous arm cycle (which returns PSLVERR) cannot hang the
  * device forever.
  *
- * Background: rtc_control grants its internal APB bus to firmware only while the
+ * Background: rtc_control_2 grants its internal APB bus to firmware only while the
  * RTC FSM is parked (IDLE/WAITING). A firmware read of the RTC region
  * (rtc_dr/rtc_lr/... 0x200-0x21C) that lands during an arm cycle gets PSLVERR.
  * The cmsdk_ahb_to_apb bridge turns an APB error into an AHB error response, and

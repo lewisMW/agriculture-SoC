@@ -46,7 +46,7 @@ module extio8x4_axis_target
 wire       ioreq1_s;
 wire       ioreq2_s;
 
-extio8x4_sync u_extio8x4_sync_ioreq1
+extio8x4t_sync u_extio8x4_sync_ioreq1
   (
   .clk(clk),
   .resetn(resetn),
@@ -55,7 +55,7 @@ extio8x4_sync u_extio8x4_sync_ioreq1
   .sig_s(ioreq1_s)
   );
 
-extio8x4_sync u_extio8x4_sync_ioreq2
+extio8x4t_sync u_extio8x4_sync_ioreq2
   (
   .clk(clk),
   .resetn(resetn),

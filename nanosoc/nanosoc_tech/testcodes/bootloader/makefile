@@ -142,7 +142,11 @@ ARM_CC_OPTIONS   = $(ARM_TARGET) -c -O1 -g -I $(DEVICE_DIR)/Include -I $(CORE_DI
 
 ARM_ASM_OPTIONS  = -g
 ARM_LINK_OPTIONS = "--keep=$(STARTUP_FILE).o(RESET)" "--first=$(STARTUP_FILE).o(RESET)" \
-		--rw_base 0x30000000 --ro_base 0x10000000 --map
+		--rw_base 0x30000000 --ro_base 0x10000000 --map 
+
+ifeq ($(TOOL_CHAIN),ds6)
+	ARM_LINK_OPTIONS += --no_scatterload_enabled
+endif
 
 ifeq ($(COMPILE_BIGEND),1)
  # Big Endian
@@ -173,7 +177,10 @@ GNU_OBJCOPY = $(TARGET)-objcopy
 LINKER_SCRIPT_PATH = $(SOFTWARE_DIR)/common/scripts
 LINKER_SCRIPT = $(LINKER_SCRIPT_PATH)/cmsdk_bootloader.ld
 
-GNU_CC_FLAGS = -g -O3 -mthumb $(CPU_TYPE)
+# GCC optimization specs
+GCC_SPEC_OPTS := --specs=nano.specs -Wl,--gc-sections
+
+GNU_CC_FLAGS = -g -O3 -Os -mthumb -flto -mthumb-interwork $(CPU_TYPE) $(GCC_SPEC_OPTS)
 
 ifeq ($(COMPILE_BIGEND),1)
  # Big Endian
@@ -226,8 +233,10 @@ all_gcc:
 # 	$(GNU_OBJCOPY) -S $(BOOTLOADER).o --adjust-vma -0x10000000 -O verilog $(BOOTLOADER).hex
     # Generate binary file
 	$(GNU_OBJCOPY) -S $(BOOTLOADER).o -O binary $(BOOTLOADER).bin
-    # Generate hex file from binary
-	od -v -A n -t x1 --width=1 $(BOOTLOADER).bin > $(BOOTLOADER).hex
+	# Generate hex file from binary
+	# $(GNU_OBJCOPY) -S $(BOOTLOADER).o --adjust-vma -0x10000000 --gap-fill 00 -O verilog $(BOOTLOADER).hex
+	# Format the hex file to match fromelf output
+	od -v -A n -t x1 --width=1  $(BOOTLOADER).bin > $(BOOTLOADER).hex
 
 # Note:
 # Objcopy use --adjust-vma so that the Verilog hex address start at address 0 instead of actual address 0x10000000

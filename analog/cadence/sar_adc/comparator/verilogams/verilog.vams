@@ -1,0 +1,44 @@
+//Verilog-AMS HDL for "adc_analog_lib", "comparator" "verilogams"
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module comparator(vp, vn, outp, outn, clk, trima, trimb, vdd, vss);
+	input [4:0] trima, trimb;
+	input clk, vn, vp;
+	output outn, outp;
+	inout vdd, vss ;
+	electrical vp, vn, vdd, vss;
+	logic [4:0] trima, trimb;
+	logic clk;
+	reg outp, outn;
+	
+	
+	parameter real v_lsb = 5m;
+	
+	integer trima_code, trimb_code;
+	real v_trima, v_trimb;
+	integer d_out;
+
+	genvar i;
+
+	analog begin
+		// Calibration by adding a v offset (what value? still don't know)
+		trima_code  = (trima[0]? 1:0) + (trima[1]? 2:0) + (trima[2]? 4:0)
+             + (trima[3]? 8:0) + (trima[4]?16:0);
+
+  		trimb_code = (trimb[0]? 1:0) + (trimb[1]? 2:0) + (trimb[2]? 4:0)
+             + (trimb[3]? 8:0) + (trimb[4]?16:0);
+
+		v_trima = -trima_code*v_lsb + V(vp,vss);
+		v_trimb = -trimb_code*v_lsb + V(vn,vss);		
+		
+		// Comparision and differential output
+		d_out = v_trima > v_trimb;
+	end
+	
+	always @(posedge clk) begin
+		if (d_out) begin outp <= 1; outn <= 0; end
+		else begin outp <= 0; outn <= 1; end
+	end
+endmodule

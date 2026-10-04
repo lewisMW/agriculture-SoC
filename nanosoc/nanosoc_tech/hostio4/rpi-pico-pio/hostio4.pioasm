@@ -1,0 +1,303 @@
+;
+; Copyright (c) 2024-26 soclabs.org.
+;
+; XIO Target driver
+;       example pin numbers allocated for testbench
+;       REQ1,REQ2 ideally contiguous
+;       DATA[3:0] must be contiguous
+;   SM0 providing status signalling
+;       pin jump on REQ1 at transfer start
+;       then command parsing/acknowledge and direction setup and signalling
+;       and set interrupt to SM1 or SM2 depending on channel
+;       poll until end of transfer
+;   SM1, SM3 transmit channel 0,1 handler threads to transmit data
+;       data transfer/acknowledge with autopop byte
+;       poll until end of transfer
+;
+;
+; SPDX-License-Identifier: BSD-3-Clause
+;
+.define public XIOT_RQ1 0
+.define public XIOT_RQ2 1
+.define public XIOT_ACK 2
+.define public XIOT_DATA 3 // gpio base offset 4-bits [0:3]
+.define public XIOT_DATAWIDTH 4 // GPIO[06:03] specifically
+
+.program XIOTsm0
+.side_set 1 opt // mapped to {XIOT_ACK}
+
+.lang_opt python out_init     = (rp2.PIO.OUT_HIGH,rp2.PIO.OUT_HIGH,rp2.PIO.OUT_HIGH,rp2.PIO.OUT_HIGH)
+.lang_opt python set_init     = (rp2.PIO.OUT_LOW,rp2.PIO.OUT_LOW,rp2.PIO.OUT_LOW,rp2.PIO.OUT_LOW)
+.lang_opt python sideset_init = (rp2.PIO.OUT_HIGH)
+.lang_opt python out_shiftdir = rp2.PIO.SHIFT_RIGHT
+.lang_opt python in_shiftdir  = rp2.PIO.SHIFT_LEFT
+.lang_opt python autopush     = True
+.lang_opt python autopull     = False
+.lang_opt python push_thresh  = 12
+.lang_opt python pull_thresh  = 4
+
+; XIOT status (4 bits from TXFIFO until packet starts)
+; NOTE: must write 0xf to TXFIFO 0 before starting SM (no xfers)
+; set jmp_pin XIOT_RQ1
+; side-signals: {(opt update), DIR, ACK}
+; XDATA : IN[3:0],  OUT[3:0], SET[3:0]
+
+.wrap_target // wrap target for SM0
+sm02:
+    set x, 0b0000                 // default inactive
+    set pindirs 0b1111            // status drive on dio pins
+statloop:                         // poll status flags from RXFIFO
+    pull noblock                  // return X if empty
+    mov x, osr                    // update flags if changed
+    out pins, 4                   // drive status flags
+    jmp pin command    side 0     // deassert ACK, exit status update loop if RQ1 asserted
+    jmp statloop                  // otherwise keep updating
+command:                          // input and parse command
+    set pindirs 0b0000 side 1 [1] // tristate, set first ACK before command
+    wait 1 gpio, XIOT_RQ2     [2] // set first ACK, await REQ2 (and delay before input)
+    in pins, 4                   // 4-bit command capture
+    mov osr, isr       side 0    // parse using OSR, clear first ACK
+    out y, 1                     // Y = cmd[0] : 0 for RX, 1 for TX
+    out x, 1                     // X = cmd[1] : 0 for CON, 1 for DATA
+    wait 0 gpio, XIOT_RQ2        // poll REQ2 deasserted
+    jmp !y, rxdata               // 0 to branch to input data hi,lo
+txdata:
+    set pindirs, 0b1111          // TX so output data hi,lo
+txchan:
+    jmp x--, txchan1             // non zero so TX3
+txchan0:                         // console TX (to STDIN)
+    irq set 5                [2] // assert IRQ 4+1 to trigger SM1, wait 2 (+1)
+    jmp txcapture
+txchan1:                         // Data TX
+    irq set 7                [2] // assert IRQ 4+3 to trigger SM3, wait 3
+txcapture:                       // tx also sampled/captured
+rxdata:
+    nop                      [3] // delay for input data hi to stabilize
+    in  pins, 4                  // capture high nibble, set 2nd ACK
+    wait 1 gpio, XIOT_RQ2 side 1 [3]  // poll RQ2, delay for input data lo to stabilize
+    in pins, 4                   // capture low nibble, clr 2nd ACK
+    wait 0 gpio, XIOT_RQ2 side 0 // wait RQ2 low
+    wait 0 gpio, XIOT_RQ1 side 1 // set third ack, wait for RQ1 low
+    irq set 0                    // signal IRQ (non-blocking)
+.wrap // jmp sm02
+
+.program XIOTsm13
+.side_set 1 opt // mapped to {XIOT_ACK}
+
+.lang_opt python out_init     = (rp2.PIO.OUT_HIGH,rp2.PIO.OUT_HIGH,rp2.PIO.OUT_HIGH,rp2.PIO.OUT_HIGH)
+.lang_opt python sideset_init = (rp2.PIO.OUT_HIGH)
+.lang_opt python out_shiftdir = rp2.PIO.SHIFT_LEFT
+.lang_opt python autopull     = True
+.lang_opt python pull_thresh  = 8
+
+//.program SM1, SM2 for data transfer channels
+.wrap_target
+sm13:
+//  autopull (sm1.put() before enable) TXD in in bits[31:24]
+    wait 1 irq, 4 rel           // SM +1, or SM +3, and auto-ack irq
+    pull noblock
+txdh:
+    out pins, 4   side 1        // high nibble drive, synchronous ACK assert
+    wait 1 gpio, XIOT_RQ2       // wait REQ2 deasserted
+txdl:
+    out pins, 4   side 0        // low nibble, synchronous ACK deassert
+.wrap // jmp sm13
+
+% c-sdk {
+static inline void XIOT0_program_init(PIO pio) {
+    pio_sm_config cfg_sm0 = XIOT_pio_get_default_sm_config();
+    pio_sm_config cfg_sm1 = XIOT_pio_get_default_sm_config();
+    pio_sm_config cfg_sm3 = XIOT_pio_get_default_sm_config();
+
+// SM0: status, command parse and set direction, Mon/RX0
+    sm_config_set_in_shift(&cfg_sm0, false, true, 12); // SHL, Autopush
+    sm_config_set_out_shift(&cfg_sm0, true, false, 4); // SHR, no autopull, 4 bits of status flags
+    sm_config_set_in_pins(&cfg_sm0, XIOT_DATA);
+    sm_config_set_out_pins(&cfg_sm0, XIOT_DATA, XIOT_DATAWIDTH);
+    sm_config_set_sideset_pins(&cfg_sm0, XIOT_ACK);
+    sm_config_set_sideset(&cfg_sm0, 1, true);
+    sm_config_set_jmp_pin(&cfg_sm0, XIOT_RQ1);  //
+    sm_config_set_wrap(&cfg_sm0, XIOTsm0_wrap_target, XIOTsm0_wrap); // wrap from 0
+
+// SM1: TX1, data transfer interrupt thread
+    sm_config_set_out_shift(&cfg_sm1, true, false, 8); // SHR, no autopull, 8-bit data
+    sm_config_set_out_pins(&cfg_sm1, XIOT_DATA, XIOT_DATAWIDTH);
+    sm_config_set_sideset_pins(&cfg_sm1, XIOT_ACK);
+    sm_config_set_sideset(&cfg_sm1, 1, true);
+    sm_config_set_wrap(&cfg_sm1, XIOTsm13_wrap_target, XIOTsm13_wrap);
+
+// SM3: TX3, data transfer interrupt thread
+    sm_config_set_out_shift(&cfg_sm3, true, false, 8); // SHR, no autopull, 8-bit data
+    sm_config_set_out_pins(&cfg_sm3, XIOT_DATA, XIOT_DATAWIDTH);
+    sm_config_set_sideset_pins(&cfg_sm3, XIOT_ACK);
+    sm_config_set_sideset(&cfg_sm3, 1, true);
+    sm_config_set_wrap(&cfg_sm3, XIOTsm13_wrap_target, XIOTsm13_wrap);
+
+    // Map the state machine's data pins
+    // parameter to this function.
+    pio_gpio_init(pio, XIOT_ACK, true);
+    // Connext PIO data bus (connect PIO to the pad)
+    pio_gpio_init(pio, XIOT_DATA+0);
+    pio_gpio_init(pio, XIOT_DATA+1);
+    pio_gpio_init(pio, XIOT_DATA+2);
+    pio_gpio_init(pio, XIOT_DATA+3);
+    // Set the pin direction to input at the PIO
+    pio_sm_set_consecutive_pindirs(pio, sm, XIOT_DATA, XIOT_DATAWIDTH, true);
+    pio_sm_set_consecutive_pindirs(pio, sm, XIOT_ACK, 1, true);
+
+    // Load our configuration, and jump to the start of the program
+    pio_add_program(pio, pio_program_t *(XIOTsm0_program))
+    pio_sm_init(pio, 0, 0, &cfg_sm0);
+    pio_add_program(pio, pio_program_t *(XIOTsm13_program))
+    pio_sm_init(pio, 1, XIOTsm13_wrap_target, &cfg_sm1);
+    pio_sm_init(pio, 3, XIOTsm13_wrap_target, &cfg_sm3);
+
+   // Set the state machines running (1,3 at WFI, then SM0 controller)
+    pio_sm_set_enabled(pio, 1, true);
+    pio_sm_set_enabled(pio, 3, true);
+    pio_sm_set_enabled(pio, 0, true);
+}
+%}
+
+% python {
+# 1 x controller state machine
+
+## 3x target state machines
+sm0 = rp2.StateMachine(0, XIOTsm0 , set_base=Pin(XIOT_DATA), out_base=Pin(XIOT_DATA), in_base=Pin(XIOT_DATA), sideset_base=XIOT_ACK, jmp_pin=XIOT_RQ1)
+sm1 = rp2.StateMachine(1, XIOTsm13, out_base=Pin(XIOT_DATA), sideset_base=XIOT_ACK)
+sm3 = rp2.StateMachine(3, XIOTsm13, out_base=Pin(XIOT_DATA), sideset_base=XIOT_ACK)
+
+# global copy of virtual channel flags
+xiot_vcflags = 0b0000
+
+verbose = False
+
+# Function to get target FIFO status
+#From controller perspective:
+#   FIFO_status[3:0] = { tx1, rx1, tx0, rx0}
+#   Controller interprets as (tx1 full, rx1_empty, tx0 full, rx0_empty)
+# so we need (rx)
+#    fifo_status = rx1_not_empty << 3 | tx1_full << 2 | rx0_not_empty << 1 | tx0_full
+def get_xiot_fifo_status():
+    fifo_flags = 0b0000
+    if sm0.rx_fifo() <= 1: #2 RX channels share SM0
+        fifo_flags = fifo_flags | 0b1010
+    if sm1.tx_fifo() > 0:
+        fifo_flags = fifo_flags | 0b0001
+    if sm3.tx_fifo() > 0:
+        fifo_flags = fifo_flags | 0b0100
+    return fifo_flags
+
+# Function to update target FIFO status
+def update_xiot_fifo_status():
+    # global copy of virtual channel flags
+    global xiot_vcflags
+    xiot_vcflags = get_xiot_fifo_status()
+    sm0.put(xiot_vcflags)
+    return 
+
+def xiot_xfer_poll():
+    update_xiot_fifo_status()
+    return(sm0.rx_fifo() > 0)
+
+def xiot_xfer_change():
+    update_xiot_fifo_status()
+    return(sm0.rx_fifo() > 0)
+
+def xiot_xfer_parse():
+# sm0 returns 4-bit command + 8-bit data in 12 LSB
+    rxd = sm0.get()
+    chan1 = (rxd & 0x200) != 0
+    read = (rxd & 0x100) == 0
+    rxbyte = rxd & 0xff
+    return(chan1, read, rxbyte)
+
+# XIOT tx0->rx0 - SM1 FIFO/SM
+# sm1 transfers byte data in bits[31:24]
+def xiot_tx0(txbyte):  # host channel 0 tx
+    sm1.put(txbyte<<24)
+    return
+
+def xiot_tx0_ready():
+    return(sm1.tx_fifo() == 0) # <3
+
+# XIOT tx1->rx1 - SM3 FIFO/SM
+# sm3 transfers byte data in bits[31:24]
+def xiot_tx1(txbyte):  # host channel 1 tx
+    sm3.put(txbyte<<24)
+    return
+
+def xiot_tx1_ready():
+    return(sm3.tx_fifo() == 0) # <3
+
+def fifo_stats():
+    print(sm0.tx_fifo(), sm1.tx_fifo(),  sm3.tx_fifo(),
+          sm0.rx_fifo(), sm1.rx_fifo(),  sm3.rx_fifo(), end="\n")
+
+def adp_console_enter():
+    while True:
+      if xiot_xfer_poll():
+        break
+    xiot_tx0(0x1b) # escape char
+
+#def adp_upload():
+    
+# start both output state machines
+sm1.active(1)
+sm3.active(1)
+sm0.put(0b0000) # all channels inactive
+# finally start main read/control state machine
+sm0.active(1)
+
+adp_req = False
+adp_mode = False
+csvio_mode = False
+
+get_xiot_fifo_status()
+update_xiot_fifo_status()
+
+verbose = True
+
+### example main code usage
+
+adp_console_enter()
+adp_mode = True
+# Loop indefinitely
+while True:
+# poll input RX FIFO
+  while xiot_xfer_change() :
+    chan1, read, rxbyte = xiot_xfer_parse()
+    if (read and (chan1 == False)): # stdout channel
+      sys.stdout.write(chr(rxbyte))
+    if (read and (chan1 == True)) :  #data channel
+      print("{",chr(rxbyte),"}",sep='',end='')
+  if (not (adp_load and adp_mode)) and xiot_tx0_ready() and select.select([sys.stdin], [], [], 0)[0]:
+    txbyte = sys.stdin.read(1) # Read just one character
+    if txbyte == ']': # remap ']'
+      xiot_tx0(0x1b) # to ESC // REPL issue
+      adp_req = True
+    else:
+      xiot_tx0(ord(txbyte))
+  if (adp_mode and adp_load) and xiot_tx0_ready() and (afile != 0) :
+    txbyte = afile.read(1)  # Read just one character
+    if txbyte == b'': # binary file end of file
+      afile.close()
+      afile = 0
+      adp_load = 0
+      csvio_mode = 1
+      print("<csv file io starts...>")
+    else:
+      xiot_tx0(ord(txbyte))
+  if csvio_mode and xiot_tx1_ready() and (sfile != 0):
+    txbyte = sfile.read(1)  # Read exactly one character
+    if not txbyte: # text file eof
+      sfile.close()
+      sfile = 0
+      print("\n<csv file stim closed>")
+    else:
+      if verbose and (txbyte == (',')):
+          print(",",end="")
+      if verbose and (txbyte == ('\n')):
+          print("\n",end="")
+      xiot_tx1(ord(txbyte))
+%}

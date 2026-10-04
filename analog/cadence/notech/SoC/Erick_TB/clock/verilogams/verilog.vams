@@ -1,0 +1,17 @@
+//Verilog-AMS HDL for "adc_analog_lib", "clock" "verilogams"
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+`timescale 1ns / 1ps
+
+module clock (clk);
+    parameter cycle = 1000;	// clock period (ns)
+    output clk;
+    reg clk;
+
+    initial clk = 0;
+
+    always #(cycle/2) clk = ~clk;
+endmodule
+
