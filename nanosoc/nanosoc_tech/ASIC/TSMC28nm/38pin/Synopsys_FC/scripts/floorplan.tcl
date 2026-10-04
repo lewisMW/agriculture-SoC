@@ -124,3 +124,39 @@ set_signal_io_constraints -io_guide_object {main_io.right} -constraint {{order_o
 place_io
 create_io_filler_cells -io_guides [get_io_guides {main_io.top main_io.right main_io.bottom main_io.left}] -reference_cells [list PFILLER20_G PFILLER10_G PFILLER5_G PFILLER0005_G ] -prefix io_filler
 
+
+## ------------------------------------------
+## Create Bond Pads
+## ------------------------------------------
+
+# Bottom
+set bottom_pads [list  P0_00 P0_01 VSS_1 VDD_1 SE_I VDDACC_1 P0_02]
+foreach pad $bottom_pads {
+  create_cell uBONDPAD_${pad} PAD60GU 
+  set_attribute -objects uBONDPAD_${pad} -name origin -value [get_attribute -objects uPAD_${pad} -name origin]
+  move_objects -delta {0.0 11.66} [get_cell uBONDPAD_${pad}]
+}
+ 
+set top_pads [list TEST_I SWDCK_I VDD_3 VSS_3 VDDIO_3 P1_00 P1_01]
+foreach pad $top_pads {
+  create_cell uBONDPAD_${pad} PAD60GU 
+  set_attribute -objects uBONDPAD_${pad} -name orientation -value R180
+  set_attribute -objects uBONDPAD_${pad} -name origin -value [get_attribute -objects uPAD_${pad} -name origin]
+  move_objects -delta {0.0 -11.66} [get_cell uBONDPAD_${pad}]
+}
+
+set left_pads [list P0_04 P0_05 P0_03 VDDACC_0 VSS_0 CLK_I VDD_0 VDDIO_0 SWDIO_IO VSSIO_0 P0_06 P0_07]
+foreach pad $left_pads {
+  create_cell uBONDPAD_${pad} PAD60GU 
+  set_attribute -objects uBONDPAD_${pad} -name orientation -value R270
+  set_attribute -objects uBONDPAD_${pad} -name origin -value [get_attribute -objects uPAD_${pad} -name origin]
+  move_objects -delta {11.66 0.0} [get_cell uBONDPAD_${pad}]
+}
+
+set right_pads [list P1_04 P1_05 NRST_I VDDIO_2 VSS_2 VDD_2 VDDACC_2 P1_02 P1_03 VSSIO_1 P1_06]
+foreach pad $right_pads {
+  create_cell uBONDPAD_${pad} PAD60GU 
+  set_attribute -objects uBONDPAD_${pad} -name orientation -value R90
+  set_attribute -objects uBONDPAD_${pad} -name origin -value [get_attribute -objects uPAD_${pad} -name origin]
+  move_objects -delta {-11.66 0.0} [get_cell uBONDPAD_${pad}]
+}

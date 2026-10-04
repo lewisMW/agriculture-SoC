@@ -156,6 +156,8 @@ localparam BUFSIZE = (64 * 1024);
        begin
          @(posedge aresetn);
          while (fp <= flen) begin
+           if((fp%16)==0)
+            $write("** ADP Uploading code progress: %d/%d done\n",fp,flen);
            @(posedge aclk);
            data8 <= adpbuf[fp];
            fp = fp + 1;

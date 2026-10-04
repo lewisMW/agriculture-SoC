@@ -1,9 +1,9 @@
 ## Paths Please Edit for your system
-set cln28ht_tech_path           /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/arm_tech/r1p0
-set standard_cell_base_path     /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc7mcpp140z_base_svt_c30/r0p0
-set pmk_base_path               /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc7mcpp140z_pmk_svt_c30/r0p0
-set ret_base_path               /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc12mcpp140z_rklo_lvt_svt_c30_c35/r1p0
-set hpc_base_path               /home/dwn1c21/SoC-Labs/phys_ip/arm/tsmc/cln28ht/sc7mcpp140z_hpk_svt_c30/r0p0
+set cln28ht_tech_path           /research/AAA/phys_ip_library/arm/tsmc/cln28ht/arm_tech/r1p0
+set standard_cell_base_path     /research/AAA/phys_ip_library/arm/tsmc/cln28ht/sc7mcpp140z_base_svt_c30/r0p0
+set pmk_base_path               /research/AAA/phys_ip_library/arm/tsmc/cln28ht/sc7mcpp140z_pmk_svt_c30/r0p0
+set ret_base_path               /research/AAA/phys_ip_library/arm/tsmc/cln28ht/sc12mcpp140z_rklo_lvt_svt_c30_c35/r1p0
+set hpc_base_path               /research/AAA/phys_ip_library/arm/tsmc/cln28ht/sc7mcpp140z_hpk_svt_c30/r0p0
 set TSMC_28_base_path           /home/dwn1c21/SoC-Labs/phys_ip/TSMC/28
 # Technology files
 set cln28ht_tech_file                       $TSMC_28_base_path/CMOS/util/PRTF_ICC_28nm_Syn_V19_1a/tsmcn28_9lm5X1Y1Z1UUTRDL.tf
@@ -184,22 +184,59 @@ set Synopsys_PLL_gds_file $Synopsys_PLL_dir/gds/5m4x0z/dwc_z19606ts_ns.gds
 # Synopsys Temperature sensor files
 set Synopsys_TS_dir /home/dwn1c21/SoC-Labs/Synopsys_ip/IP/Southampton_28hpcp_pd_vm_ts_vmps_pvtc/1.01b
 set Synopsys_TS_lef_file $Synopsys_TS_dir/lef/mr74127.lef
-set Synopsys_TS_lib_file $Synopsys_TS_dir/liberty/mr74127_wc_vmin_125c.lib
-set Synopsys_TS_db_file $Synopsys_TS_dir/db/mr74127_wc_vmin_125c.db
+set Synopsys_TS_db_bc_vmax_m40c  $Synopsys_TS_dir/db/mr74127_bc_vmax_m40c.db     
+set Synopsys_TS_db_bc_vmax_25c  $Synopsys_TS_dir/db/mr74127_bc_vmax_25c.db    
+set Synopsys_TS_db_bc_vmax_0c  $Synopsys_TS_dir/db/mr74127_bc_vmax_0c.db    
+set Synopsys_TS_db_bc_vmax_125c  $Synopsys_TS_dir/db/mr74127_bc_vmax_125c.db  
+set Synopsys_TS_db_tc_vtyp_m40c  $Synopsys_TS_dir/db/mr74127_tc_vtyp_m40c.db
+set Synopsys_TS_db_tc_vtyp_0c  $Synopsys_TS_dir/db/mr74127_tc_vtyp_0c.db     
+set Synopsys_TS_db_tc_vtyp_25c  $Synopsys_TS_dir/db/mr74127_tc_vtyp_25c.db   
+set Synopsys_TS_db_tc_vtyp_85c  $Synopsys_TS_dir/db/mr74127_tc_vtyp_85c.db 
+set Synopsys_TS_db_tc_vtyp_125c  $Synopsys_TS_dir/db/mr74127_tc_vtyp_125c.db  
+set Synopsys_TS_db_wc_vmin_m40c  $Synopsys_TS_dir/db/mr74127_wc_vmin_m40c.db
+set Synopsys_TS_db_wc_vmin_0c  $Synopsys_TS_dir/db/mr74127_wc_vmin_0c.db    
+set Synopsys_TS_db_wc_vmin_25c  $Synopsys_TS_dir/db/mr74127_wc_vmin_25c.db
+set Synopsys_TS_db_wc_vmin_125c  $Synopsys_TS_dir/db/mr74127_wc_vmin_125c.db
+set Synopsys_TS_db_ffg_vmax_125c  $Synopsys_TS_dir/db/mr74127_ffg_vmax_125c.db  
 set Synopsys_TS_gds_file $Synopsys_TS_dir/gdsii/mr74127_v1r1.gds
 
 # Synopsys Process detector Files
 set Synopsys_PD_dir /home/dwn1c21/SoC-Labs/Synopsys_ip/IP/Southampton_28hpcp_pd_vm_ts_vmps_pvtc/dwc_sensors_pd_tsmc28hpcp_1.00a/synopsys/dwc_sensors_pd_tsmc28hpcp/1.00a
 set Synopsys_PD_lef_file    $Synopsys_PD_dir/lef/mr74125.lef
-set Synopsys_PD_lib_file    $Synopsys_PD_dir/liberty/mr74125_wc_vmin_125c.lib
 set Synopsys_PD_db_file     $Synopsys_PD_dir/db/mr74125_wc_vmin_125c.db
+set Synopsys_PD_db_bc_vmax_0c  $Synopsys_PD_dir/db/mr74125_bc_vmax_0c.db  
+set Synopsys_PD_db_bc_vmax_125c    $Synopsys_PD_dir/db/mr74125_bc_vmax_125c.db  
+set Synopsys_PD_db_bc_vmax_25c $Synopsys_PD_dir/db/mr74125_bc_vmax_25c.db  
+set Synopsys_PD_db_bc_vmax_m40c    $Synopsys_PD_dir/db/mr74125_bc_vmax_m40c.db  
+set Synopsys_PD_db_ffg_vmax_125c   $Synopsys_PD_dir/db/mr74125_ffg_vmax_125c.db  
+set Synopsys_PD_db_tc_vtyp_0c  $Synopsys_PD_dir/db/mr74125_tc_vtyp_0c.db  
+set Synopsys_PD_db_tc_vtyp_125c    $Synopsys_PD_dir/db/mr74125_tc_vtyp_125c.db  
+set Synopsys_PD_db_tc_vtyp_25c $Synopsys_PD_dir/db/mr74125_tc_vtyp_25c.db  
+set Synopsys_PD_db_tc_vtyp_85c $Synopsys_PD_dir/db/mr74125_tc_vtyp_85c.db  
+set Synopsys_PD_db_tc_vtyp_m40c    $Synopsys_PD_dir/db/mr74125_tc_vtyp_m40c.db  
+set Synopsys_PD_db_wc_vmin_0c  $Synopsys_PD_dir/db/mr74125_wc_vmin_0c.db  
+set Synopsys_PD_db_wc_vmin_125c    $Synopsys_PD_dir/db/mr74125_wc_vmin_125c.db  
+set Synopsys_PD_db_wc_vmin_25c $Synopsys_PD_dir/db/mr74125_wc_vmin_25c.db  
+set Synopsys_PD_db_wc_vmin_m40c    $Synopsys_PD_dir/db/mr74125_wc_vmin_m40c.db
 set Synopsys_PD_gds_file    $Synopsys_PD_dir/gds/mr74125_v1r2.gds
 
 # Synopsys Voltage Monitor files
 set Synopsys_VM_dir /home/dwn1c21/SoC-Labs/Synopsys_ip/IP/Southampton_28hpcp_pd_vm_ts_vmps_pvtc/dwc_sensors_vm_shrink_tsmc28hpcp_1.00a/synopsys/dwc_sensors_vm_shrink_tsmc28hpcp/1.00a
 set Synopsys_VM_lef_file    $Synopsys_VM_dir/lef/mr74140.lef
-set Synopsys_VM_lib_file    $Synopsys_VM_dir/liberty/mr74140_wc_vmin_125c.lib
-set Synopsys_VM_db_file     $Synopsys_VM_dir/db/mr74140_wc_vmin_125c.db
+set Synopsys_VM_db_bc_vmax_0c   $Synopsys_VM_dir/db/mr74140_bc_vmax_0c.db  
+set Synopsys_VM_db_bc_vmax_125c $Synopsys_VM_dir/db/mr74140_bc_vmax_125c.db  
+set Synopsys_VM_db_bc_vmax_25c  $Synopsys_VM_dir/db/mr74140_bc_vmax_25c.db  
+set Synopsys_VM_db_bc_vmax_m40c $Synopsys_VM_dir/db/mr74140_bc_vmax_m40c.db  
+set Synopsys_VM_db_ffg_vmax_125c    $Synopsys_VM_dir/db/mr74140_ffg_vmax_125c.db  
+set Synopsys_VM_db_tc_vtyp_0c   $Synopsys_VM_dir/db/mr74140_tc_vtyp_0c.db  
+set Synopsys_VM_db_tc_vtyp_125c $Synopsys_VM_dir/db/mr74140_tc_vtyp_125c.db 
+set Synopsys_VM_db_tc_vtyp_25c  $Synopsys_VM_dir/db/mr74140_tc_vtyp_25c.db  
+set Synopsys_VM_db_tc_vtyp_85c  $Synopsys_VM_dir/db/mr74140_tc_vtyp_85c.db  
+set Synopsys_VM_db_tc_vtyp_m40c $Synopsys_VM_dir/db/mr74140_tc_vtyp_m40c.db  
+set Synopsys_VM_db_wc_vmin_0c   $Synopsys_VM_dir/db/mr74140_wc_vmin_0c.db  
+set Synopsys_VM_db_wc_vmin_125c $Synopsys_VM_dir/db/mr74140_wc_vmin_125c.db  
+set Synopsys_VM_db_wc_vmin_25c  $Synopsys_VM_dir/db/mr74140_wc_vmin_25c.db  
+set Synopsys_VM_db_wc_vmin_m40c $Synopsys_VM_dir/db/mr74140_wc_vmin_m40c.db
 set Synopsys_VM_gds_file    $Synopsys_VM_dir/gdsii/mr74140_v1r1.gds
 
 # Create standard cell fusion library
@@ -444,26 +481,62 @@ save_fusion_lib Synopsys_PLL
 close_fusion_lib Synopsys_PLL
 
 # Synopsys TS
-read_lib $Synopsys_TS_lib_file
-write_lib -output $Synopsys_TS_db_file -format db mr74127_wc_vmin_125c
-close_lib -all
-create_fusion_lib -dbs $Synopsys_TS_db_file -lefs $Synopsys_TS_lef_file -technology $cln28ht_tech_file Synopsys_TS
+create_fusion_lib -dbs [list \
+    $Synopsys_TS_db_bc_vmax_m40c \
+    $Synopsys_TS_db_bc_vmax_25c \
+    $Synopsys_TS_db_bc_vmax_0c \
+    $Synopsys_TS_db_bc_vmax_125c \
+    $Synopsys_TS_db_tc_vtyp_m40c \
+    $Synopsys_TS_db_tc_vtyp_0c \
+    $Synopsys_TS_db_tc_vtyp_25c \
+    $Synopsys_TS_db_tc_vtyp_85c \
+    $Synopsys_TS_db_tc_vtyp_125c \
+    $Synopsys_TS_db_wc_vmin_m40c \
+    $Synopsys_TS_db_wc_vmin_0c \
+    $Synopsys_TS_db_wc_vmin_25c \
+    $Synopsys_TS_db_wc_vmin_125c \
+    $Synopsys_TS_db_ffg_vmax_125c \
+    ] -lefs $Synopsys_TS_lef_file -technology $cln28ht_tech_file Synopsys_TS
 save_fusion_lib Synopsys_TS
 close_fusion_lib Synopsys_TS
 
 # Synopsys PD
-read_lib $Synopsys_PD_lib_file
-write_lib -output $Synopsys_PD_db_file -format db mr74125_wc_vmin_125c
-close_lib -all
-create_fusion_lib -dbs $Synopsys_PD_db_file -lefs $Synopsys_PD_lef_file -technology $cln28ht_tech_file Synopsys_PD
+create_fusion_lib -dbs [list \
+    $Synopsys_PD_db_bc_vmax_0c \
+    $Synopsys_PD_db_bc_vmax_125c \
+    $Synopsys_PD_db_bc_vmax_25c \
+    $Synopsys_PD_db_bc_vmax_m40c \
+    $Synopsys_PD_db_ffg_vmax_125c \
+    $Synopsys_PD_db_tc_vtyp_0c \
+    $Synopsys_PD_db_tc_vtyp_125c \
+    $Synopsys_PD_db_tc_vtyp_25c \
+    $Synopsys_PD_db_tc_vtyp_85c \
+    $Synopsys_PD_db_tc_vtyp_m40c \
+    $Synopsys_PD_db_wc_vmin_0c \
+    $Synopsys_PD_db_wc_vmin_125c \
+    $Synopsys_PD_db_wc_vmin_25c \
+    $Synopsys_PD_db_wc_vmin_m40c \
+    ] -lefs $Synopsys_PD_lef_file -technology $cln28ht_tech_file Synopsys_PD
 save_fusion_lib Synopsys_PD
 close_fusion_lib Synopsys_PD
 
 # Synopsys VM
-read_lib $Synopsys_VM_lib_file
-write_lib -output $Synopsys_VM_db_file -format db mr74140_wc_vmin_125c
-close_lib -all
-create_fusion_lib -dbs $Synopsys_VM_db_file -lefs $Synopsys_VM_lef_file -technology $cln28ht_tech_file Synopsys_VM
+create_fusion_lib -dbs [list \
+    $Synopsys_VM_db_bc_vmax_0c \
+    $Synopsys_VM_db_bc_vmax_125c \
+    $Synopsys_VM_db_bc_vmax_25c \
+    $Synopsys_VM_db_bc_vmax_m40c \
+    $Synopsys_VM_db_ffg_vmax_125c \
+    $Synopsys_VM_db_tc_vtyp_0c \
+    $Synopsys_VM_db_tc_vtyp_125c \
+    $Synopsys_VM_db_tc_vtyp_25c \
+    $Synopsys_VM_db_tc_vtyp_85c \
+    $Synopsys_VM_db_tc_vtyp_m40c \
+    $Synopsys_VM_db_wc_vmin_0c \
+    $Synopsys_VM_db_wc_vmin_125c \
+    $Synopsys_VM_db_wc_vmin_25c \
+    $Synopsys_VM_db_wc_vmin_m40c \
+    ] -lefs $Synopsys_VM_lef_file -technology $cln28ht_tech_file Synopsys_VM
 save_fusion_lib Synopsys_VM
 close_fusion_lib Synopsys_VM
 

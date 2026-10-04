@@ -107,3 +107,8 @@ doc/tex/*.aux
 doc/tex/*.out 
 doc/tex/*.toc
 doc/tex/*.synctex.gz
+
+# Spyglass lint removal
+.vcstPref
+novas.conf
+novas.rc

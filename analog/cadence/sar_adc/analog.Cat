@@ -1,0 +1,8 @@
+TDMCHECKPOINT="1.0"
+keepEmptyCategory type="unknown"
+sar_adc/carray_8b type="cell"
+sar_adc/cdac_8b type="cell"
+sar_adc/comparator type="cell"
+sar_adc/inverter type="cell"
+sar_adc/mim_cap_adc type="cell"
+sar_adc/switch_adc type="cell"

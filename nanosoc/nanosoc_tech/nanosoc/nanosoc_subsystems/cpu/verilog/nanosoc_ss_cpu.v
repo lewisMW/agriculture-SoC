@@ -32,7 +32,7 @@ module nanosoc_ss_cpu #(
     parameter [31:0] ROMTABLE_BASE = 32'hE00FF003,  // Defaultly Points to Core ROM Table
     
     // Bootrom 0 Parameters
-    parameter    BOOTROM_ADDR_W    = 10,  // Size of Bootrom (Based on Address Width) - Default 1KB
+    parameter    BOOTROM_ADDR_W    = 11,  // Size of Bootrom (Based on Address Width) - Default 2KB
     
     // IMEM 0 Parameters
     parameter    IMEM_RAM_ADDR_W   = 14,          // Width of IMEM RAM Address - Default 16KB

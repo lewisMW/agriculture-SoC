@@ -1,0 +1,218 @@
+//Verilog-AMS HDL for "adc_tb_lib", "tb_cdac_8b_stimuli", "verilogams"
+// ------------------------------------------------------------
+// Module: tb_cdac_8b_stimuli
+// Description:
+//   Stimuli block for 8-bit capacitive DAC testbench.
+//   Drives vin, sample, ctl[7:0], ctl_dum, vdd, vss.
+//
+//   Test sequence:
+//     Phase 1: Sample mid-rail (vin = 0.9V)
+//     Phase 2: Sequential code sweep  ctl = 255 -> 0
+//     Phase 3: Re-sample mid-rail
+//     Phase 4: SAR-order sweep (MSB-first binary search)
+//              repeated for vin = VIN_LOW, VIN_MID, VIN_HIGH
+//              vin is sampled at VDD; compare_voltage holds
+//              the target for the bit-trial decision.
+//
+// Connections (all outputs from this block):
+//   vin, vdd, vss  -- electrical
+//   sample, ctl, ctl_dum -- logic (reg)
+//
+// Parameters:
+//   VDD          supply voltage                    (default 1.8V)
+//   VIN_MID      mid-rail sample voltage            (default 0.9V)
+//   VIN_LOW      quarter-rail SAR test voltage      (default 0.45V)
+//   VIN_HIGH     upper SAR test voltage             (default 1.6V)
+//   T_SAMPLE     sample phase hold time             (default 100ns)
+//   T_SETTLE     settle time per DAC code           (default 50ns)
+//   T_SAR_STEP   settle time per SAR bit trial      (default 50ns)
+//
+// Notes:
+//   - Delays use #(T_xxx * 1e9) assuming `timescale 1ns/1ps.
+//   - vin_level is a real variable bridging the digital initial
+//     block to the analog V(vin) source driver.
+//   - compare_voltage holds the expected conversion target for
+//     each SAR trial; the bit decision compares V(vout) against
+//     it directly, standing in for the comparator output.
+//
+// Author: Hee
+// Date: 2026-04
+// ------------------------------------------------------------
+`include "constants.vams"
+`include "disciplines.vams"
+
+module tb_cdac_8b_stimuli (
+    vin, vout,
+    sample, ctl, ctl_dum,
+    vdd, vss
+);
+
+    // ----------------------------------------------------------------
+    // Port declarations
+    // ----------------------------------------------------------------
+    output vin;
+    inout  vdd, vss;
+    input  vout;        // observe only -- no drive from this block
+    output sample, ctl_dum;
+    output [7:0] ctl;
+
+    electrical vin, vout, vdd, vss;
+    reg sample, ctl_dum;
+    reg [7:0] ctl;
+
+    // ----------------------------------------------------------------
+    // Parameters
+    // ----------------------------------------------------------------
+    parameter real VDD        = 1.8;    // V
+    parameter real VIN_MID    = 0.9;    // V  -- mid-rail sample voltage
+    parameter real VIN_LOW    = 0.45;   // V  -- quarter-rail SAR test voltage
+    parameter real VIN_HIGH   = 1.6;    // V  -- upper SAR test voltage
+    parameter real T_SAMPLE   = 100e-9; // s  -- sample phase hold time
+    parameter real T_SETTLE   = 50e-9;  // s  -- settle time per DAC code
+    parameter real T_SAR_STEP = 50e-9;  // s  -- settle time per SAR bit trial
+
+    // ----------------------------------------------------------------
+    // Internal variables
+    // ----------------------------------------------------------------
+    real vin_level;       // bridges initial block to analog V(vin) driver
+    real compare_voltage; // target voltage for SAR bit-trial decision
+
+    // ----------------------------------------------------------------
+    // Analog block: DC voltage sources
+    // V(vdd,vss) is a fixed rail; V(vin,vss) tracks vin_level,
+    // which is updated by the digital initial block each phase.
+    // ----------------------------------------------------------------
+    analog begin
+        V(vdd, vss) <+ VDD;
+        V(vin, vss) <+ vin_level;
+    end
+
+    // ----------------------------------------------------------------
+    // Digital stimulus
+    // ----------------------------------------------------------------
+    integer i;          // loop counter for sequential sweep
+    integer bit_k;      // bit index for SAR sweep (7 downto 0)
+    integer sar_vin;    // loop index over SAR input voltages (0,1,2)
+
+    reg [7:0] sar_result; // accumulates bit decisions during SAR sweep
+
+    initial begin
+        // ----- safe initial state -----
+        sample        = 1'b0;
+        ctl           = 8'h00;
+        ctl_dum       = 1'b0;
+        vin_level     = VIN_MID;
+        compare_voltage = VIN_MID;
+
+        // ============================================================
+        // PHASE 1: Sample mid-rail
+        // sample=1 closes the switch, connecting vin to vout.
+        // ctl=0x00 holds all bottom plates at vdd (after inversion).
+        // Top plate charges to VIN_MID during T_SAMPLE.
+        // ============================================================
+        $display("[%0t] === Phase 1: Sampling vin = %.3fV ===", $realtime, VIN_MID);
+        vin_level = VIN_MID;
+        ctl       = 8'h00;
+        ctl_dum   = 1'b0;
+        sample    = 1'b1;
+        #(T_SAMPLE * 1e9);
+
+        // ============================================================
+        // PHASE 2: Sequential sweep  ctl = 0xFF -> 0x00
+        // sample=0 opens the switch; top plate floats.
+        // ctl decrements each step, exercising the full code range.
+        // Each code is held for T_SETTLE to allow charge redistribution
+        // before vout is sampled for display.
+        // ============================================================
+        $display("[%0t] === Phase 2: Sequential sweep 255->0 ===", $realtime);
+        sample = 1'b0;
+        #10; // guard delay -- ensures switch is fully open before sweep
+
+        for (i = 0; i <= 255; i = i + 1) begin
+            ctl = 255 - i[7:0];
+            #(T_SETTLE * 1e9);
+            $display("[%0t] SEQ  ctl=0x%02H  vout=%.6fV",
+                      $realtime, ctl, $itor($rtoi(V(vout)*1e6))*1e-6);
+        end
+
+        // ============================================================
+        // PHASE 3: Re-sample mid-rail
+        // Resets the charge on the top plate back to VIN_MID before
+        // the SAR sweep. ctl=0xFF so all bottom plates start at vss
+        // (after inversion), consistent with the SAR initial state.
+        // ============================================================
+        $display("[%0t] === Phase 3: Re-sampling vin = %.3fV ===", $realtime, VIN_MID);
+        ctl       = 8'hff;
+        vin_level = VIN_MID;
+        sample    = 1'b1;
+        #(T_SAMPLE * 1e9);
+
+        // ============================================================
+        // PHASE 4: SAR-order sweep -- MSB-first binary search
+        //
+        // Repeated for three input voltages: VIN_LOW, VIN_MID, VIN_HIGH.
+        // For each conversion:
+        //   - vin is sampled at VDD (switch closed, ctl=0x00)
+        //   - compare_voltage holds the actual target for bit decisions
+        //   - switch opens; SAR loop runs 8 bit trials MSB first
+        //
+        // Each bit trial:
+        //   1. Tentatively set bit k in sar_result
+        //   2. Apply sar_result to ctl -- DAC redistributes charge
+        //   3. Wait T_SAR_STEP for vout to settle
+        //   4. Decision: if V(vout) <= compare_voltage, DAC overshot
+        //                -- clear bit k; otherwise keep it
+        //
+        // This mirrors the comparator decision in the full SAR loop.
+        // V(vout) is read directly here as the comparator is not
+        // instantiated in this testbench.
+        // ============================================================
+        for (sar_vin = 0; sar_vin <= 2; sar_vin = sar_vin + 1) begin
+
+            // Select the comparison target for this trial
+            case (sar_vin)
+                0: compare_voltage = VIN_LOW;
+                1: compare_voltage = VIN_MID;
+                2: compare_voltage = VIN_HIGH;
+            endcase
+            vin_level = VDD; // sample at full rail; DAC redistributes relative to this
+
+            $display("[%0t] === Phase 4 [sar_vin=%0d]: Sampling vin=%.3fV, target=%.3fV ===",
+                      $realtime, sar_vin, vin_level, compare_voltage);
+
+            ctl    = 8'h00;
+            sample = 1'b1;
+            #(T_SAMPLE * 1e9);
+
+            // Open switch -- begin conversion
+            sample     = 1'b0;
+            sar_result = 8'h00;
+            #10; // guard delay -- switch fully open before first bit trial
+
+            for (bit_k = 7; bit_k >= 0; bit_k = bit_k - 1) begin
+                // Tentatively assert this bit
+                sar_result[bit_k] = 1'b1;
+                ctl = sar_result;
+                #(T_SAR_STEP * 1e9);
+
+                // Bit decision: V(vout) <= compare_voltage means the
+                // DAC output has met or exceeded the input -- clear the bit
+                if (V(vout) <= compare_voltage) begin
+                    sar_result[bit_k] = 1'b0;
+                    ctl = sar_result;
+                end
+
+                //$display("[%0t] SAR  target=%.3fV  bit=%0d  result=0x%02H  vout=%.6fV",
+                //          $realtime, compare_voltage, bit_k, ~sar_result,
+                //          $itor($rtoi(V(vout)*1e6))*1e-6);
+            end
+            sar_result = ~sar_result;
+            $display("[%0t] SAR  target=%.3fV  FINAL code=0x%02H (%0d/255)",
+                      $realtime, compare_voltage, sar_result, sar_result);
+        end
+
+        $display("[%0t] === Simulation complete ===", $realtime);
+        $finish;
+    end
+
+endmodule

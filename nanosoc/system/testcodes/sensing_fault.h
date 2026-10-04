@@ -6,7 +6,7 @@
  * The CMSDK startup installs only a WEAK HardFault_Handler that dead-loops
  * (`b .`), so any unexpected bus fault would HANG the device forever (see
  * pslverr_test / TEST_RUNBOOK §3.5). The known RTC hang vector is already gone
- * at the source: rtc_control now inserts APB wait states instead of returning
+ * at the source: rtc_control_2 now inserts APB wait states instead of returning
  * PSLVERR when a passthrough access collides with an autonomous arm cycle, so an
  * unguarded RTC read can no longer fault the CPU. This handler is the *backstop*
  * for any OTHER unexpected bus fault: instead of hanging, it requests a

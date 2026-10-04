@@ -10,6 +10,7 @@
 #-----------------------------------------------------------------------------
 # Each Repo needs to have its branch set manually in here - they will defaultly be checked out to main
 
+hostio4: main
 nanosoc/slcorem0_tech: main
 nanosoc/sldma230_tech: main
 nanosoc/socdebug_tech: main

@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Created by fc compare_floorplans on Mon Jun 16 16:08:36 2025
+# Created by fc compare_floorplans on Wed Nov  5 12:35:44 2025
 #
 # DO NOT EDIT - automatically generated file
 #
@@ -8,14 +8,51 @@
 
 START nanosoc_chip_pads
  MACROS
-  u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom { {135.0000 1436.4500} {161.5650 1531.5000} }
+  u_nanosoc_chip/u_system/u_ss_cpu/u_region_bootrom_0/u_bootrom_cpu_0/u_bootrom/u_sl_rom { {421.5250 1436.4500} {448.0900 1531.5000} }
   u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram/genblk1.u_sram { {522.8000 1187.1050} {712.3350 1359.2850} }
   u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram/genblk1.u_sram { {522.8000 1359.2850} {712.3350 1531.4650} }
   u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram/genblk1.u_sram { {786.4450 1359.3200} {975.9800 1531.5000} }
   u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram/genblk1.u_sram { {786.4450 1187.1400} {975.9800 1359.3200} }
+  u_nanosoc_chip/u_system/u_ss_systemctrl/u_region_sysio/u_nanosoc_sysio_snps_pvt_ss/gen_snps_PVT_ts0.u_snps_PVT_ts0/u_synopsys_ts { {135.0000 1331.5000} {375.0000 1531.5000} }
+  u_nanosoc_chip/u_system/u_ss_systemctrl/u_region_sysio/u_nanosoc_sysio_snps_pvt_ss/gen_snps_PVT_pd0.u_snps_PVT_pd0/u_synopsys_pd { {151.4300 1231.6250} {236.4300 1306.6250} }
+  uBONDPAD_P0_00 { {887.1100 0.0000} {907.1100 84.7100} }
+  uBONDPAD_P0_01 { {773.2350 0.0000} {793.2350 84.7100} }
+  uBONDPAD_VSS_1 { {659.3650 0.0000} {679.3650 84.7100} }
+  uBONDPAD_VDD_1 { {545.4900 0.0000} {565.4900 84.7100} }
+  uBONDPAD_SE_I { {431.6200 0.0000} {451.6200 84.7100} }
+  uBONDPAD_VDDACC_1 { {317.7450 0.0000} {337.7450 84.7100} }
+  uBONDPAD_P0_02 { {203.8750 0.0000} {223.8750 84.7100} }
+  uBONDPAD_TEST_I { {203.8750 1581.7900} {223.8750 1666.5000} }
+  uBONDPAD_SWDCK_I { {317.7450 1581.7900} {337.7450 1666.5000} }
+  uBONDPAD_VDD_3 { {431.6200 1581.7900} {451.6200 1666.5000} }
+  uBONDPAD_VSS_3 { {545.4900 1581.7900} {565.4900 1666.5000} }
+  uBONDPAD_VDDIO_3 { {659.3650 1581.7900} {679.3650 1666.5000} }
+  uBONDPAD_P1_00 { {773.2350 1581.7900} {793.2350 1666.5000} }
+  uBONDPAD_P1_01 { {887.1100 1581.7900} {907.1100 1666.5000} }
+  uBONDPAD_P0_04 { {0.0000 202.8100} {84.7100 222.8100} }
+  uBONDPAD_P0_05 { {0.0000 315.6150} {84.7100 335.6150} }
+  uBONDPAD_P0_03 { {0.0000 428.4250} {84.7100 448.4250} }
+  uBONDPAD_VDDACC_0 { {0.0000 541.2300} {84.7100 561.2300} }
+  uBONDPAD_VSS_0 { {0.0000 654.0400} {84.7100 674.0400} }
+  uBONDPAD_CLK_I { {0.0000 766.8450} {84.7100 786.8450} }
+  uBONDPAD_VDD_0 { {0.0000 879.6550} {84.7100 899.6550} }
+  uBONDPAD_VDDIO_0 { {0.0000 992.4600} {84.7100 1012.4600} }
+  uBONDPAD_SWDIO_IO { {0.0000 1105.2700} {84.7100 1125.2700} }
+  uBONDPAD_VSSIO_0 { {0.0000 1218.0750} {84.7100 1238.0750} }
+  uBONDPAD_P0_06 { {0.0000 1330.8850} {84.7100 1350.8850} }
+  uBONDPAD_P0_07 { {0.0000 1443.6900} {84.7100 1463.6900} }
+  uBONDPAD_P1_04 { {1026.2700 1443.6900} {1110.9800 1463.6900} }
+  uBONDPAD_P1_05 { {1026.2700 1330.8850} {1110.9800 1350.8850} }
+  uBONDPAD_NRST_I { {1026.2700 1218.0750} {1110.9800 1238.0750} }
+  uBONDPAD_VDDIO_2 { {1026.2700 1105.2700} {1110.9800 1125.2700} }
+  uBONDPAD_VSS_2 { {1026.2700 992.4600} {1110.9800 1012.4600} }
+  uBONDPAD_VDD_2 { {1026.2700 879.6550} {1110.9800 899.6550} }
+  uBONDPAD_VDDACC_2 { {1026.2700 766.8450} {1110.9800 786.8450} }
+  uBONDPAD_P1_02 { {1026.2700 654.0400} {1110.9800 674.0400} }
+  uBONDPAD_P1_03 { {1026.2700 541.2300} {1110.9800 561.2300} }
+  uBONDPAD_VSSIO_1 { {1026.2700 428.4250} {1110.9800 448.4250} }
+  uBONDPAD_P1_06 { {1026.2700 315.6150} {1110.9800 335.6150} }
  PINS
-  VDDIO { {555.4900 833.2500} {555.4901 833.2501} }
-  VSSIO { {555.4900 833.2500} {555.4901 833.2501} }
   SE { {433.5950 70.0500} {449.6450 73.0500} }
   CLK { {70.0500 768.8200} {73.0500 784.8700} }
   TEST { {205.8500 1593.4500} {221.9000 1596.4500} }

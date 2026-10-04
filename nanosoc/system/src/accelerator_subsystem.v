@@ -86,10 +86,36 @@ module accelerator_subsystem #(
   // Interrupts
   output wire   [IRQ_NUM-1:0]      EXP_IRQ
 );
+
+
+wire [SYS_DATA_W-1:0] PWDATA;
+wire PWRITE;
+wire [SYS_DATA_W-1:0] PRDATA;
+wire [ACC_ADDR_W-1:0] PADDR;
+wire PREADY;
+wire PSEL;
+wire PENABLE;
+wire PSLVERR;
+wire [3:0] PSTRB;
+wire [2:0] PPROT;
+wire APBACTIVE;
   
   //-------------------------------------------
   // Instantiate your accelerator/wrapper here
   //-------------------------------------------
+  // APB bridge <-> wrapper nets (declared before first use - strict Verilog)
+  wire [SYS_DATA_W-1:0] PWDATA;
+  wire PWRITE;
+  wire [SYS_DATA_W-1:0] PRDATA;
+  wire [ACC_ADDR_W-1:0] PADDR;
+  wire PREADY;
+  wire PSEL;
+  wire PENABLE;
+  wire PSLVERR;
+  wire [3:0] PSTRB;
+  wire [2:0] PPROT;
+  wire APBACTIVE;
+
   cmsdk_ahb_to_apb  #(
   .ADDRWIDTH(SYS_ADDR_W),
   .REGISTER_RDATA(1),
@@ -126,17 +152,6 @@ module accelerator_subsystem #(
   /*input  wire*/.PREADY(PREADY),    // Ready for each APB slave
   /*input  wire*/.PSLVERR(PSLVERR));  // Error state for each APB slave
 
-wire [SYS_DATA_W-1:0] PWDATA;
-wire PWRITE;
-wire [SYS_DATA_W-1:0] PRDATA;
-wire [ACC_ADDR_W-1:0] PADDR;
-wire PREADY;
-wire PSEL;
-wire PENABLE;
-wire PSLVERR;
-wire [3:0] PSTRB;
-wire [2:0] PPROT;
-wire APBACTIVE;
 
 // ---------------------------------------------------------------------------
 // RTC support signals for the sensing peripheral (mirrors agriculture_soc.v).
@@ -154,27 +169,9 @@ wire nPOR = HRESETn;
 
 // ~1 Hz tick for the RTC, divided from HCLK. Reset from HRESETn so clk1hz_ctr /
 // clk1hz_reg initialise cleanly (no X-propagation) and CLK1HZ starts toggling
-// immediately after reset deasserts. CLK1HZ_DIV sets the half-period divide:
-// CLK1HZ = HCLK / (2 * CLK1HZ_DIV).
-//
-// Three-way selection (priority order):
-//   1. `SENSING_CLK1HZ_DIV — explicit override for any flow (pass as a
-//      verilog_define / +define+SENSING_CLK1HZ_DIV=<n>).
-//   2. `SYNTHESIS — defined automatically by Vivado synthesis (and Genus/DC):
-//      true 1 Hz for the ZCU104 FPGA build, where HCLK = PS pl_clk0 =
-//      39.473682 MHz (the block design requests 40 MHz; 39.473682 is the
-//      actual IOPLL output — see fpga/targets/pynq_zcu104 nanosoc_design.tcl,
-//      PSU__CRL_APB__PL0_REF_CTRL__ACT_FREQMHZ). If the fabric clock ever
-//      changes, or for an ASIC target with a different HCLK, use override (1).
-//   3. Simulation default (50): CLK1HZ = HCLK/100, so RTC "seconds" pass fast
-//      enough for testbenches/firmware sims to see autonomous samples.
-`ifdef SENSING_CLK1HZ_DIV
-localparam [31:0] CLK1HZ_DIV = `SENSING_CLK1HZ_DIV;
-`elsif SYNTHESIS
-localparam [31:0] CLK1HZ_DIV = 32'd19_736_841; // 39_473_682 Hz / 2 -> 1 Hz
-`else
-localparam [31:0] CLK1HZ_DIV = 32'd50;         // sim-fast: CLK1HZ = HCLK/100
-`endif
+// immediately after reset deasserts. CLK1HZ_DIV sets the half-period divide;
+// this value is sim-friendly. For real hardware set it to (HCLK_hz / 2).
+localparam [31:0] CLK1HZ_DIV = 32'd50;
 reg  [31:0] clk1hz_ctr;
 reg         clk1hz_reg;
 always @(posedge HCLK or negedge HRESETn) begin
@@ -190,7 +187,7 @@ always @(posedge HCLK or negedge HRESETn) begin
 end
 wire clk1hz = clk1hz_reg;
 
-adc_apb_wrapper_rev1 #(
+adc_apb_wrapper_rev2 #(
    .ADDR_WIDTH(ACC_ADDR_W),
    .DATA_WIDTH(SYS_DATA_W)
 ) sensor_wrapper (

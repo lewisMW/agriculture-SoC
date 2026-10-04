@@ -13,7 +13,7 @@ import argparse
 import os
 
 # Files with these extensions are included in compiled filelists
-verilog_extensions = (".v", ".sv", ".vh",".vams")
+verilog_extensions = (".v", ".sv", ".vh",".vams",".vlib")
 
 # Exclude paths including these strings
 filelist_exclusions = ["cortex","pl230"]
@@ -107,9 +107,9 @@ def read_list(filelist, first, incdirs, args):
                                         compiled_filelist.append("read_hdl " + str(env_var_substitute(line_list[1], tcl=True)).replace("$","$env")+"/"+str(file))
                                 elif args.dc ==True:
                                     if file.endswith(".sv"):
-                                        compiled_filelist.append("analyze -format sverilog -lib WORK -define POWER_PINS " + str(env_var_substitute(line_list[1], tcl=True)).replace("$","$env")+"/"+str(file))
+                                        compiled_filelist.append("analyze -format sverilog -lib WORK " + str(env_var_substitute(line_list[1], tcl=True)).replace("$","$env")+"/"+str(file))
                                     else:
-                                        compiled_filelist.append("analyze -format verilog -lib WORK -define POWER_PINS " + str(env_var_substitute(line_list[1], tcl=True)).replace("$","$env")+"/"+str(file))
+                                        compiled_filelist.append("analyze -format verilog -lib WORK " + str(env_var_substitute(line_list[1], tcl=True)).replace("$","$env")+"/"+str(file))
                                 elif args.makefile == True:
                                     compiled_filelist.append("VERILOG_SOURCES += " + str(env_var_substitute((line_list[1])+"/"+str(file), synthesis=True)))
                                 else:
@@ -125,9 +125,9 @@ def read_list(filelist, first, incdirs, args):
                                         compiled_filelist.append("read_hdl " + str(env_var_substitute(line_list[1], tcl=True)).replace("$","$env")+"/"+str(file))
                                 elif args.dc == True:
                                     if file.endswith(".sv"):
-                                        compiled_filelist.append("analyze -format sverilog -lib WORK -define POWER_PINS " + str(env_var_substitute(line_list[1], tcl=True)).replace("$","$env")+"/"+str(file))
+                                        compiled_filelist.append("analyze -format sverilog -lib WORK " + str(env_var_substitute(line_list[1], tcl=True)).replace("$","$env")+"/"+str(file))
                                     else:
-                                        compiled_filelist.append("analyze -format verilog -lib WORK -define POWER_PINS " + str(env_var_substitute(line_list[1], tcl=True)).replace("$","$env")+"/"+str(file))
+                                        compiled_filelist.append("analyze -format verilog -lib WORK " + str(env_var_substitute(line_list[1], tcl=True)).replace("$","$env")+"/"+str(file))
                                 elif args.makefile == True:
                                     compiled_filelist.append("VERILOG_SOURCES += " + str(line_list[1]).replace("$","$env")+"/"+str(file))
                                 else:
@@ -136,6 +136,16 @@ def read_list(filelist, first, incdirs, args):
                                 if (file.endswith(".v") or (file.endswith(".sv") and (args.html == False))):
                                     compiled_filelist.append(line_list[1]+"/"+str(file))
             
+            elif line_list[0].startswith("+libext+"):
+                # +libext+ directives are simulator compile arguments, not source files
+                if args.makefile:
+                    compiled_filelist.append("COMPILE_ARGS += " + line_list[0])
+                elif args.vfiles:
+                    compiled_filelist.append(line_list[0])
+                # Skip for tcl mode; pass through for plain mode
+                elif not args.tcl:
+                    compiled_filelist.append(line_list[0])
+
             elif line_list[0].startswith("+incdir+"):
                 # Append to filelist
                 if args.absolute == True:
@@ -226,37 +236,44 @@ def read_list(filelist, first, incdirs, args):
     if len(hdl_files) > 0:
         # temp_str = 'add_files -norecurse -scan_for_includes "'
         if args.genus == True:
-            if hdl_files[0].endswith(".sv"):
-                temp_str = f'read_hdl -define POWER_PINS -language sv '
-            else:
-                temp_str = f'read_hdl -define POWER_PINS '
+            for files in hdl_files:
+                if files.endswith(".sv"):
+                    temp_str = f'read_hdl -language sv '
+                else:
+                    temp_str = f'read_hdl '
+                temp_str += files + " "
+                compiled_filelist.append(temp_str)
+        elif args.dc ==True:   
+            temp_str = ''
+            defs = ''
+            for defines in args.defines:
+                defs += ' -define ' + defines.strip('+define+')
+                #print(defines.strip('+define+'))
             for file in hdl_files:
-                temp_str += file + " "
-            compiled_filelist.append(temp_str)
-        elif args.dc ==True:
-            if hdl_files[0].endswith(".sv"):
-                temp_str = f'analyze -format sverilog -lib WORK -define POWER_PINS [list '
-            else:
-                temp_str = f'analyze -format verilog -lib WORK -define POWER_PINS [list '
-            for file in hdl_files:
-                temp_str += file + " "
-            temp_str += "]"
+                if file.endswith(".sv"):
+                    temp_str += f'analyze -format sverilog ' + defs + ' ' + file + '\n'
+                else:
+                    temp_str += f'analyze -format verilog ' + defs + ' ' + file + '\n'
             compiled_filelist.append(temp_str)
         elif args.formality == True:
             if hdl_files[0].endswith(".sv"):
-                temp_str = f'read_sverilog -define POWER_PINS -r [list '
+                temp_str = f'read_sverilog -r [list '
             else:
-                temp_str = f'read_verilog -define POWER_PINS -r [list '
+                temp_str = f'read_verilog -r [list '
             for file in hdl_files:
                 temp_str += file + " "
             temp_str += "]"
             compiled_filelist.append(temp_str)
         else:
             temp_str = f'add_files -norecurse -force -copy_to {args.rtldir} "'
+            n_inc=0
             for file in hdl_files:
-                temp_str += file + " "
-            temp_str += '"'
-            compiled_filelist.append(temp_str)
+                if not(file.startswith("+libext+")):
+                    temp_str += file + " "
+                    n_inc=+1
+            if(n_inc!=0):
+                temp_str += '"'
+                compiled_filelist.append(temp_str)
 
     return compiled_filelist, first, incdirs
 
@@ -308,7 +325,8 @@ def filelist_compile(args):
     if args.tcl == True:
         if args.genus==False:
         # filelist_str += incdir_compile(args, incdirs) + "\n"
-            filelist_str += defines_compile(args)
+            if args.dc==False:
+                filelist_str += defines_compile(args)
     for path in filelist: filelist_str += path
     filelist_str += incdir_compile(args, incdirs) + "\n"
         # filelist_str += defines_compile(args)

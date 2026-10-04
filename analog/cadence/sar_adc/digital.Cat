@@ -1,0 +1,4 @@
+TDMCHECKPOINT="1.0"
+keepEmptyCategory type="unknown"
+sar_adc/sarlogic type="cell"
+sar_adc/sr_latch type="cell"

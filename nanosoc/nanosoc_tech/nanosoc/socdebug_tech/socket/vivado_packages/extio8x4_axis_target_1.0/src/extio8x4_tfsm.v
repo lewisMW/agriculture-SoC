@@ -7,7 +7,8 @@
 //
 // David Flynn (d.w.flynn@soton.ac.uk)
 //
-// Copyright (c) 2024, SoC Labs (www.soclabs.org)
+// Copyright (c) 2024-26, SoC Labs (www.soclabs.org)
+// status flag polarity changed for hostio4 multi-SoC compatability
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -146,7 +147,7 @@ begin
     cmd4 <= iodata4_i[3:0];
 end
 
-wire [3:0] fifo_stat = ~{req_tx1, req_rx1, req_tx0, req_rx0 };
+wire [3:0] fifo_stat = {req_tx1, req_rx1, req_tx0, req_rx0 };
 // IO Write Data
 assign iodata4_o = ({4{fif_state}} & fifo_stat)
                  | ({4{wdh_state}} & ((cmd4[1]) ? rx1_axis_wdata8[7:4] : rx0_axis_wdata8[7:4]))

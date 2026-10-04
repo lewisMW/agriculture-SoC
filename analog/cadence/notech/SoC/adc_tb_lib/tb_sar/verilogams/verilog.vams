@@ -1,0 +1,88 @@
+// Verilog-AMS HDL for "adc_tb_lib", "tb_sar" "verilogams"
+//
+// Testbench: tb_sar
+//	Two phases testbench for the full SAR ADC system
+//	Phase 1: DC ramp sweep for DNL/INL (static linearity)
+//	Phase 2: Sine wave input for SNDR/ENOB (dynamic)
+//
+// Supply:	VDD=1.8V, VSS=0V
+// Fs:		100 kHz (Tclk=10us)
+// Sar needs 10 clk cycles per conversion (8 bits + sample + valid)
+// so Tconv=1us
+//
+// Phase 1: 256 ramp steps, one conversion per step
+// Phase 2: 512 conversions, coherent sine
+//			fin = (29/512) * fs = 5664 Hz (29 and 512 coprime)
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module tb_sar_stimuli (clk, en, cal, rstn, valid, result, vp, vn, vdd_net, vss_net);
+	// Parameters
+	parameter real VDD      = 1.8;
+	parameter real VSS      = 0.0;
+	parameter real VREF     = 1.8;          // full-scale reference
+	parameter real TCLK     = 1e-6;        // 10 cycles per conversion
+	parameter real TCONV    = 10e-6;       // 100 kHz clock period for sampling
+	parameter real TRAMP    = 256*10e-6;   // phase 1 total time
+    
+	// Coherent sine: fin = (29/512) * fs
+	parameter real FIN      = 29.0/512.0 * 100e3;
+	parameter real VAMP     = 0.8;          // sine amplitude (V)
+	parameter real VCM      = 0.9;          // common mode = VDD/2
+
+	// Electrical nodes
+	electrical vdd_net, vss_net;
+	electrical vp_net, vn_net;
+
+	// Digital signals
+	reg clk, en, cal, rstn;
+	wire valid;
+	wire [7:0] result;
+
+	// Phase control
+	integer phase; // 1=ramp, 2=sine
+
+	// Result log
+	integer code_count[0:255]; // histogram for DNL/INL
+	integer conv_index;
+	integer i;
+	integer fid;
+	real ramp_step;
+
+	// Supply sources
+	// vsource #(.dc(1.8)) u_vdd (.p(vdd_net), .n(vss_net));
+
+	// Differential input source
+	// Controlled by phase register
+	// vp = VCM + input_signal
+	// vn = VCM - input_signal (differential)
+	electrical ramp_node, sine_node;
+
+	analog begin
+		// Ramp voltage sweeps 0 to VREF across phase 1
+		// Driven by $abstime, resets at phase 2
+		if (phase==1) begin
+			V(vp_net) <+ VCM + ramp_step;
+			V(vn_net) <+ VCM - ramp_step;
+		end else begin
+			// Coherent sine for phase 2
+			V(vp_net) <+ VCM + VAMP * $sin(2.0*`M_PI*FIN*$abstime);
+			V(vn_net) <+ VCM - VAMP * $sin(2.0*`M_PI*FIN*$abstime);
+
+	// Clock generation: 1000 kHz
+	initial begin
+		clk = 0;
+	end
+	always #(TCLK/2) clk = ~clk;
+
+	// Stimulus
+	initial begin
+		// Initialise
+		en = 0;
+		cal = 0;
+		rstn = 0;
+		phase = 1;
+		ramp_step = -VAMP;
+		
+endmodule

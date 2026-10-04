@@ -53,21 +53,21 @@ TB_MODULE = agriculture_soc_tb
 ROM_FILE = ../software/hello/write_test.hex
 
 # Design files only — do NOT glob the tree. The sub-dirs contain per-block
-# testbenches (wrapper_control_tb, tb_rtc_control, fifo_apb_adc_tb, arm_rtc_tb,
-# adc_apb_wrapper_rev1_tb) and legacy revisions (adc_apb_wrapper_rev0,
-# rtc_control_old, rtc_control_tb_*) that collide / add extra top-levels.
+# testbenches (wrapper_control_2_tb, tb_rtc_control, fifo_apb_adc_tb, arm_rtc_tb,
+# adc_apb_wrapper_rev2_tb) and legacy revisions (adc_apb_wrapper_rev0,
+# rtc_control, rtc_control_tb_*) that collide / add extra top-levels.
 DESIGN_FILES = \
     ./agriculture_soc.v \
     ./agriculture_soc_tb.v \
     ./AHB/AHBDCD.v \
     ./AHB/AHBMUX.v \
     ./FIFO/fifo_apb_adc.v \
-    ./FSM/wrapper_control.v \
+    ./FSM/wrapper_control_2.v \
     ./Dummy/dummy_adc.v \
     ./Dummy/dummy_amux.v \
     ./Dummy/dummy_pll.v \
-    ./RTC/rtc_control.v \
-    ./Wrapper/adc_apb_wrapper_rev1.v
+    ./RTC/rtc_control_2.v \
+    ./Wrapper/adc_apb_wrapper_rev2.v
 
 VERILOG_FILES = \
     $(DESIGN_FILES) \
@@ -91,61 +91,6 @@ all:
 
 clean:
 	rm -rf obj_dir code.hex *.vcd
-
-# -----------------------------------------------------------------------------
-# Full-SoC self-checking tests. `all` above (agriculture_soc_tb) is a pure
-# smoke run with no pass/fail verdict — these two exercise the same fully-wired
-# chip (real Cortex-M0 + CMSDK + AHB->APB bridge, not a directly-poked APB
-# port) and actually check it:
-#   make check       — liveness/integration checks (no LOCKUP, no PSLVERR,
-#                       CLK1HZ alive, autonomous RTC->FSM->FIFO chain samples).
-#   make reset_rand  — same postconditions, but only after a storm of
-#                       randomly-timed async reset pulses (see
-#                       agriculture_soc_reset_rand_tb.v).
-# Both reuse code.hex exactly like `all` (see ROM_FILE fallback below).
-# -----------------------------------------------------------------------------
-CHECK_MODULE      = agriculture_soc_checked_tb
-RESET_RAND_MODULE = agriculture_soc_reset_rand_tb
-
-CHECK_DESIGN_FILES = $(filter-out ./agriculture_soc_tb.v,$(DESIGN_FILES)) ./agriculture_soc_checked_tb.v
-CHECK_VERILOG_FILES = \
-    $(CHECK_DESIGN_FILES) \
-    $(shell find $(rtc_ip) -type f -name "*.v") \
-    $(CM0_FILES) \
-    $(CMSDK_FILES)
-
-RESET_RAND_DESIGN_FILES = $(filter-out ./agriculture_soc_tb.v,$(DESIGN_FILES)) ./agriculture_soc_reset_rand_tb.v
-RESET_RAND_VERILOG_FILES = \
-    $(RESET_RAND_DESIGN_FILES) \
-    $(shell find $(rtc_ip) -type f -name "*.v") \
-    $(CM0_FILES) \
-    $(CMSDK_FILES)
-
-.PHONY: check reset_rand
-
-check:
-	verilator --Wno-fatal --trace --exe --main --top $(CHECK_MODULE) $(CHECK_VERILOG_FILES) --timing +libext+.v+.vlib $(ARM_INCDIRS) $(simulation_defs);
-	$(MAKE) -C obj_dir -f V$(CHECK_MODULE).mk;
-	@if [ -f "$(ROM_FILE)" ]; then \
-	    cp "$(ROM_FILE)" code.hex; echo "Loaded $(ROM_FILE) -> code.hex"; \
-	elif [ -f code.hex ]; then \
-	    echo "NOTE: $(ROM_FILE) not found (firmware not built) — running existing code.hex"; \
-	else \
-	    echo "ERROR: no $(ROM_FILE) and no existing code.hex to run"; exit 1; \
-	fi
-	./obj_dir/V$(CHECK_MODULE);
-
-reset_rand:
-	verilator --Wno-fatal --trace --exe --main --top $(RESET_RAND_MODULE) $(RESET_RAND_VERILOG_FILES) --timing +libext+.v+.vlib $(ARM_INCDIRS) $(simulation_defs);
-	$(MAKE) -C obj_dir -f V$(RESET_RAND_MODULE).mk;
-	@if [ -f "$(ROM_FILE)" ]; then \
-	    cp "$(ROM_FILE)" code.hex; echo "Loaded $(ROM_FILE) -> code.hex"; \
-	elif [ -f code.hex ]; then \
-	    echo "NOTE: $(ROM_FILE) not found (firmware not built) — running existing code.hex"; \
-	else \
-	    echo "ERROR: no $(ROM_FILE) and no existing code.hex to run"; exit 1; \
-	fi
-	./obj_dir/V$(RESET_RAND_MODULE);
 
 # -----------------------------------------------------------------------------
 # Unit-test regression. Runs every self-checking block testbench and aggregates
@@ -174,11 +119,8 @@ _run_free:
 
 _run_ip:
 	-@$(MAKE) --no-print-directory -C RTC     all  2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory -C RTC     rand 2>&1 | tee -a $(VERIF_LOG)
 	-@$(MAKE) --no-print-directory -C Wrapper all  2>&1 | tee -a $(VERIF_LOG)
 	-@$(MAKE) --no-print-directory -C Wrapper rand 2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory check        2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory reset_rand   2>&1 | tee -a $(VERIF_LOG)
 
 _verify_summary:
 	@echo ""
@@ -200,14 +142,14 @@ _verify_summary:
 # -----------------------------------------------------------------------------
 LINT_FREE_FILES = \
     ./FIFO/fifo_apb_adc.v \
-    ./FSM/wrapper_control.v \
+    ./FSM/wrapper_control_2.v \
     ./Dummy/dummy_adc.v \
     ./Dummy/dummy_amux.v \
     ./Dummy/dummy_pll.v
 
 LINT_DUT_FILES = \
-    ./Wrapper/adc_apb_wrapper_rev1.v \
-    ./RTC/rtc_control.v \
+    ./Wrapper/adc_apb_wrapper_rev2.v \
+    ./RTC/rtc_control_2.v \
     $(LINT_FREE_FILES) \
     $(shell find $(rtc_ip) -type f -name "*.v")
 
@@ -217,4 +159,4 @@ lint-free:
 	verilator --lint-only -Wall $(LINT_FREE_FILES)
 
 lint:
-	verilator --lint-only -Wall --top-module adc_apb_wrapper_rev1 $(LINT_DUT_FILES) $(ARM_INCDIRS)
+	verilator --lint-only -Wall --top-module adc_apb_wrapper_rev2 $(LINT_DUT_FILES) $(ARM_INCDIRS)

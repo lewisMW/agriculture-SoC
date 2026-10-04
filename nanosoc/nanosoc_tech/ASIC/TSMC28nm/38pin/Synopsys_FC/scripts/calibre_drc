@@ -1,0 +1,12 @@
+*drcRulesFile: /home/dwn1c21/SoC-Labs/phys_ip/TSMC/28/CMOS/HPC+/pdk/Calibre/drc/calibre.drc
+*drcRunDir: ${SOCLABS_PROJECT_DIR}/nanosoc_tech/ASIC/TSMC28nm/38pin/Synopsys_FC/work/DRC
+*drcLayoutPaths: ${SOCLABS_PROJECT_DIR}/nanosoc_tech/ASIC/TSMC28nm/38pin/Synopsys_FC/outputs/nanosoc_chip_pads.gds
+*drcLayoutPrimary: nanosoc_chip_pads
+*drcResultsFile: DRC_RES.db
+*drcResultsCheckText: 1
+*drcResultsCheckTextValue: ALL
+*drcCellName: 0
+*drcDRCMaxResultsAll: 1
+*drcSummaryFile: DRC.rep
+*drcActiveRecipe: Checks selected in the rules file
+*cmnResolution: 5

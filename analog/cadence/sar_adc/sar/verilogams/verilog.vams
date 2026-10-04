@@ -1,0 +1,118 @@
+//Verilog-AMS HDL for "adc_top_lib", "sar" "verilogams"
+
+// ------------------------------------------------------------
+// Module: sar
+//
+// Description:
+// 	Sar differential architecture for the ADC. This block has the
+// 	full implementation of a sar algorithm with a differential
+//	input. The blocks integrated in this module are:
+//	2x - Ideal switch: connecting the input signal to each dac.
+//	2x - capacitive dac: 8-bit binary weighted capacitive array.
+//	1x - comparator: comparing both dac outputs and sync the differential
+//				output with a clk signal.
+//	1x - SR latch: converting the differential comparator output into a
+//				single output.
+//	1x - SAR FSM: logic controlling the capacitive arrays and 
+//				synchronizing the comparators output with a clk.
+//
+// Function:
+//  Differential SAR ADC algorithm. Converts diff analog input to
+//	8-bit output
+//
+// Assumptions:
+//   - Ideal capacitors (no parasitics)
+//   - No noise
+//
+// Author: Hee
+// Date: 2026-03-05
+// ------------------------------------------------------------
+
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module sar (vp, vn, clk, en, cal, rstn, valid, result, vdd, vss);
+	input vp, vn, clk, en, cal;
+	output valid;
+	output [7:0] result;
+	inout vdd, vss;
+
+	electrical vp, vn, vdd, vss;
+	logic en, cal, rstn;
+	reg valid;
+	reg [7:0] result;
+
+	// Comparator input
+	electrical non_inverting_input, inverting_input;
+	
+	// Comparator output
+	wire outp, outn;
+
+	// Control signals from FSM to CDAC
+	wire sample_ctl;
+	wire [7:0] ctlp, ctln;
+	
+	// Control signals from FSM to comparator
+	wire clkc;
+	wire [4:0] trim, trimb;
+
+	// SR Latch comparator signal to FSM
+	wire comp_out, comp_outn;
+
+	// ----------------------------------------------------------------
+	// Connection to cdacs
+	// ----------------------------------------------------------------
+	cdac_8b cdacp (.vin(vp), 
+				.vout(non_inverting_input), 
+				.sample(sample_ctl),
+				.ctl(ctlp), 
+				.ctl_dum(1'b0), 
+				.vdd(vdd), 
+				.vss(vss));
+
+	cdac_8b cdacn (.vin(vn), 
+				.vout(inverting_input), 
+				.sample(sample_ctl),
+				.ctl(ctln), 
+				.ctl_dum(1'b0), 
+				.vdd(vdd), 
+				.vss(vss));
+
+	// ----------------------------------------------------------------
+	// Connection to comparator
+	// ----------------------------------------------------------------
+	comparator comp (
+				.vp(non_inverting_input), 
+				.vn(inverting_input),
+				.outp(outp), 
+				.outn(outn), 
+				.clk(clkc), 
+				.trim(trim),
+				.trimb(trimb), 
+				.vdd(vdd), 
+				.vss(vss));
+
+	// ----------------------------------------------------------------
+	// Connection to SR LATCH
+	// ----------------------------------------------------------------
+	sr_latch u_latch (.s(outp), .r(outn), .q(comp_out), .qn(compn_out));
+
+	// ----------------------------------------------------------------
+	// Connection to FSM
+	// ----------------------------------------------------------------
+	sarlogic fsm (.clk(clk), 
+				.rstn(rstn),
+				.en(en),
+				.comp(comp_out),
+				.cal(cal),
+				.valid(valid),
+				.result(result),
+				.sample(sample_ctl),
+				.ctlp(ctlp),
+				.ctln(ctln),
+				.trim(trim),
+				.trimb(trimb),
+				.clkc(clkc));
+
+endmodule

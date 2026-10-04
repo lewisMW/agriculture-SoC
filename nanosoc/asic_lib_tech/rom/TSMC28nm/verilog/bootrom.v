@@ -17,10 +17,10 @@ module bootrom #(
     inout VDD,
     inout VSS,
     `endif
-    input  wire CLK,
-    input  wire EN,
-    input  wire [7:0] W_ADDR,
-    output reg [31:0] RDATA 
+    input  wire clk,
+    input  wire en,
+    input  wire [7:0] word_addr,
+    output reg [31:0] out_data
 );
 
     rom_via 
@@ -29,10 +29,10 @@ module bootrom #(
         .VDD(VDD),
         .VSSE(VSS),
         `endif
-        .Q(RDATA),
-        .CLK(CLK),
-        .CEN(!EN),
-        .A(W_ADDR),
+        .Q(out_data),
+        .CLK(clk),
+        .CEN(!en),
+        .A(word_addr),
         .EMA(3'b011),
         .TEN(1'b1),
         .BEN(1'b1),

@@ -20,8 +20,11 @@
 
 // - Top-level testbench - QUICKSTART
 $(SOCLABS_NANOSOC_TECH_DIR)/verif/tb/verilog/nanosoc_tb_qs.v
-$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_axis_target.v
-$(SOCLABS_NANOSOC_TECH_DIR)/extio8x4-axis/rtl/extio8x4_tfsm.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_fsm.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_sync.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_axis_rxport.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_axis_txport.v
 
 // Include NanoSoC Testbench Components
 -f $(SOCLABS_NANOSOC_TECH_DIR)/flist/nanosoc_vip.flist

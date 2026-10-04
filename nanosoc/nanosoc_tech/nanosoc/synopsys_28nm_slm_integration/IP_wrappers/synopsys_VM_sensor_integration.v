@@ -58,9 +58,8 @@ module synopsys_VM_sensor_integration(
 wire vm_enable;
 wire vm_pd;
 wire [7:0] vm_clock_div;
-reg [7:0]  vm_clock_counter;
 wire vm_clkg;
-reg  vm_slow_clock;
+wire  vm_slow_clock;
 wire vm_local_reset;
 
 // vm Signals
@@ -194,18 +193,14 @@ assign vm_enable = data0[1];
 assign vm_sel_vin = data2[3:0];
 // vm Clock generation
 assign vm_clkg = PCLK & vm_enable;
-always @(posedge vm_clkg or negedge PRESETn) begin
-    if(~PRESETn) begin
-        vm_clock_counter <= 8'h00;
-        vm_slow_clock <= 1'b0;
-    end else begin
-        vm_clock_counter <= vm_clock_counter + 1;
-        if(vm_clock_counter == vm_clock_div) begin
-            vm_clock_counter <= 8'h00;
-            vm_slow_clock <= ~vm_slow_clock;
-        end
-    end
-end
+
+pvt_clk_div u_vm_clk_div(
+    .clk_i(vm_clkg),
+    .resetn(PRESETn),
+    .clk_div(vm_clock_div),
+    .clk_o(vm_slow_clock)
+);
+
 
 // CDC for APB write of registers 0 and 2
 always @(posedge vm_slow_clock or negedge PRESETn) begin

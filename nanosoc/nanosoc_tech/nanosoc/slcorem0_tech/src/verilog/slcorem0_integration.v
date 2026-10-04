@@ -56,10 +56,6 @@ module slcorem0_integration
                                   //   0 = no debug support
                                   //   1 = implement debug support
     // ----------------------------------------------------------------------
-    parameter JTAGnSW  = 0,       // Debug port interface
-                                  //   0 = SerialWire interface
-                                  //   1 = JTAG interface
-    // ----------------------------------------------------------------------
     parameter NUMIRQ   = 32,      // Functional IRQ lines:
                                   //   0 = none
                                   //   1 = IRQ[0]
@@ -90,13 +86,10 @@ module slcorem0_integration
                                   //   . . ...
                                   //  34 = NMI, RXEV and IRQ[31:0]
     // ----------------------------------------------------------------------
-    parameter WPT      =  2,      // Number of DWT comparators
+    parameter WPT      =  2)      // Number of DWT comparators
                                   //   0 = none
                                   //   1 = one
                                   //   2 = two
-    // ----------------------------------------------------------------------
-    parameter [31:0] ROMTABLE_BASE = 32'hE00FF000) // ROM Table Base Address
-                                // - Defaultly points to Core ROMTABLE
     // ----------------------------------------------------------------------
 
     (// CLOCK AND RESETS
@@ -104,11 +97,8 @@ module slcorem0_integration
      input  wire        SCLK,
      input  wire        HCLK,
      input  wire        DCLK,
-     input  wire        PORESETn,
      input  wire        DBGRESETn,
      input  wire        HRESETn,
-     input  wire        SWCLKTCK,
-     input  wire        nTRST,
 
      // AHB-LITE MASTER PORT
      output wire [31:0] HADDR,
@@ -129,13 +119,17 @@ module slcorem0_integration
      output wire [ 2:0] CODEHINTDE,
      output wire        SPECHTRANS,
 
+     // DEBUG SLAVE PORT (directly exposed for DAP connection)
+     input  wire [31:0] SLVADDR,
+     input  wire [31:0] SLVWDATA,
+     input  wire [ 1:0] SLVTRANS,
+     input  wire        SLVWRITE,
+     input  wire [ 1:0] SLVSIZE,
+     output wire [31:0] SLVRDATA,
+     output wire        SLVREADY,
+     output wire        SLVRESP,
+
      // DEBUG
-     input  wire        SWDITMS,
-     input  wire        TDI,
-     output wire        SWDO,
-     output wire        SWDOEN,
-     output wire        TDO,
-     output wire        nTDOEN,
      input  wire        DBGRESTART,
      output wire        DBGRESTARTED,
      input  wire        EDBGRQ,
@@ -151,7 +145,7 @@ module slcorem0_integration
      input  wire [25:0] STCALIB,
      input  wire        STCLKEN,
      input  wire [ 7:0] IRQLATENCY,
-     input  wire [27:0] ECOREVNUM,    // [27:20] to DAP, [19:0] to core
+     input  wire [19:0] ECOREVNUM,
 
      // POWER MANAGEMENT
      output wire        GATEHCLK,
@@ -163,92 +157,11 @@ module slcorem0_integration
      output wire        SLEEPHOLDACKn,
      input  wire        WICENREQ,
      output wire        WICENACK,
-     output wire        CDBGPWRUPREQ,
      input  wire        CDBGPWRUPACK,
 
      // SCAN IO
-     input  wire        SE,
-     input  wire        RSTBYPASS
+     input  wire        SE
      );
-   // ------------------------------------------------------------
-   // ROM Table Value Calculation
-   // ------------------------------------------------------------
-   wire    [31:0] ROMTABLE_VAL;
-   assign         ROMTABLE_VAL = {ROMTABLE_BASE[31:2],2'd3};
-   // ------------------------------------------------------------
-   // Configurability
-   // ------------------------------------------------------------
-
-   wire        cfg_dbg = DBG != 0;  // Reduce DBG param to a wire
-
-   // ------------------------------------------------------------
-   // Define sub-module interconnect wires
-   // ------------------------------------------------------------
-
-   wire        dp_reset_n;          // DAP DP reset (synchronised)
-  
-   wire [31:0] slv_rdata;           // Core -> DAP read data
-   wire        slv_ready;           // Core -> DAP bus ready
-   wire        slv_resp;            // Core -> DAP error response
-
-   wire        wic_clear;           // NVIC -> WIC clear
-   wire        wic_ds_req_n;        // WIC  -> NVIC mode request
-   wire        wic_ds_ack_n;        // NVIC -> WIC mode acknowledge
-   wire        wic_load;            // NVIC -> WIC load
-   wire [31:0] wic_mask_isr;        // NVIC -> WIC IRQs mask
-   wire        wic_mask_nmi;        // NVIC -> WIC NMI mask
-   wire        wic_mask_rxev;       // NVIC -> WIC RXEV mask
-
-   wire [33:0] wic_pend;            // interrupt pend lines
-
-   wire [33:0] wic_sense;           // WIC sensitivity output
-
-   wire [31:0] slv_addr_dap;        // DAP -> Core address
-   wire [31:0] slv_wdata_dap;       // DAP -> Core write data
-   wire [ 1:0] slv_trans_dap;       // DAP -> Core transaction
-   wire        slv_write_dap;       // DAP -> Core write
-   wire [ 1:0] slv_size_dap;        // DAP -> Core size
-
-   wire        sw_do;               // DAP serial-wire output
-   wire        sw_do_en;            // DAP serial-wire out enable
-   wire        t_do;                // DAP TDO
-   wire        t_do_en_n;           // DAP TDO enable
-   wire        cdbg_pwrup_req;      // DAP powerup request
-
-   // ------------------------------------------------------------
-   // Tie off key debug signals if no debug is implemented
-   // ------------------------------------------------------------
-
-   // this logic is present to allow synthesis to strip out the
-   // debug-access-port if no debug is required; implementors
-   // may choose simply not to instantiate the DAP sub-module
-
-   wire [31:0] slv_addr       = cfg_dbg ? slv_addr_dap  : {32{1'b0}};
-   wire [31:0] slv_wdata      = cfg_dbg ? slv_wdata_dap : {32{1'b0}};
-   wire [ 1:0] slv_trans      = cfg_dbg ? slv_trans_dap : {2{1'b0}};
-   wire        slv_write      = cfg_dbg ? slv_write_dap : 1'b0;
-   wire [ 1:0] slv_size       = cfg_dbg ? slv_size_dap  : {2{1'b0}};
-   wire        device_en      = cfg_dbg ? 1'b1          : 1'b0;
-
-   wire        sw_di_t_ms     = cfg_dbg ? SWDITMS       : 1'b1;
-   wire        t_di           = cfg_dbg ? TDI           : 1'b0;
-   wire        cdbg_pwrup_ack = cfg_dbg ? CDBGPWRUPACK  : 1'b0;
-   wire [31:0] slv_rdata_dap  = cfg_dbg ? slv_rdata     : {32{1'b0}};
-   wire        slv_ready_dap  = cfg_dbg ? slv_ready     : 1'b0;
-   wire        slv_resp_dap   = cfg_dbg ? slv_resp      : 1'b0;
-
-   // ------------------------------------------------------------
-   // Reset synchronizer for dp_reset
-   // ------------------------------------------------------------
-
-   cm0_dbg_reset_sync #(.PRESENT(DBG))
-     u_dpreset_sync
-       (
-        .RSTIN     (PORESETn),
-        .CLK       (SWCLKTCK),
-        .SE        (SE),
-        .RSTBYPASS (RSTBYPASS),
-        .RSTOUT    (dp_reset_n));
 
    // ------------------------------------------------------------
    // Generate signal that can be used to gate system clock
@@ -258,7 +171,7 @@ module slcorem0_integration
    // sleeping, and there is no chance of a debug transaction
 
    wire        gate_hclk = ( (SLEEPING | ~SLEEPHOLDACKn) &
-                             ~cdbg_pwrup_ack );
+                             ~CDBGPWRUPACK );
 
    // ------------------------------------------------------------
    // Connect wake-up interrupt controller to Cortex-M0 NVIC
@@ -268,6 +181,17 @@ module slcorem0_integration
    // regular interrupts, so simply assign NMI, RXEV and the
    // configured number of IRQ signals consistently to the least
    // significant bits of input and output ports
+
+   wire        wic_ds_req_n;            // WIC  -> NVIC mode request
+   wire        wic_ds_ack_n;            // NVIC -> WIC mode acknowledge
+   wire        wic_load;                // NVIC -> WIC load
+   wire [31:0] wic_mask_isr;            // NVIC -> WIC IRQs mask
+   wire        wic_mask_nmi;            // NVIC -> WIC NMI mask
+   wire        wic_mask_rxev;           // NVIC -> WIC RXEV mask
+   wire        wic_clear;               // NVIC -> WIC clear
+
+   wire [33:0] wic_pend;                // interrupt pend lines
+   wire [33:0] wic_sense;               // WIC sensitivity output
 
    wire [33:0] wic_mask = { wic_mask_isr[31:0],
                             wic_mask_nmi,
@@ -303,9 +227,9 @@ module slcorem0_integration
           .HWDATA                         (HWDATA[31:0]),
           .HWRITE                         (HWRITE),
           .HMASTER                        (HMASTER),
-          .SLVRDATA                       (slv_rdata[31:0]),
-          .SLVREADY                       (slv_ready),
-          .SLVRESP                        (slv_resp),
+          .SLVRDATA                       (SLVRDATA[31:0]),
+          .SLVREADY                       (SLVREADY),
+          .SLVRESP                        (SLVRESP),
           .DBGRESTARTED                   (DBGRESTARTED),
           .HALTED                         (HALTED),
           .TXEV                           (TXEV),
@@ -332,11 +256,11 @@ module slcorem0_integration
           .HRDATA                         (HRDATA[31:0]),
           .HREADY                         (HREADY),
           .HRESP                          (HRESP),
-          .SLVADDR                        (slv_addr[31:0]),
-          .SLVSIZE                        (slv_size[1:0]),
-          .SLVTRANS                       (slv_trans[1:0]),
-          .SLVWDATA                       (slv_wdata[31:0]),
-          .SLVWRITE                       (slv_write),
+          .SLVADDR                        (SLVADDR[31:0]),
+          .SLVSIZE                        (SLVSIZE[1:0]),
+          .SLVTRANS                       (SLVTRANS[1:0]),
+          .SLVWDATA                       (SLVWDATA[31:0]),
+          .SLVWRITE                       (SLVWRITE),
           .DBGRESTART                     (DBGRESTART),
           .EDBGRQ                         (EDBGRQ),
           .NMI                            (nmi_pend),
@@ -349,44 +273,6 @@ module slcorem0_integration
           .SLEEPHOLDREQn                  (SLEEPHOLDREQn),
           .WICDSREQn                      (wic_ds_req_n),
           .SE                             (SE));
-
-   // ------------------------------------------------------------
-   // Cortex-M0 debug-access-port instantiation
-   // ------------------------------------------------------------
-
-   CORTEXM0DAP
-     #(.JTAGnSW(JTAGnSW),
-       .DBG(DBG),
-       .RAR(RAR))
-       u_dap
-         (// Outputs
-          .SWDO                           (sw_do),
-          .SWDOEN                         (sw_do_en),
-          .TDO                            (t_do),
-          .nTDOEN                         (t_do_en_n),
-          .CDBGPWRUPREQ                   (cdbg_pwrup_req),
-          .SLVADDR                        (slv_addr_dap[31:0]),
-          .SLVWDATA                       (slv_wdata_dap[31:0]),
-          .SLVTRANS                       (slv_trans_dap[1:0]),
-          .SLVWRITE                       (slv_write_dap),
-          .SLVSIZE                        (slv_size_dap[1:0]),
-          // Inputs
-          .SWCLKTCK                       (SWCLKTCK),
-          .nTRST                          (nTRST),
-          .DPRESETn                       (dp_reset_n),
-          .APRESETn                       (DBGRESETn),
-          .SWDITMS                        (sw_di_t_ms),
-          .TDI                            (t_di),
-          .CDBGPWRUPACK                   (cdbg_pwrup_ack),
-          .DEVICEEN                       (device_en),
-          .DCLK                           (DCLK),
-          .SLVRDATA                       (slv_rdata_dap[31:0]),
-          .SLVREADY                       (slv_ready_dap),
-          .SLVRESP                        (slv_resp_dap),
-          .BASEADDR                       (ROMTABLE_VAL),
-          .ECOREVNUM                      (ECOREVNUM[27:20]),
-          .SE                             (SE)
-          );
 
    // ------------------------------------------------------------
    // Cortex-M0 wake-up interrupt controller instantiation
@@ -416,12 +302,6 @@ module slcorem0_integration
    // ------------------------------------------------------------
 
    assign      GATEHCLK      = gate_hclk;
-
-   assign      SWDO          = cfg_dbg ? sw_do          : 1'b0;
-   assign      SWDOEN        = cfg_dbg ? sw_do_en       : 1'b0;
-   assign      TDO           = t_do;
-   assign      nTDOEN        = cfg_dbg ? t_do_en_n      : 1'b1;
-   assign      CDBGPWRUPREQ  = cfg_dbg ? cdbg_pwrup_req : 1'b0;
 
    assign      WICSENSE      = wic_sense[33:0];
 

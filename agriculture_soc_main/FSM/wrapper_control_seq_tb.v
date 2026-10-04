@@ -3,7 +3,7 @@
 // wrapper_control_seq_tb.v
 //
 // Rigorous sequencing/coverage unit test for the sampling FSM. Complements
-// wrapper_control_tb.v (which hand-drives adc_valid to test the handshake and
+// wrapper_control_2_tb.v (which hand-drives adc_valid to test the handshake and
 // the stale-valid case) by wiring the FSM to the REAL dummy_adc so the
 // enable->valid protocol is exercised end-to-end, and by checking the
 // higher-level sequencing properties from VERIFICATION.md:
@@ -19,7 +19,7 @@
 // -----------------------------------------------------------------------------
 module wrapper_control_seq_tb;
 
-    // FSM state encodings (mirror wrapper_control.v)
+    // FSM state encodings (mirror wrapper_control_2.v)
     localparam [2:0] S_IDLE=3'd0, S_CHECK_FIFO=3'd1, S_ENABLE=3'd2,
                      S_WAIT_START=3'd3, S_WAIT_DONE=3'd4, S_WRITE=3'd5, S_ERR_FULL=3'd6;
 
@@ -34,7 +34,7 @@ module wrapper_control_seq_tb;
     integer pass_count = 0;
     integer fail_count = 0;
 
-    wrapper_control uut (
+    wrapper_control_2 uut (
         .clk(clk), .rstn(rstn),
         .sample_trig(sample_trig),
         .fifo_full(fifo_full),

@@ -1,10 +1,10 @@
-// VerilogA for adc_primitives_lib, capacitor, veriloga
+//Verilog-AMS HDL for adc_primitives_lib, capacitor, veriloga
 
 `include "constants.vams"
 `include "disciplines.vams"
 
 module capacitor_adc(top, bottom);
-parameter c=1f;
+parameter real c=1e-15;
 
 inout top, bottom;
 electrical top, bottom;
