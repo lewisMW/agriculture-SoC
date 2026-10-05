@@ -1,0 +1,11 @@
+# Build / run outputs of the coverage and UVM targets - never commit these.
+obj_dir/
+obj_*/
+annotate/
+*.dat
+*.log
+make_build.out
+*.vcd
+
+# Local-only: behavioural PL031 stand-in for no-ARM-IP smoke runs (kept out of the repo).
+stubs/
