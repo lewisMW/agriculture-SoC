@@ -12,12 +12,20 @@ VERILOG_FILES = $(shell find . -type f -name "*.v") $(shell find $(rtc_ip) -type
 simulation_defs = -DSIMULATION
 VERILATOR_FLAGS = -Wno-WIDTHEXPAND
 
-.PHONY: all clean
+.PHONY: all rand clean
 
 all:
 	$(VERILATOR) --cc --trace --exe --main $(VERILATOR_FLAGS) --top $(TB_MODULE) $(VERILOG_FILES) --timing $(simulation_defs) -I$(rtc_ip)
 	$(MAKE) -C obj_dir -f V$(TB_MODULE).mk
 	./obj_dir/V$(TB_MODULE)
+
+# Constrained-random collision/liveness stress test (see tb_rtc_control_rand.v).
+RAND_MODULE = tb_rtc_control_rand
+
+rand:
+	$(VERILATOR) --cc --trace --exe --main $(VERILATOR_FLAGS) --top $(RAND_MODULE) $(VERILOG_FILES) --timing $(simulation_defs) -I$(rtc_ip)
+	$(MAKE) -C obj_dir -f V$(RAND_MODULE).mk
+	./obj_dir/V$(RAND_MODULE)
 
 clean:
 	rm -rf obj_dir waveform.vcd

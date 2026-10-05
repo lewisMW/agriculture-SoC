@@ -2,7 +2,7 @@
 // =============================================================================
 // tb_rtc_control_rand.v
 //
-// Constrained-random stress test for rtc_control.v, complementing the directed
+// Constrained-random stress test for rtc_control_2.v, complementing the directed
 // tb_rtc_control.v (P01-P32). The directed tests exercise the passthrough
 // arbitration at a handful of fixed points in the FSM cycle (see P15-P18b);
 // this test hammers the RTC with randomly-timed external reads, a randomly
@@ -62,7 +62,7 @@ integer fail_count;
 integer trig_count;
 
 // ── DUT instantiation ─────────────────────────────────────────────────────────
-rtc_control #(
+rtc_control_2 #(
     .DATA_WIDTH(32),
     .ADDR_WIDTH(12)
 ) dut (
