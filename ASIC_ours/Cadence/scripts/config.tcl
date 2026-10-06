@@ -4,18 +4,26 @@ set process_node 130
 set sky130_open_dir    /opt/pdk/sky130A
 set sky130_digital_dir ${sky130_open_dir}/libs.ref/sky130_fd_sc_hd
 
-set io_dir      ${sky130_open_dir}/libs.ref/sky130_fd_io
+# contains both the fd_io and ef_io libs
+set io_dir      ${sky130_open_dir}/libs.ref/sky130_fd_io 
 set sram_dir    /opt/pdk/sram_macros
 set sc_dir      ${sky130_digital_dir}
 
 set io_lib_dir ${io_dir}/lib
 set sc_lib_dir ${sc_dir}/lib
+set level_shifter_dir ${sky130_open_dir}/libs.ref/sky130_fd_sc_hvl/lib
 set sram_8k_lib_dir  ${sram_dir}/sky130_sram_8kbyte_1rw_32x2048_8
 
-set lib_search_path_list "$io_lib_dir $sc_lib_dir $sram_8k_lib_dir"
+set lib_search_path_list "$io_lib_dir $sc_lib_dir $level_shifter_dir $sram_8k_lib_dir"
 
-set BASE_LIB sky130_fd_sc_hd__ss_100C_1v60.lib
+set BASE_LIB sky130_fd_sc_hd__tt_025C_1v80.lib
+# TODO this is the correct lib?
+set LEVEL_SHIFTER_LIB sky130_fd_sc_hvl__tt_025C_3v30_lv1v80.lib
 set SRAM_LIB sky130_sram_8kbyte_1rw_32x2048_8_SS_1p8V_25C.lib
+# TODO find out about the ESD protection
+# hvc:
+# lvc:
+# TODO am I supposed to use gpio2 or the top_gpio2? What's the difference? 
 set IO_PAD_DRIVER [list \
     sky130_ef_io__gpiov2_pad_wrapped_ss_ss_100C_1v60_3v00.lib \
     sky130_ef_io__vccd_lvc_clamped3_pad_ss_100C_1v60_3v00_3v00.lib \
@@ -29,7 +37,7 @@ set IO_PAD_DRIVER [list \
 ]
 # TODO: the analog block libs
 
-set syn_lib_list [list $BASE_LIB $SRAM_LIB {*}$IO_PAD_DRIVER]
+set syn_lib_list [list $BASE_LIB $LEVEL_SHIFTER_LIB $SRAM_LIB {*}$IO_PAD_DRIVER]
 
 set block_name nanosoc_chip_pads
 
@@ -60,19 +68,19 @@ set TECH_LEF            ${sky130_digital_dir}/techlef/sky130_fd_sc_hd__nom.tlef
 set BASE_LEF            ${sky130_digital_dir}/lef/sky130_fd_sc_hd.lef
 # for the open source one physical cells (e.g. filler) are included in BASE_LEF
 
-set IO_PAD_DRIVER_LEF   ${sky130_open_dir}/libs.ref/sky130_fd_io/lef/sky130_ef_io.lef
+set IO_PAD_DRIVER_LEF   [list \
+  ${sky130_open_dir}/libs.ref/sky130_fd_io/lef/sky130_fd_io.lef \
+  ${sky130_open_dir}/libs.ref/sky130_fd_io/lef/sky130_ef_io.lef \
+]
 set SRAM_LEF            ${sram_dir}/sky130_sram_8kbyte_1rw_32x2048_8/sky130_sram_8kbyte_1rw_32x2048_8.lef
 
 #set lef_file_list [list ${TECH_LEF} ${PHYS_CELL_LEF} ${BASE_LEF} ${IO_PAD_DRIVER_LEF} ${SRAM_LEF}]
-set lef_file_list [list ${TECH_LEF} ${BASE_LEF} ${IO_PAD_DRIVER_LEF} ${SRAM_LEF}]
+set lef_file_list [list ${TECH_LEF} ${BASE_LEF} {*}${IO_PAD_DRIVER_LEF} ${SRAM_LEF}]
 
-# Routable layer range for this technology, applied by the P&R setup stage.
-# li1 is declared TYPE ROUTING in the sky130 tech LEF but is local interconnect
-# meant for use inside standard cells -- all 437 hd macros obstruct it (2,148 OBS
-# blocks), so letting the router use it collides with them everywhere. Restricting
-# to met1..met5 cut DRC violations from 952 to 120.
-set bottom_routing_layer 2   ;# met1 (li1 is layer 1)
-set top_routing_layer    6   ;# met5
+# don't use li1 for routing
+set bottom_routing_layer 2   ;# met1
+# alternatively, use M4 as rounting as well (otherwise congested)
+set top_routing_layer    5   ;#met4
 
 # TODO: the analog blocks lefs
 
