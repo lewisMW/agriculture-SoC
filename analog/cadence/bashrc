@@ -6,6 +6,7 @@ unset CDSHOME
 unset AMSHOME
 unset SPECTREHOME
 unset PEGASUSHOME
+unset QUANTUSHOME
 
 # ==============================================================
 # MODIFY. Put in the correct path names to the software installs.
@@ -15,6 +16,7 @@ export AMSHOME=/opt/cadence/installs/XCELIUM2409
 export SPECTREHOME=/opt/cadence/installs/SPECTRE231
 # export ASSURAHOME=/opt/cadence/installs/ASSURA41
 export PEGASUSHOME=/opt/cadence/installs/PEGASUS232
+export QUANTUSHOME=/opt/cadence/installs/QUANTUS231
 
 export LD_LIBRARY_PATH=${CDSHOME}/tools/lib:${SPECTREHOME}/tools.lnx86/lib:${AMSHOME}/tools/lib:${AMSHOME}/tools/affirma_ams/lib
 
@@ -24,6 +26,7 @@ export PATH=$PATH:${CDSHOME}/tools/dfII/bin:${CDSHOME}/tools/bin
 export PATH=$PATH:${SPECTREHOME}/tools.lnx86/dfII/bin:${SPECTREHOME}/bin
 # export PATH=$PATH:${ASSURAHOME}/tools/dfII/bin:${ASSURAHOME}/tools/bin
 export PATH=$PATH:${PEGASUSHOME}/bin:${PEGASUSHOME}/tools/bin
+export PATH=$PATH:${QUANTUSHOME}/bin:${QUANTUSHOME}/tools/bin
 
 # Technology path
 export SKY130=/opt/pdk/sky130_release_0.1.0/
