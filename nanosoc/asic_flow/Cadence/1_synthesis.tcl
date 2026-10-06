@@ -23,7 +23,8 @@ check_library > $LOG_DIR/syn_lib_check.log
 
 ## -- Read in RTL and elaborate top level
 source $hdl_file_list
-read_hdl -define POWER_PINS $top_level_hdl
+read_hdl -sv -define POWER_PINS $top_level_hdl
+# set_db hdl_track_filename_row true
 elaborate $block_name
 
 ## -- Load power intent for top and accelerator power domains -- ##
@@ -34,16 +35,16 @@ read_power_intent -module $block_name ../inputs/${block_name}.upf
 
 ## -- Apply power intent and check library and CPF -- ##
 apply_power_intent
-## -- Rule checkers, not gates: they exit non-zero on pre-existing undriven
-## -- analog/config pins on the sky130 pads (~21 per gpiov2 pad, deferred to
-## -- tie-cell insertion in P&R). Keep the logs; do not abort the flow.
-catch { check_cpf -detail -license lpgxl > $LOG_DIR/syn_cpf_check.log }
+## TODO no more warnings for unconnected things, BUT check the gpio connections
+check_cpf -detail -license lpgxl > $LOG_DIR/syn_cpf_check.log
 commit_power_intent
+
+check_power_intent
 
 ## -- Preserve power pad instances / macros from optimization -- ##
 set_dont_touch [get_cells -hierarchical -filter {name =~ "uPAD*"}]
 
-catch { check_power_structure -detail -license lpgxl > $LOG_DIR/syn_pow_check.log }
+check_power_structure -detail -license lpgxl > $LOG_DIR/syn_pow_check.log
 
 ## -- Read constraints -- ##
 read_sdc $constraints_file
@@ -56,6 +57,13 @@ if {$DFT == 1} {
 ## -- Synthesis -- ##
 set_db syn_generic_effort high
 set_db syn_map_effort high
+if {$DFT != 1} {
+    # new flops: don't use scan version
+    set_db use_scan_seqs_for_non_dft false
+    # existing scans (e.g. from the pregenerated RAMs): don't use them
+    # set_db dft_connect_scan_data_pins_during_mapping ground
+    # set_db dft_connect_shift_enable_during_mapping tie_off
+}
 
 syn_generic
 syn_map
@@ -90,7 +98,8 @@ report_power > $REPORT_DIR/syn_power.rep
 write_hdl > $OUT_DIR/${block_name}_gate.v
 write_hdl -pg > $OUT_DIR/${block_name}_gate_power.v
 write_power_intent -cpf -design $block_name -base_name $OUT_DIR/${block_name}_gate
-write_power_intent -design $block_name -base_name $OUT_DIR/${block_name}_gate
+# upf read, has more info
+write_power_intent -1801 -design $block_name -base_name $OUT_DIR/${block_name}_gate -overwrite
 
 write_sdf -timescale ns > $OUT_DIR/${block_name}_gate.sdf
 
