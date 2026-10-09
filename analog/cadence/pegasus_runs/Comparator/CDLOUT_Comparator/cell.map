@@ -1,2 +1,4 @@
+sky130_analog_lib   sarcta__C0          schematic           sarcta__C0
+sky130_analog_lib   sarct__trim_array   schematic           sarct__trim_array
 sky130_analog_lib   Trim                schematic           Trim
 sky130_analog_lib   Comparator          schematic           Comparator

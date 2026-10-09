@@ -5,14 +5,14 @@
 "Run Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence/pegasus_runs/Comparator
 "Current Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence
 "Cadence Directory" internal none /home/admin/git/agriculture-SoC/analog/cadence/.cadence/
-"Job Signature" internal none IPVS_1789972338_38169
+"Job Signature" internal none IPVS_1791506517_7435
 "Pegasus Job Mode" internal none lvs
 "GUI Flow" internal none virtuoso6
 "GUI Preset" internal none /home/admin/git/agriculture-SoC/analog/cadence/pegasus_runs/Comparator/.preset.autosave
 "Pegasus Version" internal none 23.26-s005
 "Binary Name" internal none pegasusgui
 "Pegasus Build Date" internal none "Thu Oct 17 16:37:42 PDT 2024"
-"Pegasus Job Time" internal none 1789972345
+"Pegasus Job Time" internal none 1791506518
 "DFII version" internal none IC23.1.0
 "Rule File" input text /home/admin/Documents/PDKs/sky130_release_0.1.0/Sky130_LVS/sky130.lvs.v0.0_1.1.pvl
 "Layout Scale" internal none 0.001
@@ -20,7 +20,7 @@
 "Layout Library Name" internal none sky130_analog_lib
 "Layout Cell Name" internal none Comparator
 "Layout View Name" internal none layout
-"Layout ConvertPin" internal text geometry
+"Layout ConvertPin" internal text geometryAndText
 "Layout HierDepth" internal none 32
 "Layout MaxVertices" internal none 2048
 "Layout Top Cell" internal none Comparator
@@ -32,7 +32,7 @@
 "Layout ReplaceBusBitChar" input none nil
 "Layout NoConvertHalfWidthPath" input none nil
 "Schematic Top Cell" internal none Comparator
-"Schematic Netlist" input text /home/admin/git/agriculture-SoC/analog/cadence/pegasus_runs/Comparator/CDLOUT_Comparator/netlist.cdl
+"Schematic Netlist" input text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/Peg_netlist/Comparator.cdl
 "Extracted Spice File" output text /home/admin/git/agriculture-SoC/analog/cadence/pegasus_runs/Comparator/Comparator.spi
 "Do not check rules files before run" internal none ENABLED
 "Control File" input text /home/admin/git/agriculture-SoC/analog/cadence/pegasus_runs/Comparator/pegasuslvsctl
@@ -52,12 +52,13 @@
 "Extraction Result" internal none CLEAN
 "ERC Result" internal none EMPTY
 "UI Data" internal none ENABLED
-"Pegasus Mode Info" internal none ACFBHODLFBIMBBAMPNFEBCKLEODJDBMG
+"Pegasus Mode Info" internal none OHFLIJCKHGBCCCCAJFAEPEGGFKPAEIEA
 "Report MaxResults" internal none 1000
 "Binary Name" internal none Pegasus
-"Comparison Result" internal none MISMATCH
+"Schematic Netlist" input text /home/admin/git/agriculture-SoC/analog/cadence/sky130/SoC/sky130_analog_lib/Comparator/LVS/Comparator.cdl
+"Comparison Result" internal none MATCH
 "LVS Run Name" internal none Comparator.rep
 "Pegasus Version" internal none 23.26-s005
 "Binary Name" internal none pegasusnvn
 "Pegasus Build Date" internal none "Thu Oct 17 16:37:42 PDT 2024"
-"Pegasus Job Time" internal none 1789972360
+"Pegasus Job Time" internal none 1791506532

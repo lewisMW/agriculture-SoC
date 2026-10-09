@@ -1,7 +1,7 @@
 
 
 ***********************************************************
-* CDL produced by pvsBuildNetlist on Sep 21 16:27:16 2026 *
+* CDL produced by pvsBuildNetlist on Oct  9 11:41:52 2026 *
 ***********************************************************
 
 
@@ -16,16 +16,42 @@
 
 
 
+.subckt sarcta__C0 cn cp
+*PVSCELL netlisted from sky130_analog_lib sarcta__C0 schematic
+  CC0 cp cn cap c=1.25f
+.ends sarcta__C0
+
+
+.subckt sarct__trim_array drain n0 n1 n2 n3 n4 vss
+*PVSCELL netlisted from sky130_analog_lib sarct__trim_array schematic
+  XI0 sarcta__C0 $PINS cn=n4 cp=drain
+  XI1 sarcta__C0 $PINS cn=n4 cp=drain
+  XI10 sarcta__C0 $PINS cn=n3 cp=drain
+  XI11 sarcta__C0 $PINS cn=n3 cp=drain
+  XI12 sarcta__C0 $PINS cn=n2 cp=drain
+  XI13 sarcta__C0 $PINS cn=n2 cp=drain
+  XI14 sarcta__C0 $PINS cn=n1 cp=drain
+  XI15 sarcta__C0 $PINS cn=n0 cp=drain
+  XI16 sarcta__C0 $PINS cn=vss cp=drain
+  XI17 sarcta__C0 $PINS cn=vss cp=drain
+  XI2 sarcta__C0 $PINS cn=n4 cp=drain
+  XI3 sarcta__C0 $PINS cn=n4 cp=drain
+  XI4 sarcta__C0 $PINS cn=n4 cp=drain
+  XI5 sarcta__C0 $PINS cn=n4 cp=drain
+  XI6 sarcta__C0 $PINS cn=n4 cp=drain
+  XI7 sarcta__C0 $PINS cn=n4 cp=drain
+  XI8 sarcta__C0 $PINS cn=n3 cp=drain
+  XI9 sarcta__C0 $PINS cn=n3 cp=drain
+.ends sarct__trim_array
+
+
 .subckt Trim Vss d<0> d<1> d<2> d<3> d<4> drain
 *PVSCELL netlisted from sky130_analog_lib Trim schematic
-  CC0 drain net3 cap c=1.25f
-  CC1 drain net16 cap c=1.25f
-  CC2 drain net12 cap c=1.25f
-  CC3 drain net8 cap c=1.25f
-  CC4 drain net4 cap c=1.25f
-  MNM0 net8 d<3> Vss Vss nfet_01v8 m=1 l=300n w=1u
-  MNM1 net12 d<2> Vss Vss nfet_01v8 m=1 l=300n w=1u
-  MNM2 net4 d<4> Vss Vss nfet_01v8 m=1 l=300n w=1u
+  XI1 sarct__trim_array $PINS drain=drain n0=net3 n1=net16 n2=net12 n3=net8
++  n4=net4 vss=Vss
+  MNM0 net8 d<3> Vss Vss nfet_01v8 m=1 l=300n w=4u
+  MNM1 net12 d<2> Vss Vss nfet_01v8 m=1 l=300n w=2u
+  MNM2 net4 d<4> Vss Vss nfet_01v8 m=1 l=300n w=8u
   MNM3 net16 d<1> Vss Vss nfet_01v8 m=1 l=300n w=1u
   MNM4 net3 d<0> Vss Vss nfet_01v8 m=1 l=300n w=1u
 .ends Trim
@@ -42,7 +68,7 @@
   MNM1 Out_N Out_P net2 Vss nfet_01v8 m=1 l=300n w=1u
   MNM2 net2 Vn net25 Vss nfet_01v8 m=1 l=300n w=1u
   MNM3 net3 Vp net25 Vss nfet_01v8 m=1 l=300n w=1u
-  MNM4 net25 Clk Vss Vss nfet_01v8 m=1 l=300n w=1u
+  MNM4 net25 Clk Vss Vss nfet_01v8 m=1 l=300n w=2u
   MPM0 Out_N Clk Vdd Vdd pfet_01v8 m=1 l=300n w=1u
   MPM2 Out_N Out_P Vdd Vdd pfet_01v8 m=1 l=300n w=1u
   MPM3 Out_P Out_N Vdd Vdd pfet_01v8 m=1 l=300n w=1u
@@ -53,5 +79,5 @@
 
 
 ***********************************************************
-*             Completed at Sep 21 16:27:16 2026           *
+*             Completed at Oct  9 11:41:52 2026           *
 ***********************************************************

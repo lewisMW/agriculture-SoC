@@ -1,2 +1,19 @@
 # SVDB: Port Table (ports)
 # SVDB: Layout Primary Comparator
+Trima<1> 13 Trima<1> -12707 6240 met1
+Trima<4> 14 Trima<4> -12742 690 met1
+Trimb<3> 15 Trimb<3> 30450 11305 met1
+Vn 2 Vn 130 13537 met2
+Trimb<2> 16 Trimb<2> 30460 9220 met1
+Out_N 3 Out_N 5850 5005 met2
+Out_P 4 Out_P 11970 4887 met2
+Trimb<0> 17 Trimb<0> 30480 7735 met1
+Trimb<1> 18 Trimb<1> 30495 6240 met1
+Vp 5 Vp 17705 14367 met2
+Trimb<4> 19 Trimb<4> 30360 690 met1
+Clk 7 Clk 1210 8175 met5
+Vdd 8 Vdd 8837 14305 met1
+Vss 9 Vss 8880 -205 met1
+Trima<3> 10 Trima<3> -12655 11305 met1
+Trima<2> 11 Trima<2> -12617 9220 met1
+Trima<0> 12 Trima<0> -12680 7735 met1

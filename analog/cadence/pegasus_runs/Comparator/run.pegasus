@@ -3,7 +3,7 @@
 ###### Pegasus Version 23.26-s005
 pwd_d=`pwd`
 cd /home/admin/git/agriculture-SoC/analog/cadence/pegasus_runs/Comparator ;\
-/root/cadence/installs/PEGASUS232/bin/pegasus \
+/opt/cadence/installs/PEGASUS232/bin/pegasus \
 	-lvs \
 	-top_cell Comparator \
 	-log_dir LOGS \

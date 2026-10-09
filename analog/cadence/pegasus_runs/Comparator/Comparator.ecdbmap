@@ -1,6 +1,6 @@
 Gds_Map 1000
 Layers:
-0 0 69 Sep 21 16:32:35 2026
+0 0 73 Oct  9 11:42:08 2026
 nsd 2 0
 HV_ngate_5v10v 3 0
 psd 4 0
@@ -13,7 +13,10 @@ diode_pw2nd_05v5_rec 16 0
 diode_pw2nd_05v5_lvt_rec 17 0
 diode_pw2nd_05v5_nvt_rec 18 0
 diode_pw2nd_11v0_rec 20 0
+met1_pin 21 0
 pfet_v20_rec 22 0
+met2_pin 23 0
+met5_pin 28 0
 nfet_v20_rec 36 0
 nfet_v20_zvt_rec 37 0
 res_high_po_0p35_rec 38 0
@@ -34,6 +37,7 @@ nfet 57 0
 pfet 58 0
 pnp_rec 59 0
 ntap 65 0
+ptap 66 0
 licon1 67 0
 pSourceDrain 69 0
 mcon 70 0
@@ -71,4 +75,4 @@ pfet_v20_overlap 116 0
 cap_width 117 0
 cap_length 118 0
 END OF RESPONSE
-0 0 0 Sep 21 16:32:35 2026
+0 0 0 Oct  9 11:42:08 2026

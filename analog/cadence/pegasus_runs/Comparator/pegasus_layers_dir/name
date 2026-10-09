@@ -17,6 +17,8 @@
 40b met4_in
 40d via4
 40e met5_in
+477 met2_pin
+47d met5_pin
 40000 boundary
 40036 li1
 4002e met3_all
@@ -39,6 +41,7 @@
 400ec _EPTMPL262380
 400ed nSourceDrain
 40066 _EPTMPL262246
+400e9 ptap
 40063 _EPTMPL262243
 400e7 ntap
 40064 _EPTMPL262244
