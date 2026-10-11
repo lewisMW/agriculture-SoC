@@ -1,5 +1,6 @@
 TDMCHECKPOINT="1.0"
 keepEmptyCategory type="unknown"
+sar_adc/tb_bootstrap_sw type="cell"
 sar_adc/tb_capacitor type="cell"
 sar_adc/tb_carray_8b type="cell"
 sar_adc/tb_cdac_8b type="cell"

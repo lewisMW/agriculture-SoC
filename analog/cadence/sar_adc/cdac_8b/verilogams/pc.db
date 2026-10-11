@@ -1,4 +1,7 @@
---TIMESTAMP:	1787568259	Mon Aug 24 20:44:19 2026
+--TIMESTAMP:	1791614289	Sat Oct 10 17:38:09 2026
+#
+* bootstrap_sw *
+sw
 #
 * carray_8b *
 c_array
@@ -13,6 +16,3 @@ inv5
 inv6
 inv7
 inv8
-#
-* switch_adc *
-sw
