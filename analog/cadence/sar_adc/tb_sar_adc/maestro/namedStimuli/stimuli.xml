@@ -2,7 +2,7 @@
 <stimuliset>
     <namedstimuli>
         <stimuliname>rstn</stimuliname>
-        <timeStamp>31/08/2026;4:39:29:PM</timeStamp>
+        <timeStamp>11/10/2026;2:40:32:PM</timeStamp>
         <simStopTime>1n</simStopTime>
         <isourceResistorValue>1k</isourceResistorValue>
         <libname></libname>
@@ -14,7 +14,7 @@
                 <cdfname>data</cdfname>
                 <prompt>Pattern Parameter data</prompt>
                 <datatype>string</datatype>
-                <value>010000000000</value>
+                <value>101</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
@@ -49,14 +49,14 @@
                 <cdfname>val1</cdfname>
                 <prompt>One value</prompt>
                 <datatype>string</datatype>
-                <value>vdd</value>
+                <value>vdd_supply</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
                 <cdfname>val0</cdfname>
                 <prompt>Zero value</prompt>
                 <datatype>string</datatype>
-                <value>vss</value>
+                <value>vss_supply</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
@@ -77,14 +77,14 @@
                 <cdfname>per</cdfname>
                 <prompt>Period</prompt>
                 <datatype>string</datatype>
-                <value>1u</value>
+                <value>1/fclk</value>
                 <defvalue></defvalue>
             </parameter>
         </parameterset>
     </namedstimuli>
     <namedstimuli>
         <stimuliname>vdda</stimuliname>
-        <timeStamp>30/08/2026;11:34:32:PM</timeStamp>
+        <timeStamp>11/10/2026;2:36:44:PM</timeStamp>
         <simStopTime>1n</simStopTime>
         <isourceResistorValue>1k</isourceResistorValue>
         <libname></libname>
@@ -103,14 +103,14 @@
                 <cdfname>vdc</cdfname>
                 <prompt>DC voltage</prompt>
                 <datatype>string</datatype>
-                <value>vdd</value>
+                <value>vdd_supply</value>
                 <defvalue></defvalue>
             </parameter>
         </parameterset>
     </namedstimuli>
     <namedstimuli>
         <stimuliname>vssa</stimuliname>
-        <timeStamp>30/08/2026;11:35:13:PM</timeStamp>
+        <timeStamp>11/10/2026;2:37:27:PM</timeStamp>
         <simStopTime>1n</simStopTime>
         <isourceResistorValue>1k</isourceResistorValue>
         <libname></libname>
@@ -129,14 +129,14 @@
                 <cdfname>vdc</cdfname>
                 <prompt>DC voltage</prompt>
                 <datatype>string</datatype>
-                <value>vss</value>
+                <value>vss_supply</value>
                 <defvalue></defvalue>
             </parameter>
         </parameterset>
     </namedstimuli>
     <namedstimuli>
         <stimuliname>en</stimuliname>
-        <timeStamp>14/09/2026;2:12:40:PM</timeStamp>
+        <timeStamp>11/10/2026;2:42:45:PM</timeStamp>
         <simStopTime>1n</simStopTime>
         <isourceResistorValue>1k</isourceResistorValue>
         <libname></libname>
@@ -148,7 +148,7 @@
                 <cdfname>data</cdfname>
                 <prompt>Pattern Parameter data</prompt>
                 <datatype>string</datatype>
-                <value>001000000000</value>
+                <value>1</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
@@ -183,14 +183,14 @@
                 <cdfname>val1</cdfname>
                 <prompt>One value</prompt>
                 <datatype>string</datatype>
-                <value>vdd</value>
+                <value>vdd_supply</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
                 <cdfname>val0</cdfname>
                 <prompt>Zero value</prompt>
                 <datatype>string</datatype>
-                <value>vss</value>
+                <value>vss_supply</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
@@ -211,14 +211,14 @@
                 <cdfname>per</cdfname>
                 <prompt>Period</prompt>
                 <datatype>string</datatype>
-                <value>1u</value>
+                <value>1/fclk</value>
                 <defvalue></defvalue>
             </parameter>
         </parameterset>
     </namedstimuli>
     <namedstimuli>
         <stimuliname>cal</stimuliname>
-        <timeStamp>14/09/2026;2:11:52:PM</timeStamp>
+        <timeStamp>11/10/2026;3:4:56:PM</timeStamp>
         <simStopTime>1n</simStopTime>
         <isourceResistorValue>1k</isourceResistorValue>
         <libname></libname>
@@ -265,14 +265,14 @@
                 <cdfname>val1</cdfname>
                 <prompt>One value</prompt>
                 <datatype>string</datatype>
-                <value>vdd</value>
+                <value>vdd_supply</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
                 <cdfname>val0</cdfname>
                 <prompt>Zero value</prompt>
                 <datatype>string</datatype>
-                <value>vss</value>
+                <value>vss_supply</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
@@ -300,7 +300,7 @@
     </namedstimuli>
     <namedstimuli>
         <stimuliname>clk</stimuliname>
-        <timeStamp>30/08/2026;11:40:28:PM</timeStamp>
+        <timeStamp>11/10/2026;3:15:9:PM</timeStamp>
         <simStopTime>1n</simStopTime>
         <isourceResistorValue>1k</isourceResistorValue>
         <libname></libname>
@@ -316,38 +316,24 @@
                 <defvalue>0</defvalue>
             </parameter>
             <parameter>
-                <cdfname>vdc</cdfname>
-                <prompt>DC voltage</prompt>
-                <datatype>string</datatype>
-                <value>vdd/2</value>
-                <defvalue></defvalue>
-            </parameter>
-            <parameter>
-                <cdfname>acm</cdfname>
-                <prompt>AC magnitude</prompt>
-                <datatype>string</datatype>
-                <value>vdd/2</value>
-                <defvalue></defvalue>
-            </parameter>
-            <parameter>
                 <cdfname>v1</cdfname>
                 <prompt>Voltage 1</prompt>
                 <datatype>string</datatype>
-                <value>0</value>
+                <value>vss_supply</value>
                 <defvalue>0</defvalue>
             </parameter>
             <parameter>
                 <cdfname>v2</cdfname>
                 <prompt>Voltage 2</prompt>
                 <datatype>string</datatype>
-                <value>0</value>
+                <value>vdd_supply</value>
                 <defvalue>0</defvalue>
             </parameter>
             <parameter>
                 <cdfname>per</cdfname>
                 <prompt>Period</prompt>
                 <datatype>string</datatype>
-                <value>1u</value>
+                <value>1/fclk</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
@@ -375,7 +361,7 @@
     </namedstimuli>
     <namedstimuli>
         <stimuliname>vp</stimuliname>
-        <timeStamp>31/08/2026;4:35:15:PM</timeStamp>
+        <timeStamp>11/10/2026;2:51:18:PM</timeStamp>
         <simStopTime>1n</simStopTime>
         <isourceResistorValue>1k</isourceResistorValue>
         <libname></libname>
@@ -394,28 +380,28 @@
                 <cdfname>v1</cdfname>
                 <prompt>Voltage 1</prompt>
                 <datatype>string</datatype>
-                <value>vss</value>
+                <value>vss_supply</value>
                 <defvalue>0</defvalue>
             </parameter>
             <parameter>
                 <cdfname>v2</cdfname>
                 <prompt>Voltage 2</prompt>
                 <datatype>string</datatype>
-                <value>vdd</value>
+                <value>vdd_supply</value>
                 <defvalue>0</defvalue>
             </parameter>
             <parameter>
                 <cdfname>td</cdfname>
                 <prompt>Delay time</prompt>
                 <datatype>string</datatype>
-                <value>10u</value>
+                <value>5*1/fclk</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
                 <cdfname>tr</cdfname>
                 <prompt>Rise time</prompt>
                 <datatype>string</datatype>
-                <value>10m</value>
+                <value>1m</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
@@ -429,7 +415,7 @@
     </namedstimuli>
     <namedstimuli>
         <stimuliname>vn</stimuliname>
-        <timeStamp>31/08/2026;4:35:30:PM</timeStamp>
+        <timeStamp>11/10/2026;2:50:23:PM</timeStamp>
         <simStopTime>1n</simStopTime>
         <isourceResistorValue>1k</isourceResistorValue>
         <libname></libname>
@@ -448,14 +434,14 @@
                 <cdfname>vdc</cdfname>
                 <prompt>DC voltage</prompt>
                 <datatype>string</datatype>
-                <value>vss</value>
+                <value>vss_supply</value>
                 <defvalue></defvalue>
             </parameter>
         </parameterset>
     </namedstimuli>
     <namedstimuli>
         <stimuliname>vdd</stimuliname>
-        <timeStamp>30/08/2026;11:31:23:PM</timeStamp>
+        <timeStamp>11/10/2026;2:37:4:PM</timeStamp>
         <simStopTime>1n</simStopTime>
         <isourceResistorValue>1k</isourceResistorValue>
         <libname></libname>
@@ -474,14 +460,14 @@
                 <cdfname>vdc</cdfname>
                 <prompt>DC voltage</prompt>
                 <datatype>string</datatype>
-                <value>1.8</value>
+                <value>vdd_supply</value>
                 <defvalue></defvalue>
             </parameter>
         </parameterset>
     </namedstimuli>
     <namedstimuli>
         <stimuliname>vss</stimuliname>
-        <timeStamp>30/08/2026;11:32:2:PM</timeStamp>
+        <timeStamp>11/10/2026;2:34:46:PM</timeStamp>
         <simStopTime>1n</simStopTime>
         <isourceResistorValue>1k</isourceResistorValue>
         <libname></libname>
@@ -500,7 +486,7 @@
                 <cdfname>vdc</cdfname>
                 <prompt>DC voltage</prompt>
                 <datatype>string</datatype>
-                <value>0</value>
+                <value>vss_supply</value>
                 <defvalue></defvalue>
             </parameter>
         </parameterset>
