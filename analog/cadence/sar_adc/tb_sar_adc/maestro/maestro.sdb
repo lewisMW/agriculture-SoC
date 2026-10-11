@@ -31,11 +31,14 @@
 					</option>
 				</tooloptions>
 				<vars>
-					<var>vdd
+					<var>vdd_supply
 						<value>1.8</value>
 					</var>
-					<var>vss
+					<var>vss_supply
 						<value>0</value>
+					</var>
+					<var>fclk
+						<value>1000000</value>
 					</var>
 				</vars>
 				<outputs>
@@ -61,6 +64,12 @@
 						<evalType>point</evalType>
 					</output>
 					<output>/cal
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/cdac_pout
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/cdac_nout
 						<evalType>point</evalType>
 					</output>
 				</outputs>

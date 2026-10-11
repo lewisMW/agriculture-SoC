@@ -28,14 +28,29 @@ module sarlogic (
 	reg [3:0] cal_itt;
 	reg res_valid;
 	reg [7:0] dig_result;
+	reg [7:0] result_q; // holds last result until next conversion is done
 
 	parameter sInit = 0, sWait=1, sSample=2, sConv=3, sDone=4, sCal=5;
-	
+
+	// Setup for a new conversion, shared by sWait and sDone (back-to-back)
+	task start_conv;
+		begin
+			dig_result <= 0;
+			cal_itt <= 0;
+			cal_count <= 7;
+			state <= sSample;
+			calibrate <= cal; // 1 -> sCal after sSample, otherwise sConv
+			mask <= 8'b10000000; // mask for ctl buses
+			en_co_clk <= 1; // enabling clkn
+		end
+	endtask
+
 	initial begin
         state <= sInit;
         mask <= 0;
         trim_mask <= 0;
         dig_result <= 0;
+        result_q <= 0;
         co_clk <= 0;
         en_co_clk <= 0;
         cal_itt <= 0;
@@ -55,6 +70,7 @@ module sarlogic (
 			mask <= 0;
 			trim_mask <= 0;
 			dig_result <= 0;
+			result_q <= 0;
 			co_clk <= 0;
 			en_co_clk <= 0;
 			cal_itt <= 0;
@@ -73,13 +89,7 @@ module sarlogic (
 				// Waiting for trigger at en input.
 				sWait : begin
 					if(en) begin
-						dig_result <= 0;
-						cal_itt <= 0;
-						cal_count <= 7;
-						state <= sSample;
-						calibrate <= cal; // 1 -> sCal after sSample, otherwise sConv
-						mask <= 8'b10000000; // mask for ctl buses
-						en_co_clk <= 1; // enabling clkn
+						start_conv;
 						res_valid <= 0;
 					end
 					else state <= sWait;
@@ -87,6 +97,7 @@ module sarlogic (
 
 				// Sampling signal from input. clk should be 100kHz
 				sSample : begin
+					res_valid <= 0; // valid is a 1-cycle pulse in back-to-back mode
 					if (calibrate) begin
 						state <= sCal; 
 						trim_val <= 5'b00000; // resetting
@@ -135,20 +146,24 @@ module sarlogic (
 				end
 
 				// Finished either calibrating or converting
-				// dig_result can be read
+				// result can be read while valid is high.
+				// If en is still high, start the next conversion right away
+				// (10 cycles per conversion instead of 11 through sWait).
 				sDone : begin
-					state <= sWait;
+					result_q <= dig_result;
 					res_valid <= 1;
+					if (en) start_conv;
+					else state <= sWait;
 				end
 			endcase
 		end
 	end
 
-	assign result = dig_result;
+	assign result = result_q;
 	assign trima = (trim_val | trim_mask); // adding an extra 1 in n-1 after each itt.
 	assign trimb = ~(trim_val | trim_mask); // complement of trim
 	assign sample = (state==sSample) || (state==sCal); // sample trigger (remain on during cal)
-	assign valid = (1 && res_valid); // dig_result is valid and ready to be read
+	assign valid = (1 && res_valid); // result is valid and ready to be read
 	assign ctlp = dig_result | mask; // ctl signals for non inverter dac. extra 1 in n-1
 	assign ctln = ~(dig_result | mask); // ctl signals for inverter dac
 endmodule
