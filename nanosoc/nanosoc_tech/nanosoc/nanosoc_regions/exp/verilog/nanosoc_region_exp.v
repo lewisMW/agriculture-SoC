@@ -76,6 +76,12 @@ module nanosoc_region_exp #(
 `endif 
 `endif 
 
+`ifdef ACCELERATOR_SUBSYSTEM
+    // agriculture-SoC: SAR ADC analog inputs, pad -> accelerator (analog nets)
+    input  wire                   ADC_VINP,
+    input  wire                   ADC_VINN,
+`endif
+
     // Interrupt and DMAC Connections
     output wire             [3:0] EXP_IRQ,
     output wire             [1:0] EXP_DRQ,
@@ -145,6 +151,9 @@ module nanosoc_region_exp #(
         .EXP_STR_OUT_2_FLUSH(EXP_STR_OUT_2_FLUSH),
 `endif 
 `endif 
+
+        .ADC_VINP(ADC_VINP),    // agriculture-SoC: SAR ADC analog inputs
+        .ADC_VINN(ADC_VINN),
 
         .EXP_IRQ(EXP_IRQ),
         .EXP_DRQ(EXP_DRQ),

@@ -83,6 +83,11 @@ module accelerator_subsystem #(
 `endif 
 `endif 
 
+  // SAR ADC analog inputs: analog nets from the chip's analog pads, passed
+  // through untouched to sensor_wrapper -> sar_adc -> the sar_afe macro
+  input  wire                      ADC_VINP,
+  input  wire                      ADC_VINN,
+
   // Interrupts
   output wire   [IRQ_NUM-1:0]      EXP_IRQ
 );
@@ -196,7 +201,10 @@ adc_apb_wrapper_rev2 #(
    // Handshake
    .PRDATA(PRDATA),
    .PREADY(PREADY),
-   .PSLVERR(PSLVERR)
+   .PSLVERR(PSLVERR),
+   // SAR ADC analog inputs
+   .ADC_VINP(ADC_VINP),
+   .ADC_VINN(ADC_VINN)
 );
 
 
