@@ -25,7 +25,27 @@ module sar_ams_shim #(
     parameter real VDD_V   = 1.8,      // SAR supply
     parameter real VCM_V   = 0.9,      // input common mode
     parameter real VAMP_V  = 0.4,      // differential input amplitude
-    parameter real FIN_HZ  = 5.0e3     // input frequency
+    parameter real FIN_HZ  = 5.0e3,    // input frequency
+    // Supply network: RSUP models bond-wire + on-chip metal, CDEC on-chip
+    // decoupling. Kept because a zero-impedance supply is unphysical, but note
+    // these were NOT what fixed the device-level CDAC transient - adding them
+    // changed nothing (identical codes, same stall). RSRC below was the fix.
+    parameter real RSUP    = 1.0,      // supply series resistance (ohm)
+    parameter real CDEC    = 10.0e-12, // decoupling capacitance (F)
+    // Source impedance of the stand-in sensor driving vp/vn.
+    //
+    // Why this exists: it is only needed when the SAMPLING SWITCH is the
+    // behavioural adc_analog_lib/switch_adc, whose ron=10 mohm is unphysical.
+    // An ideal source feeding ~8.9 pF of device-level CDAC through 10 mohm is a
+    // step with a ~90 fs time constant, which no timestep can resolve, and
+    // Spectre stalls at minstep (~-32 mA in the vn source branch).
+    //
+    // With the sky130 bootstrap_sw bound instead (amsd_sky130_full.scs) the real
+    // switch supplies physical resistance and RSRC is NOT required - it can be
+    // 0, which bypasses the series branch entirely and restores ideal sources.
+    // Set it back to ~100 ohm if you bind the behavioural switch_adc together
+    // with device-level CDAC caps.
+    parameter real RSRC    = 0.0       // sensor source impedance (ohm; 0 = ideal)
 )(
     input  wire                    clk,
     input  wire                    rstn,      // active-low
@@ -38,12 +58,33 @@ module sar_ams_shim #(
 
     // ── Analog supplies and stand-in differential sensor input ──────────────
     electrical vp, vn, vdd, vss;
+    electrical vdd_src;                 // ideal source behind RSUP
+    electrical vp_src, vn_src;          // ideal sines behind RSRC
     ground vss;
 
     analog begin
-        V(vdd) <+ VDD_V;
-        V(vp)  <+ VCM_V + VAMP_V*sin(2.0*`M_PI*FIN_HZ*$abstime);
-        V(vn)  <+ VCM_V - VAMP_V*sin(2.0*`M_PI*FIN_HZ*$abstime);
+        // Supply: ideal source -> series resistance -> decoupled vdd rail.
+        V(vdd_src)      <+ VDD_V;
+        I(vdd_src, vdd) <+ V(vdd_src, vdd)/RSUP;
+        I(vdd, vss)     <+ CDEC*ddt(V(vdd, vss));
+
+        // Differential sensor input. RSRC is a parameter, so this selects the
+        // structure once at elaboration, not during the solve.
+        if (RSRC > 0.0) begin
+            // Driven through a finite source impedance (needed only with the
+            // behavioural 10 mohm switch_adc - see the RSRC comment above).
+            V(vp_src)     <+ VCM_V + VAMP_V*sin(2.0*`M_PI*FIN_HZ*$abstime);
+            V(vn_src)     <+ VCM_V - VAMP_V*sin(2.0*`M_PI*FIN_HZ*$abstime);
+            I(vp_src, vp) <+ V(vp_src, vp)/RSRC;
+            I(vn_src, vn) <+ V(vn_src, vn)/RSRC;
+        end else begin
+            // Ideal sources: fine once a real sampling switch (bootstrap_sw)
+            // provides the impedance.
+            V(vp_src) <+ 0.0;
+            V(vn_src) <+ 0.0;
+            V(vp) <+ VCM_V + VAMP_V*sin(2.0*`M_PI*FIN_HZ*$abstime);
+            V(vn) <+ VCM_V - VAMP_V*sin(2.0*`M_PI*FIN_HZ*$abstime);
+        end
     end
 
     // ── Clock divider: PCLK -> sar_clk ──────────────────────────────────────

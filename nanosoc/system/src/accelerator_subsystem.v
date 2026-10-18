@@ -139,7 +139,6 @@ module accelerator_subsystem #(
   /*input  wire*/.PREADY(PREADY),    // Ready for each APB slave
   /*input  wire*/.PSLVERR(PSLVERR));  // Error state for each APB slave
 
-
 // ---------------------------------------------------------------------------
 // RTC support signals for the sensing peripheral (mirrors agriculture_soc.v).
 // The nanosoc integration only exposes HCLK/HRESETn here, so the wrapper's

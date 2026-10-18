@@ -1,21 +1,26 @@
 // VerilogA for SoC_probe, inverter, veriloga
+//
+// Port names and order match the sky130_analog_lib inverter schematic/layout
+// (.subckt inverter GND IN OUT VDD), so this behavioural view can be swapped
+// for the transistor-level SPICE view without a portmap. Views of the same
+// cell must keep identical interfaces - do not rename these in isolation.
 
 `include "constants.vams"
 `include "disciplines.vams"
 
-module inverter(out, in, vdd, vss);
-input in;
-output out;
-inout vdd ,vss;
-electrical in, out, vdd, vss;
+module inverter(GND, IN, OUT, VDD);
+input IN;
+output OUT;
+inout VDD, GND;
+electrical IN, OUT, VDD, GND;
 
 integer d_in;
 
 analog begin
-	@(cross(V(in,vss) - 0.5*V(vdd,vss)))
+	@(cross(V(IN,GND) - 0.5*V(VDD,GND)))
 		;
-	d_in = V(in,vss) > 0.5*V(vdd,vss);
+	d_in = V(IN,GND) > 0.5*V(VDD,GND);
 
-	V(out,vss) <+ V(vdd,vss)*transition(!d_in, 0, 10n);
+	V(OUT,GND) <+ V(VDD,GND)*transition(!d_in, 0, 10n);
 end
 endmodule
