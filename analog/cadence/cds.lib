@@ -13,4 +13,3 @@ INCLUDE $SKY130/cds.lib
 DEFINE sky130_analog_lib ./sky130/SoC/sky130_analog_lib
 
 DEFINE sar_adc ./sar_adc
-DEFINE bootstrap_switch_lib ./sar_adc/bootstrap_switch_lib

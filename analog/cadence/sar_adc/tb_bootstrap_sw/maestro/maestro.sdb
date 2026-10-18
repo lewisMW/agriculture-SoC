@@ -12,10 +12,10 @@
 				<tool>ADE</tool>
 				<tooloptions>
 					<option>cell
-						<value>bootstrap_sw_tb</value>
+						<value>tb_bootstrap_sw</value>
 					</option>
 					<option>lib
-						<value>bootstrap_switch_lib</value>
+						<value>sar_adc</value>
 					</option>
 					<option>path
 						<value>$AXL_SETUPDB_DIR</value>

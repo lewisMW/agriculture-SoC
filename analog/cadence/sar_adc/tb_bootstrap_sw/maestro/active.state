@@ -3,7 +3,7 @@
 	<Test Name="bootstrap_switch_lib_bootstrap_sw_tb_1">
 		<component Name="adeInfo" Type="skillTable">adeinfo
 			<field Name="descriptiontext" Type="string">"None"</field>
-			<field Name="designInfo" Type="list">("bootstrap_switch_lib" "bootstrap_sw_tb" "schematic" "spectre")</field>
+			<field Name="designInfo" Type="list">("sar_adc" "tb_bootstrap_sw" "schematic" "spectre")</field>
 			<field Name="projectDir" Type="string">"/home/jaime/simulation/bootstrap_switch_lib/bootstrap_sw_tb/maestro/results/maestro/.tmpADEDir_jaime/bootstrap_switch_lib_bootstrap_sw_tb_1/simulation"</field>
 		</component>
 		<component Name="rfstim" Type="skillTable">rfstim</component>
