@@ -1,17 +1,23 @@
 // -----------------------------------------------------------------------------
 // sar_ams_shim.vams
 //
-// Drop-in AMS replacement for dummy_adc: presents the same digital port list,
-// but instantiates the real behavioural SAR ADC
-// (analog/cadence/notech/SoC/adc_top_lib/sar/verilogams/verilog.vams).
+// AMS testbench glue around the chip's SAR ADC. Under SAR_AMS (Xcelium AMS
+// flow) adc_apb_wrapper_rev2 instantiates this shim in place of sar_adc, with
+// the same digital ports; the shim instantiates that same synthesisable
+// sar_adc (agriculture_soc_main/ADC/sar_adc.v: clock divider, sarlogic, NAND
+// comparator latch, sar_afe macro). The amsd file binds sar_afe to its SPICE
+// netlist (amsd_sky130_afe_sch/pex.scs); without one it stays on its
+// Verilog-AMS view (analog/cadence/sar_adc/sar_afe/verilogams).
 //
-// The shim owns everything the digital wrapper cannot express:
-//   - the analog supplies (vdd/vss) for the SAR,
+// The shim owns what the digital chip RTL cannot express:
+//   - the analog supplies for the macro: vdd/vss, and vdda for the rebuilt
+//     macro's analog supply. sar_adc leaves vdda unconnected until the macro
+//     has the pin; until then the Spectre inventory shows one Bidir connect
+//     module, which sits on that unused port,
 //   - a differential analog input on vp/vn (stand-in sensor stimulus; the
-//     wrapper's ANALOG_IN/amux path is digital-only, so it is not connected),
-//   - a clock divider, because the SAR needs ~11 clocks per conversion at a
-//     rate far below PCLK. The wrapper already synchronises `valid` back into
-//     the PCLK domain, so the slower ADC clock is safe.
+//     wrapper's ANALOG_IN/amux path is digital-only, so it is not connected,
+//     and neither are the chip's ADC_VINP/ADC_VINN wires).
+// The ADC clock divider is part of sar_adc itself (CLK_DIV).
 //
 // Requires the AMS flow (xrun -ams) with 1.8 V connect rules.
 // -----------------------------------------------------------------------------
@@ -20,9 +26,10 @@
 `include "disciplines.vams"
 
 module sar_ams_shim #(
-    parameter RESULT_WIDTH = 8,
+    parameter RESULT_WIDTH = 8,        // must be 8 (sar_adc is an 8-bit ADC)
     parameter CLK_DIV      = 4,        // PCLK cycles per SAR clock half-period
-    parameter real VDD_V   = 1.8,      // SAR supply
+    parameter real VDD_V   = 1.8,      // macro digital/comparator supply
+    parameter real VDDA_V  = 1.8,      // macro analog supply (rebuilt macro)
     parameter real VCM_V   = 0.9,      // input common mode
     parameter real VAMP_V  = 0.4,      // differential input amplitude
     parameter real FIN_HZ  = 5.0e3,    // input frequency
@@ -40,11 +47,11 @@ module sar_ams_shim #(
     // step with a ~90 fs time constant, which no timestep can resolve, and
     // Spectre stalls at minstep (~-32 mA in the vn source branch).
     //
-    // With the sky130 bootstrap_sw bound instead (amsd_sky130_full.scs) the real
-    // switch supplies physical resistance and RSRC is NOT required - it can be
-    // 0, which bypasses the series branch entirely and restores ideal sources.
-    // Set it back to ~100 ohm if you bind the behavioural switch_adc together
-    // with device-level CDAC caps.
+    // With the sky130 bootstrap_sw bound instead (the sar_afe netlists) the
+    // real switch supplies physical resistance and RSRC is NOT required - it
+    // can be 0, which bypasses the series branch entirely and restores ideal
+    // sources. Set it back to ~100 ohm if you bind the behavioural switch_adc
+    // together with device-level CDAC caps.
     parameter real RSRC    = 0.0       // sensor source impedance (ohm; 0 = ideal)
 )(
     input  wire                    clk,
@@ -57,16 +64,19 @@ module sar_ams_shim #(
 );
 
     // ── Analog supplies and stand-in differential sensor input ──────────────
-    electrical vp, vn, vdd, vss;
-    electrical vdd_src;                 // ideal source behind RSUP
+    electrical vp, vn, vdd, vdda, vss;
+    electrical vdd_src, vdda_src;       // ideal sources behind RSUP
     electrical vp_src, vn_src;          // ideal sines behind RSRC
     ground vss;
 
     analog begin
-        // Supply: ideal source -> series resistance -> decoupled vdd rail.
-        V(vdd_src)      <+ VDD_V;
-        I(vdd_src, vdd) <+ V(vdd_src, vdd)/RSUP;
-        I(vdd, vss)     <+ CDEC*ddt(V(vdd, vss));
+        // Supplies: ideal source -> series resistance -> decoupled rail.
+        V(vdd_src)        <+ VDD_V;
+        I(vdd_src, vdd)   <+ V(vdd_src, vdd)/RSUP;
+        I(vdd, vss)       <+ CDEC*ddt(V(vdd, vss));
+        V(vdda_src)       <+ VDDA_V;
+        I(vdda_src, vdda) <+ V(vdda_src, vdda)/RSUP;
+        I(vdda, vss)      <+ CDEC*ddt(V(vdda, vss));
 
         // Differential sensor input. RSRC is a parameter, so this selects the
         // structure once at elaboration, not during the solve.
@@ -87,34 +97,21 @@ module sar_ams_shim #(
         end
     end
 
-    // ── Clock divider: PCLK -> sar_clk ──────────────────────────────────────
-    reg [15:0] div_cnt;
-    reg        sar_clk;
-
-    always @(posedge clk or negedge rstn) begin
-        if (!rstn) begin
-            div_cnt <= 16'd0;
-            sar_clk <= 1'b0;
-        end else if (div_cnt == CLK_DIV-1) begin
-            div_cnt <= 16'd0;
-            sar_clk <= ~sar_clk;
-        end else begin
-            div_cnt <= div_cnt + 16'd1;
-        end
-    end
-
-    // ── The real SAR ADC ────────────────────────────────────────────────────
-    sar u_sar (
-        .vp     (vp),
-        .vn     (vn),
-        .clk    (sar_clk),
+    // ── The chip's SAR ADC (same RTL as synthesis) ──────────────────────────
+    sar_adc #(
+        .CLK_DIV (CLK_DIV)
+    ) u_sar_adc (
+        .vdd    (vdd),
+        .vss    (vss),
+        .vdda   (vdda),
+        .clk    (clk),
+        .rstn   (rstn),
         .en     (en),
         .cal    (cal),
-        .rstn   (rstn),
         .valid  (valid),
         .result (result),
-        .vdd    (vdd),
-        .vss    (vss)
+        .vinp   (vp),
+        .vinn   (vn)
     );
 
 endmodule

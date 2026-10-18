@@ -1,20 +1,25 @@
 //-----------------------------------------------------------------------------
-// Behavioural Verilog-AMS SAR ADC filelist
+// Verilog-AMS SAR ADC filelist
 //
 // Pulled into the simulation via FLIST_INCLUDES when SAR_AMS_INCLUDE is set
 // (see nanosoc_tech/makefile). Requires the Xcelium AMS flow (SIMULATOR=xr):
 // the .vams sources need -ams, connect rules and a Spectre analog control
 // file, all added by makefile.simulate when AMS=yes.
 //
+// The digital half of the ADC is the chip RTL itself and is NOT listed here:
+// sar_adc, sar_comp_latch and sarlogic come from accelerator.flist, the nand2
+// cell model from accelerator_sim.flist (whose behavioural sar_afe model is
+// empty under SAR_AMS). This list adds the shim and the sar_afe views:
+// sar_afe's Verilog-AMS view and its behavioural sub-cells, used as they are
+// without an amsd file (run_afe_suite.sh beh) and replaced as a whole by the
+// SPICE netlist with amsd_sky130_afe_sch/pex.scs.
+//
 // All cells come from the consolidated analog/cadence/sar_adc library
 // (one library, lowercase names, every view of a cell shares its ports).
 //
-// sar_ams_shim replaces dummy_adc inside adc_apb_wrapper_rev2 (`ifdef SAR_AMS).
+// sar_ams_shim replaces sar_adc inside adc_apb_wrapper_rev2 (`ifdef SAR_AMS)
+// and instantiates it.
 //-----------------------------------------------------------------------------
-
-// Digital sub-blocks of the SAR
-$(ACCELERATOR_DIR)/../analog/cadence/sar_adc/sarlogic/functional/verilog.v
-$(ACCELERATOR_DIR)/../analog/cadence/sar_adc/sr_latch/functional/verilog.v
 
 // Verilog-A cells. xrun does not recognise the .va extension, so these are
 // committed .vams symlinks to the OA veriloga.va cellview files.
@@ -27,7 +32,6 @@ $(ACCELERATOR_DIR)/../analog/cadence/sar_adc/switch_adc/verilogams/verilog.vams
 $(ACCELERATOR_DIR)/../analog/cadence/sar_adc/comparator/verilogams/verilog.vams
 $(ACCELERATOR_DIR)/../analog/cadence/sar_adc/cdac_8b/verilogams/verilog.vams
 $(ACCELERATOR_DIR)/../analog/cadence/sar_adc/sar_afe/verilogams/verilog.vams
-$(ACCELERATOR_DIR)/../analog/cadence/sar_adc/sar/verilogams/verilog.vams
 
-// AMS shim presenting the dummy_adc digital interface around the real SAR
+// AMS shim: supplies + stimulus around the chip's sar_adc
 $(ACCELERATOR_DIR)/AMS/sar_ams_shim.vams

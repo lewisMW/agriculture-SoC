@@ -56,6 +56,16 @@ ROM_FILE = ../software/hello/write_test.hex
 # testbenches (wrapper_control_2_tb, tb_rtc_control, fifo_apb_adc_tb, arm_rtc_tb,
 # adc_apb_wrapper_rev2_tb) and legacy revisions (adc_apb_wrapper_rev0,
 # rtc_control, rtc_control_tb_*) that collide / add extra top-levels.
+# The SAR ADC: sar_adc + latch + sarlogic (synthesisable), and the simulation-
+# only models of its nand2 cells and of the sar_afe analog macro.
+ADC_FILES = \
+    ./ADC/sar_adc.v \
+    ./ADC/sar_comp_latch.v \
+    ../analog/cadence/sar_adc/sarlogic/functional/verilog.v
+ADC_SIM_FILES = \
+    ./ADC/sim/sky130_fd_sc_hd__nand2_1.v \
+    ./ADC/sim/sar_afe_model.v
+
 DESIGN_FILES = \
     ./agriculture_soc.v \
     ./agriculture_soc_tb.v \
@@ -63,7 +73,8 @@ DESIGN_FILES = \
     ./AHB/AHBMUX.v \
     ./FIFO/fifo_apb_adc.v \
     ./FSM/wrapper_control_2.v \
-    ./Dummy/dummy_adc.v \
+    $(ADC_FILES) \
+    $(ADC_SIM_FILES) \
     ./Dummy/dummy_amux.v \
     ./Dummy/dummy_pll.v \
     ./RTC/rtc_control_2.v \
@@ -143,7 +154,8 @@ _verify_summary:
 LINT_FREE_FILES = \
     ./FIFO/fifo_apb_adc.v \
     ./FSM/wrapper_control_2.v \
-    ./Dummy/dummy_adc.v \
+    $(ADC_FILES) \
+    $(ADC_SIM_FILES) \
     ./Dummy/dummy_amux.v \
     ./Dummy/dummy_pll.v
 

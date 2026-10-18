@@ -3,11 +3,13 @@
 # run_wrapper_ams.sh
 #
 # Wrapper-level mixed-signal simulation: the real APB sensing wrapper
-# (adc_apb_wrapper_rev2) driven by its APB testbench, with the behavioural
-# Verilog-AMS SAR ADC swapped in for dummy_adc (via -define SAR_AMS).
+# (adc_apb_wrapper_rev2) driven by its APB testbench, with sar_ams_shim in
+# place of sar_adc (via -define SAR_AMS). The shim instantiates the chip's
+# sar_adc, whose sar_afe macro stays on its behavioural Verilog-AMS view here.
 #
-# Digital: wrapper + sampling FSM + FIFO + RTC (Arm PL031)  -> Xcelium
-# Analog : SAR (CDAC / comparator / caps / switches)        -> Spectre
+# Digital: wrapper + sampling FSM + FIFO + RTC (Arm PL031)
+#          + sar_adc (divider, sarlogic, NAND latch)        -> Xcelium
+# Analog : sar_afe (CDAC / comparator / caps / switches)    -> Spectre
 #
 # Requires: Xcelium + Spectre (see analog/cadence/bashrc), ARM_IP_LIBRARY_PATH.
 # Usage:    ./run_wrapper_ams.sh [extra xrun args]
@@ -44,14 +46,17 @@ xrun -64bit -ams -clean -timescale 1ns/1ps \
   -analogcontrol acf.scs \
   -define SAR_AMS \
   "$CL/ConnRules18.vams" \
-  `# ---- analog: SAR hierarchy (bottom-up) ----` \
+  `# ---- the chip's SAR ADC: sar_adc, latch, sarlogic; nand2 cell model ----` \
+  "$SOC/ADC/sar_adc.v" \
+  "$SOC/ADC/sar_comp_latch.v" \
   "$ANA/sarlogic/functional/verilog.v" \
-  "$ANA/sr_latch/functional/verilog.v" \
+  "$SOC/ADC/sim/sky130_fd_sc_hd__nand2_1.v" \
+  `# ---- analog: sar_afe's behavioural views (bottom-up) ----` \
   mim_cap_adc.vams inverter.vams carray_8b.vams \
   "$ANA/switch_adc/verilogams/verilog.vams" \
   "$ANA/comparator/verilogams/verilog.vams" \
   "$ANA/cdac_8b/verilogams/verilog.vams" \
-  "$ANA/sar/verilogams/verilog.vams" \
+  "$ANA/sar_afe/verilogams/verilog.vams" \
   "$SOC/AMS/sar_ams_shim.vams" \
   `# ---- digital: wrapper, FSM, FIFO, RTC, testbench ----` \
   "$SOC/Wrapper/adc_apb_wrapper_rev2.v" \
