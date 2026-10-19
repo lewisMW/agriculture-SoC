@@ -12,7 +12,7 @@
 				<tool>ADE</tool>
 				<tooloptions>
 					<option>cell
-						<value>tb_sar_adc</value>
+						<value>tb_sar</value>
 					</option>
 					<option>lib
 						<value>sar_adc</value>
@@ -73,6 +73,7 @@
 						<evalType>point</evalType>
 					</output>
 				</outputs>
+				<origoptions></origoptions>
 			</test>
 		</tests>
 		<extensions>
@@ -112,7 +113,7 @@
 				<value></value>
 			</plottingoption>
 			<plottingoption>distributedplot_enabled
-				<value>no</value>
+				<value>yes</value>
 			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
@@ -121,6 +122,93 @@
 			</exploreroption>
 			<exploreroption>autoplotmode
 				<value>Replace</value>
+			</exploreroption>
+			<exploreroption>plottype
+				<value>Auto</value>
+			</exploreroption>
+			<exploreroption>autoplotsignals
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>autoplotwaveexpr
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>autoplotscalarexpr
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>annotatedesignname
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>annotatesimdate
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>annotatetemperature
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>annotatedesignvars
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>annotatescalaroutputs
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>annotatespecmarkers
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>histogramtype
+				<value>pass/fail</value>
+			</exploreroption>
+			<exploreroption>histogrambins
+				<value>10</value>
+			</exploreroption>
+			<exploreroption>showhistogramdensity
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>showhistogramdeviation
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>showhistogrampercentmarkers
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>histogramqqplot
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>showhistogrampoints
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>additionalcalcs
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>exactmatchonly
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>createnewstrips
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>usecolorbank
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>quickplotenable
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>useExpressionDB
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>probingmode
+				<value>current</value>
+			</exploreroption>
+			<exploreroption>directplotmode
+				<value>Append</value>
+			</exploreroption>
+			<exploreroption>directplotafter
+				<value>All Selections Are Made</value>
+			</exploreroption>
+			<exploreroption>printafter
+				<value>Each Selection</value>
+			</exploreroption>
+			<exploreroption>distributedplot_enabled
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>distributedplot_linger_time
+				<value>60</value>
 			</exploreroption>
 		</exploreroptions>
 		<vars>
