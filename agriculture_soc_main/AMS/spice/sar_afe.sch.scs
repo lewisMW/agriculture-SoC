@@ -320,18 +320,18 @@ subckt bootstrap_sw en in out vdd vss
     inv_lvt0 (en enb vdd vss) inv_lvt
 ends bootstrap_sw
 subckt cdac_8b ctl\<7\> ctl\<6\> ctl\<5\> ctl\<4\> ctl\<3\> ctl\<2\> \
-        ctl\<1\> ctl\<0\> ctl_dum sample vdda vin vout vssa
+        ctl\<1\> ctl\<0\> ctl_dum sample vdda vin vout vref vssa
     I0 (vbottom\<7\> vbottom\<6\> vbottom\<5\> vbottom\<4\> vbottom\<3\> \
         vbottom\<2\> vbottom\<1\> vbottom\<0\> net3 vout vssa) carray_8b
-    I9 (ctl_dum net3 vdda vssa) inverter
-    I8 (ctl\<7\> vbottom\<7\> vdda vssa) inverter
-    I7 (ctl\<6\> vbottom\<6\> vdda vssa) inverter
-    I6 (ctl\<5\> vbottom\<5\> vdda vssa) inverter
-    I5 (ctl\<4\> vbottom\<4\> vdda vssa) inverter
-    I4 (ctl\<3\> vbottom\<3\> vdda vssa) inverter
-    I3 (ctl\<2\> vbottom\<2\> vdda vssa) inverter
-    I2 (ctl\<1\> vbottom\<1\> vdda vssa) inverter
-    I1 (ctl\<0\> vbottom\<0\> vdda vssa) inverter
+    I9 (ctl_dum net3 vref vssa) inverter
+    I8 (ctl\<7\> vbottom\<7\> vref vssa) inverter
+    I7 (ctl\<6\> vbottom\<6\> vref vssa) inverter
+    I6 (ctl\<5\> vbottom\<5\> vref vssa) inverter
+    I5 (ctl\<4\> vbottom\<4\> vref vssa) inverter
+    I4 (ctl\<3\> vbottom\<3\> vref vssa) inverter
+    I3 (ctl\<2\> vbottom\<2\> vref vssa) inverter
+    I2 (ctl\<1\> vbottom\<1\> vref vssa) inverter
+    I1 (ctl\<0\> vbottom\<0\> vref vssa) inverter
     I10 (sample vin vout vdda vssa) bootstrap_sw
 ends cdac_8b
 subckt sarcta__C0 cn cp
@@ -411,11 +411,12 @@ subckt sar_afe clk ctln\<7\> ctln\<6\> ctln\<5\> ctln\<4\> ctln\<3\> \
         ctln\<2\> ctln\<1\> ctln\<0\> ctlp\<7\> ctlp\<6\> ctlp\<5\> \
         ctlp\<4\> ctlp\<3\> ctlp\<2\> ctlp\<1\> ctlp\<0\> outn outp sample \
         trima\<4\> trima\<3\> trima\<2\> trima\<1\> trima\<0\> trimb\<4\> \
-        trimb\<3\> trimb\<2\> trimb\<1\> trimb\<0\> vdd vinn vinp vss vdda
+        trimb\<3\> trimb\<2\> trimb\<1\> trimb\<0\> vdd vinn vinp vss vdda \
+        vref
     XCN (ctln\<7\> ctln\<6\> ctln\<5\> ctln\<4\> ctln\<3\> ctln\<2\> \
-        ctln\<1\> ctln\<0\> vss sample vdda vinn vtopn vss) cdac_8b
+        ctln\<1\> ctln\<0\> vss sample vdda vinn vtopn vref vss) cdac_8b
     XCP (ctlp\<7\> ctlp\<6\> ctlp\<5\> ctlp\<4\> ctlp\<3\> ctlp\<2\> \
-        ctlp\<1\> ctlp\<0\> vss sample vdda vinp vtopp vss) cdac_8b
+        ctlp\<1\> ctlp\<0\> vss sample vdda vinp vtopp vref vss) cdac_8b
     XCMP (clk outn outp trima\<4\> trima\<3\> trima\<2\> trima\<1\> \
         trima\<0\> trimb\<4\> trimb\<3\> trimb\<2\> trimb\<1\> trimb\<0\> \
         vdd vtopn vtopp vss) comparator
