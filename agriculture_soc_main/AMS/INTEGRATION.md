@@ -1,5 +1,82 @@
 # Executive Summary
 
+**20 Oct 2026: the macro is rebuilt on Hee's final `cdac_8b`, with its own
+`vref`. Accuracy is unchanged: within 1 LSB as a schematic and 2 LSB
+extracted at the chip's ADC clock.**
+
+- **Cells:** Hee's `cdac_8b` now carries the bootstrapped switch and passes LVS against its own schematic. Its bit drivers run from a separate `vref` (the CDAC reference, to be heavily decoupled) and the switch from `vdda`. `carray_8b` has `vtop` on its right edge and its whole `vssa` plane as the pin. The inverter keeps PR 2's poly fix.
+- **Floorplan:** N at the bottom and P above it, mirrored, so both cells' input and top-plate corners face a 12 µm gap; the macro no longer places switches of its own. 260 × 429.32 µm. See `ASIC_ours/macros/sar_afe/README.md`.
+- **`vref`:** a macro pin of its own, with straps and buses. `sar_adc`, `ADC/sim/sar_afe_model.v`, the `sar_afe` Verilog-AMS view and both netlists carry it, and the shim supplies it with its own decoupling (`CDEC_REF`, 10 pF like the other rails for now). The behavioural `cdac_8b` still has one supply, which the macro's Verilog-AMS view takes from `vref`.
+- **LVS:** MATCH for all three cells, with `cdac_8b` as an ordinary subcell (no more `--exclude-hcell`). **DRC:** no real violations.
+- **Extraction:** 98 FETs, 656 MIM caps, 12.9k C, 10.6k R.
+
+Results, 20 Oct, on the exact tree of the rebuilt stack:
+- **Suite** (`ADC_CLK_DIV` 4, as the suite runs it): with the schematic macro (75 BSIM4, 692 C) and the extracted macro (98 BSIM4, 13.6k C), 6/6 firmware PASS and Spectre 0 errors and 0 warnings. The `SENSING_CHECK` counts are exactly those of 18 Oct (schematic: adc_autonomous 1, fifo_drain 6, sensing_driver 8; extracted: adc_trigger 1, adc_autonomous 1, fifo_drain 7, sensing_driver 8). The negative control gives 23 FAILs in both.
+- **At the chip's ADC clock** (`ADC_CLK_DIV` 12, per sample against the ideal model, 112 samples of adc_trigger, adc_autonomous and fifo_drain):
+  - Schematic: −1..+1 LSB; fit gain +0.30 %, offset +0.09 LSB.
+  - Extracted: −2..+2 LSB; fit gain +2.55 %, offset +0.06 LSB.
+  - Split by the time since the previous conversion, as on 19 Oct: within 10 µs (90 samples) +3.03 %, after a longer idle (22) +0.65 %; on 19 Oct +3.0 % and +0.4 %. The rebuild re-routed the top plate, rewired every supply and separated `vref`, and the effect didn't move, so it isn't in that wiring. The switch's boost recharge is still the leading candidate.
+
+**18 Oct 2026: the macro is rebuilt for the chip's bottom-left corner,
+on the team's own cells.** *(Superseded by the 20 Oct entry above for the
+cells, the floorplan and the supplies.)*
+
+- **Floorplan** (the team's sketch):
+  - Hee's two `cdac_8b` are stacked on the left, used exactly as Hee drew them.
+  - Jaime's two bootstrap switches and Erick's comparator sit in a column to their right.
+  - The analog inputs enter from the left edge, and every digital pin is on the right edge, facing the SAR logic.
+  - `sar_afe_r` (mirrored) and `sar_afe_b` (rotated, inputs at the bottom) are the same layout. See `ASIC_ours/macros/sar_afe/README.md`.
+- **Cells:**
+  - Hee's PR #130: `cdac_8b`, `carray_8b` with a real `vssa` pin, the `inverter` with its licon.8 fix, and the 10-cycle `sarlogic`.
+  - Jaime's switch, with its schematic back on `inv_lvt`.
+  - Erick's comparator and trim, with the n-well fix.
+- **New supply pin `vdda`:** the CDAC reference (Hee's bit-driver inverters) and the switches, as Hee's `cdac_8b` schematic has it. The `sar_afe` Verilog-AMS view and both netlists carry it, and the shim supplies it.
+- **LVS:** MATCH for all three cells. Hee's `cdac_8b` is compared flattened: its schematic contains the switch, its layout doesn't.
+- **DRC:** only `cdac_8b`'s own two rules remain.
+- **Extraction:** 98 FETs, 656 MIM caps, 13.9k C, 10.4k R.
+
+Results, 18 Oct, on the exact `stack/ams-integration` tree (shim → `sar_adc` → `sar_afe` bound to its netlist; `ADC_CLK_DIV` 4, as the suite runs it):
+- **Schematic macro:** 6/6 firmware PASS, Spectre 0 errors and 0 warnings, 75 BSIM4 and 692 capacitors. `SENSING_CHECK` reports adc_autonomous 1, fifo_drain 6 and sensing_driver 8, and is clean on the rest. These are the same counts the old macro gave with the same RTL, so the rebuild changes nothing here. The negative control gives 23 FAILs.
+- **Extracted macro:** 6/6 firmware PASS, Spectre 0 errors and 0 warnings, 98 BSIM4 and 14.6k capacitors, with no behavioural front-end cells. `SENSING_CHECK` reports adc_trigger 1, adc_autonomous 1, fifo_drain 7 and sensing_driver 8 (13 Oct: 0/0/9/5), and is clean on rtc_time and pslverr. The negative control gives 23 FAILs.
+- **What the FAILs mean:** they are not an ADC defect; see the next section.
+
+**18–19 Oct 2026: the AMS suite runs the chip's own ADC RTL. At the chip's
+ADC clock the macro matches an ideal model to 1 LSB as a schematic and 2 LSB
+extracted.**
+
+- **Same RTL as the chip:**
+  - `sar_ams_shim` now instantiates `agriculture_soc_main/ADC/sar_adc.v`, the synthesisable ADC that replaces `dummy_adc` in `adc_apb_wrapper_rev2`. It contains the clock divider, Hee's 10-cycle `sarlogic` (PR #130), the NAND comparator latch (two sky130 nand2) and `sar_afe`.
+  - The shim only provides the supplies (now with `vdda`) and the sine. The behavioural `sar` and `sr_latch` are no longer used.
+  - Plain-digital simulation uses `ADC/sim/sar_afe_model.v` instead of `dummy_adc`. It is an ideal charge-redistribution model driven by the same 5 kHz sine.
+- **A reference code for every sample:**
+  - The digital timing is identical in all three configurations, so each FIFO sample can be compared at the same time stamp (`EXTRA_DEFINES=+define+SENSING_DEBUG`).
+  - `AMS/cmp_codes.py IDEAL_LOG AMS_LOG ...` pairs the samples and fits the error as offset, gain and lag.
+  - The behavioural views (`run_afe_suite.sh beh`) give exactly the model's codes on all 170 samples of four tests.
+- **Schematic macro, as the suite runs it** (`ADC_CLK_DIV` 4 at the 100 MHz FAST_SIM clock):
+  - 6/6 firmware PASS. Spectre reports 0 errors and 0 warnings; the inventory is 75 BSIM4 and 692 capacitors.
+  - `SENSING_CHECK` reports adc_autonomous 1, fifo_drain 6 and sensing_driver 8, and is clean on the other three. The negative control gives 23 FAILs.
+  - Against the model the codes are 33 LSB low to 8 LSB high (mean about 9 LSB low), and read 0x3F where the model gives 0x47 to 0x60.
+- **Schematic macro at the chip's ADC clock** (`ADC_CLK_DIV` 12: a 240 ns sar_clk period, as 33 MHz / 8 on the chip):
+  - It is within ±1 LSB of the model on all 147 samples of adc_autonomous, fifo_drain and sensing_driver.
+  - So the 0x3F trough and the low codes come from running the ADC three times faster than the chip will. For these large errors this supersedes the bootstrap-recharge explanation of 6 and 13 Oct.
+  - At `ADC_CLK_DIV` 12, sensing_driver_test fails its own "FIFO empty after clear" check, because the firmware assumes a conversion takes no more cycles than at 4.
+  - To reproduce, add `-defparam nanosoc_tb.u_nanosoc_chip_pads.u_nanosoc_chip.u_system.u_ss_expansion.u_region_exp.u_ss_accelerator.sensor_wrapper.ADC_CLK_DIV=12` to `XRUN_EXTRA_SRC`.
+- **Extracted macro at the chip's ADC clock** (19 Oct, same tree and settings; adc_trigger, adc_autonomous and fifo_drain):
+  - Firmware PASS, Spectre 0 errors and 0 warnings. `SENSING_CHECK` is clean on adc_trigger and adc_autonomous. fifo_drain's 11 FAILs are the aliasing ones, the same 11 as the model's.
+  - Against the model the codes are −2 to +2 LSB on all 112 samples, with no 0x3F anywhere. The trough samples (0x46 to 0x5d) are within 1 LSB.
+  - **Back-to-back conversions carry a +3.0 % gain error.** That covers adc_trigger, adc_autonomous and the start of fifo_drain, 90 samples. The codes spread up to 2 LSB away from mid-scale. Conversions after an idle (fifo_drain's 22 sparse samples) show +0.4 %, and the schematic shows +0.3 % either way.
+  - So something in the layout recovers slowly between conversions about 2 µs apart. `sarlogic` gives every conversion the same one-cycle sample phase, so only the history differs.
+  - Ruled out: the `vdda` wiring (about 190 Ω to the bit drivers, a 2 mV drop), and a static top-plate capacitance, which the idle samples would show too.
+  - One candidate is the switch's boost recharge. The next step is a standalone run of the extracted macro with back-to-back conversions, probing the boost nodes, the top plates and the bit-driver supplies.
+- **`SENSING_CHECK` on fifo_drain and sensing_driver:**
+  - The model and the behavioural views fail it too, with 11 and 12 FAILs.
+  - These tests trigger about every 108 µs and 42 µs, which aliases the 5 kHz sine, so consecutive samples are up to 113 LSB apart.
+  - With a 500 Hz sine (`-defparam ...sensor_wrapper.u_adc.FIN_HZ=500`) the model passes both tests. The schematic at `ADC_CLK_DIV` 4 then fails sensing_driver twice, at the 0x3F trough.
+  - The step check is therefore weak in both directions. Comparing each sample with the model's code is the stronger check.
+- **Open, found while wiring the RTL:**
+  - **Calibration diverges.** `sarlogic` assumes that raising `trima` raises the `vinp` side, but the macro lowers it (see "`Trima` trims the `Vn` side" below). The fix goes in `sarlogic`, or as a `trima`/`trimb` cross in `sar_adc`.
+  - **Two conversions per trigger.** `wrapper_control_2` holds `en` until the synchronised `valid` arrives. Harmless, but it doubles the ADC's power.
+
 **13 Oct 2026: the macro is rebuilt on the team's latest cells and handed to
 the digital flow.**
 
@@ -47,7 +124,9 @@ Results, 6 Oct:
 - Remaining analog finding, unchanged: the bootstrap switch's boost caps
   don't recharge between back-to-back conversions (see the bootstrap-sw
   section below and the 0x3F trough). It is the open item for M3, not a
-  regression.
+  regression. **18 Oct:** superseded. The suite clocks the ADC three times
+  faster than the chip, and at the chip's rate there is no such failure (see
+  the top).
 
 What changed under the AMS flow on 6 Oct:
 - main merged in. The inverter's views now use (out, in, vdd, vss), so the
@@ -92,7 +171,7 @@ Branch fix-ups:
 ## bootstrap-sw — bootstrap_sw, inv_lvt (0d8dd22)
 
 - Port out is declared dir=input — should be output. AMS binding uses port directions.
-- Back-to-back conversions produce alternating samples 60–90 LSB low. RTC-spaced conversions are clean. Suspect the 4×53 fF boost caps can't recharge in the trigger interval. Characterise in bootstrap_sw_tb (probe vbsh/vbsl under rapid en), then publish a minimum conversion interval or strengthen the precharge. But also, not yet ruled out: wrapper FSM re-asserting adc_en too early.
+- Back-to-back conversions produce alternating samples 60–90 LSB low. RTC-spaced conversions are clean. Suspect the 4×53 fF boost caps can't recharge in the trigger interval. Characterise in bootstrap_sw_tb (probe vbsh/vbsl under rapid en), then publish a minimum conversion interval or strengthen the precharge. But also, not yet ruled out: wrapper FSM re-asserting adc_en too early. **18 Oct:** neither; the suite clocks the ADC three times faster than the chip (see the top).
 - Un-nest bootstrap_switch_lib — it currently sits inside sky130_analog_lib/. Make it a sibling or merge the cells in.
 - Add a switch_adc cell = one bootstrap_sw instance, pins p n ctrl vdd vss (ctrl→en, p→in, n→out). Removes a wrapper from our glue.
 - Re-Check&Save to clear stale "floating net" results in the OA — the live data is fine, they mislead.
@@ -223,7 +302,7 @@ Runs a deliberately-broken configuration first, then all 6 firmware tests.
 
 Point at, in order:
 1. Negative control: 23 SENSING_CHECK FAIL lines — and the firmware still says Test Passed!. The tests only check the FIFO is non-empty, so a dead ADC passes. That's why the checker exists.
-2. Then 4 tests clean, and fifo_drain_test / sensing_driver_test fail with 6 checks each — alternating samples 60–90 LSB low. A real design finding: the bootstrap switch's boost caps can't recharge between back-to-back conversions. RTC-spaced conversions are fine.
+2. Then 4 tests clean, and fifo_drain_test / sensing_driver_test fail with 6 checks each — alternating samples 60–90 LSB low. A real design finding: the bootstrap switch's boost caps can't recharge between back-to-back conversions. RTC-spaced conversions are fine. (**18 Oct:** superseded. The suite clocks the ADC three times faster than the chip; at the chip's rate these samples are within 2 LSB of the ideal model. See the top.)
 
 That's the strongest thing you have to show: the flow found a genuine analog defect through a firmware test.
 
@@ -328,7 +407,10 @@ Two Cadence facts that constrain the naming, both learned the hard way:
    for `bootstrap_sw`.
    *Action:* run both.
 
-3. **Design finding — back-to-back conversions fail.** With the real switch
+3. **Design finding — back-to-back conversions fail.** (**18 Oct:**
+   superseded; see the top. The suite clocks the ADC three times faster than
+   the chip, and at the chip's rate back-to-back conversions are within 2 LSB
+   of the ideal model.) With the real switch
    bound, conversions triggered back-to-back produce **alternating samples
    60-90 LSB low**, recovering on the next conversion:
 

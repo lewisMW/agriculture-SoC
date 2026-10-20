@@ -19,68 +19,84 @@ on the Cadence box; run `source ~/.bashrc` first to get the licence and tool pat
 
 Outputs go to `runs/` (gitignored).
 
-## Results (18 Oct 2026, Pegasus 23.2, patched deck)
+## Results (20 Oct 2026, Pegasus 23.2, patched deck)
 
 | Cell | Owner | Version | LVS | Real DRC (density/fill excluded) |
 |---|---|---|---|---|
-| `inverter` | Hee | PR #130 + poly fix | MATCH 4/4 | clean |
+| `inverter` | Hee | 19 Oct + poly fix | MATCH | clean |
 | `mim_cap_adc` | Hee | PR #130 | MATCH | clean |
-| `carray_8b` | Hee | PR #130 + vssa pin fix | MATCH 11/11, 324 unit caps | clean |
-| `cdac_8b` | Hee | PR #130 | compared flattened in the macro (below) | CDR.m1.1 ×9 (bit-driver inputs), CDR.li.5 ×4 (row-end taps) |
-| `bootstrap_sw` | Jaime | moved into `sar_adc` (PR #130), schematic re-pointed to `inv_lvt` | MATCH 5/5 | clean |
+| `carray_8b` | Hee | 19 Oct (`vtop` on the right edge, `vssa` plane as the pin) | MATCH, 324 unit caps | clean |
+| `cdac_8b` | Hee | 20 Oct (switch inside, `vref` pin) | MATCH | clean |
+| `bootstrap_sw` | Jaime | moved into `sar_adc`; Hee's 20 Oct schematic on `inv_lvt` | MATCH | clean |
 | `trim` | Erick | `Erick_dev` (9 Oct) | MATCH 7/7, `sarcta__C0` black-boxed | clean |
 | `comparator_core` | Erick | `Erick_dev` (9 Oct) + n-well fix | MATCH 17/17, `sarcta__C0` black-boxed | clean |
 | `comparator` (wrapper) | — | generated | MATCH 17/17 | none of its own |
-| **`sar_afe`**, `sar_afe_r`, `sar_afe_b` (ADC macro) | — | generated | **MATCH, all three** | none of their own; only `cdac_8b`'s above |
+| **`sar_afe`**, `sar_afe_r`, `sar_afe_b` (ADC macro) | — | generated | **MATCH, all three** | clean |
 
 The fixes to the team's cells are commits on their branches in the PR stack:
-- **Inverter:** a poly rectangle at (0.345, 1.875)–(0.675, 2.145) encloses the input contact.
-- **Array:** the `vssa` pin is a real 0.3 × 0.3 µm pin instead of a 15 nm speck.
-- **Switch:** Jaime's schematic is restored, with its inverter pointing at the moved `inv_lvt`.
+- **Inverter:** a poly rectangle at (0.345, 1.875)–(0.675, 2.145) encloses the input contact (licon.8/8a). Hee's 19 Oct inverter still needs it; with it, `cdac_8b` is clean too.
 - **Comparator:** an n-well rectangle at (1.75, 11.885)–(16.05, 13.245) merges the six Vdd PMOS wells.
 
-`cdac_8b`'s two DRC items are Hee's to fix: his cell is used exactly as he
-drew it.
+Two earlier fixes are no longer needed: Hee's 19 Oct `carray_8b` makes the
+whole `vssa` plane its pin, and his 20 Oct `bootstrap_sw` schematic points its
+inverter back at `inv_lvt` himself.
 
 ### The ADC macro
 
-`sar_afe` is the ADC's analog front end as one hard macro, 229.5 × 372 µm,
-for the chip's bottom-left corner. From left to right:
-- **Supply straps:** the left-hand set.
-- **Hee's two `cdac_8b`:** each is a `carray_8b` with its 9 bit-driver inverters. They are stacked with a 10 µm gap that the analog inputs enter from the left edge.
-- **One column:** Jaime's bootstrap switch, Erick's comparator (rotated so its inputs face the arrays) and the other switch.
-- **Supply straps:** the right-hand set.
+`sar_afe` is the ADC's analog front end as one hard macro, 260 × 429.32 µm,
+for the chip's bottom-left corner. From bottom to top:
+- **Supply buses:** one met3 bus per supply, joining that supply's left and right straps.
+- **Hee's two `cdac_8b`:** each is a `carray_8b`, its 9 bit-driver inverters and Jaime's bootstrapped switch. N sits at the bottom and P above it, mirrored, so both cells' input and top-plate corners face a 12 µm gap. The analog inputs come in from the left edge straight to those corners.
+- **Supply buses** again.
 
-`macro/afe_lay.il` generates the layouts and `macro/afe_sch.il` the
-schematics; the layout script reads the leaf cells' pin positions from their
-layouts.
+Erick's comparator sits to the right of the CDACs, level with the gap, rotated
+so its inputs face them. `macro/afe_lay.il` generates the layouts and
+`macro/afe_sch.il` the schematics; the layout script reads the leaf cells'
+pin positions from their layouts.
 
-- **Digital pins** (ctlp/ctln, sample, clk, trima/trimb, outp/outn): met3 stubs on the right edge, on the `sky130_fd_sc_hd` met3 tracks.
+- **Digital pins** (ctlp/ctln, sample, clk, trima/trimb, outp/outn): met3 stubs on the right edge, on the `sky130_fd_sc_hd` met3 tracks. Each CDAC's `ctl` pins (on its right edge) run straight across.
 - **Analog inputs** (vinp/vinn): met3 stubs on the left edge.
-- **Supplies:** six full-height met4 straps. From each edge inward they are `vss`, `vdda` (the CDAC reference and the switches, as in Hee's `cdac_8b` schematic) and `vdd` (the comparator).
-- **met5:** used only by the comparator's clock and the switches' supply runs.
+- **Supplies:** eight full-height met4 straps. From each edge inward they are `vss`, `vdda` (the switches), `vref` (the CDAC reference: Hee's bit drivers) and `vdd` (the comparator). Each CDAC's supply pins, on its outer edge, drop onto the buses; its `vssa` is tied to `vss`.
+- **met5:** used only by the comparator's clock.
 - **Variants:** `sar_afe_r` is `sar_afe` mirrored (inputs on the right), and `sar_afe_b` is `sar_afe` rotated by 90° (inputs at the bottom, digital pins as met2 on the top edge, supply bands along its top and bottom). All three share the schematic and the internal layout.
 
-**`cdac_8b` is compared flattened** (`--exclude-hcell cdac_8b`). Hee's
-`cdac_8b` schematic contains the bootstrap switch, but its layout doesn't: in
-the macro the switch sits beside it, as in the floorplan sketch. So
-`cdac_8b` can't be a correspondence point of its own. With
-`lvs_exclude_hcell`, Pegasus compares its contents as part of the macro,
-which checks every device and connection all the same. Two more quirks of
-the cell, as of 18 Oct:
-- **Stale `vout` stub:** its `vout` stub sits where the array's `vtop` pin was before Hee's 12 Oct change, and it now touches the array's `vssa` plane. The macro joins the array's `vtop` riser itself and leaves the stub alone, so the stub is just part of `vss`.
-- **Pin names:** its layout pins are named `vdd`/`vss`, while the schematic's are `vdda`/`vssa`.
+**`cdac_8b` is an ordinary subcell now.** Until 20 Oct its schematic held the
+switch and its layout didn't, so the macro placed the switch beside it and
+LVS compared `cdac_8b` flattened (`--exclude-hcell cdac_8b`). Hee's 20 Oct
+layout has the switch and matches its schematic on its own, so the macro is
+compared hierarchically and the option is gone from the macro's commands.
+
+**Symbols:** `afe_sch.il` regenerates the schematics. A supply pin added
+later (`vdda` on 18 Oct, `vref` on 20 Oct) is added to the existing symbols by
+`m1SymAddPin` (`macro/schgen.il`), because `schViewToView` can't overwrite a
+symbol in batch mode.
 
 `macro/export_macro.sh` writes the views for the digital flow
 (`ASIC_ours/macros/sar_afe/README.md`).
 
-**Extraction** (`run_pex.sh sar_adc sar_afe --blackbox sarcta__C0 --exclude-hcell cdac_8b`, rc_coupled):
+**Extraction** (`run_pex.sh sar_adc sar_afe --blackbox sarcta__C0`, rc_coupled):
 
 - Devices: 656 MIM caps and 98 FETs (fingers and multipliers expanded).
-- Parasitics: 13.9k C and 10.4k R.
+- Parasitics: 12.9k C and 10.6k R.
 - MOM caps: the trims' 36 MOM unit caps stay as black boxes, netlisted from their schematic (1.25 fF each).
 
 The netlist (~1.5 MB) is **not committed**; regenerate it. Its ports must match the schematic netlist's exactly, and the script checks this.
+
+**AMS regression** (`AMS/run_afe_suite.sh sch|pex`, 20 Oct): the six firmware
+tests run the chip's own `sar_adc` RTL around the macro. With both the
+schematic and the extracted macro, all six pass, Spectre is clean, the
+`SENSING_CHECK` counts are the same as before the rebuild, and the negative
+control gives 23 FAILs.
+
+The remaining `SENSING_CHECK` step failures don't point to an ADC defect:
+- the suite clocks the ADC three times faster than the chip will;
+- the triggers of two tests alias the test tone.
+
+At the chip's ADC clock the macro matches an ideal model per sample: within
+1 LSB as a schematic and 2 LSB extracted. In the extraction, a conversion
+within 10 µs of the previous one carries a +3 % gain error that conversions
+after a longer idle don't have (+0.65 %); the rebuild didn't change it.
+Details are in `agriculture_soc_main/AMS/INTEGRATION.md`.
 
 ## The trim's MOM unit cap is compared as a black box
 

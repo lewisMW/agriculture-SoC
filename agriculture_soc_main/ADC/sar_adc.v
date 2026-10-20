@@ -20,7 +20,7 @@
 //   sar_clk_reg  the divider's output flop: sar_clk = clk / (2*CLK_DIV)
 //   u_logic      sarlogic, the SAR state machine
 //                (analog/cadence/sar_adc/sarlogic/functional/verilog.v);
-//                synthesis may flatten it, and nothing refers inside it
+//                Genus may flatten it, and nothing refers inside it
 //   u_latch      sar_comp_latch: NAND SR latch of two sky130_fd_sc_hd__nand2_1,
 //                u_latch/u_nand_q and u_latch/u_nand_qn (dont_touch)
 //   u_afe        sar_afe hard macro: bootstrapped switches, CDACs, comparator

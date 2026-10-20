@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 // -----------------------------------------------------------------------------
 // sar_afe_model.v -- SIMULATION ONLY. Never list it in a synthesis filelist:
-// synthesis takes the sar_afe cell from ASIC_ours/macros/sar_afe/*.lib.
+// Genus takes the sar_afe cell from ASIC_ours/macros/sar_afe/*.lib.
 //
 // Behavioural Verilog model of the sar_afe hard macro (two bootstrapped
 // sampling switches, two 8-bit CDACs with their bit-driver inverters, and the
