@@ -73,6 +73,7 @@ module sar_afe #(
     inout  wire       vdd,
     inout  wire       vss,
     inout  wire       vdda,
+    inout  wire       vref,
 `endif
     input  wire       vinp,     // ignored (see "Input")
     input  wire       vinn,     // ignored

@@ -29,6 +29,7 @@ $(ACCELERATOR_DIR)/AMS/analog_views/carray_8b.vams
 
 // Verilog-AMS cells
 $(ACCELERATOR_DIR)/../analog/cadence/sar_adc/switch_adc/verilogams/verilog.vams
+$(ACCELERATOR_DIR)/../analog/cadence/sar_adc/bootstrap_sw/verilogams/verilog.vams
 $(ACCELERATOR_DIR)/../analog/cadence/sar_adc/comparator/verilogams/verilog.vams
 $(ACCELERATOR_DIR)/../analog/cadence/sar_adc/cdac_8b/verilogams/verilog.vams
 $(ACCELERATOR_DIR)/../analog/cadence/sar_adc/sar_afe/verilogams/verilog.vams

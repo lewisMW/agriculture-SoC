@@ -10,10 +10,9 @@
 // Verilog-AMS view (analog/cadence/sar_adc/sar_afe/verilogams).
 //
 // The shim owns what the digital chip RTL cannot express:
-//   - the analog supplies for the macro: vdd/vss, and vdda for the rebuilt
-//     macro's analog supply. sar_adc leaves vdda unconnected until the macro
-//     has the pin; until then the Spectre inventory shows one Bidir connect
-//     module, which sits on that unused port,
+//   - the analog supplies for the macro: vdd/vss for the comparator, vdda
+//     for the bootstrapped switches, and vref for the CDAC reference (the
+//     bit drivers), with its own decoupling CDEC_REF,
 //   - a differential analog input on vp/vn (stand-in sensor stimulus; the
 //     wrapper's ANALOG_IN/amux path is digital-only, so it is not connected,
 //     and neither are the chip's ADC_VINP/ADC_VINN wires).
@@ -29,7 +28,8 @@ module sar_ams_shim #(
     parameter RESULT_WIDTH = 8,        // must be 8 (sar_adc is an 8-bit ADC)
     parameter CLK_DIV      = 4,        // PCLK cycles per SAR clock half-period
     parameter real VDD_V   = 1.8,      // macro digital/comparator supply
-    parameter real VDDA_V  = 1.8,      // macro analog supply (rebuilt macro)
+    parameter real VDDA_V  = 1.8,      // macro analog supply (sampling switches)
+    parameter real VREF_V  = 1.8,      // macro CDAC reference (bit-driver inverters)
     parameter real VCM_V   = 0.9,      // input common mode
     parameter real VAMP_V  = 0.4,      // differential input amplitude
     parameter real FIN_HZ  = 5.0e3,    // input frequency
@@ -39,6 +39,8 @@ module sar_ams_shim #(
     // changed nothing (identical codes, same stall). RSRC below was the fix.
     parameter real RSUP    = 1.0,      // supply series resistance (ohm)
     parameter real CDEC    = 10.0e-12, // decoupling capacitance (F)
+    parameter real CDEC_REF = 10.0e-12, // vref decoupling (F); the chip decouples vref
+                                        // heavily, so raise this to study that
     // Source impedance of the stand-in sensor driving vp/vn.
     //
     // Why this exists: it is only needed when the SAMPLING SWITCH is the
@@ -64,8 +66,8 @@ module sar_ams_shim #(
 );
 
     // ── Analog supplies and stand-in differential sensor input ──────────────
-    electrical vp, vn, vdd, vdda, vss;
-    electrical vdd_src, vdda_src;       // ideal sources behind RSUP
+    electrical vp, vn, vdd, vdda, vref, vss;
+    electrical vdd_src, vdda_src, vref_src;  // ideal sources behind RSUP
     electrical vp_src, vn_src;          // ideal sines behind RSRC
     ground vss;
 
@@ -77,6 +79,9 @@ module sar_ams_shim #(
         V(vdda_src)       <+ VDDA_V;
         I(vdda_src, vdda) <+ V(vdda_src, vdda)/RSUP;
         I(vdda, vss)      <+ CDEC*ddt(V(vdda, vss));
+        V(vref_src)       <+ VREF_V;
+        I(vref_src, vref) <+ V(vref_src, vref)/RSUP;
+        I(vref, vss)      <+ CDEC_REF*ddt(V(vref, vss));
 
         // Differential sensor input. RSRC is a parameter, so this selects the
         // structure once at elaboration, not during the solve.
@@ -104,6 +109,7 @@ module sar_ams_shim #(
         .vdd    (vdd),
         .vss    (vss),
         .vdda   (vdda),
+        .vref   (vref),
         .clk    (clk),
         .rstn   (rstn),
         .en     (en),

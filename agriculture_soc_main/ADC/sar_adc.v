@@ -24,8 +24,9 @@
 //   u_latch      sar_comp_latch: NAND SR latch of two sky130_fd_sc_hd__nand2_1,
 //                u_latch/u_nand_q and u_latch/u_nand_qn (dont_touch)
 //   u_afe        sar_afe hard macro: bootstrapped switches, CDACs, comparator
-//                (dont_touch). Place it with the SAR logic and the latch next to
-//                its bottom-edge pins (see the macro README).
+//                (dont_touch). Place it at the bottom-left of the core, with the
+//                SAR logic and the latch to its right, next to its right-edge
+//                digital pins (see the macro README).
 // sar_adc.sdc finds the instance from u_afe, so it also works on a netlist in
 // which synthesis has flattened this level (names then become u_adc_<name>);
 // u_latch keeps its level because it is dont_touch.
@@ -52,13 +53,13 @@
 // so valid is high for one sar_clk period (2*CLK_DIV clk cycles).
 //
 // Supplies
-//   vdd/vss/vdda exist with USE_POWER_PINS (powered netlists, as for the
+//   vdd/vss/vdda/vref exist with USE_POWER_PINS (powered netlists, as for the
 //   sky130 cells and the sar_afe port list) and in the AMS flow (SAR_AMS),
 //   where sar_ams_shim supplies the SPICE-bound macro. Plain RTL simulation and
 //   synthesis have neither; the physical flow connects the macro's supply pins
-//   with connect_global_net. vdda is the macro's coming analog supply (CDAC
-//   reference, bit drivers and bootstrapped switches). It is not used until the
-//   rebuilt macro has the pin: then uncomment the one marked line on u_afe.
+//   with connect_global_net. vdda is the macro's analog supply for the
+//   bootstrapped switches; vref is the CDAC reference (Hee's bit-driver
+//   inverters), a pin of its own so it can be decoupled on its own.
 //
 // Analog inputs
 //   vinp/vinn go straight to the macro and carry no logic. In the chip they
@@ -84,7 +85,8 @@ module sar_adc #(
 `ifdef SAR_ADC_PG
     inout  wire       vdd,
     inout  wire       vss,
-    inout  wire       vdda,     // analog supply of the rebuilt macro (unused until then)
+    inout  wire       vdda,     // macro analog supply: sampling switches
+    inout  wire       vref,     // macro CDAC reference: bit-driver inverters
 `endif
     input  wire       clk,      // PCLK
     input  wire       rstn,     // active-low, asynchronous
@@ -174,7 +176,8 @@ module sar_adc #(
 `ifdef SAR_ADC_PG
         .vdd    (vdd),
         .vss    (vss),
-     // .vdda   (vdda),   // <- uncomment once the rebuilt sar_afe has its vdda pin
+        .vdda   (vdda),
+        .vref   (vref),
 `endif
         .vinp   (vinp),
         .vinn   (vinn),
