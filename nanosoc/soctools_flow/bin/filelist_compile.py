@@ -35,7 +35,7 @@ filelist_header = """//---------------------------------------------------------
 """
 
 def file_contains_module(f):
-    if 'module' in open(f).read():
+    if 'module' in open(f, encoding='utf-8').read():
        return True
     else:
        print('### -y strip: no module in ' + f)
@@ -64,7 +64,7 @@ def read_list(filelist, first, incdirs, args):
     # Create Filelist List Structure
     compiled_filelist = []
     # Open Filelist and Read Lines
-    f = open(filelist, "r")
+    f = open(filelist, "r", encoding="utf-8")
     filelines = f.readlines()
     
     if first:

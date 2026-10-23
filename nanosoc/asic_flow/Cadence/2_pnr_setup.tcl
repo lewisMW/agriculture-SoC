@@ -37,6 +37,17 @@ if {$DFT == 1} {
 ### Initializing the Design 
 init_design
 
+## -- Optional per-technology routable layer range, declared by the project's
+## -- config.tcl. Kept technology-agnostic here: if the project does not set these,
+## -- nothing changes. Must be applied at init_design -- once routing geometry
+## -- exists on an excluded layer, route_design rejects the constraint (NRDB-955).
+if {[info exists bottom_routing_layer]} {
+    set_db design_bottom_routing_layer $bottom_routing_layer
+}
+if {[info exists top_routing_layer]} {
+    set_db design_top_routing_layer $top_routing_layer
+}
+
 read_power_intent -cpf $OUT_DIR/${block_name}_gate1.cpf
 
 commit_power_intent

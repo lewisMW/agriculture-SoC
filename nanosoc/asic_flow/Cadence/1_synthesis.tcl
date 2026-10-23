@@ -23,7 +23,8 @@ check_library > $LOG_DIR/syn_lib_check.log
 
 ## -- Read in RTL and elaborate top level
 source $hdl_file_list
-read_hdl -define POWER_PINS $top_level_hdl
+read_hdl -sv -define POWER_PINS $top_level_hdl
+# set_db hdl_track_filename_row true
 elaborate $block_name
 
 ## -- Load power intent for top and accelerator power domains -- ##
@@ -34,8 +35,11 @@ read_power_intent -module $block_name ../inputs/${block_name}.upf
 
 ## -- Apply power intent and check library and CPF -- ##
 apply_power_intent
+## TODO no more warnings for unconnected things, BUT check the gpio connections
 check_cpf -detail -license lpgxl > $LOG_DIR/syn_cpf_check.log
 commit_power_intent
+
+check_power_intent
 
 ## -- Preserve power pad instances / macros from optimization -- ##
 set_dont_touch [get_cells -hierarchical -filter {name =~ "uPAD*"}]
@@ -53,6 +57,13 @@ if {$DFT == 1} {
 ## -- Synthesis -- ##
 set_db syn_generic_effort high
 set_db syn_map_effort high
+if {$DFT != 1} {
+    # new flops: don't use scan version
+    set_db use_scan_seqs_for_non_dft false
+    # existing scans (e.g. from the pregenerated RAMs): don't use them
+    # set_db dft_connect_scan_data_pins_during_mapping ground
+    # set_db dft_connect_shift_enable_during_mapping tie_off
+}
 
 syn_generic
 syn_map
@@ -68,12 +79,27 @@ syn_opt
 report_area > $REPORT_DIR/syn_area.rep
 report_timing > $REPORT_DIR/syn_timing.rep
 report_gates > $REPORT_DIR/syn_gates.rep
+
+## -- Fail loudly on unresolved references. Genus black-boxes undefined modules
+## -- at zero area by default, so an unreadable read_hdl path silently yields a
+## -- netlist missing whole blocks while still reporting success. The 2 Aug sky130
+## -- run lost the entire Arm Corstone-101 peripheral set this way: 28 unresolved
+## -- references at 0.000 area, 8,799 instances reported instead of 21,192.
+set _fh [open $REPORT_DIR/syn_gates.rep r]
+set _rpt [read $_fh]
+close $_fh
+if {[regexp {unresolved\s+(\d+)} $_rpt -> _nunres] && $_nunres > 0} {
+    puts "ERROR: $_nunres unresolved reference(s) in the netlist - aborting before write_hdl."
+    puts "       Every read_hdl path must resolve; check \$env(ARM_IP_LIBRARY_PATH) first."
+    exit 1
+}
 report_power > $REPORT_DIR/syn_power.rep
 
 write_hdl > $OUT_DIR/${block_name}_gate.v
 write_hdl -pg > $OUT_DIR/${block_name}_gate_power.v
 write_power_intent -cpf -design $block_name -base_name $OUT_DIR/${block_name}_gate
-write_power_intent -design $block_name -base_name $OUT_DIR/${block_name}_gate
+# upf read, has more info
+write_power_intent -1801 -design $block_name -base_name $OUT_DIR/${block_name}_gate -overwrite
 
 write_sdf -timescale ns > $OUT_DIR/${block_name}_gate.sdf
 

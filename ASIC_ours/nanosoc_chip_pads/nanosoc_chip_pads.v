@@ -38,11 +38,51 @@
 `include "gen_defines.v"
 
 module nanosoc_chip_pads (
-  inout  wire          VDDIO,
-  inout  wire          VSSIO,
+  //----------------------------------
+  // package pins
+  //----------------------------------
+  // corresponds to # of pad cells instantiated, see below
+  inout  wire          VCCD_PAD,
+  inout  wire          VCCD_PAD1,
+  inout  wire          VCCD_PAD2,
+  inout  wire          VSSD_PAD,
+  inout  wire          VSSD_PAD1,
+  inout  wire          VSSD_PAD2,
+
+  inout  wire          VDDIO_PAD,
+  inout  wire          VDDIO_PAD1,
+  inout  wire          VSSIO_PAD,
+  inout  wire          VSSIO_PAD1,
+  inout  wire          VDDIO_Q_PAD,
+  inout  wire          VDDIO_Q_PAD1,
+  inout  wire          VSSIO_Q_PAD,
+  inout  wire          VSSIO_Q_PAD1,
+
+  inout  wire          VDDA_PAD,
+  inout  wire          VDDA_PAD1,
+  inout  wire          VDDA_PAD2,
+  inout  wire          VSSA_PAD,
+  inout  wire          VSSA_PAD1,
+  inout  wire          VSSA_PAD2,
+
+  //----------------------------------
+  // power wires
+  //----------------------------------
+  // main digital supply
   inout  wire          VDD,
   inout  wire          VSS,
-  //inout  wire          VDDACC,
+  // main io supply
+  inout  wire          VDDIO,
+  inout  wire          VSSIO,
+  // quiet io supply
+  inout  wire          VDDIO_Q,
+  inout  wire          VSSIO_Q,
+  // analog supply
+  inout  wire          VDDA,
+  inout  wire          VSSA,
+  // auxillary supplies
+  inout  wire          VSWITCH,
+  inout  wire          VCCHIB,
 
   input  wire          SE,
   input  wire          CLK, // input
@@ -53,6 +93,12 @@ module nanosoc_chip_pads (
   inout  wire          SWDIO,
   input  wire          SWDCK);
 
+//------------------------------------
+// io wires
+// POR for the IO ring. This is less than a system reset, but rather
+// a reset to setup the IO cells to a correct state.
+// TODO wire this up correctly
+wire        por_h_io; 
 
 //------------------------------------
 // internal wires
@@ -214,65 +260,82 @@ nanosoc_chip_cfg #(
 
 
  // --------------------------------------------------------------------------------
- // IO pad (TSMC 65nm specific Library napping)
+ // IOs
  // --------------------------------------------------------------------------------
 
-// Pad IO power supplies
-
-sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIO_0(
-   .VDDIO_PAD(VDDIO)
-   );
-sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIO_1(
-   .VDDIO_PAD(VDDIO)
-   );
-sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIO_2(
-   .VDDIO_PAD(VDDIO)
-   );
-sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIO_3(
-   .VDDIO_PAD(VDDIO)
-   );
-
-sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_0(
-   .VSSIO_PAD(VSSIO)
-   );
-sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_1(
-   .VSSIO_PAD(VSSIO)
-   );
-sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_2(
-   .VSSIO_PAD(VSSIO)
-   );
-sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_3(
-   .VSSIO_PAD(VSSIO)
-   );
+ // power supplies
+ // receive external power from their pads (<net>_PAD)
+ // and allows it to be used on power ring.
 
 // Core power supplies
-
 sky130_ef_io__vccd_lvc_clamped_pad uPAD_VDD_0(
-   .VCCD_PAD(VDD)
+   .VCCD_PAD(VCCD_PAD)
    );
 sky130_ef_io__vccd_lvc_clamped_pad uPAD_VDD_1(
-   .VCCD_PAD(VDD)
+   .VCCD_PAD(VCCD_PAD1)
    );
 sky130_ef_io__vccd_lvc_clamped_pad uPAD_VDD_2(
-   .VCCD_PAD(VDD)
+   .VCCD_PAD(VCCD_PAD2)
    );
-sky130_ef_io__vccd_lvc_clamped_pad uPAD_VDD_3(
-   .VCCD_PAD(VDD)
-   );
-
 sky130_ef_io__vssd_lvc_clamped_pad uPAD_VSS_0(
-   .VSSD_PAD(VSS)
+   .VSSD_PAD(VSSD_PAD)
    );
 sky130_ef_io__vssd_lvc_clamped_pad uPAD_VSS_1(
-   .VSSD_PAD(VSS)
+   .VSSD_PAD(VSSD_PAD1)
    );
 sky130_ef_io__vssd_lvc_clamped_pad uPAD_VSS_2(
-   .VSSD_PAD(VSS)
-   );
-sky130_ef_io__vssd_lvc_clamped_pad uPAD_VSS_3(
-   .VSSD_PAD(VSS)
+   .VSSD_PAD(VSSD_PAD2)
    );
 
+// Pad IO power supplies
+sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIO_0(
+   .VDDIO_PAD(VDDIO_PAD)
+   );
+sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIO_1(
+   .VDDIO_PAD(VDDIO_PAD1)
+   );
+sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_0(
+   .VSSIO_PAD(VSSIO_PAD)
+   );
+sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_1(
+   .VSSIO_PAD(VSSIO_PAD1)
+   );
+
+// Pad IO quiet power supplies
+// need to make sure their power pin is connected to <power>_Q
+// when specifying power
+sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIOQ_0(
+   .VDDIO_PAD(VDDIO_Q_PAD)
+   );
+sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIOQ_1(
+   .VDDIO_PAD(VDDIO_Q_PAD1)
+   );
+sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIOQ_0(
+   .VSSIO_PAD(VSSIO_Q_PAD)
+   );
+sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIOQ_1(
+   .VSSIO_PAD(VSSIO_Q_PAD1)
+   );
+
+// Analog power supplies
+sky130_ef_io__vdda_hvc_clamped_pad uPAD_VDDA_0(
+   .VDDA_PAD(VDDA_PAD)
+   );
+sky130_ef_io__vdda_hvc_clamped_pad uPAD_VDDA_1(
+   .VDDA_PAD(VDDA_PAD1)
+   );
+sky130_ef_io__vdda_hvc_clamped_pad uPAD_VDDA_2(
+   .VDDA_PAD(VDDA_PAD2)
+   );
+sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_0(
+   .VSSA_PAD(VSSA_PAD)
+   );
+sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_1(
+   .VSSA_PAD(VSSA_PAD1)
+   );
+sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_2(
+   .VSSA_PAD(VSSA_PAD2)
+   );
 
 // Clock, Reset and Serial Wire Debug ports
 
@@ -301,14 +364,36 @@ sky130_ef_io__gpiov2_pad_wrapped uPAD_TEST_I (
     .PAD(TEST)
    );
 
-sky130_ef_io__gpiov2_pad_wrapped uPAD_NRST_I (
-    .INP_DIS(~tiehi),
-    .IN(pad_nrst_i),
-    .OUT(tielo),
-    .OE_N(tiehi),
-    .PAD(NRST)
-   );
+// connection diagram refer to 
+// https://skywater-pdk.readthedocs.io/en/main/contents/libraries/sky130_fd_io/docs/user_guide.html#use-case-for-the-xres-cells
+// doc above is confusing. below taken from (slightly modified)
+// https://github.com/efabless/caravel/blob/27cbe49c90ba5362ad52c9968dd98e035c30c74f/verilog/rtl/chip_io.v#L308
+wire nrst_tie_lo_esd;
+wire nrst_weak_pullup;
+wire pad_nrst_io; // this is in the VDDIO domain but level shifters should be auto added (hopefully)
+sky130_fd_io__top_xres4v2 uPAD_NRST_I (
+   .PAD(NRST),
+   .TIE_WEAK_HI_H(nrst_weak_pullup), // Loop-back connection to pad through pad_a_esd_h
+   .TIE_HI_ESD(),
+   .TIE_LO_ESD(nrst_tie_lo_esd),
+   .PAD_A_ESD_H(nrst_weak_pullup),
+   .XRES_H_N(pad_nrst_io), 
+   .DISABLE_PULLUP_H(nrst_tie_lo_esd), // 0 = enable pull-up on reset pad
+   .EN_VDDIO_SIG_H(nrst_tie_lo_esd),  // No idea.
+   .INP_SEL_H(nrst_tie_lo_esd), // 1 = use filt_in_h else filter the pad input
+   .FILT_IN_H(nrst_tie_lo_esd), // Alternate input for glitch filter
+   .PULLUP_H(nrst_tie_lo_esd), // Pullup connection for alternate filter input
+   // it's done like this in caravel but is it actually correct?
+   // TODO the skew between enable_h and enable_vddio is not respected?
+   // is that a problem?
+   .ENABLE_H(por_h_io), // Power-on-reset
+   .ENABLE_VDDIO(1'b1), // it's done like this in caravel
+   .AMUXBUS_A(), .AMUXBUS_B()
+);
+// as above, pad_nrst_i should be in VDD domain
+assign pad_nrst_i = pad_nrst_io;
 
+// scan pins. TODO I might need to set them up differently??
 sky130_ef_io__gpiov2_pad_wrapped uPAD_SWDIO_IO (
     .INP_DIS(~pad_swdio_z),
     .IN(pad_swdio_i),
@@ -326,25 +411,42 @@ sky130_ef_io__gpiov2_pad_wrapped uPAD_SWDCK_I (
    );
 
 // GPI.I Port 0 x 16
+`define DIGITAL_IO_PIN(PORT, IDX) \
+\
+wire gpio_``PORT``_``IDX``_tie_hi_esd; \
+wire gpio_``PORT``_``IDX``_tie_lo_esd; \
+\
+sky130_ef_io__gpiov2_pad_wrapped uPAD_P``PORT``_``IDX ( \
+   // functional pins \
+   .INP_DIS(~pad_gpio_port``PORT``_z[IDX]), \
+   .IN(pad_gpio_port``PORT``_i[IDX]), \
+   .IN_H(), // non level shifted input to SOC, don't need \
+   .OUT(pad_gpio_port``PORT``_o[IDX]), \
+   .OE_N(pad_gpio_port``PORT``_z[IDX]), \
+   .PAD(P``PORT[IDX]), \
+   .ANALOG_EN(), \
+   .ANALOG_SEL(), \
+   // other pins \
+   .TIE_HI_ESD(gpio_``PORT``_``IDX``_tie_hi_esd), \
+   .TIE_LO_ESD(gpio_``PORT``_``IDX``_tie_lo_esd), \
+   .ENABLE_INP_H(gpio_``PORT``_``IDX``_tie_hi_esd), // enable cell during reset \
+   .DM(3'b110), // strong 1 and 0 \
+   .VTRIP_SEL(1'b0), // use CMOS input buffer \
+   .IB_MODE_SEL(1'b0), // use CMOS input buffer \
+   .ANALOG_POL(), \
+   // enables, disables for the chip \
+   // resets: \
+   .ENABLE_H(por_h_io), // for input (vddio domain, just the io cells?) \
+   .ENABLE_VDDA_H(por_h_io),// for analog domains \
+   // technically resets??? \
+   .ENABLE_VSWITCH_H(gpio_``PORT``_``IDX``_tie_hi_esd), // in design VSWITCH is there but connected to VDDIO. TODO check this \
+   .ENABLE_VDDIO(por_h_io), // TODO see the reset cell connection, should there be the slew thing? \
+   .HLD_H_N(gpio_``PORT``_``IDX``_tie_hi_esd), // hold state control, 1 to use as default \
+   .HLD_OVR(gpio_``PORT``_``IDX``_tie_lo_esd), // actually freeze value, ignored with hld_h_n is 1 \
+   .SLOW(1'b0) // default slew rate \
+)
 
-wire gpio_tie_hi_esd;
-wire gpio_tie_lo_esd;
-
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_00 (
-    // useful pins
-    .INP_DIS(~pad_gpio_port0_z[00]),
-    .IN(pad_gpio_port0_i[00]),
-    .OUT(pad_gpio_port0_o[00]),
-    .OE_N(pad_gpio_port0_z[00]),
-    .PAD(P0[00]),
-    // other pins
-    .TIE_HI_ESD(gpio_tie_hi_esd),
-    .TIE_LO_ESD(gpio_tie_lo_esd),
-    .ENABLE_H(tiehi), // TODO this will basically always turn on gpio. correct?
-    .ENABLE_INP_H(gpio_tie_hi_esd) // enable
-    
-   );
+`DIGITAL_IO_PIN(0, 00);
 
 sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_01 (
     .INP_DIS(~pad_gpio_port0_z[01]),
