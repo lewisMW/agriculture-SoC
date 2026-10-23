@@ -14,11 +14,20 @@
 // =============    Accelerator Module search path    =============
 
 // ! Point this to your Accelerator RTL
+// This list is shared by simulation (top.flist) and synthesis (top_ASIC.flist
+// -> genus_flist.tcl), so it holds synthesisable RTL only. Simulation-only
+// models (the behavioural sar_afe, the nand2 cell stand-in) are in
+// accelerator_sim.flist, which only the simulation tops include.
 $(ACCELERATOR_DIR)/AHB
-$(ACCELERATOR_DIR)/Dummy/dummy_adc.v
 $(ACCELERATOR_DIR)/Dummy/dummy_amux.v
 $(ACCELERATOR_DIR)/Dummy/dummy_pll.v
 $(ACCELERATOR_DIR)/FIFO/fifo_apb_adc.v
+// SAR ADC: the synthesisable wrapper, its comparator latch and the SAR logic.
+// The analog macro sar_afe itself comes from ASIC_ours/macros/sar_afe
+// (.lib/.lef) in synthesis and P&R; its sar_afe.v port list must not be read.
+$(ACCELERATOR_DIR)/ADC/sar_adc.v
+$(ACCELERATOR_DIR)/ADC/sar_comp_latch.v
+$(ACCELERATOR_DIR)/../analog/cadence/sar_adc/sarlogic/functional/verilog.v
 // List the FSM/RTC design modules EXPLICITLY, not as directory entries. The
 // flist tool (filelist_compile.py) silently drops bare directory paths in
 // vfiles mode — only `-y <dir>`, `+incdir+`, and explicit `.v` files emit

@@ -1,0 +1,34 @@
+//Verilog-AMS HDL for "sar_adc", "bootstrap_sw" "verilogams"
+// ------------------------------------------------------------
+// Module: bootstrap_sw
+//
+// Description:
+//	Behavioural model of Jaime's bootstrapped sampling switch, for the
+//	all-behavioural AMS mode (agriculture_soc_main/AMS/run_afe_suite.sh
+//	beh). Hee's cdac_8b instantiates the switch; the sch/pex modes bind the
+//	whole sar_afe to its transistor-level netlist and never elaborate this
+//	view. Same ports as the schematic and symbol.
+//
+//	A bootstrapped switch holds its gate-source voltage near vdd, so its
+//	on-resistance hardly depends on the input: model it as a constant ron
+//	(the 10 mohm of switch_adc stalls Spectre against device-level caps).
+// ------------------------------------------------------------
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module bootstrap_sw (in, out, en, vdd, vss);
+	input en;
+	inout in, out, vdd, vss;	// vdd/vss: unused by the model, as on the cell
+	electrical in, out, vdd, vss;
+	wire en;
+
+	parameter real ron  = 200.0 from (0:inf);	// on-resistance (ohm)
+	parameter real roff = 1e12  from (0:inf);	// off-resistance (ohm)
+	parameter real tsw  = 1e-9  from (0:inf);	// switching time (s)
+
+	analog begin
+		I(in, out) <+ V(in, out) / transition(en ? ron : roff, 0, tsw, tsw);
+	end
+
+endmodule

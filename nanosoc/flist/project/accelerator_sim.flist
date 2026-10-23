@@ -1,0 +1,16 @@
+//-----------------------------------------------------------------------------
+// Accelerator Simulation-Only Filelist
+//-----------------------------------------------------------------------------
+// Models that stand in for hard cells in RTL simulation. NEVER synthesise
+// them: this list is included only by the simulation tops (top.flist,
+// top_qs.flist), not by system*.flist, so filelist_compile.py never puts it
+// into genus_flist.tcl (top_ASIC.flist -> system_ASIC.flist).
+//
+//  - sky130_fd_sc_hd__nand2_1: the two cells of sar_adc's comparator latch.
+//    Needed in plain and AMS simulation; synthesis uses the .lib cell.
+//  - sar_afe_model.v: behavioural sar_afe (CDACs + comparator) for plain-digital
+//    simulation, with its own sine/ramp/dc input. Empty under SAR_AMS, where
+//    the AMS views (sar_ams.flist) or the SPICE netlist provide sar_afe.
+//-----------------------------------------------------------------------------
+$(ACCELERATOR_DIR)/ADC/sim/sky130_fd_sc_hd__nand2_1.v
+$(ACCELERATOR_DIR)/ADC/sim/sar_afe_model.v

@@ -23,6 +23,9 @@
 
 -f $(SOCLABS_PROJECT_DIR)/flist/project/system.flist
 
+// - Simulation-only accelerator models (never in the ASIC/FPGA tops)
+-f $(SOCLABS_PROJECT_DIR)/flist/project/accelerator_sim.flist
+
 // NanoSoC Testbench
 -f $(SOCLABS_NANOSOC_TECH_DIR)/flist/nanosoc_tb.flist
 

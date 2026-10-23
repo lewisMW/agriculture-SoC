@@ -83,6 +83,11 @@ module accelerator_subsystem #(
 `endif 
 `endif 
 
+  // SAR ADC analog inputs: analog nets from the chip's analog pads, passed
+  // through untouched to sensor_wrapper -> sar_adc -> the sar_afe macro
+  input  wire                      ADC_VINP,
+  input  wire                      ADC_VINN,
+
   // Interrupts
   output wire   [IRQ_NUM-1:0]      EXP_IRQ
 );
@@ -138,7 +143,6 @@ module accelerator_subsystem #(
   /*input  wire*/.PRDATA(PRDATA),    // Read data for each APB slave
   /*input  wire*/.PREADY(PREADY),    // Ready for each APB slave
   /*input  wire*/.PSLVERR(PSLVERR));  // Error state for each APB slave
-
 
 // ---------------------------------------------------------------------------
 // RTC support signals for the sensing peripheral (mirrors agriculture_soc.v).
@@ -197,7 +201,10 @@ adc_apb_wrapper_rev2 #(
    // Handshake
    .PRDATA(PRDATA),
    .PREADY(PREADY),
-   .PSLVERR(PSLVERR)
+   .PSLVERR(PSLVERR),
+   // SAR ADC analog inputs
+   .ADC_VINP(ADC_VINP),
+   .ADC_VINN(ADC_VINN)
 );
 
 
