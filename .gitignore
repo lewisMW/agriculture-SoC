@@ -44,6 +44,7 @@ results/
 pegasus_runs/
 analog/cadence/**/DRC/
 analog/cadence/**/LVS/
+analog/cadence/**/Peg_netlist/
 CheckAndUpdateLogs/
 XLComplianceLogs/
 
