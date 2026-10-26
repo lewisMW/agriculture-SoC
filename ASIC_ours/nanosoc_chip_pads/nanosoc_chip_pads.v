@@ -279,37 +279,76 @@ nanosoc_chip_cfg #(
  // receive external power from their pads (<net>_PAD)
  // and allows it to be used on power ring.
 
+`define BASE_IO_POWER_PINS \
+   .VCCD(VDD), \
+   .VSSD(VSS), \
+   .VDDA(VDDA), \
+   .VSSA(VSSA), \
+   .VCCHIB(VCCHIB), \
+   .VSWITCH(VSWITCH), 
+
+`define POWER_PINS_VIO_STD \
+   .VDDIO(VDDIO), \
+   .VSSIO(VSSIO), \
+   .VDDIO_Q(VDDIO_Q), \
+   .VSSIO_Q(VSSIO_Q), \
+   `BASE_IO_POWER_PINS
+
+`define POWER_PINS_VIO_VDDIO_Q \
+   .VDDIO(VDDIO_Q), \
+   .VSSIO(VSSIO), \
+   .VDDIO_Q(VDDIO_Q), \
+   .VSSIO_Q(VSSIO_Q), \
+   `BASE_IO_POWER_PINS
+
+`define POWER_PINS_VIO_VSSIO_Q \
+   .VDDIO(VDDIO), \
+   .VSSIO(VSSIO_Q), \
+   .VDDIO_Q(VDDIO_Q), \
+   .VSSIO_Q(VSSIO_Q), \
+   `BASE_IO_POWER_PINS
+
 // Core power supplies
 sky130_ef_io__vccd_lvc_clamped_pad uPAD_VDD_0(
+   `POWER_PINS_VIO_STD
    .VCCD_PAD(VCCD_PAD)
    );
 sky130_ef_io__vccd_lvc_clamped_pad uPAD_VDD_1(
+   `POWER_PINS_VIO_STD
    .VCCD_PAD(VCCD_PAD1)
    );
 sky130_ef_io__vccd_lvc_clamped_pad uPAD_VDD_2(
+   `POWER_PINS_VIO_STD
    .VCCD_PAD(VCCD_PAD2)
    );
 sky130_ef_io__vssd_lvc_clamped_pad uPAD_VSS_0(
+   `POWER_PINS_VIO_STD
    .VSSD_PAD(VSSD_PAD)
    );
 sky130_ef_io__vssd_lvc_clamped_pad uPAD_VSS_1(
+   `POWER_PINS_VIO_STD
    .VSSD_PAD(VSSD_PAD1)
    );
 sky130_ef_io__vssd_lvc_clamped_pad uPAD_VSS_2(
+   `POWER_PINS_VIO_STD
    .VSSD_PAD(VSSD_PAD2)
    );
 
 // Pad IO power supplies
 sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIO_0(
+   `POWER_PINS_VIO_STD
    .VDDIO_PAD(VDDIO_PAD)
    );
 sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIO_1(
+   `POWER_PINS_VIO_STD
    .VDDIO_PAD(VDDIO_PAD1)
    );
 sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_0(
+   `POWER_PINS_VIO_STD
    .VSSIO_PAD(VSSIO_PAD)
    );
 sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_1(
+   `POWER_PINS_VIO_STD
    .VSSIO_PAD(VSSIO_PAD1)
    );
 
@@ -317,56 +356,52 @@ sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_1(
 // need to make sure their power pin is connected to <power>_Q
 // when specifying power
 sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIOQ_0(
+   `POWER_PINS_VIO_VDDIO_Q
    .VDDIO_PAD(VDDIO_Q_PAD)
    );
 sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIOQ_1(
+   `POWER_PINS_VIO_VDDIO_Q
    .VDDIO_PAD(VDDIO_Q_PAD1)
    );
 sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIOQ_0(
+   `POWER_PINS_VIO_VSSIO_Q
    .VSSIO_PAD(VSSIO_Q_PAD)
    );
 sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIOQ_1(
+   `POWER_PINS_VIO_VSSIO_Q
    .VSSIO_PAD(VSSIO_Q_PAD1)
    );
 
 // Analog power supplies
 sky130_ef_io__vdda_hvc_clamped_pad uPAD_VDDA_0(
+   `POWER_PINS_VIO_STD
    .VDDA_PAD(VDDA_PAD)
    );
 sky130_ef_io__vdda_hvc_clamped_pad uPAD_VDDA_1(
+   `POWER_PINS_VIO_STD
    .VDDA_PAD(VDDA_PAD1)
    );
 sky130_ef_io__vdda_hvc_clamped_pad uPAD_VDDA_2(
+   `POWER_PINS_VIO_STD
    .VDDA_PAD(VDDA_PAD2)
    );
 sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_0(
+   `POWER_PINS_VIO_STD
    .VSSA_PAD(VSSA_PAD)
    );
 sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_1(
+   `POWER_PINS_VIO_STD
    .VSSA_PAD(VSSA_PAD1)
    );
 sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_2(
+   `POWER_PINS_VIO_STD
    .VSSA_PAD(VSSA_PAD2)
-   );
-
-// SAR ADC analog inputs. sky130_ef_io__analog_pad connects the bond pad (P_PAD)
-// to a 25 um wide met3 pin on its core edge (P_CORE). Its supply
-// pins join the pad ring by abutment, as on the other pads, and AMUXBUS_A/B are
-// left open as on uPAD_NRST_I.
-sky130_ef_io__analog_pad uPAD_ADC_VINP (
-   .P_PAD(ADC_VINP),
-   .P_CORE(pad_adc_vinp),
-   .AMUXBUS_A(), .AMUXBUS_B()
-   );
-sky130_ef_io__analog_pad uPAD_ADC_VINN (
-   .P_PAD(ADC_VINN),
-   .P_CORE(pad_adc_vinn),
-   .AMUXBUS_A(), .AMUXBUS_B()
    );
 
 // Clock, Reset and Serial Wire Debug ports
 
 sky130_ef_io__gpiov2_pad_wrapped uPAD_SE_I (
+    `POWER_PINS_VIO_STD
     .INP_DIS(~tiehi),
     .IN(pad_se_i),
     .OUT(tielo),
@@ -376,6 +411,7 @@ sky130_ef_io__gpiov2_pad_wrapped uPAD_SE_I (
 
 
 sky130_ef_io__gpiov2_pad_wrapped uPAD_CLK_I (
+    `POWER_PINS_VIO_STD
     .INP_DIS(~tiehi),
     .IN(pad_clk_i),
     .OUT(tielo),
@@ -384,6 +420,7 @@ sky130_ef_io__gpiov2_pad_wrapped uPAD_CLK_I (
    );
 
 sky130_ef_io__gpiov2_pad_wrapped uPAD_TEST_I (
+    `POWER_PINS_VIO_STD
     .INP_DIS(~tiehi),
     .IN(pad_test_i),
     .OUT(tielo),
@@ -399,6 +436,7 @@ wire nrst_tie_lo_esd;
 wire nrst_weak_pullup;
 wire pad_nrst_io; // this is in the VDDIO domain but level shifters should be auto added (hopefully)
 sky130_fd_io__top_xres4v2 uPAD_NRST_I (
+   `POWER_PINS_VIO_STD
    .PAD(NRST),
    .TIE_WEAK_HI_H(nrst_weak_pullup), // Loop-back connection to pad through pad_a_esd_h
    .TIE_HI_ESD(),
@@ -422,6 +460,7 @@ assign pad_nrst_i = pad_nrst_io;
 
 // scan pins. TODO I might need to set them up differently??
 sky130_ef_io__gpiov2_pad_wrapped uPAD_SWDIO_IO (
+    `POWER_PINS_VIO_STD
     .INP_DIS(~pad_swdio_z),
     .IN(pad_swdio_i),
     .OUT(pad_swdio_o),
@@ -430,6 +469,7 @@ sky130_ef_io__gpiov2_pad_wrapped uPAD_SWDIO_IO (
    );
 
 sky130_ef_io__gpiov2_pad_wrapped uPAD_SWDCK_I (
+    `POWER_PINS_VIO_STD
     .INP_DIS(~tiehi),
     .IN(pad_swdclk_i),
     .OUT(tielo),
@@ -444,6 +484,7 @@ wire gpio_``PORT``_``IDX``_tie_hi_esd; \
 wire gpio_``PORT``_``IDX``_tie_lo_esd; \
 \
 sky130_ef_io__gpiov2_pad_wrapped uPAD_P``PORT``_``IDX ( \
+   `POWER_PINS_VIO_STD \
    // functional pins \
    .INP_DIS(~pad_gpio_port``PORT``_z[IDX]), \
    .IN(pad_gpio_port``PORT``_i[IDX]), \
@@ -458,8 +499,9 @@ sky130_ef_io__gpiov2_pad_wrapped uPAD_P``PORT``_``IDX ( \
    .TIE_LO_ESD(gpio_``PORT``_``IDX``_tie_lo_esd), \
    .ENABLE_INP_H(gpio_``PORT``_``IDX``_tie_hi_esd), // enable cell during reset \
    .DM(3'b110), // strong 1 and 0 \
-   .VTRIP_SEL(1'b0), // use CMOS input buffer \
-   .IB_MODE_SEL(1'b0), // use CMOS input buffer \
+   // use CMOS input buffer (VDDIO CMOS) \
+   .VTRIP_SEL(1'b0), // use CMOS \
+   .IB_MODE_SEL(1'b0), // use VDDIO \
    .ANALOG_POL(), \
    // enables, disables for the chip \
    // resets: \
@@ -467,263 +509,48 @@ sky130_ef_io__gpiov2_pad_wrapped uPAD_P``PORT``_``IDX ( \
    .ENABLE_VDDA_H(por_h_io),// for analog domains \
    // technically resets??? \
    .ENABLE_VSWITCH_H(gpio_``PORT``_``IDX``_tie_hi_esd), // in design VSWITCH is there but connected to VDDIO. TODO check this \
+   // TODO like for the reset cell - I have no idea if this is correct. \
+   // What does "in VCCHIB domain" mean here? \
+   // I think it's saying the signal should be given in VCCHIB (VCCD) domain \
    .ENABLE_VDDIO(por_h_io), // TODO see the reset cell connection, should there be the slew thing? \
    .HLD_H_N(gpio_``PORT``_``IDX``_tie_hi_esd), // hold state control, 1 to use as default \
-   .HLD_OVR(gpio_``PORT``_``IDX``_tie_lo_esd), // actually freeze value, ignored with hld_h_n is 1 \
+   .HLD_OVR(1'b0), // actually freeze value, ignored with hld_h_n is 1 \
    .SLOW(1'b0) // default slew rate \
 )
 
 `DIGITAL_IO_PIN(0, 00);
+`DIGITAL_IO_PIN(0, 01);
+`DIGITAL_IO_PIN(0, 02);
+`DIGITAL_IO_PIN(0, 03);
+`DIGITAL_IO_PIN(0, 04);
+`DIGITAL_IO_PIN(0, 05);
+`DIGITAL_IO_PIN(0, 06);
+`DIGITAL_IO_PIN(0, 07);
+`DIGITAL_IO_PIN(0, 08);
+`DIGITAL_IO_PIN(0, 09);
+`DIGITAL_IO_PIN(0, 10);
+`DIGITAL_IO_PIN(0, 11);
+`DIGITAL_IO_PIN(0, 12);
+`DIGITAL_IO_PIN(0, 13);
+`DIGITAL_IO_PIN(0, 14);
+`DIGITAL_IO_PIN(0, 15);
 
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_01 (
-    .INP_DIS(~pad_gpio_port0_z[01]),
-    .IN(pad_gpio_port0_i[01]),
-    .OUT(pad_gpio_port0_o[01]),
-    .OE_N(pad_gpio_port0_z[01]),
-    .PAD(P0[01])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_02 (
-    .INP_DIS(~pad_gpio_port0_z[02]),
-    .IN(pad_gpio_port0_i[02]),
-    .OUT(pad_gpio_port0_o[02]),
-    .OE_N(pad_gpio_port0_z[02]),
-    .PAD(P0[02])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_03 (
-    .INP_DIS(~pad_gpio_port0_z[03]),
-    .IN(pad_gpio_port0_i[03]),
-    .OUT(pad_gpio_port0_o[03]),
-    .OE_N(pad_gpio_port0_z[03]),
-    .PAD(P0[03])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_04 (
-    .INP_DIS(~pad_gpio_port0_z[04]),
-    .IN(pad_gpio_port0_i[04]),
-    .OUT(pad_gpio_port0_o[04]),
-    .OE_N(pad_gpio_port0_z[04]),
-    .PAD(P0[04])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_05 (
-    .INP_DIS(~pad_gpio_port0_z[05]),
-    .IN(pad_gpio_port0_i[05]),
-    .OUT(pad_gpio_port0_o[05]),
-    .OE_N(pad_gpio_port0_z[05]),
-    .PAD(P0[05])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_06 (
-    .INP_DIS(~pad_gpio_port0_z[06]),
-    .IN(pad_gpio_port0_i[06]),
-    .OUT(pad_gpio_port0_o[06]),
-    .OE_N(pad_gpio_port0_z[06]),
-    .PAD(P0[06])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_07 (
-    .INP_DIS(~pad_gpio_port0_z[07]),
-    .IN(pad_gpio_port0_i[07]),
-    .OUT(pad_gpio_port0_o[07]),
-    .OE_N(pad_gpio_port0_z[07]),
-    .PAD(P0[07])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_08 (
-    .INP_DIS(~pad_gpio_port0_z[08]),
-    .IN(pad_gpio_port0_i[08]),
-    .OUT(pad_gpio_port0_o[08]),
-    .OE_N(pad_gpio_port0_z[08]),
-    .PAD(P0[08])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_09 (
-    .INP_DIS(~pad_gpio_port0_z[09]),
-    .IN(pad_gpio_port0_i[09]),
-    .OUT(pad_gpio_port0_o[09]),
-    .OE_N(pad_gpio_port0_z[09]),
-    .PAD(P0[09])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_10 (
-    .INP_DIS(~pad_gpio_port0_z[10]),
-    .IN(pad_gpio_port0_i[10]),
-    .OUT(pad_gpio_port0_o[10]),
-    .OE_N(pad_gpio_port0_z[10]),
-    .PAD(P0[10])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_11 (
-    .INP_DIS(~pad_gpio_port0_z[11]),
-    .IN(pad_gpio_port0_i[11]),
-    .OUT(pad_gpio_port0_o[11]),
-    .OE_N(pad_gpio_port0_z[11]),
-    .PAD(P0[11])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_12 (
-    .INP_DIS(~pad_gpio_port0_z[12]),
-    .IN(pad_gpio_port0_i[12]),
-    .OUT(pad_gpio_port0_o[12]),
-    .OE_N(pad_gpio_port0_z[12]),
-    .PAD(P0[12])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_13 (
-    .INP_DIS(~pad_gpio_port0_z[13]),
-    .IN(pad_gpio_port0_i[13]),
-    .OUT(pad_gpio_port0_o[13]),
-    .OE_N(pad_gpio_port0_z[13]),
-    .PAD(P0[13])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_14 (
-    .INP_DIS(~pad_gpio_port0_z[14]),
-    .IN(pad_gpio_port0_i[14]),
-    .OUT(pad_gpio_port0_o[14]),
-    .OE_N(pad_gpio_port0_z[14]),
-    .PAD(P0[14])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P0_15 (
-    .INP_DIS(~pad_gpio_port0_z[15]),
-    .IN(pad_gpio_port0_i[15]),
-    .OUT(pad_gpio_port0_o[15]),
-    .OE_N(pad_gpio_port0_z[15]),
-    .PAD(P0[15])
-   );
-// GPI.I Port 1 x 16
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_00 (
-    .INP_DIS(~pad_gpio_port1_z[00]),
-    .IN(pad_gpio_port1_i[00]),
-    .OUT(pad_gpio_port1_o[00]),
-    .OE_N(pad_gpio_port1_z[00]),
-    .PAD(P1[00])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_01 (
-    .INP_DIS(~pad_gpio_port1_z[01]),
-    .IN(pad_gpio_port1_i[01]),
-    .OUT(pad_gpio_port1_o[01]),
-    .OE_N(pad_gpio_port1_z[01]),
-    .PAD(P1[01])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_02 (
-    .INP_DIS(~pad_gpio_port1_z[02]),
-    .IN(pad_gpio_port1_i[02]),
-    .OUT(pad_gpio_port1_o[02]),
-    .OE_N(pad_gpio_port1_z[02]),
-    .PAD(P1[02])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_03 (
-    .INP_DIS(~pad_gpio_port1_z[03]),
-    .IN(pad_gpio_port1_i[03]),
-    .OUT(pad_gpio_port1_o[03]),
-    .OE_N(pad_gpio_port1_z[03]),
-    .PAD(P1[03])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_04 (
-    .INP_DIS(~pad_gpio_port1_z[04]),
-    .IN(pad_gpio_port1_i[04]),
-    .OUT(pad_gpio_port1_o[04]),
-    .OE_N(pad_gpio_port1_z[04]),
-    .PAD(P1[04])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_05 (
-    .INP_DIS(~pad_gpio_port1_z[05]),
-    .IN(pad_gpio_port1_i[05]),
-    .OUT(pad_gpio_port1_o[05]),
-    .OE_N(pad_gpio_port1_z[05]),
-    .PAD(P1[05])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_06 (
-    .INP_DIS(~pad_gpio_port1_z[06]),
-    .IN(pad_gpio_port1_i[06]),
-    .OUT(pad_gpio_port1_o[06]),
-    .OE_N(pad_gpio_port1_z[06]),
-    .PAD(P1[06])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_07 (
-    .INP_DIS(~pad_gpio_port1_z[07]),
-    .IN(pad_gpio_port1_i[07]),
-    .OUT(pad_gpio_port1_o[07]),
-    .OE_N(pad_gpio_port1_z[07]),
-    .PAD(P1[07])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_08 (
-    .INP_DIS(~pad_gpio_port1_z[08]),
-    .IN(pad_gpio_port1_i[08]),
-    .OUT(pad_gpio_port1_o[08]),
-    .OE_N(pad_gpio_port1_z[08]),
-    .PAD(P1[08])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_09 (
-    .INP_DIS(~pad_gpio_port1_z[09]),
-    .IN(pad_gpio_port1_i[09]),
-    .OUT(pad_gpio_port1_o[09]),
-    .OE_N(pad_gpio_port1_z[09]),
-    .PAD(P1[09])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_10 (
-    .INP_DIS(~pad_gpio_port1_z[10]),
-    .IN(pad_gpio_port1_i[10]),
-    .OUT(pad_gpio_port1_o[10]),
-    .OE_N(pad_gpio_port1_z[10]),
-    .PAD(P1[10])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_11 (
-    .INP_DIS(~pad_gpio_port1_z[11]),
-    .IN(pad_gpio_port1_i[11]),
-    .OUT(pad_gpio_port1_o[11]),
-    .OE_N(pad_gpio_port1_z[11]),
-    .PAD(P1[11])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_12 (
-    .INP_DIS(~pad_gpio_port1_z[12]),
-    .IN(pad_gpio_port1_i[12]),
-    .OUT(pad_gpio_port1_o[12]),
-    .OE_N(pad_gpio_port1_z[12]),
-    .PAD(P1[12])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_13 (
-    .INP_DIS(~pad_gpio_port1_z[13]),
-    .IN(pad_gpio_port1_i[13]),
-    .OUT(pad_gpio_port1_o[13]),
-    .OE_N(pad_gpio_port1_z[13]),
-    .PAD(P1[13])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_14 (
-    .INP_DIS(~pad_gpio_port1_z[14]),
-    .IN(pad_gpio_port1_i[14]),
-    .OUT(pad_gpio_port1_o[14]),
-    .OE_N(pad_gpio_port1_z[14]),
-    .PAD(P1[14])
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_P1_15 (
-    .INP_DIS(~pad_gpio_port1_z[15]),
-    .IN(pad_gpio_port1_i[15]),
-    .OUT(pad_gpio_port1_o[15]),
-    .OE_N(pad_gpio_port1_z[15]),
-    .PAD(P1[15])
-   );
-
+`DIGITAL_IO_PIN(1, 00);
+`DIGITAL_IO_PIN(1, 01);
+`DIGITAL_IO_PIN(1, 02);
+`DIGITAL_IO_PIN(1, 03);
+`DIGITAL_IO_PIN(1, 04);
+`DIGITAL_IO_PIN(1, 05);
+`DIGITAL_IO_PIN(1, 06);
+`DIGITAL_IO_PIN(1, 07);
+`DIGITAL_IO_PIN(1, 08);
+`DIGITAL_IO_PIN(1, 09);
+`DIGITAL_IO_PIN(1, 10);
+`DIGITAL_IO_PIN(1, 11);
+`DIGITAL_IO_PIN(1, 12);
+`DIGITAL_IO_PIN(1, 13);
+`DIGITAL_IO_PIN(1, 14);
+`DIGITAL_IO_PIN(1, 15);
 
 endmodule
 

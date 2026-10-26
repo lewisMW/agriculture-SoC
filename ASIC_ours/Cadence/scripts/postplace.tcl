@@ -15,7 +15,8 @@ set_db add_tieoffs_max_distance 100
 # TODO tieoff_exclude not exactly working yet
 set_db add_tieoffs_cells sky130_fd_sc_hd__conb_1
 #add_tieoffs -lib_cell sky130_fd_sc_hd__conb_1 -prefix LTIE -matching_power_domains true -exclude_pin ../scripts/tieoff_exclude
-add_tieoffs -lib_cell sky130_fd_sc_hd__conb_1 -prefix LTIE -matching_power_domains true
+# trying to put tieoff cells in the PD_IO domain resulted in innovus creashing...
+add_tieoffs -lib_cell sky130_fd_sc_hd__conb_1 -prefix LTIE -power_domain PD_TOP
 #add_tieoffs -lib_cell sky130_fd_sc_hd__conb_1 -prefix LTIE -power_domain PD_ACC -exclude_pin ../scripts/tieoff_exclude
 #add_tieoffs -prefix LTIE -power_domain PD_TOP
 check_tieoffs
