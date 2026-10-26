@@ -17,13 +17,11 @@ set sram_8k_lib_dir  ${sram_dir}/sky130_sram_8kbyte_1rw_32x2048_8
 set lib_search_path_list "$io_lib_dir $sc_lib_dir $level_shifter_dir $sram_8k_lib_dir"
 
 set BASE_LIB sky130_fd_sc_hd__tt_025C_1v80.lib
-# TODO this is the correct lib?
 set LEVEL_SHIFTER_LIB sky130_fd_sc_hvl__tt_025C_3v30_lv1v80.lib
 set SRAM_LIB sky130_sram_8kbyte_1rw_32x2048_8_SS_1p8V_25C.lib
 # TODO find out about the ESD protection
 # hvc:
 # lvc:
-# TODO am I supposed to use gpio2 or the top_gpio2? What's the difference? 
 set IO_PAD_DRIVER [list \
     sky130_ef_io__gpiov2_pad_wrapped_ss_ss_100C_1v60_3v00.lib \
     sky130_ef_io__vccd_lvc_clamped3_pad_ss_100C_1v60_3v00_3v00.lib \
@@ -34,6 +32,7 @@ set IO_PAD_DRIVER [list \
     sky130_ef_io__vssd_lvc_clamped3_pad_ss_100C_1v60_3v00.lib \
     sky130_ef_io__vssd_lvc_clamped_pad_ss_100C_1v60_3v00.lib \
     sky130_ef_io__vssio_hvc_clamped_pad_ss_100C_1v60_3v00_3v00.lib \
+    sky130_fd_io__top_xres4v2_ss_ss_100C_1v60_3v00.lib \
 ]
 # TODO: the analog block libs
 
@@ -46,7 +45,6 @@ set REPORT_DIR ../reports
 set OUT_DIR ../outputs
 
 set hdl_file_list $::env(SOCLABS_PROJECT_DIR)/imp/ASIC/nanosoc/flist/genus_flist.tcl
-# TODO we might need to slightly modify this
 set top_level_hdl ../../nanosoc_chip_pads/nanosoc_chip_pads.v
 
 set constraints_file ../inputs/constraints.sdc
@@ -59,15 +57,12 @@ set ground_nets {VSS VSSIO}
 
 # Set library paths 
 # !! EDIT THIS TO YOUR PATHS IN YOUR ENVIRONMENT
-# NOTE!! I had to uncomment out the li1 layer for this version.
-# set TECH_LEF            ${sky130_cadence_dir}/sky130_scl_9T_0.1.2/sky130_scl_9T_tech/lef/sky130_scl_9T.tlef
-
-# set BASE_LEF            ${sky130_cadence_dir}/sky130_scl_9T_0.1.2/sky130_scl_9T/lef/sky130_scl_9T.lef
-# set PHYS_CELL_LEF       ${sky130_cadence_dir}/sky130_scl_9T_0.1.2/sky130_scl_9T_tech/lef/sky130_scl_9T_phyCells.lef
-set TECH_LEF            ${sky130_digital_dir}/techlef/sky130_fd_sc_hd__nom.tlef
-set BASE_LEF            ${sky130_digital_dir}/lef/sky130_fd_sc_hd.lef
+# include both the library and tlef for those
+set BASE_LEF            [list ${sky130_digital_dir}/techlef/sky130_fd_sc_hd__nom.tlef ${sky130_digital_dir}/lef/sky130_fd_sc_hd.lef]
 # for the open source one physical cells (e.g. filler) are included in BASE_LEF
+set LEVEL_SHIFTER_LEF   [list ${sky130_open_dir}/libs.ref/sky130_fd_sc_hvl/techlef/sky130_fd_sc_hvl__nom.tlef ${sky130_open_dir}/libs.ref/sky130_fd_sc_hvl/lef/sky130_fd_sc_hvl.lef ]
 
+# these don't have a tlef...
 set IO_PAD_DRIVER_LEF   [list \
   ${sky130_open_dir}/libs.ref/sky130_fd_io/lef/sky130_fd_io.lef \
   ${sky130_open_dir}/libs.ref/sky130_fd_io/lef/sky130_ef_io.lef \
@@ -75,12 +70,12 @@ set IO_PAD_DRIVER_LEF   [list \
 set SRAM_LEF            ${sram_dir}/sky130_sram_8kbyte_1rw_32x2048_8/sky130_sram_8kbyte_1rw_32x2048_8.lef
 
 #set lef_file_list [list ${TECH_LEF} ${PHYS_CELL_LEF} ${BASE_LEF} ${IO_PAD_DRIVER_LEF} ${SRAM_LEF}]
-set lef_file_list [list ${TECH_LEF} ${BASE_LEF} {*}${IO_PAD_DRIVER_LEF} ${SRAM_LEF}]
+set lef_file_list [list {*}${BASE_LEF} {*}${LEVEL_SHIFTER_LEF} {*}${IO_PAD_DRIVER_LEF} ${SRAM_LEF}]
 
 # don't use li1 for routing
 set bottom_routing_layer 2   ;# met1
 # alternatively, use M4 as rounting as well (otherwise congested)
-set top_routing_layer    5   ;#met4
+set top_routing_layer    6   ;#met5
 
 # TODO: the analog blocks lefs
 

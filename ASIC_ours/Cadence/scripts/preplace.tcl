@@ -1,5 +1,5 @@
 set_db place_global_cong_effort high 
-set_db place_global_timing_effort high 
+set_db place_global_timing_effort auto 
 
 ### Uniform Cell Distribution and fill gap
 # Innovus defaults this to false. Set true it spreads ~21k cells evenly across
@@ -10,6 +10,10 @@ set_db place_global_uniform_density false
 
 ### Placement Mode Config 
 set_db place_design_floorplan_mode false 
+
+### lower density for less congestion
+set_db place_global_max_density 0.03
+set_db opt_max_density 0.3
 
 ### Timing Analysis Type 
 set_db timing_analysis_type ocv

@@ -8,16 +8,16 @@
 
 # TODO I don't think this is exactly right. Might need to connect to VDDIO/VSSIO???
 
-connect_global_net VDD -type pg_pin -pin_base_name VPWR  -inst_base_name *
-connect_global_net VDD -type pg_pin -pin_base_name VPB   -inst_base_name *
-connect_global_net VSS -type pg_pin -pin_base_name VGND  -inst_base_name *
-connect_global_net VSS -type pg_pin -pin_base_name VNB   -inst_base_name *
-connect_global_net VDD -type pg_pin -pin_base_name vccd1 -inst_base_name *
-connect_global_net VSS -type pg_pin -pin_base_name vssd1 -inst_base_name *
-connect_global_net VDDIO -type pg_pin -pin_base_name VDDIO -inst_base_name * -overrride
-connect_global_net VSSIO -type pg_pin -pin_base_name VSSIO -inst_base_name * -overrride
-connect_global_net VDDIO -type pg_pin -pin_base_name VDDIO_PAD -inst_base_name * 
-connect_global_net VSSIO -type pg_pin -pin_base_name VSSIO_PAD -inst_base_name * 
+#connect_global_net VDD -type pg_pin -pin_base_name VPWR  -inst_base_name *
+#connect_global_net VDD -type pg_pin -pin_base_name VPB   -inst_base_name *
+#connect_global_net VSS -type pg_pin -pin_base_name VGND  -inst_base_name *
+#connect_global_net VSS -type pg_pin -pin_base_name VNB   -inst_base_name *
+#connect_global_net VDD -type pg_pin -pin_base_name vccd1 -inst_base_name *
+#connect_global_net VSS -type pg_pin -pin_base_name vssd1 -inst_base_name *
+#connect_global_net VDDIO -type pg_pin -pin_base_name VDDIO -inst_base_name * -override
+#connect_global_net VSSIO -type pg_pin -pin_base_name VSSIO -inst_base_name * -override
+#connect_global_net VDDIO -type pg_pin -pin_base_name VDDIO_PAD -inst_base_name * 
+#connect_global_net VSSIO -type pg_pin -pin_base_name VSSIO_PAD -inst_base_name * 
 
 # M1(2), M4(5), M5(6)
 
@@ -27,7 +27,7 @@ set_db add_rings_stacked_via_bottom_layer 2
 
 ### Adding Rings 
 add_rings -nets {VDD VSS} -type core_rings -follow core -layer {top 6 bottom 6 left 5 right 5} -width {top 10 bottom 10 left 10 right 10} -spacing {top 5 bottom 5 left 5 right 5} -offset {top 1.8 bottom 1.8 left 1.8 right 1.8} -center 0 -threshold 0 -jog_distance 0 -snap_wire_center_to_grid none
-route_special -connect {pad_pin pad_ring} -layer_change_range { M1(2) M5(6) } -block_pin_target nearest_target -pad_pin_port_connect {all_port all_geom} -pad_pin_target nearest_target -allow_jogging 1 -crossover_via_layer_range { M1(2) M5(6) } -nets { VDD VSS VDDIO VSSIO } -allow_layer_change 1 -pad_pin_width 6 -target_via_layer_range { M1(2) M5(6) }
+route_special -connect {pad_pin pad_ring} -layer_change_range { M1(2) M5(6) } -block_pin_target nearest_target -pad_pin_port_connect {all_port all_geom} -pad_pin_target nearest_target -allow_jogging 1 -crossover_via_layer_range { M1(2) M5(6) } -nets { VDD VSS } -allow_layer_change 1 -pad_pin_width 6 -target_via_layer_range { M1(2) M5(6) }
 
 # TODO I likely need the VDDIO VSSIO rings
 
@@ -64,12 +64,9 @@ catch {
 set power_stripes_all_macros_bbox_str [join [ list $power_stripes_all_macros_bbox ]]
 
 # M4(5)
-add_stripes -nets {VDD VSS} -layer 5 -direction vertical -width 1.8 -spacing 0.8 -set_to_set_distance 100 -extend_to all_domains -start_from left -start_offset 39.5 -stop_offset 0 -switch_layer_over_obs false -max_same_layer_jog_length 2 -pad_core_ring_top_layer_limit AP -pad_core_ring_bottom_layer_limit 2 -block_ring_top_layer_limit 6 -block_ring_bottom_layer_limit 2 -use_wire_group 0 -snap_wire_center_to_grid none -area_blockage $power_stripes_all_macros_bbox_str
+add_stripes -nets {VDD VSS} -layer 5 -direction vertical -width 1.8 -spacing 0.8 -set_to_set_distance 100 -extend_to all_domains -start_from left -start_offset 46 -stop_offset 0 -switch_layer_over_obs false -max_same_layer_jog_length 2 -pad_core_ring_top_layer_limit AP -pad_core_ring_bottom_layer_limit 2 -block_ring_top_layer_limit 6 -block_ring_bottom_layer_limit 2 -use_wire_group 0 -snap_wire_center_to_grid none -area_blockage $power_stripes_all_macros_bbox_str
 # M5(6)
-# TODO somehow, these stripes are going through the macros, which is not needed/wanted
-add_stripes -nets {VDD VSS} -layer 6 -direction horizontal -width 1.8 -spacing 1.6 -set_to_set_distance 100 -extend_to all_domains -start_from left -start_offset 39.5 -stop_offset 0 -switch_layer_over_obs false -max_same_layer_jog_length 2 -pad_core_ring_top_layer_limit AP -pad_core_ring_bottom_layer_limit 2 -block_ring_top_layer_limit 6 -block_ring_bottom_layer_limit 2 -use_wire_group 0 -snap_wire_center_to_grid none -area_blockage $power_stripes_all_macros_bbox_str
-
-# get_db [get_cells u_nanosoc_chip_u_system_u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram] .bbox
+add_stripes -nets {VDD VSS} -layer 6 -direction horizontal -width 1.8 -spacing 1.6 -set_to_set_distance 100 -extend_to all_domains -start_from left -start_offset 54.4 -stop_offset 0 -switch_layer_over_obs false -max_same_layer_jog_length 2 -pad_core_ring_top_layer_limit AP -pad_core_ring_bottom_layer_limit 2 -block_ring_top_layer_limit 6 -block_ring_bottom_layer_limit 2 -use_wire_group 0 -snap_wire_center_to_grid none -area_blockage $power_stripes_all_macros_bbox_str
 
 # connect Macros
 select_obj $power_stripes_all_macros
@@ -87,8 +84,8 @@ add_stripes -nets {VDD VSS} -layer 6 -direction horizontal -width 1.6 -spacing 1
 # add_endcaps -start_row_cap ENDCAPTIE2_A12TR -end_row_cap ENDCAPTIE2_A12TR -prefix ENDCAP
 # add_endcaps -power_domain PD_ACC -start_row_cap ENDCAPTIE2_A12TR -end_row_cap ENDCAPTIE2_A12TR -prefix ENDCAP
 
-route_special -connect {pad_pin pad_ring} -layer_change_range { M1(2) M5(6) } -block_pin_target nearest_target -pad_pin_port_connect {all_port all_geom} -pad_pin_target nearest_target -allow_jogging 1 -crossover_via_layer_range { M1(2) M5(6) } -nets { VDD VSS VDDIO VSSIO VDDACC } -allow_layer_change 1 -pad_pin_width 6 -target_via_layer_range { M1(2) M5(6) }
+route_special -connect {pad_pin pad_ring} -layer_change_range { M1(2) M5(6) } -block_pin_target nearest_target -pad_pin_port_connect {all_port all_geom} -pad_pin_target {ring} -allow_jogging 1 -crossover_via_layer_range { M1(2) M5(6) } -nets { VDD VSS VDDIO VSSIO VDDIO_Q VSSIO_Q VDDA VSSA VSWITCH VCCHIB } -allow_layer_change 1 -pad_pin_width 6 -target_via_layer_range { M1(2) M5(6) }
 set_db route_special_via_connect_to_shape { padring stripe }
 # VDDIO VSSIO not used inside core so not needed??
-route_special -connect {block_pin core_pin floating_stripe} -layer_change_range { M1(2) M5(6) } -block_pin_target nearest_target -pad_pin_port_connect {all_port one_geom} -pad_pin_target nearest_target -core_pin_target first_after_row_end -floating_stripe_target {block_ring pad_ring ring stripe ring_pin block_pin followpin} -allow_jogging 1 -power_domains { PD_TOP } -crossover_via_layer_range { M1(2) M5(6) } -nets { VDD VSS } -allow_layer_change 1 -block_pin use_lef -target_via_layer_range { M1(2) M5(6) }
+route_special -connect {pad_ring pad_pin block_pin core_pin floating_stripe} -layer_change_range { M1(2) M5(6) } -block_pin_target nearest_target -pad_pin_port_connect {all_port one_geom} -pad_pin_target nearest_target -core_pin_target first_after_row_end -floating_stripe_target {block_ring pad_ring ring stripe ring_pin block_pin followpin} -allow_jogging 1 -power_domains { PD_TOP } -crossover_via_layer_range { M1(2) M5(6) } -nets { VDD VSS VDDIO VSSIO VDDIO_Q VSSIO_Q VDDA VSSA VSWITCH VCCHIB } -allow_layer_change 1 -block_pin use_lef -target_via_layer_range { M1(2) M5(6) }
 
