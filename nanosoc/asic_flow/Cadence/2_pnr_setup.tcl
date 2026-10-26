@@ -74,7 +74,9 @@ report_end_step 01_place $REPORT_DIR
 
 source ../scripts/postplace.tcl
 
-write_db $block_name
+## -- 3_pnr_clock.tcl reads ${block_name}_place (and writes _cts, which
+## -- 4_pnr_route.tcl reads); writing $block_name here left CTS nothing to load.
+write_db ${block_name}_place
 
 exit
 
