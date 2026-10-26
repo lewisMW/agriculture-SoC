@@ -66,6 +66,19 @@ dict map {supply_name supply_args} $all_supplies {
 
 # I think the other connections should be automatic...
 
+# SAR ADC analog front end (the sar_afe hard macro, ASIC_ours/macros/sar_afe).
+# It sits in PD_TOP. vdd/vss are PD_TOP's VDD/VSS. vdda (the bootstrapped sampling
+# switches) and vref (the CDAC reference) go to VDDA, the analog supply, whose
+# SS_ANALOG is already a supply of PD_TOP. vref shares VDDA until the chip has a
+# dedicated, decoupled reference (a design decision, Oct 2026). All four are pg_pins of
+# primary_power/primary_ground type in the macro's .lib, so each is connected
+# explicitly rather than left to the domain's primary supply. The instance path
+# is the RTL one (sar_adc.v's header), as this file is read before synthesis.
+set sar_afe_inst u_nanosoc_chip/u_system/u_ss_expansion/u_region_exp/u_ss_accelerator/sensor_wrapper/u_adc/u_afe
+connect_supply_net VDD  -ports [list $sar_afe_inst/vdd]
+connect_supply_net VSS  -ports [list $sar_afe_inst/vss]
+connect_supply_net VDDA -ports [list $sar_afe_inst/vdda $sar_afe_inst/vref]
+
 # after connecting supplies, connect the IO ring.
 #dict map {supply_name supply_args} $all_supplies_nets {
 #  set connect_net_name [dict get $supply_args connect_net_name]
@@ -98,7 +111,10 @@ create_supply_set PD_ANALOG.SS_ANALOG  -function {power VDDA} -function {ground 
 # This is not right...
 # set_port_attributes -ports {SE} -receiver_supply PD_IO.SS_IO
 # Set the outside + inside to be the SS_IO domain???
-set_port_attributes -ports {uPAD_NRST_I/XRES_H_N} -driver_supply_set PD_IO.SS_IO -receiver_supply_set PD_IO.SS_IO
+# IEEE 1801-2.0 names these options -driver_supply/-receiver_supply. Genus 22.1's
+# 1801 linter rejects -driver_supply_set/-receiver_supply_set (1801-98) and
+# read_power_intent aborts the synthesis stage on it.
+set_port_attributes -ports {uPAD_NRST_I/XRES_H_N} -driver_supply PD_IO.SS_IO -receiver_supply PD_IO.SS_IO
 
 
 #######################################

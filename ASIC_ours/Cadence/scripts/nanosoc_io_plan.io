@@ -5,6 +5,26 @@
 #  Design:            nanosoc_chip_pads
 #  Command:           write_io_file io
 ###############################################################
+# Edited by hand since (Oct 2026) for the SAR ADC and a closed pad ring:
+# - Rows run bottom to top (left, right) and left to right (top, bottom).
+# - The pad ring is closed with IO filler slices (floorplan.tcl, add_io_fillers): the
+#   ring buses (VDDA, VSSA, VSWITCH, VCCHIB, VDDIO_Q, the enables, AMUXBUS) exist only by
+#   abutment, and the smallest slice is 1 um, so every gap must be a whole number of um.
+#   The die is 3442 x 4042 (floorplan.tcl) and the corner pads 200 x 204, so each row is
+#   a whole number of um long, and every pad has an explicit integer space (Innovus
+#   spreads pads evenly only if none has an offset or space, and then not by whole um).
+#   The first pad of each row has an offset (from the die edge) instead: a first space
+#   counts from 210.965 um, not from the corner pad's edge.
+#   Each row: the pads in their old order, gaps of (row length - pad widths) / (pads + 1)
+#   rounded down, the remainder in the last gap, to the next corner.
+# - One sky130_ef_io__connect_vcchib_vccd_and_vswitch_vddio_slice_20um per row
+#   (uPAD_CONN_*), next to an IO-supply pad: it ties the ring's VCCHIB to VCCD (VDD) and
+#   VSWITCH to VDDIO, as nanosoc_chip_pads.upf assumes. Nothing else drives them, and the
+#   gpiov2 pads need both.
+# - uPAD_VDDIO_2/VSSIO_2/VDDIO_3/VSSIO_3/VDD_3/VSS_3 do not exist in nanosoc_chip_pads.v.
+#   Its third and fourth IO-supply pairs are the quiet ones, uPAD_VDDIOQ_*/VSSIOQ_*, which
+#   were in no row (so Innovus placed them itself, in the wrong orientation); they take
+#   the VDDIO_2/3, VSSIO_2/3 places.
 
 (globals
     version = 3
@@ -15,74 +35,96 @@
 		(inst name="uPAD_CORNER_TL" orientation=R90 cell=sky130_ef_io__corner_pad)
 	)
     (top
-	(inst  name="uPAD_VDDIO_0"	orientation=R0	place_status=fixed )
-	(inst  name="uPAD_VSSIO_0"	orientation=R0 	place_status=fixed )
-	(inst  name="uPAD_VSS_0"	orientation=R0 	place_status=fixed )
-	(inst  name="uPAD_VDD_0"	orientation=R0 	place_status=fixed )
-	(inst  name="uPAD_P0_02"	orientation=R0 	place_status=fixed )
-	(inst  name="uPAD_P0_03"	orientation=R0 	place_status=fixed )
-	(inst  name="uPAD_P0_04"	orientation=R0 	place_status=fixed )
-	(inst  name="uPAD_P0_05"	orientation=R0 	place_status=fixed )
-	(inst  name="uPAD_P0_06"	orientation=R0 	place_status=fixed )
-	(inst  name="uPAD_P0_07"	orientation=R0 	place_status=fixed )
-	(inst  name="uPAD_P0_08"	orientation=R0 	place_status=fixed )
-	(inst  name="uPAD_P0_09"	orientation=R0 	place_status=fixed )
-	(inst  name="uPAD_P0_10"	orientation=R0 	place_status=fixed )
+# x 204-3242: 13 pads and the connect slice, 142 um gaps, 152 um to the top-right corner
+	(inst  name="uPAD_VDDIO_0"	orientation=R0	place_status=fixed offset=346 )
+	(inst  name="uPAD_CONN_T"	orientation=R0 cell=sky130_ef_io__connect_vcchib_vccd_and_vswitch_vddio_slice_20um	place_status=fixed space=0 )
+	(inst  name="uPAD_VSSIO_0"	orientation=R0	place_status=fixed space=142 )
+	(inst  name="uPAD_VSS_0"	orientation=R0	place_status=fixed space=142 )
+	(inst  name="uPAD_VDD_0"	orientation=R0	place_status=fixed space=142 )
+	(inst  name="uPAD_P0_02"	orientation=R0	place_status=fixed space=142 )
+	(inst  name="uPAD_P0_03"	orientation=R0	place_status=fixed space=142 )
+	(inst  name="uPAD_P0_04"	orientation=R0	place_status=fixed space=142 )
+	(inst  name="uPAD_P0_05"	orientation=R0	place_status=fixed space=142 )
+	(inst  name="uPAD_P0_06"	orientation=R0	place_status=fixed space=142 )
+	(inst  name="uPAD_P0_07"	orientation=R0	place_status=fixed space=142 )
+	(inst  name="uPAD_P0_08"	orientation=R0	place_status=fixed space=142 )
+	(inst  name="uPAD_P0_09"	orientation=R0	place_status=fixed space=142 )
+	(inst  name="uPAD_P0_10"	orientation=R0	place_status=fixed space=142 )
     )
 	( bottomleft 
 		(inst name="uPAD_CORNER_BL" orientation=R180 cell=sky130_ef_io__corner_pad)
 	)
     (left
-	(inst  name="uPAD_VDDIO_1"	orientation=R90	place_status=fixed )
-	(inst  name="uPAD_VSSIO_1"	orientation=R90 place_status=fixed )
-	(inst  name="uPAD_VDD_1"	orientation=R90 place_status=fixed )
-	(inst  name="uPAD_VSS_1"	orientation=R90 place_status=fixed )
-	(inst  name="uPAD_P0_15"	orientation=R90 place_status=fixed )
-	(inst  name="uPAD_P1_00"	orientation=R90 place_status=fixed )
-	(inst  name="uPAD_P1_01"	orientation=R90 place_status=fixed )
-	(inst  name="uPAD_P1_02"	orientation=R90 place_status=fixed )
-	(inst  name="uPAD_P1_03"	orientation=R90 place_status=fixed )
-	(inst  name="uPAD_P1_04"	orientation=R90 place_status=fixed )
-	(inst  name="uPAD_P1_05"	orientation=R90 place_status=fixed )
-	(inst  name="uPAD_P1_06"	orientation=R90 place_status=fixed )
-	(inst  name="uPAD_P1_07"	orientation=R90 place_status=fixed )
-	(inst  name="uPAD_P1_08"	orientation=R90 place_status=fixed )
+# SAR ADC (sar_afe macro at the core's bottom-left, floorplan.tcl): its analog inputs
+# come in on its left edge at y 488.86 (vinn) and 503.16 (vinp). The two analog pads
+# abut, centred on those pins: each P_CORE (met3, 25 um, 24.7-49.7 um up the pad) ends
+# 18 um short of its pin's level, so each input is a short met3 run with one jog.
+# VSSA below and VDDA above them; uPAD_VDDA_0's core-side met3 VDDA pins (y 571-646)
+# face the macro's block ring, which power_plan.tcl joins them to.
+	(inst  name="uPAD_VSSA_0"	orientation=R90	place_status=fixed offset=346 )
+	(inst  name="uPAD_ADC_VINN"	orientation=R90	place_status=fixed space=0 )
+	(inst  name="uPAD_ADC_VINP"	orientation=R90	place_status=fixed space=0 )
+	(inst  name="uPAD_VDDA_0"	orientation=R90	place_status=fixed space=0 )
+# the rest, y 646-3842: 14 pads and the connect slice, 138 um gaps, 144 um to the top-left corner
+	(inst  name="uPAD_VDDIO_1"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_CONN_L"	orientation=R90 cell=sky130_ef_io__connect_vcchib_vccd_and_vswitch_vddio_slice_20um	place_status=fixed space=0 )
+	(inst  name="uPAD_VSSIO_1"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_VDD_1"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_VSS_1"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_P0_15"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_P1_00"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_P1_01"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_P1_02"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_P1_03"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_P1_04"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_P1_05"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_P1_06"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_P1_07"	orientation=R90	place_status=fixed space=138 )
+	(inst  name="uPAD_P1_08"	orientation=R90	place_status=fixed space=138 )
     )
 	( bottomright
 		(inst name="uPAD_CORNER_BR" orientation=R270 cell=sky130_ef_io__corner_pad)
 	)
     (bottom
-	(inst  name="uPAD_VDDIO_2"	orientation=R180 place_status=fixed )
-	(inst  name="uPAD_VSSIO_2"	orientation=R180 place_status=fixed )
-	(inst  name="uPAD_VDD_2"	orientation=R180 place_status=fixed )
-	(inst  name="uPAD_VSS_2"	orientation=R180 place_status=fixed )
-	(inst  name="uPAD_P1_11"	orientation=R180	place_status=fixed )
-	(inst  name="uPAD_P1_12"	orientation=R180	place_status=fixed )
-	(inst  name="uPAD_P1_13"	orientation=R180	place_status=fixed )
-	(inst  name="uPAD_P1_14"	orientation=R180	place_status=fixed )
-	(inst  name="uPAD_P1_15"	orientation=R180	place_status=fixed )
-	(inst  name="uPAD_SE_I"		orientation=R180	place_status=fixed )
-	(inst  name="uPAD_SWDCK_I"	orientation=R180	place_status=fixed )
-	(inst  name="uPAD_SWDIO_IO"	orientation=R180	place_status=fixed )
-	(inst  name="uPAD_TEST_I"	orientation=R180	place_status=fixed )
+# Under the SAR ADC macro (x 281-541): two VDDA pads, whose core-side met3 VDDA pins
+# power_plan.tcl takes straight up to the macro's block ring, flanked by the VSSA pads.
+	(inst  name="uPAD_VSSA_1"	orientation=R180 place_status=fixed offset=230 )
+	(inst  name="uPAD_VDDA_1"	orientation=R180 place_status=fixed space=0 )
+	(inst  name="uPAD_VDDA_2"	orientation=R180 place_status=fixed space=0 )
+	(inst  name="uPAD_VSSA_2"	orientation=R180 place_status=fixed space=0 )
+# the rest, x 530-3238: 13 pads and the connect slice, 119 um gaps, 121 um to the bottom-right corner
+	(inst  name="uPAD_VDDIOQ_0"	orientation=R180	place_status=fixed space=119 )
+	(inst  name="uPAD_VSSIOQ_0"	orientation=R180	place_status=fixed space=119 )
+	(inst  name="uPAD_VDD_2"	orientation=R180	place_status=fixed space=119 )
+	(inst  name="uPAD_CONN_B"	orientation=R180 cell=sky130_ef_io__connect_vcchib_vccd_and_vswitch_vddio_slice_20um	place_status=fixed space=0 )
+	(inst  name="uPAD_VSS_2"	orientation=R180	place_status=fixed space=119 )
+	(inst  name="uPAD_P1_11"	orientation=R180	place_status=fixed space=119 )
+	(inst  name="uPAD_P1_12"	orientation=R180	place_status=fixed space=119 )
+	(inst  name="uPAD_P1_13"	orientation=R180	place_status=fixed space=119 )
+	(inst  name="uPAD_P1_14"	orientation=R180	place_status=fixed space=119 )
+	(inst  name="uPAD_P1_15"	orientation=R180	place_status=fixed space=119 )
+	(inst  name="uPAD_SE_I"	orientation=R180	place_status=fixed space=119 )
+	(inst  name="uPAD_SWDCK_I"	orientation=R180	place_status=fixed space=119 )
+	(inst  name="uPAD_SWDIO_IO"	orientation=R180	place_status=fixed space=119 )
+	(inst  name="uPAD_TEST_I"	orientation=R180	place_status=fixed space=119 )
     )
 	( topright 
 		(inst name="uPAD_CORNER_TR" orientation=R0 cell=sky130_ef_io__corner_pad)
 	)
     (right
-	(inst  name="uPAD_VDDIO_3"	orientation=R270 place_status=fixed )
-	(inst  name="uPAD_VDD_3"	orientation=R270 place_status=fixed )
-	(inst  name="uPAD_VSSIO_3"	orientation=R270 place_status=fixed )
-	(inst  name="uPAD_VSS_3"	orientation=R270 place_status=fixed )
-	(inst  name="uPAD_CLK_I"	orientation=R270 place_status=fixed )
-	(inst  name="uPAD_NRST_I"	orientation=R270 place_status=fixed )
-	(inst  name="uPAD_P0_00"	orientation=R270 place_status=fixed )
-	(inst  name="uPAD_P0_01"	orientation=R270 place_status=fixed )
-	(inst  name="uPAD_P0_11"	orientation=R270 place_status=fixed )
-	(inst  name="uPAD_P0_12"	orientation=R270 place_status=fixed )
-	(inst  name="uPAD_P0_13"	orientation=R270 place_status=fixed )
-	(inst  name="uPAD_P0_14"	orientation=R270 place_status=fixed )
-	(inst  name="uPAD_P1_09"	orientation=R270	place_status=fixed )
-	(inst  name="uPAD_P1_10"	orientation=R270	place_status=fixed )
+# y 200-3838: 12 pads and the connect slice, 205 um gaps, 213 um to the top-right corner
+	(inst  name="uPAD_VDDIOQ_1"	orientation=R270	place_status=fixed offset=405 )
+	(inst  name="uPAD_CONN_R"	orientation=R270 cell=sky130_ef_io__connect_vcchib_vccd_and_vswitch_vddio_slice_20um	place_status=fixed space=0 )
+	(inst  name="uPAD_VSSIOQ_1"	orientation=R270	place_status=fixed space=205 )
+	(inst  name="uPAD_CLK_I"	orientation=R270	place_status=fixed space=205 )
+	(inst  name="uPAD_NRST_I"	orientation=R270	place_status=fixed space=205 )
+	(inst  name="uPAD_P0_00"	orientation=R270	place_status=fixed space=205 )
+	(inst  name="uPAD_P0_01"	orientation=R270	place_status=fixed space=205 )
+	(inst  name="uPAD_P0_11"	orientation=R270	place_status=fixed space=205 )
+	(inst  name="uPAD_P0_12"	orientation=R270	place_status=fixed space=205 )
+	(inst  name="uPAD_P0_13"	orientation=R270	place_status=fixed space=205 )
+	(inst  name="uPAD_P0_14"	orientation=R270	place_status=fixed space=205 )
+	(inst  name="uPAD_P1_09"	orientation=R270	place_status=fixed space=205 )
+	(inst  name="uPAD_P1_10"	orientation=R270	place_status=fixed space=205 )
     )
 )

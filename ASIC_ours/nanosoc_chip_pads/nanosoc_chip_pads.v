@@ -65,6 +65,11 @@ module nanosoc_chip_pads (
   inout  wire          VSSA_PAD1,
   inout  wire          VSSA_PAD2,
 
+  // SAR ADC analog inputs (sky130_ef_io__analog_pad), straight to the sar_afe
+  // macro's vinp/vinn with no cell in between
+  inout  wire          ADC_VINP,
+  inout  wire          ADC_VINN,
+
   //----------------------------------
   // power wires
   //----------------------------------
@@ -152,6 +157,11 @@ wire [15:0] soc_gpio_port1_e; // GPIO SOC tristate output enable
 wire [15:0] soc_gpio_port1_z; // GPIO SOC tristate output hiz
 
 wire pad_se_i;
+
+// SAR ADC analog inputs: analog pad P_CORE -> nanosoc_chip ADC_VINP/ADC_VINN ->
+// sar_adc u_adc -> sar_afe u_afe vinp/vinn. Analog nets: P&R must not buffer them.
+wire pad_adc_vinp;
+wire pad_adc_vinn;
 
 // connect up high order GPIOs
 assign soc_gpio_port0_i[15:GPIO_TIO] = pad_gpio_port0_i[15:GPIO_TIO];
@@ -255,7 +265,9 @@ nanosoc_chip_cfg #(
   .swdio_o(soc_swd_dio_o),
   .swdio_e(soc_swd_dio_e),
   .swdio_z(soc_swd_dio_z),
-  .swdclk_i(pad_swdclk_i)
+  .swdclk_i(pad_swdclk_i),
+  .ADC_VINP(pad_adc_vinp), // SAR ADC analog inputs, from uPAD_ADC_VINP/VINN
+  .ADC_VINN(pad_adc_vinn)
   );
 
 
@@ -335,6 +347,21 @@ sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_1(
    );
 sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_2(
    .VSSA_PAD(VSSA_PAD2)
+   );
+
+// SAR ADC analog inputs. sky130_ef_io__analog_pad connects the bond pad (P_PAD)
+// to a 25 um wide met3 pin on its core edge (P_CORE). Its supply
+// pins join the pad ring by abutment, as on the other pads, and AMUXBUS_A/B are
+// left open as on uPAD_NRST_I.
+sky130_ef_io__analog_pad uPAD_ADC_VINP (
+   .P_PAD(ADC_VINP),
+   .P_CORE(pad_adc_vinp),
+   .AMUXBUS_A(), .AMUXBUS_B()
+   );
+sky130_ef_io__analog_pad uPAD_ADC_VINN (
+   .P_PAD(ADC_VINN),
+   .P_CORE(pad_adc_vinn),
+   .AMUXBUS_A(), .AMUXBUS_B()
    );
 
 // Clock, Reset and Serial Wire Debug ports
