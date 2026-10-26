@@ -94,7 +94,7 @@
 				<value>no</value>
 			</plottingoption>
 			<plottingoption>autoplotmode
-				<value>New Win</value>
+				<value>Replace</value>
 			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
@@ -114,6 +114,5 @@
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
 		<allcornersenabled>1</allcornersenabled>
 	</active>
-	<history>History
-	</history>
+	<history>History</history>
 </setupdb>

@@ -1,0 +1,72 @@
+//Verilog-AMS HDL for "sar_adc", "sar_afe" "verilogams"
+// ------------------------------------------------------------
+// Module: sar_afe
+//
+// Description:
+//	Analog front end of the differential SAR ADC, i.e. the hard macro
+//	laid out as sar_adc/sar_afe:
+//	2x - cdac_8b (Hee's): bootstrapped sampling switch, 8-bit binary
+//	     capacitor array and its bit-driver inverters. In the circuit the
+//	     bit drivers run from vref (the CDAC reference) and the switch from
+//	     vdda; Hee's behavioural cdac_8b has one supply for both, which this
+//	     view takes from vref, so the conversion follows the reference.
+//	     The dummy cap's driver input is tied low (ctl_dum = 0), as
+//	     sar.vams always did; vssa is vss.
+//	1x - comparator: clocked comparator with offset-trim arrays.
+//	The SAR FSM (sarlogic) and the SR latch are digital and stay outside.
+//
+//	All views of sar_afe share this port list: schematic, layout, symbol,
+//	and the Spectre netlists of the schematic and of the Quantus
+//	extraction that agriculture_soc_main/AMS binds in place of this view.
+//
+// Author: Lewis (split out of sar, Hee's design)
+// Date: 2026-10-06 (vdda: 2026-10-18, vref: 2026-10-20)
+// ------------------------------------------------------------
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module sar_afe (vinp, vinn, sample, clk, ctlp, ctln, trima, trimb, outp, outn, vdd, vdda, vref, vss);
+	input vinp, vinn, sample, clk;
+	input [7:0] ctlp, ctln;
+	input [4:0] trima, trimb;
+	output outp, outn;
+	inout vdd, vdda, vref, vss;	// vdd: comparator; vdda: switches; vref: CDAC reference
+
+	electrical vinp, vinn, vdd, vdda, vref, vss;
+	logic sample, clk;
+	logic [7:0] ctlp, ctln;
+	logic [4:0] trima, trimb;
+	wire outp, outn;
+
+	// CDAC top plates = comparator inputs
+	electrical vtopp, vtopn;
+
+	cdac_8b cdacp (.vin(vinp),
+				.vout(vtopp),
+				.sample(sample),
+				.ctl(ctlp),
+				.ctl_dum(1'b0),
+				.vdda(vref),
+				.vssa(vss));
+
+	cdac_8b cdacn (.vin(vinn),
+				.vout(vtopn),
+				.sample(sample),
+				.ctl(ctln),
+				.ctl_dum(1'b0),
+				.vdda(vref),
+				.vssa(vss));
+
+	comparator comp (
+				.vp(vtopp),
+				.vn(vtopn),
+				.outp(outp),
+				.outn(outn),
+				.clk(clk),
+				.trima(trima),
+				.trimb(trimb),
+				.vdd(vdd),
+				.vss(vss));
+
+endmodule

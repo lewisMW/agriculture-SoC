@@ -11,7 +11,13 @@ export REPO_ROOT="$(cd "$_SETUP_DIR/../../.." && pwd)"
 # Genus/Innovus live in DDI221; check_cpf in 1_synthesis.tcl shells out to
 # Conformal, so CONFRML241 must be on PATH too or the stage aborts (RCLP-202).
 export PATH=/opt/cadence/installs/DDI221/bin:/opt/cadence/installs/CONFRML241/bin:$PATH
-export CDS_LIC_FILE="${CDS_LIC_FILE:-5280@cadence.lic.sydney.edu.au}"
+
+# The licence server is site-specific, so it comes from the caller's
+# environment (e.g. ~/.bashrc): CDS_LIC_FILE=port@host.
+if [ -z "${CDS_LIC_FILE:-}${LM_LICENSE_FILE:-}" ]; then
+    echo "ERROR: set CDS_LIC_FILE to your Cadence licence server (port@host) first."
+    return 1
+fi
 
 # soctools_flow/bin/filelist_compile.py opens sources with the locale default
 # encoding; under the machine default LANG=C.UTF-8 python3.6 falls back to ASCII

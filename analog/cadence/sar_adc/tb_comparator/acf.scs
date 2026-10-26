@@ -1,0 +1,13 @@
+***********************************
+simulator lang=spectre
+***********************************
+
+*-----------------------------------------------------*
+* Spectre Fast APS Analysis Options/Spectre X options
+*-----------------------------------------------------*
+tran1 tran start=0 stop=1u method=trap
+
+*-----------------------------------------------------*
+* Spectre Fast APS Simulator Options options
+*-----------------------------------------------------*
+save * sigtype=node depth=4

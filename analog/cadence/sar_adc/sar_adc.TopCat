@@ -1,0 +1,6 @@
+TDMCHECKPOINT="1.0"
+sar_adc/analog.Cat type="category"
+sar_adc/digital.Cat type="category"
+sar_adc/stimuli.Cat type="category"
+sar_adc/testbench.Cat type="category"
+sar_adc/top.Cat type="category"

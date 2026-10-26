@@ -1,0 +1,7 @@
+--TIMESTAMP:	1787567505	Mon Aug 24 20:31:45 2026
+#
+* mim_cap_adc *
+DUT
+#
+* vsource *
+Vstim

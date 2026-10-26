@@ -65,6 +65,11 @@ module nanosoc_chip_pads (
   inout  wire          VSSA_PAD1,
   inout  wire          VSSA_PAD2,
 
+  // SAR ADC analog inputs (sky130_ef_io__analog_pad), straight to the sar_afe
+  // macro's vinp/vinn with no cell in between
+  inout  wire          ADC_VINP,
+  inout  wire          ADC_VINN,
+
   //----------------------------------
   // power wires
   //----------------------------------
@@ -152,6 +157,11 @@ wire [15:0] soc_gpio_port1_e; // GPIO SOC tristate output enable
 wire [15:0] soc_gpio_port1_z; // GPIO SOC tristate output hiz
 
 wire pad_se_i;
+
+// SAR ADC analog inputs: analog pad P_CORE -> nanosoc_chip ADC_VINP/ADC_VINN ->
+// sar_adc u_adc -> sar_afe u_afe vinp/vinn. Analog nets: P&R must not buffer them.
+wire pad_adc_vinp;
+wire pad_adc_vinn;
 
 // connect up high order GPIOs
 assign soc_gpio_port0_i[15:GPIO_TIO] = pad_gpio_port0_i[15:GPIO_TIO];
@@ -255,7 +265,9 @@ nanosoc_chip_cfg #(
   .swdio_o(soc_swd_dio_o),
   .swdio_e(soc_swd_dio_e),
   .swdio_z(soc_swd_dio_z),
-  .swdclk_i(pad_swdclk_i)
+  .swdclk_i(pad_swdclk_i),
+  .ADC_VINP(pad_adc_vinp), // SAR ADC analog inputs, from uPAD_ADC_VINP/VINN
+  .ADC_VINN(pad_adc_vinn)
   );
 
 
@@ -440,9 +452,6 @@ sky130_fd_io__top_xres4v2 uPAD_NRST_I (
    // TODO the skew between enable_h and enable_vddio is not respected?
    // is that a problem?
    .ENABLE_H(por_h_io), // Power-on-reset
-   // TODO I don't think this is right.
-   // enable_vddio: This qualifier lets the sky130_fd_io__gpio know that VDDIO is either present (1) or absent (0) in VCCHIB domain.
-   // but VDDIO is not in the VCCHIB domain???
    .ENABLE_VDDIO(1'b1), // it's done like this in caravel
    .AMUXBUS_A(), .AMUXBUS_B()
 );

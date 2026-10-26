@@ -156,6 +156,27 @@ foreach gpio_pad_pin [get_db [get_pins uPAD_*/PAD] .name] { # all pads
   set_port_domains [get_pins $gpio_pad_pin] PD_IO.SS_IO "pin"
 }
 
+# SAR ADC analog front end (the sar_afe hard macro, ASIC_ours/macros/sar_afe).
+# It sits in PD_TOP. vdd/vss are PD_TOP's VDD/VSS. vdda (the bootstrapped sampling
+# switches) and vref (the CDAC reference) go to VDDA, the analog supply, whose
+# SS_ANALOG is already a supply of PD_TOP. vref shares VDDA until the chip has a
+# dedicated, decoupled reference (a design decision, Oct 2026). All four are pg_pins of
+# primary_power/primary_ground type in the macro's .lib, so each is connected
+# explicitly rather than left to the domain's primary supply. The instance path
+# is the RTL one (sar_adc.v's header), as this file is read before synthesis.
+set sar_afe_inst u_nanosoc_chip/u_system/u_ss_expansion/u_region_exp/u_ss_accelerator/sensor_wrapper/u_adc/u_afe
+connect_supply_net VDD  -ports [list $sar_afe_inst/vdd]
+connect_supply_net VSS  -ports [list $sar_afe_inst/vss]
+connect_supply_net VDDA -ports [list $sar_afe_inst/vdda $sar_afe_inst/vref]
+
+
+# This is not right...
+# set_port_attributes -ports {SE} -receiver_supply PD_IO.SS_IO
+# Set the outside + inside to be the SS_IO domain???
+# IEEE 1801-2.0 names these options -driver_supply/-receiver_supply. Genus 22.1's
+# 1801 linter rejects -driver_supply_set/-receiver_supply_set (1801-98) and
+# read_power_intent aborts the synthesis stage on it.
+# set_port_attributes -ports {uPAD_NRST_I/XRES_H_N} -driver_supply PD_IO.SS_IO -receiver_supply PD_IO.SS_IO
 
 
 #######################################
@@ -170,40 +191,9 @@ dict map {supply_name supply_args} $all_supplies_nets {
   add_port_state $supply_name -state [list ON_FAST $voltage_fast]
 }
 
-#add_port_state VDD              -state {ON_SLOW 1.62}
-#add_port_state VDD              -state {ON_TYP  1.80}
-#add_port_state VDD              -state {ON_FAST 1.98}
-#add_port_state VSS              -state {ON_SLOW 0.0}
-#add_port_state VSS              -state {ON_TYP  0.0}
-#add_port_state VSS              -state {ON_FAST 0.0}
-#add_port_state VDDIO            -state {ON_SLOW 2.97}
-#add_port_state VDDIO            -state {ON_TYP  3.30}
-#add_port_state VDDIO            -state {ON_FAST 3.63}
-#add_port_state VSSIO            -state {ON_SLOW 0}
-#add_port_state VSSIO            -state {ON_TYP  0}
-#add_port_state VSSIO            -state {ON_FAST 0}
-#add_port_state VDDIO_Q          -state {ON_SLOW 2.97}
-#add_port_state VDDIO_Q          -state {ON_TYP  3.30}
-#add_port_state VDDIO_Q          -state {ON_FAST 3.63}
-#add_port_state VSSIO_Q          -state {ON_SLOW 0}
-#add_port_state VSSIO_Q          -state {ON_TYP  0}
-#add_port_state VSSIO_Q          -state {ON_FAST 0}
-#add_port_state VDDA             -state {ON_SLOW 1.62}
-#add_port_state VDDA             -state {ON_TYP  1.80}
-#add_port_state VDDA             -state {ON_FAST 1.98}
-#add_port_state VSSA             -state {ON_SLOW 0.0}
-#add_port_state VSSA             -state {ON_TYP  0.0}
-#add_port_state VSSA             -state {ON_FAST 0.0}
-
 add_power_state PD_TOP.SS_TOP         -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.62} && ground == `{FULL_ON, 0.0}}}
 add_power_state PD_TOP.SS_TOP         -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.80} && ground == `{FULL_ON, 0.0}}}
 add_power_state PD_TOP.SS_TOP         -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.98} && ground == `{FULL_ON, 0.0}}}
-#add_power_state PD_TOP.SS_IO          -state ON_SLOW {-supply_expr {power == `{FULL_ON, 2.97} && ground == `{FULL_ON, 0.0}}}
-#add_power_state PD_TOP.SS_IO          -state ON_TYP  {-supply_expr {power == `{FULL_ON, 3.30} && ground == `{FULL_ON, 0.0}}}
-#add_power_state PD_TOP.SS_IO          -state ON_FAST {-supply_expr {power == `{FULL_ON, 3.63} && ground == `{FULL_ON, 0.0}}}
-#add_power_state PD_IO.SS_TOP          -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.62} && ground == `{FULL_ON, 0.0}}}
-#add_power_state PD_IO.SS_TOP          -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.80} && ground == `{FULL_ON, 0.0}}}
-#add_power_state PD_IO.SS_TOP          -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.98} && ground == `{FULL_ON, 0.0}}}
 add_power_state PD_IO.SS_IO           -state ON_SLOW {-supply_expr {power == `{FULL_ON, 2.97} && ground == `{FULL_ON, 0.0}}}
 add_power_state PD_IO.SS_IO           -state ON_TYP  {-supply_expr {power == `{FULL_ON, 3.30} && ground == `{FULL_ON, 0.0}}}
 add_power_state PD_IO.SS_IO           -state ON_FAST {-supply_expr {power == `{FULL_ON, 3.63} && ground == `{FULL_ON, 0.0}}}
@@ -240,10 +230,6 @@ add_pst_state all_on_slow -pst top_pst -state       {ON_SLOW  ON_SLOW  ON_SLOW  
 add_pst_state all_on_typ -pst top_pst -state        {ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   } 
 add_pst_state all_on_fast -pst top_pst -state       {ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  } 
 
-#add_pst_state all_on_slow -pst top_pst -state       {ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  } 
-#add_pst_state all_on_typ -pst top_pst -state        {ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   } 
-#add_pst_state all_on_fast -pst top_pst -state       {ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  } 
-
 # Add the level shifters
 # TODO this is not too right - it's including too much, including some pins that are not needed...
 #foreach domain [list PD_TOP PD_IO PD_ANALOG] {
@@ -253,8 +239,10 @@ add_pst_state all_on_fast -pst top_pst -state       {ON_FAST  ON_FAST  ON_FAST  
 #    -applies_to both \
 #    -rule both
 #}
+
 set_level_shifter LS_PD_TOP_GENERAL -domain PD_TOP -applies_to both -rule both
 set_level_shifter LS_PD_IO_GENERAL  -domain PD_IO  -applies_to both -rule both
 #set_level_shifter LS_PD_TOP_GENERAL -domain PD_TOP -source PD_TOP.SS_IO -sink PD_TOP.SS_TOP -elements {uPAD_NRST_I/XRES_H_N}
+# set_level_shifter LS_PD_TOP_GENERAL -domain PD_TOP -source PD_TOP.SS_IO -sink PD_TOP.SS_TOP
 #set_level_shifter LS_PD_TOP_TO_PD_TO -domain PD_TOP -source PD_TOP.SS_TOP -sink PD_IO.SS_IO
 #set_level_shifter LS_PD_IO_TO_PD_TOP -domain PD_TOP -source PD_TOP.SS_IO -sink PD_IO.SS_TOP

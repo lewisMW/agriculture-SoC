@@ -1,0 +1,570 @@
+************************************************************************
+* auCdl Netlist:
+* 
+* Library Name:  sar_adc
+* Top Cell Name: sar_afe_r
+* View Name:     schematic
+* Netlisted on:  Oct 20 13:36:48 2026
+************************************************************************
+
+*.BIPOLAR
+*.RESI = 2000 
+*.RESVAL
+*.CAPVAL
+*.DIOPERI
+*.DIOAREA
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+
+
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    mim_cap_adc
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__mim_cap_adc bottom top vssa
+*.PININFO bottom:B top:B vssa:B
+CC0 top bottom $[cap_mim_m3__base] m=1 l=4u w=4u
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    mim_cap_128bank
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__mim_cap_128bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B
+XC127 bottom top vssa / sar_afe_r__mim_cap_adc
+XC126 bottom top vssa / sar_afe_r__mim_cap_adc
+XC125 bottom top vssa / sar_afe_r__mim_cap_adc
+XC124 bottom top vssa / sar_afe_r__mim_cap_adc
+XC123 bottom top vssa / sar_afe_r__mim_cap_adc
+XC122 bottom top vssa / sar_afe_r__mim_cap_adc
+XC121 bottom top vssa / sar_afe_r__mim_cap_adc
+XC120 bottom top vssa / sar_afe_r__mim_cap_adc
+XC119 bottom top vssa / sar_afe_r__mim_cap_adc
+XC118 bottom top vssa / sar_afe_r__mim_cap_adc
+XC117 bottom top vssa / sar_afe_r__mim_cap_adc
+XC116 bottom top vssa / sar_afe_r__mim_cap_adc
+XC115 bottom top vssa / sar_afe_r__mim_cap_adc
+XC114 bottom top vssa / sar_afe_r__mim_cap_adc
+XC113 bottom top vssa / sar_afe_r__mim_cap_adc
+XC112 bottom top vssa / sar_afe_r__mim_cap_adc
+XC111 bottom top vssa / sar_afe_r__mim_cap_adc
+XC110 bottom top vssa / sar_afe_r__mim_cap_adc
+XC109 bottom top vssa / sar_afe_r__mim_cap_adc
+XC108 bottom top vssa / sar_afe_r__mim_cap_adc
+XC107 bottom top vssa / sar_afe_r__mim_cap_adc
+XC106 bottom top vssa / sar_afe_r__mim_cap_adc
+XC105 bottom top vssa / sar_afe_r__mim_cap_adc
+XC104 bottom top vssa / sar_afe_r__mim_cap_adc
+XC103 bottom top vssa / sar_afe_r__mim_cap_adc
+XC102 bottom top vssa / sar_afe_r__mim_cap_adc
+XC101 bottom top vssa / sar_afe_r__mim_cap_adc
+XC100 bottom top vssa / sar_afe_r__mim_cap_adc
+XC99 bottom top vssa / sar_afe_r__mim_cap_adc
+XC98 bottom top vssa / sar_afe_r__mim_cap_adc
+XC97 bottom top vssa / sar_afe_r__mim_cap_adc
+XC96 bottom top vssa / sar_afe_r__mim_cap_adc
+XC95 bottom top vssa / sar_afe_r__mim_cap_adc
+XC94 bottom top vssa / sar_afe_r__mim_cap_adc
+XC93 bottom top vssa / sar_afe_r__mim_cap_adc
+XC92 bottom top vssa / sar_afe_r__mim_cap_adc
+XC91 bottom top vssa / sar_afe_r__mim_cap_adc
+XC90 bottom top vssa / sar_afe_r__mim_cap_adc
+XC89 bottom top vssa / sar_afe_r__mim_cap_adc
+XC88 bottom top vssa / sar_afe_r__mim_cap_adc
+XC87 bottom top vssa / sar_afe_r__mim_cap_adc
+XC86 bottom top vssa / sar_afe_r__mim_cap_adc
+XC85 bottom top vssa / sar_afe_r__mim_cap_adc
+XC84 bottom top vssa / sar_afe_r__mim_cap_adc
+XC83 bottom top vssa / sar_afe_r__mim_cap_adc
+XC82 bottom top vssa / sar_afe_r__mim_cap_adc
+XC81 bottom top vssa / sar_afe_r__mim_cap_adc
+XC80 bottom top vssa / sar_afe_r__mim_cap_adc
+XC79 bottom top vssa / sar_afe_r__mim_cap_adc
+XC78 bottom top vssa / sar_afe_r__mim_cap_adc
+XC77 bottom top vssa / sar_afe_r__mim_cap_adc
+XC76 bottom top vssa / sar_afe_r__mim_cap_adc
+XC75 bottom top vssa / sar_afe_r__mim_cap_adc
+XC74 bottom top vssa / sar_afe_r__mim_cap_adc
+XC73 bottom top vssa / sar_afe_r__mim_cap_adc
+XC72 bottom top vssa / sar_afe_r__mim_cap_adc
+XC71 bottom top vssa / sar_afe_r__mim_cap_adc
+XC70 bottom top vssa / sar_afe_r__mim_cap_adc
+XC69 bottom top vssa / sar_afe_r__mim_cap_adc
+XC68 bottom top vssa / sar_afe_r__mim_cap_adc
+XC67 bottom top vssa / sar_afe_r__mim_cap_adc
+XC66 bottom top vssa / sar_afe_r__mim_cap_adc
+XC65 bottom top vssa / sar_afe_r__mim_cap_adc
+XC64 bottom top vssa / sar_afe_r__mim_cap_adc
+XC63 bottom top vssa / sar_afe_r__mim_cap_adc
+XC62 bottom top vssa / sar_afe_r__mim_cap_adc
+XC61 bottom top vssa / sar_afe_r__mim_cap_adc
+XC60 bottom top vssa / sar_afe_r__mim_cap_adc
+XC59 bottom top vssa / sar_afe_r__mim_cap_adc
+XC58 bottom top vssa / sar_afe_r__mim_cap_adc
+XC57 bottom top vssa / sar_afe_r__mim_cap_adc
+XC56 bottom top vssa / sar_afe_r__mim_cap_adc
+XC55 bottom top vssa / sar_afe_r__mim_cap_adc
+XC54 bottom top vssa / sar_afe_r__mim_cap_adc
+XC53 bottom top vssa / sar_afe_r__mim_cap_adc
+XC52 bottom top vssa / sar_afe_r__mim_cap_adc
+XC51 bottom top vssa / sar_afe_r__mim_cap_adc
+XC50 bottom top vssa / sar_afe_r__mim_cap_adc
+XC49 bottom top vssa / sar_afe_r__mim_cap_adc
+XC48 bottom top vssa / sar_afe_r__mim_cap_adc
+XC47 bottom top vssa / sar_afe_r__mim_cap_adc
+XC46 bottom top vssa / sar_afe_r__mim_cap_adc
+XC45 bottom top vssa / sar_afe_r__mim_cap_adc
+XC44 bottom top vssa / sar_afe_r__mim_cap_adc
+XC43 bottom top vssa / sar_afe_r__mim_cap_adc
+XC42 bottom top vssa / sar_afe_r__mim_cap_adc
+XC41 bottom top vssa / sar_afe_r__mim_cap_adc
+XC40 bottom top vssa / sar_afe_r__mim_cap_adc
+XC39 bottom top vssa / sar_afe_r__mim_cap_adc
+XC38 bottom top vssa / sar_afe_r__mim_cap_adc
+XC37 bottom top vssa / sar_afe_r__mim_cap_adc
+XC36 bottom top vssa / sar_afe_r__mim_cap_adc
+XC35 bottom top vssa / sar_afe_r__mim_cap_adc
+XC34 bottom top vssa / sar_afe_r__mim_cap_adc
+XC33 bottom top vssa / sar_afe_r__mim_cap_adc
+XC32 bottom top vssa / sar_afe_r__mim_cap_adc
+XC31 bottom top vssa / sar_afe_r__mim_cap_adc
+XC30 bottom top vssa / sar_afe_r__mim_cap_adc
+XC29 bottom top vssa / sar_afe_r__mim_cap_adc
+XC28 bottom top vssa / sar_afe_r__mim_cap_adc
+XC27 bottom top vssa / sar_afe_r__mim_cap_adc
+XC26 bottom top vssa / sar_afe_r__mim_cap_adc
+XC25 bottom top vssa / sar_afe_r__mim_cap_adc
+XC24 bottom top vssa / sar_afe_r__mim_cap_adc
+XC23 bottom top vssa / sar_afe_r__mim_cap_adc
+XC22 bottom top vssa / sar_afe_r__mim_cap_adc
+XC21 bottom top vssa / sar_afe_r__mim_cap_adc
+XC20 bottom top vssa / sar_afe_r__mim_cap_adc
+XC19 bottom top vssa / sar_afe_r__mim_cap_adc
+XC18 bottom top vssa / sar_afe_r__mim_cap_adc
+XC17 bottom top vssa / sar_afe_r__mim_cap_adc
+XC16 bottom top vssa / sar_afe_r__mim_cap_adc
+XC15 bottom top vssa / sar_afe_r__mim_cap_adc
+XC14 bottom top vssa / sar_afe_r__mim_cap_adc
+XC13 bottom top vssa / sar_afe_r__mim_cap_adc
+XC12 bottom top vssa / sar_afe_r__mim_cap_adc
+XC11 bottom top vssa / sar_afe_r__mim_cap_adc
+XC10 bottom top vssa / sar_afe_r__mim_cap_adc
+XC9 bottom top vssa / sar_afe_r__mim_cap_adc
+XC8 bottom top vssa / sar_afe_r__mim_cap_adc
+XC7 bottom top vssa / sar_afe_r__mim_cap_adc
+XC6 bottom top vssa / sar_afe_r__mim_cap_adc
+XC5 bottom top vssa / sar_afe_r__mim_cap_adc
+XC4 bottom top vssa / sar_afe_r__mim_cap_adc
+XC3 bottom top vssa / sar_afe_r__mim_cap_adc
+XC2 bottom top vssa / sar_afe_r__mim_cap_adc
+XC1 bottom top vssa / sar_afe_r__mim_cap_adc
+XC0 bottom top vssa / sar_afe_r__mim_cap_adc
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    mim_cap_64bank
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__mim_cap_64bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B
+XC63 bottom top vssa / sar_afe_r__mim_cap_adc
+XC62 bottom top vssa / sar_afe_r__mim_cap_adc
+XC61 bottom top vssa / sar_afe_r__mim_cap_adc
+XC60 bottom top vssa / sar_afe_r__mim_cap_adc
+XC59 bottom top vssa / sar_afe_r__mim_cap_adc
+XC58 bottom top vssa / sar_afe_r__mim_cap_adc
+XC57 bottom top vssa / sar_afe_r__mim_cap_adc
+XC56 bottom top vssa / sar_afe_r__mim_cap_adc
+XC55 bottom top vssa / sar_afe_r__mim_cap_adc
+XC54 bottom top vssa / sar_afe_r__mim_cap_adc
+XC53 bottom top vssa / sar_afe_r__mim_cap_adc
+XC52 bottom top vssa / sar_afe_r__mim_cap_adc
+XC51 bottom top vssa / sar_afe_r__mim_cap_adc
+XC50 bottom top vssa / sar_afe_r__mim_cap_adc
+XC49 bottom top vssa / sar_afe_r__mim_cap_adc
+XC48 bottom top vssa / sar_afe_r__mim_cap_adc
+XC47 bottom top vssa / sar_afe_r__mim_cap_adc
+XC46 bottom top vssa / sar_afe_r__mim_cap_adc
+XC45 bottom top vssa / sar_afe_r__mim_cap_adc
+XC44 bottom top vssa / sar_afe_r__mim_cap_adc
+XC43 bottom top vssa / sar_afe_r__mim_cap_adc
+XC42 bottom top vssa / sar_afe_r__mim_cap_adc
+XC41 bottom top vssa / sar_afe_r__mim_cap_adc
+XC40 bottom top vssa / sar_afe_r__mim_cap_adc
+XC39 bottom top vssa / sar_afe_r__mim_cap_adc
+XC38 bottom top vssa / sar_afe_r__mim_cap_adc
+XC37 bottom top vssa / sar_afe_r__mim_cap_adc
+XC36 bottom top vssa / sar_afe_r__mim_cap_adc
+XC35 bottom top vssa / sar_afe_r__mim_cap_adc
+XC34 bottom top vssa / sar_afe_r__mim_cap_adc
+XC33 bottom top vssa / sar_afe_r__mim_cap_adc
+XC32 bottom top vssa / sar_afe_r__mim_cap_adc
+XC31 bottom top vssa / sar_afe_r__mim_cap_adc
+XC30 bottom top vssa / sar_afe_r__mim_cap_adc
+XC29 bottom top vssa / sar_afe_r__mim_cap_adc
+XC28 bottom top vssa / sar_afe_r__mim_cap_adc
+XC27 bottom top vssa / sar_afe_r__mim_cap_adc
+XC26 bottom top vssa / sar_afe_r__mim_cap_adc
+XC25 bottom top vssa / sar_afe_r__mim_cap_adc
+XC24 bottom top vssa / sar_afe_r__mim_cap_adc
+XC23 bottom top vssa / sar_afe_r__mim_cap_adc
+XC22 bottom top vssa / sar_afe_r__mim_cap_adc
+XC21 bottom top vssa / sar_afe_r__mim_cap_adc
+XC20 bottom top vssa / sar_afe_r__mim_cap_adc
+XC19 bottom top vssa / sar_afe_r__mim_cap_adc
+XC18 bottom top vssa / sar_afe_r__mim_cap_adc
+XC17 bottom top vssa / sar_afe_r__mim_cap_adc
+XC16 bottom top vssa / sar_afe_r__mim_cap_adc
+XC15 bottom top vssa / sar_afe_r__mim_cap_adc
+XC14 bottom top vssa / sar_afe_r__mim_cap_adc
+XC13 bottom top vssa / sar_afe_r__mim_cap_adc
+XC12 bottom top vssa / sar_afe_r__mim_cap_adc
+XC11 bottom top vssa / sar_afe_r__mim_cap_adc
+XC10 bottom top vssa / sar_afe_r__mim_cap_adc
+XC9 bottom top vssa / sar_afe_r__mim_cap_adc
+XC8 bottom top vssa / sar_afe_r__mim_cap_adc
+XC7 bottom top vssa / sar_afe_r__mim_cap_adc
+XC6 bottom top vssa / sar_afe_r__mim_cap_adc
+XC5 bottom top vssa / sar_afe_r__mim_cap_adc
+XC4 bottom top vssa / sar_afe_r__mim_cap_adc
+XC3 bottom top vssa / sar_afe_r__mim_cap_adc
+XC2 bottom top vssa / sar_afe_r__mim_cap_adc
+XC1 bottom top vssa / sar_afe_r__mim_cap_adc
+XC0 bottom top vssa / sar_afe_r__mim_cap_adc
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    mim_cap_32bank
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__mim_cap_32bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B
+XC31 bottom top vssa / sar_afe_r__mim_cap_adc
+XC30 bottom top vssa / sar_afe_r__mim_cap_adc
+XC29 bottom top vssa / sar_afe_r__mim_cap_adc
+XC28 bottom top vssa / sar_afe_r__mim_cap_adc
+XC27 bottom top vssa / sar_afe_r__mim_cap_adc
+XC26 bottom top vssa / sar_afe_r__mim_cap_adc
+XC25 bottom top vssa / sar_afe_r__mim_cap_adc
+XC24 bottom top vssa / sar_afe_r__mim_cap_adc
+XC23 bottom top vssa / sar_afe_r__mim_cap_adc
+XC22 bottom top vssa / sar_afe_r__mim_cap_adc
+XC21 bottom top vssa / sar_afe_r__mim_cap_adc
+XC20 bottom top vssa / sar_afe_r__mim_cap_adc
+XC19 bottom top vssa / sar_afe_r__mim_cap_adc
+XC18 bottom top vssa / sar_afe_r__mim_cap_adc
+XC17 bottom top vssa / sar_afe_r__mim_cap_adc
+XC16 bottom top vssa / sar_afe_r__mim_cap_adc
+XC15 bottom top vssa / sar_afe_r__mim_cap_adc
+XC14 bottom top vssa / sar_afe_r__mim_cap_adc
+XC13 bottom top vssa / sar_afe_r__mim_cap_adc
+XC12 bottom top vssa / sar_afe_r__mim_cap_adc
+XC11 bottom top vssa / sar_afe_r__mim_cap_adc
+XC10 bottom top vssa / sar_afe_r__mim_cap_adc
+XC9 bottom top vssa / sar_afe_r__mim_cap_adc
+XC8 bottom top vssa / sar_afe_r__mim_cap_adc
+XC7 bottom top vssa / sar_afe_r__mim_cap_adc
+XC6 bottom top vssa / sar_afe_r__mim_cap_adc
+XC5 bottom top vssa / sar_afe_r__mim_cap_adc
+XC4 bottom top vssa / sar_afe_r__mim_cap_adc
+XC3 bottom top vssa / sar_afe_r__mim_cap_adc
+XC2 bottom top vssa / sar_afe_r__mim_cap_adc
+XC1 bottom top vssa / sar_afe_r__mim_cap_adc
+XC0 bottom top vssa / sar_afe_r__mim_cap_adc
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    mim_cap_16bank
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__mim_cap_16bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B
+XC15 bottom top vssa / sar_afe_r__mim_cap_adc
+XC14 bottom top vssa / sar_afe_r__mim_cap_adc
+XC13 bottom top vssa / sar_afe_r__mim_cap_adc
+XC12 bottom top vssa / sar_afe_r__mim_cap_adc
+XC11 bottom top vssa / sar_afe_r__mim_cap_adc
+XC10 bottom top vssa / sar_afe_r__mim_cap_adc
+XC9 bottom top vssa / sar_afe_r__mim_cap_adc
+XC8 bottom top vssa / sar_afe_r__mim_cap_adc
+XC7 bottom top vssa / sar_afe_r__mim_cap_adc
+XC6 bottom top vssa / sar_afe_r__mim_cap_adc
+XC5 bottom top vssa / sar_afe_r__mim_cap_adc
+XC4 bottom top vssa / sar_afe_r__mim_cap_adc
+XC3 bottom top vssa / sar_afe_r__mim_cap_adc
+XC2 bottom top vssa / sar_afe_r__mim_cap_adc
+XC1 bottom top vssa / sar_afe_r__mim_cap_adc
+XC0 bottom top vssa / sar_afe_r__mim_cap_adc
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    mim_cap_8bank
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__mim_cap_8bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B
+XC7 bottom top vssa / sar_afe_r__mim_cap_adc
+XC6 bottom top vssa / sar_afe_r__mim_cap_adc
+XC5 bottom top vssa / sar_afe_r__mim_cap_adc
+XC4 bottom top vssa / sar_afe_r__mim_cap_adc
+XC3 bottom top vssa / sar_afe_r__mim_cap_adc
+XC2 bottom top vssa / sar_afe_r__mim_cap_adc
+XC1 bottom top vssa / sar_afe_r__mim_cap_adc
+XC0 bottom top vssa / sar_afe_r__mim_cap_adc
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    mim_cap_4bank
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__mim_cap_4bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B
+XC3 bottom top vssa / sar_afe_r__mim_cap_adc
+XC2 bottom top vssa / sar_afe_r__mim_cap_adc
+XC1 bottom top vssa / sar_afe_r__mim_cap_adc
+XC0 bottom top vssa / sar_afe_r__mim_cap_adc
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    mim_cap_2bank
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__mim_cap_2bank bottom top vssa
+*.PININFO bottom:B top:B vssa:B
+XC1 bottom top vssa / sar_afe_r__mim_cap_adc
+XC0 bottom top vssa / sar_afe_r__mim_cap_adc
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    carray_8b
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__carray_8b vbottom<7> vbottom<6> vbottom<5> vbottom<4> vbottom<3> 
++ vbottom<2> vbottom<1> vbottom<0> vbottom_dum vssa vtop
+*.PININFO vbottom<7>:B vbottom<6>:B vbottom<5>:B vbottom<4>:B vbottom<3>:B 
+*.PININFO vbottom<2>:B vbottom<1>:B vbottom<0>:B vbottom_dum:B vssa:B vtop:B
+XC7 vbottom<7> vtop vssa / sar_afe_r__mim_cap_128bank
+XC8 vbottom_dum vtop vssa / sar_afe_r__mim_cap_adc
+XC0 vbottom<0> vtop vssa / sar_afe_r__mim_cap_adc
+XC9 vssa vssa vssa / sar_afe_r__mim_cap_64bank
+XC6 vbottom<6> vtop vssa / sar_afe_r__mim_cap_64bank
+XC5 vbottom<5> vtop vssa / sar_afe_r__mim_cap_32bank
+XC4 vbottom<4> vtop vssa / sar_afe_r__mim_cap_16bank
+XC3 vbottom<3> vtop vssa / sar_afe_r__mim_cap_8bank
+XC10 vssa vssa vssa / sar_afe_r__mim_cap_4bank
+XC2 vbottom<2> vtop vssa / sar_afe_r__mim_cap_4bank
+XC1 vbottom<1> vtop vssa / sar_afe_r__mim_cap_2bank
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    inverter
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__inverter in out vdd vss
+*.PININFO in:I out:O vdd:B vss:B
+MNM0 out in vss vss nfet_01v8 W=420n L=150n M=1
+MPM0 out in vdd vdd pfet_01v8 W=550n L=150n M=1
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    inv_lvt
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__inv_lvt in out vdd vss
+*.PININFO in:I out:O vdd:B vss:B
+MNM0 out in vss vss nfet_01v8_lvt W=420n L=150n M=1
+MPM0 out in vdd vdd pfet_01v8_lvt W=550n L=350n M=1
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    bootstrap_sw
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__bootstrap_sw en in out vdd vss
+*.PININFO en:I in:I out:O vdd:B vss:B
+MMs2 vss enb net30 vss nfet_01v8_lvt W=1u L=400n M=1
+MMs1 net30 vdd net2 vss nfet_01v8_lvt W=1u L=400n M=1
+MMs out net2 in vss nfet_01v8_lvt W=1u L=500n M=1
+MM1 vbsl net2 in vss nfet_01v8_lvt W=1u L=400n M=1
+MM2 vbsl enb vss vss nfet_01v8_lvt W=1u L=400n M=1
+MM4 net2 enb vbsh vbsh pfet_01v8_lvt W=1u L=400n M=1
+MM3 vdd net2 vbsh vbsh pfet_01v8_lvt W=1u L=400n M=1
+CC4 vbsh vbsl $[cap_mim_m3__base] m=1 l=5u w=5u
+CC2 vbsh vbsl $[cap_mim_m3__base] m=1 l=5u w=5u
+CC1 vbsh vbsl $[cap_mim_m3__base] m=1 l=5u w=5u
+CC0 vbsh vbsl $[cap_mim_m3__base] m=1 l=5u w=5u
+Xinv_lvt0 en enb vdd vss / sar_afe_r__inv_lvt
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    cdac_8b
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__cdac_8b ctl<7> ctl<6> ctl<5> ctl<4> ctl<3> ctl<2> ctl<1> ctl<0> 
++ ctl_dum sample vdda vin vout vref vssa
+*.PININFO ctl<7>:I ctl<6>:I ctl<5>:I ctl<4>:I ctl<3>:I ctl<2>:I ctl<1>:I 
+*.PININFO ctl<0>:I ctl_dum:I sample:I vin:I vdda:B vout:B vref:B vssa:B
+XI0 vbottom<7> vbottom<6> vbottom<5> vbottom<4> vbottom<3> vbottom<2> 
++ vbottom<1> vbottom<0> net3 vssa vout / sar_afe_r__carray_8b
+XI9 ctl_dum net3 vref vssa / sar_afe_r__inverter
+XI8 ctl<7> vbottom<7> vref vssa / sar_afe_r__inverter
+XI7 ctl<6> vbottom<6> vref vssa / sar_afe_r__inverter
+XI6 ctl<5> vbottom<5> vref vssa / sar_afe_r__inverter
+XI5 ctl<4> vbottom<4> vref vssa / sar_afe_r__inverter
+XI4 ctl<3> vbottom<3> vref vssa / sar_afe_r__inverter
+XI3 ctl<2> vbottom<2> vref vssa / sar_afe_r__inverter
+XI2 ctl<1> vbottom<1> vref vssa / sar_afe_r__inverter
+XI1 ctl<0> vbottom<0> vref vssa / sar_afe_r__inverter
+XI10 sample vin vout vdda vssa / sar_afe_r__bootstrap_sw
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    sarcta__C0
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__sarcta__C0 cn cp
+*.PININFO cn:I cp:I
+CC0 cp cn 1.25f $[CP]
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    sarct__trim_array
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__sarct__trim_array drain n0 n1 n2 n3 n4 vss
+*.PININFO drain:B n0:B n1:B n2:B n3:B n4:B vss:B
+XI5 n4 drain / sar_afe_r__sarcta__C0
+XI4 n4 drain / sar_afe_r__sarcta__C0
+XI3 n4 drain / sar_afe_r__sarcta__C0
+XI2 n4 drain / sar_afe_r__sarcta__C0
+XI1 n4 drain / sar_afe_r__sarcta__C0
+XI0 n4 drain / sar_afe_r__sarcta__C0
+XI11 n3 drain / sar_afe_r__sarcta__C0
+XI10 n3 drain / sar_afe_r__sarcta__C0
+XI9 n3 drain / sar_afe_r__sarcta__C0
+XI8 n3 drain / sar_afe_r__sarcta__C0
+XI7 n4 drain / sar_afe_r__sarcta__C0
+XI6 n4 drain / sar_afe_r__sarcta__C0
+XI17 vss drain / sar_afe_r__sarcta__C0
+XI16 vss drain / sar_afe_r__sarcta__C0
+XI15 n0 drain / sar_afe_r__sarcta__C0
+XI14 n1 drain / sar_afe_r__sarcta__C0
+XI13 n2 drain / sar_afe_r__sarcta__C0
+XI12 n2 drain / sar_afe_r__sarcta__C0
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    trim
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__trim Vss d<4> d<3> d<2> d<1> d<0> drain
+*.PININFO Vss:I d<4>:I d<3>:I d<2>:I d<1>:I d<0>:I drain:I
+MNM4 net3 d<0> Vss Vss nfet_01v8 W=1u L=300n M=1
+MNM3 net16 d<1> Vss Vss nfet_01v8 W=1u L=300n M=1
+MNM1 net12 d<2> Vss Vss nfet_01v8 W=2u L=300n M=1
+MNM0 net8 d<3> Vss Vss nfet_01v8 W=4u L=300n M=1
+MNM2 net4 d<4> Vss Vss nfet_01v8 W=8u L=300n M=1
+XI1 drain net3 net16 net12 net8 net4 Vss / sar_afe_r__sarct__trim_array
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    comparator_core
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__comparator_core Clk Out_N Out_P Trima<4> Trima<3> Trima<2> Trima<1> 
++ Trima<0> Trimb<4> Trimb<3> Trimb<2> Trimb<1> Trimb<0> Vdd Vn Vp Vss
+*.PININFO Clk:I Trima<4>:I Trima<3>:I Trima<2>:I Trima<1>:I Trima<0>:I 
+*.PININFO Trimb<4>:I Trimb<3>:I Trimb<2>:I Trimb<1>:I Trimb<0>:I Vdd:I Vn:I 
+*.PININFO Vp:I Vss:I Out_N:O Out_P:O
+MPM6 net2 Clk Vdd Vdd pfet_01v8 W=1u L=300n M=1
+MPM5 net3 Clk Vdd Vdd pfet_01v8 W=1u L=300n M=1
+MPM4 Out_P Clk Vdd Vdd pfet_01v8 W=1u L=300n M=1
+MPM3 Out_P Out_N Vdd Vdd pfet_01v8 W=1u L=300n M=1
+MPM2 Out_N Out_P Vdd Vdd pfet_01v8 W=1u L=300n M=1
+MPM0 Out_N Clk Vdd Vdd pfet_01v8 W=1u L=300n M=1
+MNM4 net25 Clk Vss Vss nfet_01v8 W=2u L=300n M=1
+MNM3 net3 Vp net25 Vss nfet_01v8 W=1u L=300n M=1
+MNM2 net2 Vn net25 Vss nfet_01v8 W=1u L=300n M=1
+MNM1 Out_N Out_P net2 Vss nfet_01v8 W=1u L=300n M=1
+MNM0 Out_P Out_N net3 Vss nfet_01v8 W=1u L=300n M=1
+XI1 Vss Trimb<4> Trimb<3> Trimb<2> Trimb<1> Trimb<0> net3 / sar_afe_r__trim
+XI0 Vss Trima<4> Trima<3> Trima<2> Trima<1> Trima<0> net2 / sar_afe_r__trim
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    comparator
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r__comparator clk outn outp trima<4> trima<3> trima<2> trima<1> trima<0> 
++ trimb<4> trimb<3> trimb<2> trimb<1> trimb<0> vdd vn vp vss
+*.PININFO clk:I trima<4>:I trima<3>:I trima<2>:I trima<1>:I trima<0>:I 
+*.PININFO trimb<4>:I trimb<3>:I trimb<2>:I trimb<1>:I trimb<0>:I vn:I vp:I 
+*.PININFO outn:O outp:O vdd:B vss:B
+XXCORE clk outp outn trimb<4> trimb<3> trimb<2> trimb<1> trimb<0> trima<4> 
++ trima<3> trima<2> trima<1> trima<0> vdd vn vp vss / sar_afe_r__comparator_core
+.ENDS
+
+************************************************************************
+* Library Name: sar_adc
+* Cell Name:    sar_afe_r
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT sar_afe_r clk ctln<7> ctln<6> ctln<5> ctln<4> ctln<3> ctln<2> ctln<1> 
++ ctln<0> ctlp<7> ctlp<6> ctlp<5> ctlp<4> ctlp<3> ctlp<2> ctlp<1> ctlp<0> outn 
++ outp sample trima<4> trima<3> trima<2> trima<1> trima<0> trimb<4> trimb<3> 
++ trimb<2> trimb<1> trimb<0> vdd vdda vinn vinp vref vss
+*.PININFO clk:I ctln<7>:I ctln<6>:I ctln<5>:I ctln<4>:I ctln<3>:I ctln<2>:I 
+*.PININFO ctln<1>:I ctln<0>:I ctlp<7>:I ctlp<6>:I ctlp<5>:I ctlp<4>:I 
+*.PININFO ctlp<3>:I ctlp<2>:I ctlp<1>:I ctlp<0>:I sample:I trima<4>:I 
+*.PININFO trima<3>:I trima<2>:I trima<1>:I trima<0>:I trimb<4>:I trimb<3>:I 
+*.PININFO trimb<2>:I trimb<1>:I trimb<0>:I vinn:I vinp:I outn:O outp:O vdd:B 
+*.PININFO vdda:B vref:B vss:B
+XXCN ctln<7> ctln<6> ctln<5> ctln<4> ctln<3> ctln<2> ctln<1> ctln<0> vss 
++ sample vdda vinn vtopn vref vss / sar_afe_r__cdac_8b
+XXCP ctlp<7> ctlp<6> ctlp<5> ctlp<4> ctlp<3> ctlp<2> ctlp<1> ctlp<0> vss 
++ sample vdda vinp vtopp vref vss / sar_afe_r__cdac_8b
+XXCMP clk outn outp trima<4> trima<3> trima<2> trima<1> trima<0> trimb<4> 
++ trimb<3> trimb<2> trimb<1> trimb<0> vdd vtopn vtopp vss / sar_afe_r__comparator
+.ENDS
+

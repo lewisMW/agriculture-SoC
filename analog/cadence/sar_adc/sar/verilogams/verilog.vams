@@ -1,0 +1,96 @@
+//Verilog-AMS HDL for "adc_top_lib", "sar" "verilogams"
+
+// ------------------------------------------------------------
+// Module: sar
+//
+// Description:
+// 	Sar differential architecture for the ADC. This block has the
+// 	full implementation of a sar algorithm with a differential
+//	input. The blocks integrated in this module are:
+//	1x - sar_afe: the analog front end (hard macro): 2x bootstrapped
+//				switch + 8-bit CDAC, and the clocked comparator.
+//	1x - SR latch: converting the differential comparator output into a
+//				single output.
+//	1x - SAR FSM: logic controlling the capacitive arrays and 
+//				synchronizing the comparators output with a clk.
+//
+// Function:
+//  Differential SAR ADC algorithm. Converts diff analog input to
+//	8-bit output
+//
+// Assumptions:
+//   - Ideal capacitors (no parasitics)
+//   - No noise
+//
+// Author: Hee
+// Date: 2026-03-05
+// ------------------------------------------------------------
+
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module sar (vp, vn, clk, en, cal, rstn, valid, result, vdd, vss);
+	input vp, vn, clk, en, cal, rstn;
+	output valid;
+	output [7:0] result;
+	inout vdd, vss;
+
+	electrical vp, vn, vdd, vss;
+	logic en, cal, rstn;
+	wire valid;
+	wire [7:0] result;
+
+	// Comparator output
+	wire outp, outn;
+
+	// Control signals from FSM to CDAC
+	wire sample_ctl;
+	wire [7:0] ctlp, ctln;
+	
+	// Control signals from FSM to comparator
+	wire clkc;
+	wire [4:0] trima, trimb;
+
+	// SR Latch comparator signal to FSM
+	wire comp_out, comp_outn;
+
+	// ----------------------------------------------------------------
+	// Analog front end: both CDACs and the comparator (the sar_afe macro)
+	// ----------------------------------------------------------------
+	sar_afe afe (.vinp(vp),
+				.vinn(vn),
+				.sample(sample_ctl),
+				.clk(clkc),
+				.ctlp(ctlp),
+				.ctln(ctln),
+				.trima(trima),
+				.trimb(trimb),
+				.outp(outp),
+				.outn(outn),
+				.vdd(vdd),
+				.vss(vss));
+
+	// ----------------------------------------------------------------
+	// Connection to SR LATCH
+	// ----------------------------------------------------------------
+	sr_latch u_latch (.s(outp), .r(outn), .q(comp_out), .qn(compn_outn));
+
+	// ----------------------------------------------------------------
+	// Connection to FSM
+	// ----------------------------------------------------------------
+	sarlogic fsm (.clk(clk), 
+				.rstn(rstn),
+				.en(en),
+				.comp(comp_out),
+				.cal(cal),
+				.valid(valid),
+				.result(result),
+				.sample(sample_ctl),
+				.ctlp(ctlp),
+				.ctln(ctln),
+				.trima(trima),
+				.trimb(trimb),
+				.clkc(clkc));
+
+endmodule

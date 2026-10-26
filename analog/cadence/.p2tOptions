@@ -1,0 +1,16 @@
+verbose_input
+violation_mode prototype
+allow_cover_trunk_partially
+gate_twig_use_pin_width
+nongate_twig_use_pin_width
+use_taper_rule
+tap_via_cover_pin_percent 100
+trunk_over_device_via_cover_pin_mode matchTrunk
+trunk_over_device_via_cover_pin_percent 100
+wire_extend_full
+trunk_over_device_via_cover_pin_mode matchTrunk
+trunk_over_device_via_cover_pin_percent 100
+tap_via_cover_pin_percent 100
+tap_lower_via_cover_pin_percent 100
+p2t_row_mode
+pin_trunk_accessing_directions NSEWO
