@@ -14,27 +14,27 @@
 ### no fillers. 2_pnr_setup.tcl has read and committed that CPF; here the same file, with
 ### the nets and each domain's primary supplies from nanosoc_chip_pads.upf
 ### (set_domain_supply_net) added, is read and committed again, before the floorplan.
-set _fh [open $OUT_DIR/${block_name}_gate1.cpf r]; set _cpf [read $_fh]; close $_fh
-set _nets "create_power_nets -nets VDD -voltage 1.8
-create_power_nets -nets VDDA -voltage 1.8
-create_power_nets -nets VDDIO -voltage 3.3
-create_power_nets -nets VDDIO_Q -voltage 3.3
-create_ground_nets -nets VSS
-create_ground_nets -nets VSSA
-create_ground_nets -nets VSSIO
-create_ground_nets -nets VSSIO_Q
-"
-set _doms "update_power_domain -name PD_TOP -primary_power_net VDD -primary_ground_net VSS
-update_power_domain -name PD_IO -primary_power_net VDDIO -primary_ground_net VSSIO
-update_power_domain -name PD_ANALOG -primary_power_net VDDA -primary_ground_net VSSA
-end_design"
-if {![regsub {(set_design [^\n]*\n)} $_cpf "\\1$_nets" _cpf] || ![regsub {end_design} $_cpf $_doms _cpf]} {
-    error "floorplan.tcl: unexpected CPF from Genus: $OUT_DIR/${block_name}_gate1.cpf"
-}
-set _fh [open $OUT_DIR/${block_name}_gate1_supplies.cpf w]; puts -nonewline $_fh $_cpf; close $_fh
-read_power_intent -cpf $OUT_DIR/${block_name}_gate1_supplies.cpf
-commit_power_intent
-puts "floorplan.tcl: PD_TOP supplies [get_db power_domain:PD_TOP .primary_power_net.name]/[get_db power_domain:PD_TOP .primary_ground_net.name]"
+#set _fh [open $OUT_DIR/${block_name}_gate1.cpf r]; set _cpf [read $_fh]; close $_fh
+#set _nets "create_power_nets -nets VDD -voltage 1.8
+#create_power_nets -nets VDDA -voltage 1.8
+#create_power_nets -nets VDDIO -voltage 3.3
+#create_power_nets -nets VDDIO_Q -voltage 3.3
+#create_ground_nets -nets VSS
+#create_ground_nets -nets VSSA
+#create_ground_nets -nets VSSIO
+#create_ground_nets -nets VSSIO_Q
+#"
+#set _doms "update_power_domain -name PD_TOP -primary_power_net VDD -primary_ground_net VSS
+#update_power_domain -name PD_IO -primary_power_net VDDIO -primary_ground_net VSSIO
+#update_power_domain -name PD_ANALOG -primary_power_net VDDA -primary_ground_net VSSA
+#end_design"
+#if {![regsub {(set_design [^\n]*\n)} $_cpf "\\1$_nets" _cpf] || ![regsub {end_design} $_cpf $_doms _cpf]} {
+#    error "floorplan.tcl: unexpected CPF from Genus: $OUT_DIR/${block_name}_gate1.cpf"
+#}
+#set _fh [open $OUT_DIR/${block_name}_gate1_supplies.cpf w]; puts -nonewline $_fh $_cpf; close $_fh
+#read_power_intent -cpf $OUT_DIR/${block_name}_gate1_supplies.cpf
+#commit_power_intent
+#puts "floorplan.tcl: PD_TOP supplies [get_db power_domain:PD_TOP .primary_power_net.name]/[get_db power_domain:PD_TOP .primary_ground_net.name]"
 
 # TODO this needs to be (2.920um w x 3.520um h) (right now too large, max 15mm^2)
 #create_floorplan -die_size_by_io_height max -site CoreSite -core_size 2920 3520 50 50 50 50

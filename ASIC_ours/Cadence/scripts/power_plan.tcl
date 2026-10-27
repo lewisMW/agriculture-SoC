@@ -8,19 +8,19 @@
 
 # TODO I don't think this is exactly right. Might need to connect to VDDIO/VSSIO???
 
-connect_global_net VDD -type pg_pin -pin_base_name VPWR  -inst_base_name *
-connect_global_net VDD -type pg_pin -pin_base_name VPB   -inst_base_name *
-connect_global_net VSS -type pg_pin -pin_base_name VGND  -inst_base_name *
-connect_global_net VSS -type pg_pin -pin_base_name VNB   -inst_base_name *
-connect_global_net VDD -type pg_pin -pin_base_name vccd1 -inst_base_name *
-connect_global_net VSS -type pg_pin -pin_base_name vssd1 -inst_base_name *
-# These were spelt -overrride, which Innovus 22.1 rejects (IMPTCM-48), stopping the place
-# stage here. -netlist_override, not -override: the synthesised netlist ties every pad's
-# VSSIO pin to VSS, and -override only replaces earlier connect_global_net rules.
-connect_global_net VDDIO -type pg_pin -pin_base_name VDDIO -inst_base_name * -netlist_override
-connect_global_net VSSIO -type pg_pin -pin_base_name VSSIO -inst_base_name * -netlist_override
-connect_global_net VDDIO -type pg_pin -pin_base_name VDDIO_PAD -inst_base_name * 
-connect_global_net VSSIO -type pg_pin -pin_base_name VSSIO_PAD -inst_base_name * 
+#connect_global_net VDD -type pg_pin -pin_base_name VPWR  -inst_base_name *
+#connect_global_net VDD -type pg_pin -pin_base_name VPB   -inst_base_name *
+#connect_global_net VSS -type pg_pin -pin_base_name VGND  -inst_base_name *
+#connect_global_net VSS -type pg_pin -pin_base_name VNB   -inst_base_name *
+#connect_global_net VDD -type pg_pin -pin_base_name vccd1 -inst_base_name *
+#connect_global_net VSS -type pg_pin -pin_base_name vssd1 -inst_base_name *
+## These were spelt -overrride, which Innovus 22.1 rejects (IMPTCM-48), stopping the place
+## stage here. -netlist_override, not -override: the synthesised netlist ties every pad's
+## VSSIO pin to VSS, and -override only replaces earlier connect_global_net rules.
+#connect_global_net VDDIO -type pg_pin -pin_base_name VDDIO -inst_base_name * -netlist_override
+#connect_global_net VSSIO -type pg_pin -pin_base_name VSSIO -inst_base_name * -netlist_override
+#connect_global_net VDDIO -type pg_pin -pin_base_name VDDIO_PAD -inst_base_name * 
+#connect_global_net VSSIO -type pg_pin -pin_base_name VSSIO_PAD -inst_base_name * 
 
 # SAR ADC analog front end (the sar_afe hard macro; ASIC_ours/macros/sar_afe/README.md).
 # vdd (comparator) and vss go to VDD/VSS. vdda (the bootstrapped sampling switches) and
@@ -35,10 +35,10 @@ connect_global_net VDDA -type pg_pin -pin_base_name vref -inst_base_name $sar_af
 # The pads' VDDA pins (the VDDA pads' core-side met3 pins and every pad's ring bus) by
 # name, as VDDIO/VSSIO above: the synthesised netlist leaves the pads' power pins out
 # and the CPF has no connections, so without this VDDA would have no pad pin to route.
-connect_global_net VDDA -type pg_pin -pin_base_name VDDA -inst_base_name uPAD_*
-# Likewise VCCD, the core supply (nanosoc_chip_pads.upf: the VDD pads' supply pin), which
-# was on no net at all, so nothing could join the VDD pads to the VDD core ring.
-connect_global_net VDD  -type pg_pin -pin_base_name VCCD -inst_base_name uPAD_*
+#connect_global_net VDDA -type pg_pin -pin_base_name VDDA -inst_base_name uPAD_*
+## Likewise VCCD, the core supply (nanosoc_chip_pads.upf: the VDD pads' supply pin), which
+## was on no net at all, so nothing could join the VDD pads to the VDD core ring.
+#connect_global_net VDD  -type pg_pin -pin_base_name VCCD -inst_base_name uPAD_*
 # The rest of the pad ring's buses on the cells that are not in the netlist (corner pads,
 # the VCCHIB/VSWITCH connect slices and the IO fillers, floorplan.tcl), so that they are
 # on the same nets as the pads they abut: VCCHIB on VCCD and VSWITCH on VDDIO, as the
