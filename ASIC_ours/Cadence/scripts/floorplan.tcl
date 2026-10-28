@@ -47,7 +47,21 @@
 # that distance from the IO box: with 210.965 it shrank the die by 13 um a side).
 # -no_snap_to_grid keeps the boxes exactly as given; the core box is the one Innovus
 # snapped to the rows and tracks itself.
-create_floorplan -site unithd -no_snap_to_grid -box_size {0 0 3442 4042  197.965 197.965 3244.035 3844.035  261.105 260.945 3181.185 3780.965}
+
+#create_group -name LEVEL_SHIFTERS -rects {261.105 3700.965 3181.185 3780.965}
+#update_group -name LEVEL_SHIFTERS -objs [get_cells LS*] -add
+
+#create_floorplan -site unithd -no_snap_to_grid -box_size {0 0 3442 4042  197.965 197.965 3244.035 3844.035  261.105 260.945 3181.185 3780.965}
+create_floorplan -no_snap_to_grid -box_size {0 0 3442 4042  197.965 197.965 3244.035 3844.035  261.105 260.945 3181.185 3780.965}
+
+# need to make for 2 sites, and have to do so manually because their sizes don't match up
+delete_row -all
+
+create_row -site unithd -area {261.105 260.945 3181.185 3700.965}
+#split_row -area {261.105 3700.965 3181.185 3780.965}
+create_row -site unithvdbl -area {261.105 3700.965 3181.185 3780.965}
+
+
 
 
 read_io_file ../scripts/nanosoc_io_plan.io

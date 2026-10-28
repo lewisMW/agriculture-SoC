@@ -14,6 +14,9 @@ set all_io_elems uPAD_NRST_I/XRES_H_N
 create_power_domain PD_IO -supply {SS_TOP} -supply {SS_IO} -supply {SS_SWITCH} -supply {SS_HIB} -supply {SS_IO_Q} -supply {SS_ANALOG} -elements $all_io_cell_names
 create_power_domain PD_ANALOG -supply {SS_ANALOG} -elements {}
 
+# special domain for level shifters as I can autogenerate the floorplan
+create_power_domain PD_LEVEL_SHIFTERS -supply {SS_TOP} -supply {SS_IO} -supply {SS_ANALOG} -elements {}
+
 #######################################
 # Create Supply Ports
 #######################################
@@ -66,10 +69,13 @@ create_supply_set PD_IO.SS_IO_Q   -function {power VDDIO_Q} -function {ground VS
 create_supply_set PD_ANALOG.SS_ANALOG  -function {power VDDA} -function {ground VSSA} -update
 
 # associate_supply_set <existing supply> -handle <the other name>
-associate_supply_set PD_TOP.SS_TOP     -handle PD_IO.SS_TOP
-associate_supply_set PD_IO.SS_IO     -handle PD_TOP.SS_IO
+associate_supply_set PD_TOP.SS_TOP       -handle PD_IO.SS_TOP
+associate_supply_set PD_IO.SS_IO         -handle PD_TOP.SS_IO
 associate_supply_set PD_ANALOG.SS_ANALOG -handle PD_TOP.SS_ANALOG
-associate_supply_set PD_TOP.SS_ANALOG  -handle PD_IO.SS_ANALOG
+associate_supply_set PD_TOP.SS_ANALOG    -handle PD_IO.SS_ANALOG
+associate_supply_set PD_TOP.SS_TOP       -handle PD_LEVEL_SHIFTERS.SS_TOP
+associate_supply_set PD_IO.SS_IO         -handle PD_LEVEL_SHIFTERS.SS_IO
+associate_supply_set PD_ANALOG.SS_ANALOG -handle PD_LEVEL_SHIFTERS.SS_ANALOG
 
 # associate particular pins of cells to a supply set.
 proc set_port_domains {port_obj supply_set port_or_pin} {
