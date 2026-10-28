@@ -12,6 +12,8 @@ set io_max_libs [list \
    ${io_lib_dir}/sky130_ef_io__vssd_lvc_clamped3_pad_ss_100C_1v60_3v00.lib \
    ${io_lib_dir}/sky130_ef_io__vssd_lvc_clamped_pad_ss_100C_1v60_3v00.lib \
    ${io_lib_dir}/sky130_ef_io__vssio_hvc_clamped_pad_ss_100C_1v60_3v00_3v00.lib \
+   [file normalize ../inputs/sky130_ef_io__analog_pad.lib] \
+   ${io_lib_dir}/sky130_fd_io__top_xres4v2_ss_ss_100C_1v60_3v00.lib \
 ]
 set io_typical_libs [list \
    ${io_lib_dir}/sky130_ef_io__gpiov2_pad_wrapped_tt_tt_025C_1v80_3v30.lib \
@@ -23,6 +25,8 @@ set io_typical_libs [list \
    ${io_lib_dir}/sky130_ef_io__vssd_lvc_clamped3_pad_tt_025C_1v80_3v30.lib \
    ${io_lib_dir}/sky130_ef_io__vssd_lvc_clamped_pad_tt_025C_1v80_3v30.lib \
    ${io_lib_dir}/sky130_ef_io__vssio_hvc_clamped_pad_tt_025C_1v80_3v30_3v30.lib \
+   [file normalize ../inputs/sky130_ef_io__analog_pad.lib] \
+   ${io_lib_dir}/sky130_fd_io__top_xres4v2_tt_tt_025C_1v80_3v30.lib \
 ]
 
 set io_min_libs [list \
@@ -35,25 +39,35 @@ set io_min_libs [list \
    ${io_lib_dir}/sky130_ef_io__vdda_hvc_clamped_pad_ff_n40C_1v95_5v50_5v50.lib \
    ${io_lib_dir}/sky130_ef_io__vssio_hvc_clamped_pad_ff_n40C_1v95_5v50_5v50.lib \
    ${io_lib_dir}/sky130_ef_io__vddio_hvc_clamped_pad_ff_n40C_1v95_5v50_5v50.lib \
+   [file normalize ../inputs/sky130_ef_io__analog_pad.lib] \
+   ${io_lib_dir}/sky130_fd_io__top_xres4v2_ff_ff_n40C_1v95_5v50.lib \
 ]
 
 
+# sar_afe (the ADC's analog front-end macro) has one .lib per corner of this
+# file, matched to the standard cells' corner (ASIC_ours/macros/sar_afe/README.md).
+# ../inputs/sky130_ef_io__analog_pad.lib (the ADC input pads) has one corner and is in
+# all three IO lists above, as is the reset pad's sky130_fd_io__top_xres4v2 (one
+# .lib per corner, matched to the gpiov2 pads' corners).
 create_library_set -name default_libset_max\
    -timing\
     [list ${sc_lib_dir}/sky130_fd_sc_hd__ss_100C_1v60.lib \
     ${sram_8k_lib_dir}/sky130_sram_8kbyte_1rw_32x2048_8_SS_1p8V_25C.lib \
+    ${sar_afe_dir}/sar_afe__ss_100C_1v60.lib \
     {*}$io_max_libs ]
 
 create_library_set -name default_libset_min\
    -timing\
     [list ${sc_lib_dir}/sky130_fd_sc_hd__ff_100C_1v95.lib \
     ${sram_8k_lib_dir}/sky130_sram_8kbyte_1rw_32x2048_8_FF_1p8V_25C.lib \
+    ${sar_afe_dir}/sar_afe__ff_100C_1v95.lib \
     {*}$io_min_libs ]
 
 create_library_set -name typical_libset\
    -timing\
     [list ${sc_lib_dir}/sky130_fd_sc_hd__tt_100C_1v80.lib \
     ${sram_8k_lib_dir}/sky130_sram_8kbyte_1rw_32x2048_8_TT_1p8V_25C.lib \
+    ${sar_afe_dir}/sar_afe__tt_100C_1v80.lib \
     {*}$io_typical_libs ]
 
 create_timing_condition -name default_mapping_tc_2\

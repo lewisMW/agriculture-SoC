@@ -57,6 +57,8 @@ report_end_step 05_route_opt $REPORT_DIR
 
 write_db ${block_name}_route
 
+
+
 # reporting
 report_power -out_file ../outputs/nanosoc_chip_pads_power.rpt -clock_network all -hierarchy all -sort { total }
 

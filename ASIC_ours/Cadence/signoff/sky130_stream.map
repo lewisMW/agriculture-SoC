@@ -1,0 +1,68 @@
+# Innovus write_stream layer map for sky130 with the sky130_fd_sc_hd tech LEF
+# (sky130_fd_sc_hd__nom.tlef layer names).
+#
+# Columns: <LEF layer | NAME> <object types> <GDS layer> <GDS datatype(s)>
+# GDS numbers are those of the PDK layermap
+# ($SKY130/libs/sky130_fd_pr_main/sky130_fd_pr_main.layermap):
+#   <layer> drawing = 20 (cut layers 44), pin = 16, label = 5, fill = 99.
+#
+# Deliberately NOT mapped, so they are not written at all:
+#   DIEAREA      the die box (the 22 Sep stream had it on 129/0; 235/4 would
+#                trip the deck's x.prBndry warning). The pad ring and corner
+#                pads already span the die.
+#   COMP         instance outlines (were 128/0) and NAME COMP instance-name
+#                text (were 127/0).
+#   LEFOBS/LEFPIN  only used with -output_macros, which stream_out.tcl does not
+#                pass: every master comes from a -merge GDS instead.
+#   NAME .../NET and .../SPNET  per-shape net-name text; LVS needs only the
+#                top-level port labels (PIN below, TEXT from create_text).
+#   nwell/pwell/licon  Innovus draws nothing on them at the top level.
+#
+# Comments must start with '#' as the first or last field of a line.
+
+# ---- li1 (only via landings and pin access; not a routing layer here)
+li1   NET,SPNET,VIA      67  20
+li1   PIN                67  20,16
+li1   FILL               67  99
+li1   TEXT               67  5
+NAME  li1/PIN            67  5
+mcon  VIA,VIAFILL        67  44
+
+# ---- met1
+met1  NET,SPNET,VIA      68  20
+met1  PIN                68  20,16
+met1  FILL               68  99
+met1  TEXT               68  5
+NAME  met1/PIN           68  5
+via   VIA,VIAFILL        68  44
+
+# ---- met2
+met2  NET,SPNET,VIA      69  20
+met2  PIN                69  20,16
+met2  FILL               69  99
+met2  TEXT               69  5
+NAME  met2/PIN           69  5
+via2  VIA,VIAFILL        69  44
+
+# ---- met3
+met3  NET,SPNET,VIA      70  20
+met3  PIN                70  20,16
+met3  FILL               70  99
+met3  TEXT               70  5
+NAME  met3/PIN           70  5
+via3  VIA,VIAFILL        70  44
+
+# ---- met4
+met4  NET,SPNET,VIA      71  20
+met4  PIN                71  20,16
+met4  FILL               71  99
+met4  TEXT               71  5
+NAME  met4/PIN           71  5
+via4  VIA,VIAFILL        71  44
+
+# ---- met5
+met5  NET,SPNET,VIA      72  20
+met5  PIN                72  20,16
+met5  FILL               72  99
+met5  TEXT               72  5
+NAME  met5/PIN           72  5
