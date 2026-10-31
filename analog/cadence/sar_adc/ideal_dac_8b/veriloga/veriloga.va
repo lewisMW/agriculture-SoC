@@ -1,0 +1,43 @@
+// VerilogA for sar_adc, ideal_dac_8b, veriloga
+//
+// Ideal 8-bit DAC for measuring the SAR ADC in Spectre.
+// Reads result<7:0> on each falling edge of valid (result is stable by then)
+// and holds it. Output is the equivalent differential input voltage:
+//   vout = (code + 0.5 - 128) * vref / 128
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module ideal_dac_8b(vout, result, valid);
+output vout;
+electrical vout;
+input [7:0] result;
+electrical [7:0] result;
+input valid;
+electrical valid;
+parameter real tr = 1e-09 ;
+parameter real vref = 1.8 ;
+parameter real vth = 0.9 ;     // logic threshold for result/valid (half of vdd)
+
+integer code;
+
+analog begin
+  @(initial_step) code = 128;
+
+  // Read the code one clock after it is ready (result is stable by then)
+  @(cross(V(valid) - vth, -1)) begin
+    code = 0;
+    if (V(result[0]) > vth) code = code + 1;
+    if (V(result[1]) > vth) code = code + 2;
+    if (V(result[2]) > vth) code = code + 4;
+    if (V(result[3]) > vth) code = code + 8;
+    if (V(result[4]) > vth) code = code + 16;
+    if (V(result[5]) > vth) code = code + 32;
+    if (V(result[6]) > vth) code = code + 64;
+    if (V(result[7]) > vth) code = code + 128;
+  end
+
+  V(vout) <+ transition((code + 0.5 - 128) * vref / 128, 0, tr);
+end
+
+endmodule

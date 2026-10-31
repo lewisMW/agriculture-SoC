@@ -1,0 +1,155 @@
+// VerilogA for sar_adc, sar, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+
+// FSM states (same numbering as sarlogic)
+`define S_INIT   0
+`define S_WAIT   1
+`define S_SAMPLE 2
+`define S_CONV   3
+`define S_DONE   4
+`define S_CAL    5
+
+
+module sar(result, valid, vdd, vdda, vss, vssa, cal, clk, en, rstn, vn, vp);
+output [7:0] result;
+electrical [7:0] result;
+output valid;
+electrical valid;
+inout vdd;
+electrical vdd;
+inout vdda;
+electrical vdda;
+inout vss;
+electrical vss;
+inout vssa;
+electrical vssa;
+input cal;
+electrical cal;
+input clk;
+electrical clk;
+input en;
+electrical en;
+input rstn;
+electrical rstn;
+input vn;
+electrical vn;
+input vp;
+electrical vp;
+
+parameter real vref     = 1.8;               // full scale = +/- vref differential
+parameter real vos      = 0;                 // comparator input offset [V]
+parameter real vnoise   = 0 from [0:inf);    // comparator input noise, rms [V]
+parameter real trim_lsb = 2m from (0:inf);   // offset correction per trim step [V]
+parameter real tr       = 1n from (0:inf);   // output edge time
+parameter integer seed  = 1;
+
+integer state, mask, dig_result, result_q, res_valid, calibrate;
+integer trim_val, trim_mask, cal_count, cal_itt, comp, rnd;
+real vth, vin_held, vthr, vtrim;
+genvar i;
+
+analog begin
+  vth = (V(vdd) + V(vss)) / 2;    // logic threshold for clk/rstn/en/cal
+
+  @(initial_step) begin
+    rnd = seed;
+    state = `S_INIT; mask = 0; trim_mask = 0; dig_result = 0; result_q = 0;
+    cal_itt = 0; cal_count = 7; trim_val = 0; calibrate = 0; res_valid = 0;
+    vin_held = 0;
+  end
+
+  // Asynchronous active-low reset
+  @(cross(V(rstn) - vth, -1)) begin
+    state = `S_INIT; mask = 0; trim_mask = 0; dig_result = 0; result_q = 0;
+    cal_itt = 0; cal_count = 7; trim_val = 0; calibrate = 0; res_valid = 0;
+  end
+
+  @(cross(V(clk) - vth, +1)) begin
+    if (V(rstn) < vth) begin
+      state = `S_INIT; mask = 0; trim_mask = 0; dig_result = 0; result_q = 0;
+      cal_itt = 0; cal_count = 7; trim_val = 0; calibrate = 0; res_valid = 0;
+    end else begin
+      // Comparator decision from the low phase just finished
+      // (comparator clock = ~clk, FSM reads it on the rising edge).
+      // Offset seen = vos + trim correction, trima = trim_val | trim_mask
+      vtrim = ((trim_val | trim_mask) - 16) * trim_lsb;
+      if (state == `S_CAL)
+        // sample stays high during calibration: compares the live inputs
+        comp = (V(vp, vn) + vos + vtrim + $rdist_normal(rnd, 0, vnoise) > 0);
+      else begin
+        // CDACs hold the sample; threshold set by ctlp = dig_result | mask
+        vthr = ((dig_result | mask) - 128) * vref / 128;
+        comp = (vin_held - vthr + vos + vtrim + $rdist_normal(rnd, 0, vnoise) > 0);
+      end
+
+      case (state)
+        `S_INIT: begin
+          trim_val = 16;            // 5'b10000
+          state = `S_WAIT;
+        end
+
+        `S_WAIT: begin
+          if (V(en) > vth) begin    // start_conv
+            dig_result = 0; cal_itt = 0; cal_count = 7; state = `S_SAMPLE;
+            calibrate = (V(cal) > vth); mask = 128;
+            res_valid = 0;
+          end
+        end
+
+        `S_SAMPLE: begin
+          res_valid = 0;
+          vin_held = V(vp, vn);     // sample switch opens on this edge
+          if (calibrate) begin
+            state = `S_CAL;
+            trim_val = 0;
+            trim_mask = 16;
+          end else
+            state = `S_CONV;
+        end
+
+        `S_CONV: begin
+          if (comp) dig_result = dig_result | mask;
+          if (mask & 1) state = `S_DONE;
+          mask = mask >> 1;
+        end
+
+        `S_CAL: begin
+          if (cal_itt == 7) begin
+            if (cal_count > 7) trim_val = trim_val | trim_mask;
+            if (trim_mask & 1) begin
+              state = `S_DONE;
+              calibrate = 0;
+            end else
+              cal_itt = 0;
+            trim_mask = trim_mask >> 1;
+            cal_count = 7;
+          end else begin
+            if (comp) cal_count = cal_count - 1;
+            else      cal_count = cal_count + 1;
+            cal_itt = cal_itt + 1;
+          end
+        end
+
+        `S_DONE: begin
+          result_q = dig_result;
+          res_valid = 1;
+          if (V(en) > vth) begin    // back-to-back: start_conv
+            dig_result = 0; cal_itt = 0; cal_count = 7; state = `S_SAMPLE;
+            calibrate = (V(cal) > vth); mask = 128;
+          end else
+            state = `S_WAIT;
+        end
+      endcase
+    end
+  end
+
+  V(valid) <+ V(vss) + transition(res_valid * V(vdd, vss), 0, tr);
+  for (i = 0; i < 8; i = i + 1)
+    V(result[i]) <+ V(vss) + transition(((result_q >> i) & 1) * V(vdd, vss), 0, tr);
+end
+
+
+endmodule
