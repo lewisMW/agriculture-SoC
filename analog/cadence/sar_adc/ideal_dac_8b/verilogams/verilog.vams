@@ -1,0 +1,33 @@
+//Verilog-AMS HDL for "sar_adc", "dac" "verilogams"
+// ideal_dac_8b ? reconstructs the ADC output as an analog voltage for FFT/ENOB
+// Latches result<7:0> on each rising edge of valid and holds it (zero-order hold).
+// Output is the equivalent differential input voltage:
+//   vout = (code + 0.5 - 2^(N-1)) * vref / 2^(N-1)
+// e.g. code 0 -> ~-1.8 V, code 128 -> ~+0.007 V, code 255 -> ~+1.79 V
+// CLAUDE generated
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module ideal_dac_8b (result, valid, vout);
+  input  [7:0] result;
+  input        valid;
+  output       vout;
+  electrical   vout;
+
+  parameter real vref = 1.8;   // full scale = +/- vref differential
+  parameter real tr   = 1n;    // output edge time (keeps the analog solver happy)
+
+  real vval;
+
+  initial vval = 0.0;
+
+  always @(posedge valid) begin
+    if (^result !== 1'bx)                     // ignore codes with X/Z bits
+      vval = (result + 0.5 - 128.0) * vref / 128.0;
+  end
+
+  analog begin
+    V(vout) <+ transition(vval, 0, tr);
+  end
+endmodule

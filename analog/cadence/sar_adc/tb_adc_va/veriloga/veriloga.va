@@ -1,0 +1,9 @@
+// VerilogA for sar_adc, tb_adc_va, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module tb_adc_va;
+
+
+endmodule

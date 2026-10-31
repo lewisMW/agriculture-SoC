@@ -74,6 +74,367 @@
 					</output>
 				</outputs>
 			</test>
+			<test enabled="1">sar_adc_sine_fft
+				<tool>ADE</tool>
+				<outputs>
+					<output>/vp
+						<evalType>point</evalType>
+					</output>
+					<output>/vn
+						<evalType>point</evalType>
+					</output>
+					<output>/result&lt;7:0&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/valid
+						<evalType>point</evalType>
+					</output>
+					<output>/clk
+						<evalType>point</evalType>
+					</output>
+					<output>/en
+						<evalType>point</evalType>
+					</output>
+					<output>/rstn
+						<evalType>point</evalType>
+					</output>
+					<output>/cal
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/cdac_pout
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/cdac_nout
+						<evalType>point</evalType>
+					</output>
+					<output>codes
+						<evalType>point</evalType>
+					</output>
+					<output>(codes * 2)
+						<evalType>point</evalType>
+					</output>
+					<output>(dft codes)
+						<evalType>point</evalType>
+					</output>
+					<output>fft_codes
+						<evalType>point</evalType>
+					</output>
+					<output>t0
+						<evalType>point</evalType>
+					</output>
+					<output>vin
+						<evalType>point</evalType>
+					</output>
+					<output>fft_vin
+						<evalType>point</evalType>
+					</output>
+					<output>sinad_codes
+						<evalType>point</evalType>
+					</output>
+					<output>enob
+						<evalType>point</evalType>
+					</output>
+					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "enob")
+						<evalType>point</evalType>
+					</output>
+					<output>thd
+						<evalType>point</evalType>
+					</output>
+					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "thd")
+						<evalType>point</evalType>
+					</output>
+					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "snhr")
+						<evalType>point</evalType>
+					</output>
+					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "afdr")
+						<evalType>point</evalType>
+					</output>
+					<output>sfdr
+						<evalType>point</evalType>
+					</output>
+					<output>snr
+						<evalType>point</evalType>
+					</output>
+					<output>/vout
+						<evalType>point</evalType>
+					</output>
+					<output>sinad_vout
+						<evalType>point</evalType>
+					</output>
+					<output>fft_vout
+						<evalType>point</evalType>
+					</output>
+					<output>sigpower
+						<evalType>point</evalType>
+					</output>
+				</outputs>
+				<vars>
+					<var>fs
+						<value>fclk/10</value>
+					</var>
+					<var>fclk
+						<value>1000000</value>
+					</var>
+					<var>Nfft
+						<value>1024</value>
+					</var>
+					<var>M_cycles
+						<value>31, 509</value>
+					</var>
+					<var>fin_1
+						<value>fs*M_cycles/Nfft</value>
+					</var>
+					<var>N_drop
+						<value>2</value>
+					</var>
+					<var>t_drop
+						<value>N_drop/fs</value>
+					</var>
+					<var>t_start
+						<value>100.5u</value>
+					</var>
+					<var>t0
+						<value>t_start + t_drop</value>
+					</var>
+					<var>t1
+						<value>t0 + M_cycles/fin_1</value>
+					</var>
+					<var>vssa
+						<value>0</value>
+					</var>
+					<var>vdda
+						<value>1.8</value>
+					</var>
+					<var>v_ref
+						<value>vdda</value>
+					</var>
+					<var>v_cm
+						<value>0.9</value>
+					</var>
+					<var>t_sim
+						<value>t_start + t_drop + (t1-t0) + 1/fs</value>
+					</var>
+					<var>fin_2
+						<value>0</value>
+					</var>
+				</vars>
+				<tooloptions>
+					<option>cell
+						<value>tb_sar_adc</value>
+					</option>
+					<option>lib
+						<value>sar_adc</value>
+					</option>
+					<option>path
+						<value>$AXL_SETUPDB_DIR</value>
+					</option>
+					<option>sim
+						<value>spectre</value>
+					</option>
+					<option>state
+						<value>active</value>
+					</option>
+					<option>view
+						<value>config</value>
+					</option>
+				</tooloptions>
+				<prerunscript>0</prerunscript>
+			</test>
+			<test enabled="1">sar_adc_sine_linearity
+				<tool>ADE</tool>
+				<tooloptions>
+					<option>cell
+						<value>tb_sar_adc</value>
+					</option>
+					<option>lib
+						<value>sar_adc</value>
+					</option>
+					<option>sim
+						<value>spectre</value>
+					</option>
+					<option>view
+						<value>schematic</value>
+					</option>
+					<option>path
+						<value>$AXL_SETUPDB_DIR</value>
+					</option>
+					<option>state
+						<value>active</value>
+					</option>
+				</tooloptions>
+			</test>
+			<test enabled="1">sar_adc_sine_two_tone
+				<tool>ADE</tool>
+				<outputs>
+					<output>/vp
+						<evalType>point</evalType>
+					</output>
+					<output>/vn
+						<evalType>point</evalType>
+					</output>
+					<output>/result&lt;7:0&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/valid
+						<evalType>point</evalType>
+					</output>
+					<output>/clk
+						<evalType>point</evalType>
+					</output>
+					<output>/en
+						<evalType>point</evalType>
+					</output>
+					<output>/rstn
+						<evalType>point</evalType>
+					</output>
+					<output>/cal
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/cdac_pout
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/cdac_nout
+						<evalType>point</evalType>
+					</output>
+					<output>codes
+						<evalType>point</evalType>
+					</output>
+					<output>(codes * 2)
+						<evalType>point</evalType>
+					</output>
+					<output>(dft codes)
+						<evalType>point</evalType>
+					</output>
+					<output>fft_codes
+						<evalType>point</evalType>
+					</output>
+					<output>t0
+						<evalType>point</evalType>
+					</output>
+					<output>vin
+						<evalType>point</evalType>
+					</output>
+					<output>fft_vin
+						<evalType>point</evalType>
+					</output>
+					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "enob")
+						<evalType>point</evalType>
+					</output>
+					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "thd")
+						<evalType>point</evalType>
+					</output>
+					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "snhr")
+						<evalType>point</evalType>
+					</output>
+					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "afdr")
+						<evalType>point</evalType>
+					</output>
+					<output>sfdr_codes
+						<evalType>point</evalType>
+					</output>
+					<output>/vout
+						<evalType>point</evalType>
+					</output>
+					<output>fft_vout
+						<evalType>point</evalType>
+					</output>
+					<output>sfdr_vout
+						<evalType>point</evalType>
+					</output>
+					<output>f1_vout
+						<evalType>point</evalType>
+					</output>
+					<output>f2_vout
+						<evalType>point</evalType>
+					</output>
+					<output>f_diff_vout
+						<evalType>point</evalType>
+					</output>
+					<output>f_sum_vout
+						<evalType>point</evalType>
+					</output>
+					<output>(10 * log10(rms("v+")))
+						<evalType>point</evalType>
+					</output>
+					<output>IMD_vout
+						<evalType>point</evalType>
+					</output>
+				</outputs>
+				<vars>
+					<var>fs
+						<value>fclk/10</value>
+					</var>
+					<var>fclk
+						<value>1000000</value>
+					</var>
+					<var>Nfft
+						<value>1024</value>
+					</var>
+					<var>M_cycles_1
+						<value>59</value>
+					</var>
+					<var>M_cycles_2
+						<value>67</value>
+					</var>
+					<var>fin_1
+						<value>fs*M_cycles_1/Nfft</value>
+					</var>
+					<var>fin_2
+						<value>fs*M_cycles_2/Nfft</value>
+					</var>
+					<var>N_drop
+						<value>2</value>
+					</var>
+					<var>t_drop
+						<value>N_drop/fs</value>
+					</var>
+					<var>t_start
+						<value>100.5u</value>
+					</var>
+					<var>t0
+						<value>t_start + t_drop</value>
+					</var>
+					<var>t1
+						<value>t0 + M_cycles_2/fin_2</value>
+					</var>
+					<var>vssa
+						<value>0</value>
+					</var>
+					<var>vdda
+						<value>1.8</value>
+					</var>
+					<var>v_ref
+						<value>vdda</value>
+					</var>
+					<var>v_cm
+						<value>0.9</value>
+					</var>
+					<var>t_sim
+						<value>t_start + t_drop + (t1-t0) + 1/fs</value>
+					</var>
+				</vars>
+				<tooloptions>
+					<option>cell
+						<value>tb_sar_adc</value>
+					</option>
+					<option>lib
+						<value>sar_adc</value>
+					</option>
+					<option>path
+						<value>$AXL_SETUPDB_DIR</value>
+					</option>
+					<option>sim
+						<value>spectre</value>
+					</option>
+					<option>state
+						<value>active</value>
+					</option>
+					<option>view
+						<value>config</value>
+					</option>
+				</tooloptions>
+				<prerunscript>0</prerunscript>
+			</test>
 		</tests>
 		<extensions>
 			<extension>Parasitics
@@ -85,6 +446,11 @@
 		<currentmode>Single Run, Sweeps and Corners</currentmode>
 		<checksasserts netlist="0">
 			<test netlist="0" netlistscope="all">sar_adc_tb_sar_adc_1</test>
+			<test netlist="0" netlistscope="all">sar_adc_tb_sar_adc_2</test>
+			<test netlist="0" netlistscope="all">sar_adc_tb_sar_adc_1_1</test>
+			<test netlist="0" netlistscope="all">sar_adc_sine_test</test>
+			<test netlist="0" netlistscope="all">sar_adc_sine_fft</test>
+			<test netlist="0" netlistscope="all">sar_adc_sine_two_tone</test>
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
@@ -128,12 +494,16 @@
 				<value>1.8</value>
 				<dependentTests>
 					<dependentTest omitted="0">sar_adc_tb_sar_adc_1</dependentTest>
+					<dependentTest enabled="1">sar_adc_sine_fft</dependentTest>
+					<dependentTest enabled="1">sar_adc_sine_two_tone</dependentTest>
 				</dependentTests>
 			</var>
 			<var>vss
 				<value>0</value>
 				<dependentTests>
 					<dependentTest omitted="0">sar_adc_tb_sar_adc_1</dependentTest>
+					<dependentTest enabled="1">sar_adc_sine_fft</dependentTest>
+					<dependentTest enabled="1">sar_adc_sine_two_tone</dependentTest>
 				</dependentTests>
 			</var>
 		</vars>
@@ -144,6 +514,7 @@
 			<copyreferenceresults>1</copyreferenceresults>
 		</incrementalsimsetup>
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
+		<disabledtests></disabledtests>
 	</active>
 	<history>History
 	</history>

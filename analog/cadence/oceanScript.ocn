@@ -1,0 +1,124 @@
+;====================Set to Maestro mode explorer =============================
+ocnSetXLMode("explorer")
+ocnxlProjectDir( "~/simulation" )
+ocnxlTargetCellView( "sar_adc" "tb_sar_adc" "maestro" )
+ocnxlResultsLocation( "" )
+ocnxlSimResultsLocation( "" )
+ocnxlMaxJobFail( 20 )
+
+;====================== Tests setup ============================================
+
+;---------- Test "sar_adc_sine_test" ------------- 
+ocnxlBeginTest("sar_adc_sine_test")
+simulator( 'ams )
+solver( 'Spectre )
+design( "sar_adc" "tb_sar_adc" "config")
+ocnAmsSetUnlNetlister()
+envOption(
+	'enableAMSDflex  list(t) 
+)
+modelFile( 
+    '("/home/jaime/sky130_release_0.1.0/models/sky130.lib.spice" "tt")
+)
+stimulusFile( ?xlate nil
+    "/home/jaime/simulation/sar_adc/tb_sar_adc/maestro/results/maestro/.tmpADEDir_jaime/sar_adc_sine_test/sar_adc_tb_sar_adc_config_ams/netlist/_graphical_stimuli.scs")
+analysis('tran ?stop "1m"  )
+desVar(	  "vdd_supply" 1.8	)
+desVar(	  "vss_supply" 0	)
+desVar(	  "fclk" 1000000	)
+desVar(	  "vcm" 0.9	)
+desVar(	  "vsin" "vdd_supply/2"	)
+desVar(	  "fin" 50k	)
+envOption(
+	'amsIEsList  '((t "global" "" "Value" "1" "<Using UCM>" "" "logic" "discipline=logic;" "Built-in")) 
+)
+option(	'pzSeverity  "None" 
+	'noiseSeverity  "None" 
+	'spSeverity  "None" 
+	'acSeverity  "None" 
+	'dcOpSeverity  "None" 
+	'dcSeverity  "None" 
+	'tranSeverity  "None" 
+	'checklimitdest  "sqldb" 
+)
+saveOption( ?infoOptions list(list("modelParameter" "models" "rawfile" "" "" "" t) list("element" "inst" "rawfile" "" "" "" t) list("outputParameter" "output" "rawfile" "" "" "" t) list("designParamVals" "parameters" "rawfile" "" "" "" nil) list("primitives" "primitives" "rawfile" "" "" "" nil) list("subckts" "subckts" "rawfile" "" "" "" nil) list("asserts" "assert" "rawfile" "" "" "" nil) list("extremeinfo" "all" "logfile" "" "yes" "" nil) list("allcap" "allcap" "file" "" "" "" nil) list("<Click_To_Add>" "none" "rawfile" "" "" "" nil) ) )
+save( 'v "/vp" "/vn" "/result<7:0>" "/valid" "/clk" "/en" "/rstn" "/cal" "/vout_dac" )
+temp( 27 ) 
+ocnxlOutputSignal( "/vp" ?plot t ?save t)
+ocnxlOutputSignal( "/vn" ?plot t ?save t)
+ocnxlOutputSignal( "/result<7:0>" ?plot t ?save t)
+ocnxlOutputSignal( "/valid" ?plot t ?save t)
+ocnxlOutputSignal( "/clk" ?plot t ?save t)
+ocnxlOutputSignal( "/en" ?plot t ?save t)
+ocnxlOutputSignal( "/rstn" ?plot t ?save t)
+ocnxlOutputSignal( "/cal" ?plot t ?save t)
+ocnxlOutputSignal( "/I0/cdac_pout")
+ocnxlOutputSignal( "/I0/cdac_nout")
+ocnxlOutputSignal( "/vout_dac" ?save t)
+ocnxlOutputExpr( "nil" ?plot t ?evalType 'point)
+ocnxlEndTest() ; "sar_adc_sine_test"
+
+;====================== Sweeps setup ===========================================
+
+;====================== Model Group setup ==========================================
+
+;====================== Corners setup ==========================================
+
+;====================== Checks and Asserts setup ============================================
+ocnxlPutChecksAsserts(?netlist nil)
+
+;====================== Job setup ==============================================
+ocnxlJobSetup( '(
+	"blockemail" "1"
+	"cloudEnvFile" ""
+	"cloudImageFile" ""
+	"cloudPathBindings" ""
+	"cloudSSHHost" ""
+	"cloudStorePath" ""
+	"cloudUploadCmd" ""
+	"communicationtimeout" "180"
+	"configuretimeout" "300"
+	"defaultcpuvalue" "1"
+	"defaultmemoryvalue" "1000"
+	"distributionmethod" "Local"
+	"jobruntype" "LSCS"
+	"estimatecpuvalue" ""
+	"estimatememoryvalue" ""
+	"estimationsimulationmode" "0"
+	"lingertimeout" "300"
+	"maxjobs" "1"
+	"name" "Maestro Default"
+	"preemptivestart" "1"
+	"providecpuandmemorydata" "1"
+	"reconfigureimmediately" "1"
+	"remotevirtuosohome" ""
+	"runpointsvalue" "5"
+	"runtimeout" "-1"
+	"scaleestimatedbycpu" "100"
+	"scaleestimatedbymemory" "100"
+	"scalehistorybycpu" "100"
+	"scalehistorybymemory" "100"
+	"showerrorwhenretrying" "1"
+	"showoutputlogerror" "0"
+	"startmaxjobsimmed" "1"
+	"starttimeout" "300"
+	"userquotaspace" "0"
+	"userquotavalue" ""
+	"usesameprocess" "1"
+	"warndisklow" "0"
+	"warnthresholdvalue" "100"
+) )
+
+;====================== Disabled items =========================================
+
+;====================== Run Mode Options ======================================
+
+;====================== Starting Point Info ======================================
+
+;====================== Run command ============================================
+ocnxlRun( ?mode 'sweepsAndCorners ?nominalCornerEnabled t ?allCornersEnabled t ?allSweepsEnabled t)
+ocnxlOutputSummary(?exprSummary t ?specSummary t ?detailed t ?wave t)
+ocnxlOpenResults()
+
+;====================== End XL Mode command ===================================
+ocnxlEndXLMode("explorer")
