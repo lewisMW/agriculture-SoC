@@ -216,7 +216,10 @@ module sens_gap_tb;
     endtask
     task automatic wait_fsm_idle();
         int i;
-        for (i = 0; i < 200; i++) begin
+        // 2000, not 200: a SAR ADC conversion plus the FSM handshake can take
+        // ~100+ PCLK, and giving up early let the sample land inside the NEXT
+        // check's window (spurious T3/T4/T7 count failures).
+        for (i = 0; i < 2000; i++) begin
             @(posedge PCLK); #1;
             if (uut.u_ctrl.state == 3'd0 && !uut.manual_trig && !uut.rtc_trig) break;
         end
@@ -663,7 +666,9 @@ module sens_gap_tb;
         $display("\n--- T7 RTC alarm held pending while polling is paused ---");
         set_poll(1'b0);
         wait_parked(ok);
-        cycles(30);                    // let any in-flight sample land first
+        wait_fsm_idle();               // let any in-flight sample land first (a SAR
+                                       // conversion is ~80-100 PCLK; the old fixed
+                                       // 30 cycles was sized for dummy_adc)
         wr(A_FCLR, 32'h1);             // earlier phases may have filled the FIFO
         p0 = n_push;
         force_arm(32'd4, -1, 5200, mr, ok);
