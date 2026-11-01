@@ -99,6 +99,23 @@ static inline int sensing_fifo_full(void)     { return GET_FIFO_STATUS(sensing_s
 static inline int sensing_sample_dropped(void){ return (sensing_status() & STATUS_FIFO_DROP_MASK) != 0; }
 static inline int sensing_rtc_intr(void)      { return (sensing_status() & STATUS_RTC_INTR_MASK) != 0; }
 
+/* Wait until the ADC is idle (STATUS[3:2] != running). */
+static inline void sensing_wait_adc_idle(void)
+{
+    while (GET_ADC_STATUS(sensing_status()) == STATUS_ADC_RUNNING) { }
+}
+
+/* Stop autonomous sampling and wait out any conversion already in flight, so
+ * a following clear/count sees no stray sample. Pausing only blocks NEW alarms;
+ * a conversion started just before it still completes and pushes a sample.
+ * The settle lets a trigger already in the FSM pipeline reach the ADC first. */
+static inline void sensing_quiesce(void)
+{
+    sensing_polling_disable();
+    sensing_delay(SENSING_PARK_SETTLE);
+    sensing_wait_adc_idle();
+}
+
 /* ---- draining ------------------------------------------------------------ */
 
 /* Pop up to `max` samples into `buf` (buf may be NULL to just discard). Each

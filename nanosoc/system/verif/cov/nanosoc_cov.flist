@@ -1,0 +1,17 @@
+// -----------------------------------------------------------------------------
+// nanosoc_cov.flist — system-level functional coverage (bind-attached).
+// Add to the simulator command line AFTER the design flists:
+//   -f $(SOCLABS_PROJECT_DIR)/system/verif/cov/nanosoc_cov.flist
+// Needs a simulator with covergroup + bind support (Xcelium, VCS, Questa,
+// Verilator >= 5.052). iverilog (socsim default) cannot compile it.
+// -----------------------------------------------------------------------------
+$(SOCLABS_PROJECT_DIR)/system/verif/cov/nsc_sens_apb_cov.sv
+$(SOCLABS_PROJECT_DIR)/system/verif/cov/nsc_rtc_boundary_cov.sv
+$(SOCLABS_PROJECT_DIR)/system/verif/cov/nsc_sens_ahb_cov.sv
+$(SOCLABS_PROJECT_DIR)/system/verif/cov/nsc_bus_cov.sv
+$(SOCLABS_PROJECT_DIR)/system/verif/cov/nsc_reset_cov.sv
+$(SOCLABS_PROJECT_DIR)/system/verif/cov/nsc_cpu_cov.sv
+$(SOCLABS_PROJECT_DIR)/system/verif/cov/nsc_sysio_cov.sv
+$(SOCLABS_PROJECT_DIR)/system/verif/cov/nsc_debug_pins_cov.sv
+$(SOCLABS_PROJECT_DIR)/system/verif/cov/nsc_bind_sensing.sv
+$(SOCLABS_PROJECT_DIR)/system/verif/cov/nsc_bind_system.sv

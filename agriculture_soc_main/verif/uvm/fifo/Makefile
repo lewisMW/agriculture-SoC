@@ -25,6 +25,12 @@ FILES = $(VL_UVM) \
 
 .PHONY: all build run report clean
 
+# build -> run -> report must stay in order: verilator_1core.mk exports
+# MAKEFLAGS=-j$(JOBS), so with JOBS>1 `run` would otherwise start alongside
+# `build` and execute the PREVIOUS binary. (Verilator's own C++ compile in
+# obj_dir still uses JOBS.)
+.NOTPARALLEL:
+
 all: build run report
 
 build:

@@ -190,6 +190,41 @@ reg [31:0] alarm_target;
 reg        rtc_enabled;     // set after first RTCCR write, never cleared
 
 // -----------------------------------------------------------------------------
+// Missed-alarm watchdog (fixes F8-OFFSET0/1 and RTCLR-FWD)
+// -----------------------------------------------------------------------------
+// The PL031 raises a match only when its counter *changes to* RTCMR. If the
+// armed target is ever at or behind the counter, no match ever comes and the
+// FSM would wait in S_WAITING forever — autonomous sampling silently dead:
+//   - alarm_offset = 0            -> target == now               (F8-OFFSET0)
+//   - offset 1 and a CLK1HZ tick between the RTCDR read and the RTCMR write
+//                                 -> target == new now           (F8-OFFSET1)
+//   - firmware sets the RTC forward past the target (RTCLR), or writes RTCMR
+//     in the past                                                (RTCLR-FWD)
+//   - firmware sets the RTC backwards -> target far in the future (long stall)
+// Two guards:
+//   1. eff_offset clamps alarm_offset 0 to 1.
+//   2. While waiting with polling enabled, count CLK1HZ ticks since the arm.
+//      If armed_offset + 1 ticks pass with no RTCINTR the match was missed, so
+//      service it exactly like an alarm (clear, sample, re-arm from now). The
+//      extra tick of margin guarantees a genuine RTCINTR always wins the race.
+//      The count freezes while polling is paused, so a pause/resume does not
+//      shorten the period.
+// Net guarantee: while polling is enabled a sample is taken at most
+// armed_offset + 1 seconds after each arm, whatever happens to the RTC.
+wire [31:0] eff_offset = (alarm_offset == 32'd0) ? 32'd1 : alarm_offset;
+reg  [31:0] armed_offset;   // eff_offset captured at S_CALC
+reg  [31:0] wd_ticks;       // CLK1HZ ticks seen in S_WAITING since the arm
+wire        wd_expired = (wd_ticks > armed_offset);
+
+// CLK1HZ is asynchronous to PCLK: 2-flop synchroniser + rising-edge detect.
+reg  clk1hz_s1, clk1hz_s2, clk1hz_s3;
+always @(posedge PCLK or negedge PRESETn) begin
+    if (!PRESETn) {clk1hz_s1, clk1hz_s2, clk1hz_s3} <= 3'b000;
+    else          {clk1hz_s1, clk1hz_s2, clk1hz_s3} <= {CLK1HZ, clk1hz_s1, clk1hz_s2};
+end
+wire clk1hz_tick = clk1hz_s2 & ~clk1hz_s3;
+
+// -----------------------------------------------------------------------------
 // ctrl_intr_flag — registered mirror of RTCINTR for wrapper to read
 // -----------------------------------------------------------------------------
 always @(posedge PCLK or negedge PRESETn) begin
@@ -208,7 +243,12 @@ end
 // on the bus one cycle after the FSM leaves the ACCESS state (i.e. during the
 // first WAITING cycle). Gating on !fsm_psel keeps the bus "busy" for that one
 // drain cycle so a passthrough can't clobber the FSM's write.
-wire bus_free   = ((state == S_IDLE) || (state == S_WAITING)) && !fsm_psel;
+// S_IDLE only counts as free while the counter is still in reset (nRTCRST
+// low, the FSM then stays in IDLE). Once nRTCRST is high the FSM always leaves
+// IDLE on the next cycle and takes the bus for a whole arm cycle, so granting
+// there let a passthrough SETUP be split from its ACCESS by ~12 cycles of FSM
+// transfers — an APB violation at the PL031 port (bug PL031-APB).
+wire bus_free   = (((state == S_IDLE) && !nRTCRST) || (state == S_WAITING)) && !fsm_psel;
 
 // An external transfer that collides with an arm cycle is STALLED (PREADY held
 // low) until the FSM parks — it is never failed with PSLVERR. The FSM is
@@ -265,6 +305,8 @@ always @(posedge PCLK or negedge PRESETn) begin
         rtc_trig        <= 1'b0;
         rtc_enabled     <= 1'b0;
         alarm_target    <= 32'h0;
+        armed_offset    <= 32'd1;
+        wd_ticks        <= 32'd0;
         ctrl_time_value <= 32'h0;
         fsm_psel        <= 1'b0;
         fsm_penable     <= 1'b0;
@@ -343,7 +385,9 @@ always @(posedge PCLK or negedge PRESETn) begin
             // ── Calculate alarm target (1 cycle) ──────────────────────────────
             // ctrl_time_value was latched in the previous cycle and is stable.
             S_CALC: begin
-                alarm_target <= ctrl_time_value + alarm_offset;
+                alarm_target <= ctrl_time_value + eff_offset;
+                armed_offset <= eff_offset;
+                wd_ticks     <= 32'd0;
                 state        <= S_MATCH_SETUP;
             end
 
@@ -395,7 +439,11 @@ always @(posedge PCLK or negedge PRESETn) begin
                 // poll_enable is low we park here indefinitely (counter still
                 // runs, passthrough still granted); resume the moment it is
                 // raised, servicing any alarm that fired while disabled.
-                if (RTCINTR && !ext_sel && poll_enable)
+                // Watchdog: count ticks only while polling (frozen when
+                // paused); saturate so a huge offset never wraps to "expired".
+                if (poll_enable && clk1hz_tick && (wd_ticks != 32'hFFFF_FFFF))
+                    wd_ticks <= wd_ticks + 32'd1;
+                if ((RTCINTR || wd_expired) && !ext_sel && poll_enable)
                     state <= S_ICR_SETUP;
             end
 
