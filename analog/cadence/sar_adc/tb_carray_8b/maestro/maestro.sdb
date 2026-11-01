@@ -116,5 +116,6 @@
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
 		<allcornersenabled>1</allcornersenabled>
 	</active>
-	<history>History</history>
+	<history>History
+	</history>
 </setupdb>

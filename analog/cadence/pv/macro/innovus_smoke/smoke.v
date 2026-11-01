@@ -1,0 +1,126 @@
+// smoke.v -- Innovus smoke test of the three ADC macro variants (see smoke.tcl):
+// the one-macro test three times over. Each macro's digital pins are buffered
+// to IO pins; vinp/vinn go straight to IO pins on the macro's analog side.
+module afe_smoke3 (
+  clk_l, samp_l, dp_l, dn_l, ta_l, tb_l, op_l, on_l, vinp_l, vinn_l, clk_b, samp_b, dp_b, dn_b, ta_b, tb_b, op_b, on_b, vinp_b, vinn_b, clk_r, samp_r, dp_r, dn_r, ta_r, tb_r, op_r, on_r, vinp_r, vinn_r);
+  // ---- sar_afe
+  input clk_l, samp_l, vinp_l, vinn_l;
+  input [7:0] dp_l, dn_l;
+  input [4:0] ta_l, tb_l;
+  output op_l, on_l;
+  wire clk_m_l, samp_m_l, op_m_l, on_m_l;
+  wire [7:0] ctlp_l, ctln_l;
+  wire [4:0] trima_l, trimb_l;
+  sky130_fd_sc_hd__buf_2 b_l_clk (.A(clk_l), .X(clk_m_l));
+  sky130_fd_sc_hd__buf_2 b_l_smp (.A(samp_l), .X(samp_m_l));
+  sky130_fd_sc_hd__buf_2 b_l_p0 (.A(dp_l[0]), .X(ctlp_l[0]));
+  sky130_fd_sc_hd__buf_2 b_l_n0 (.A(dn_l[0]), .X(ctln_l[0]));
+  sky130_fd_sc_hd__buf_2 b_l_p1 (.A(dp_l[1]), .X(ctlp_l[1]));
+  sky130_fd_sc_hd__buf_2 b_l_n1 (.A(dn_l[1]), .X(ctln_l[1]));
+  sky130_fd_sc_hd__buf_2 b_l_p2 (.A(dp_l[2]), .X(ctlp_l[2]));
+  sky130_fd_sc_hd__buf_2 b_l_n2 (.A(dn_l[2]), .X(ctln_l[2]));
+  sky130_fd_sc_hd__buf_2 b_l_p3 (.A(dp_l[3]), .X(ctlp_l[3]));
+  sky130_fd_sc_hd__buf_2 b_l_n3 (.A(dn_l[3]), .X(ctln_l[3]));
+  sky130_fd_sc_hd__buf_2 b_l_p4 (.A(dp_l[4]), .X(ctlp_l[4]));
+  sky130_fd_sc_hd__buf_2 b_l_n4 (.A(dn_l[4]), .X(ctln_l[4]));
+  sky130_fd_sc_hd__buf_2 b_l_p5 (.A(dp_l[5]), .X(ctlp_l[5]));
+  sky130_fd_sc_hd__buf_2 b_l_n5 (.A(dn_l[5]), .X(ctln_l[5]));
+  sky130_fd_sc_hd__buf_2 b_l_p6 (.A(dp_l[6]), .X(ctlp_l[6]));
+  sky130_fd_sc_hd__buf_2 b_l_n6 (.A(dn_l[6]), .X(ctln_l[6]));
+  sky130_fd_sc_hd__buf_2 b_l_p7 (.A(dp_l[7]), .X(ctlp_l[7]));
+  sky130_fd_sc_hd__buf_2 b_l_n7 (.A(dn_l[7]), .X(ctln_l[7]));
+  sky130_fd_sc_hd__buf_2 b_l_ta0 (.A(ta_l[0]), .X(trima_l[0]));
+  sky130_fd_sc_hd__buf_2 b_l_tb0 (.A(tb_l[0]), .X(trimb_l[0]));
+  sky130_fd_sc_hd__buf_2 b_l_ta1 (.A(ta_l[1]), .X(trima_l[1]));
+  sky130_fd_sc_hd__buf_2 b_l_tb1 (.A(tb_l[1]), .X(trimb_l[1]));
+  sky130_fd_sc_hd__buf_2 b_l_ta2 (.A(ta_l[2]), .X(trima_l[2]));
+  sky130_fd_sc_hd__buf_2 b_l_tb2 (.A(tb_l[2]), .X(trimb_l[2]));
+  sky130_fd_sc_hd__buf_2 b_l_ta3 (.A(ta_l[3]), .X(trima_l[3]));
+  sky130_fd_sc_hd__buf_2 b_l_tb3 (.A(tb_l[3]), .X(trimb_l[3]));
+  sky130_fd_sc_hd__buf_2 b_l_ta4 (.A(ta_l[4]), .X(trima_l[4]));
+  sky130_fd_sc_hd__buf_2 b_l_tb4 (.A(tb_l[4]), .X(trimb_l[4]));
+  sar_afe u_afe_l (.vinp(vinp_l), .vinn(vinn_l), .sample(samp_m_l), .clk(clk_m_l),
+    .ctlp(ctlp_l), .ctln(ctln_l), .trima(trima_l), .trimb(trimb_l), .outp(op_m_l), .outn(on_m_l));
+  sky130_fd_sc_hd__buf_2 b_l_op (.A(op_m_l), .X(op_l));
+  sky130_fd_sc_hd__buf_2 b_l_on (.A(on_m_l), .X(on_l));
+  // ---- sar_afe_b
+  input clk_b, samp_b, vinp_b, vinn_b;
+  input [7:0] dp_b, dn_b;
+  input [4:0] ta_b, tb_b;
+  output op_b, on_b;
+  wire clk_m_b, samp_m_b, op_m_b, on_m_b;
+  wire [7:0] ctlp_b, ctln_b;
+  wire [4:0] trima_b, trimb_b;
+  sky130_fd_sc_hd__buf_2 b_b_clk (.A(clk_b), .X(clk_m_b));
+  sky130_fd_sc_hd__buf_2 b_b_smp (.A(samp_b), .X(samp_m_b));
+  sky130_fd_sc_hd__buf_2 b_b_p0 (.A(dp_b[0]), .X(ctlp_b[0]));
+  sky130_fd_sc_hd__buf_2 b_b_n0 (.A(dn_b[0]), .X(ctln_b[0]));
+  sky130_fd_sc_hd__buf_2 b_b_p1 (.A(dp_b[1]), .X(ctlp_b[1]));
+  sky130_fd_sc_hd__buf_2 b_b_n1 (.A(dn_b[1]), .X(ctln_b[1]));
+  sky130_fd_sc_hd__buf_2 b_b_p2 (.A(dp_b[2]), .X(ctlp_b[2]));
+  sky130_fd_sc_hd__buf_2 b_b_n2 (.A(dn_b[2]), .X(ctln_b[2]));
+  sky130_fd_sc_hd__buf_2 b_b_p3 (.A(dp_b[3]), .X(ctlp_b[3]));
+  sky130_fd_sc_hd__buf_2 b_b_n3 (.A(dn_b[3]), .X(ctln_b[3]));
+  sky130_fd_sc_hd__buf_2 b_b_p4 (.A(dp_b[4]), .X(ctlp_b[4]));
+  sky130_fd_sc_hd__buf_2 b_b_n4 (.A(dn_b[4]), .X(ctln_b[4]));
+  sky130_fd_sc_hd__buf_2 b_b_p5 (.A(dp_b[5]), .X(ctlp_b[5]));
+  sky130_fd_sc_hd__buf_2 b_b_n5 (.A(dn_b[5]), .X(ctln_b[5]));
+  sky130_fd_sc_hd__buf_2 b_b_p6 (.A(dp_b[6]), .X(ctlp_b[6]));
+  sky130_fd_sc_hd__buf_2 b_b_n6 (.A(dn_b[6]), .X(ctln_b[6]));
+  sky130_fd_sc_hd__buf_2 b_b_p7 (.A(dp_b[7]), .X(ctlp_b[7]));
+  sky130_fd_sc_hd__buf_2 b_b_n7 (.A(dn_b[7]), .X(ctln_b[7]));
+  sky130_fd_sc_hd__buf_2 b_b_ta0 (.A(ta_b[0]), .X(trima_b[0]));
+  sky130_fd_sc_hd__buf_2 b_b_tb0 (.A(tb_b[0]), .X(trimb_b[0]));
+  sky130_fd_sc_hd__buf_2 b_b_ta1 (.A(ta_b[1]), .X(trima_b[1]));
+  sky130_fd_sc_hd__buf_2 b_b_tb1 (.A(tb_b[1]), .X(trimb_b[1]));
+  sky130_fd_sc_hd__buf_2 b_b_ta2 (.A(ta_b[2]), .X(trima_b[2]));
+  sky130_fd_sc_hd__buf_2 b_b_tb2 (.A(tb_b[2]), .X(trimb_b[2]));
+  sky130_fd_sc_hd__buf_2 b_b_ta3 (.A(ta_b[3]), .X(trima_b[3]));
+  sky130_fd_sc_hd__buf_2 b_b_tb3 (.A(tb_b[3]), .X(trimb_b[3]));
+  sky130_fd_sc_hd__buf_2 b_b_ta4 (.A(ta_b[4]), .X(trima_b[4]));
+  sky130_fd_sc_hd__buf_2 b_b_tb4 (.A(tb_b[4]), .X(trimb_b[4]));
+  sar_afe_b u_afe_b (.vinp(vinp_b), .vinn(vinn_b), .sample(samp_m_b), .clk(clk_m_b),
+    .ctlp(ctlp_b), .ctln(ctln_b), .trima(trima_b), .trimb(trimb_b), .outp(op_m_b), .outn(on_m_b));
+  sky130_fd_sc_hd__buf_2 b_b_op (.A(op_m_b), .X(op_b));
+  sky130_fd_sc_hd__buf_2 b_b_on (.A(on_m_b), .X(on_b));
+  // ---- sar_afe_r
+  input clk_r, samp_r, vinp_r, vinn_r;
+  input [7:0] dp_r, dn_r;
+  input [4:0] ta_r, tb_r;
+  output op_r, on_r;
+  wire clk_m_r, samp_m_r, op_m_r, on_m_r;
+  wire [7:0] ctlp_r, ctln_r;
+  wire [4:0] trima_r, trimb_r;
+  sky130_fd_sc_hd__buf_2 b_r_clk (.A(clk_r), .X(clk_m_r));
+  sky130_fd_sc_hd__buf_2 b_r_smp (.A(samp_r), .X(samp_m_r));
+  sky130_fd_sc_hd__buf_2 b_r_p0 (.A(dp_r[0]), .X(ctlp_r[0]));
+  sky130_fd_sc_hd__buf_2 b_r_n0 (.A(dn_r[0]), .X(ctln_r[0]));
+  sky130_fd_sc_hd__buf_2 b_r_p1 (.A(dp_r[1]), .X(ctlp_r[1]));
+  sky130_fd_sc_hd__buf_2 b_r_n1 (.A(dn_r[1]), .X(ctln_r[1]));
+  sky130_fd_sc_hd__buf_2 b_r_p2 (.A(dp_r[2]), .X(ctlp_r[2]));
+  sky130_fd_sc_hd__buf_2 b_r_n2 (.A(dn_r[2]), .X(ctln_r[2]));
+  sky130_fd_sc_hd__buf_2 b_r_p3 (.A(dp_r[3]), .X(ctlp_r[3]));
+  sky130_fd_sc_hd__buf_2 b_r_n3 (.A(dn_r[3]), .X(ctln_r[3]));
+  sky130_fd_sc_hd__buf_2 b_r_p4 (.A(dp_r[4]), .X(ctlp_r[4]));
+  sky130_fd_sc_hd__buf_2 b_r_n4 (.A(dn_r[4]), .X(ctln_r[4]));
+  sky130_fd_sc_hd__buf_2 b_r_p5 (.A(dp_r[5]), .X(ctlp_r[5]));
+  sky130_fd_sc_hd__buf_2 b_r_n5 (.A(dn_r[5]), .X(ctln_r[5]));
+  sky130_fd_sc_hd__buf_2 b_r_p6 (.A(dp_r[6]), .X(ctlp_r[6]));
+  sky130_fd_sc_hd__buf_2 b_r_n6 (.A(dn_r[6]), .X(ctln_r[6]));
+  sky130_fd_sc_hd__buf_2 b_r_p7 (.A(dp_r[7]), .X(ctlp_r[7]));
+  sky130_fd_sc_hd__buf_2 b_r_n7 (.A(dn_r[7]), .X(ctln_r[7]));
+  sky130_fd_sc_hd__buf_2 b_r_ta0 (.A(ta_r[0]), .X(trima_r[0]));
+  sky130_fd_sc_hd__buf_2 b_r_tb0 (.A(tb_r[0]), .X(trimb_r[0]));
+  sky130_fd_sc_hd__buf_2 b_r_ta1 (.A(ta_r[1]), .X(trima_r[1]));
+  sky130_fd_sc_hd__buf_2 b_r_tb1 (.A(tb_r[1]), .X(trimb_r[1]));
+  sky130_fd_sc_hd__buf_2 b_r_ta2 (.A(ta_r[2]), .X(trima_r[2]));
+  sky130_fd_sc_hd__buf_2 b_r_tb2 (.A(tb_r[2]), .X(trimb_r[2]));
+  sky130_fd_sc_hd__buf_2 b_r_ta3 (.A(ta_r[3]), .X(trima_r[3]));
+  sky130_fd_sc_hd__buf_2 b_r_tb3 (.A(tb_r[3]), .X(trimb_r[3]));
+  sky130_fd_sc_hd__buf_2 b_r_ta4 (.A(ta_r[4]), .X(trima_r[4]));
+  sky130_fd_sc_hd__buf_2 b_r_tb4 (.A(tb_r[4]), .X(trimb_r[4]));
+  sar_afe_r u_afe_r (.vinp(vinp_r), .vinn(vinn_r), .sample(samp_m_r), .clk(clk_m_r),
+    .ctlp(ctlp_r), .ctln(ctln_r), .trima(trima_r), .trimb(trimb_r), .outp(op_m_r), .outn(on_m_r));
+  sky130_fd_sc_hd__buf_2 b_r_op (.A(op_m_r), .X(op_r));
+  sky130_fd_sc_hd__buf_2 b_r_on (.A(on_m_r), .X(on_r));
+endmodule

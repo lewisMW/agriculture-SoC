@@ -91,6 +91,12 @@ module nanosoc_system #(
     input  wire                     CPU_0_SWCLK,        // SWD clock
     output wire                     CPU_0_SWDO,         // SWD data output
     output wire                     CPU_0_SWDOEN,       // SWD data output enable
+
+`ifdef ACCELERATOR_SUBSYSTEM
+    // agriculture-SoC: SAR ADC analog inputs, pad -> accelerator (analog nets)
+    input  wire                     ADC_VINP,
+    input  wire                     ADC_VINN,
+`endif
     
     // GPIO
     input  wire               [15:0] P0_IN,            // GPIO 0 inputs
@@ -1015,6 +1021,11 @@ wire       EXT_DAT_TXD_TREADY ;
         .EXPRAM_H_HRESP(EXPRAM_H_HRESP),
         .EXPRAM_H_HRDATA(EXPRAM_H_HRDATA),
         
+`ifdef ACCELERATOR_SUBSYSTEM
+        .ADC_VINP(ADC_VINP),    // agriculture-SoC: SAR ADC analog inputs
+        .ADC_VINN(ADC_VINN),
+`endif
+
         // Interrupt and DMAC Connections
         .EXP_IRQ(EXP_IRQ),
         .EXP_DRQ(EXP_DRQ),

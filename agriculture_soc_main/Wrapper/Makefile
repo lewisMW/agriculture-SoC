@@ -4,6 +4,15 @@ TB_MODULE = adc_apb_wrapper_rev2_tb
 # ARM PL031 RTC IP (needed by rtc_control_2). Set ARM_IP_LIBRARY_PATH in your env.
 rtc_ip = $(ARM_IP_LIBRARY_PATH)/PL031/PL031-r1p3-00rel0/PL031-BU-00000-r1p3-00rel0/PL031_VC/rtc_pl031/verilog/rtl_source
 
+# The SAR ADC: sar_adc + latch + sarlogic (synthesisable), with the
+# simulation-only nand2 cell model and behavioural sar_afe macro model.
+ADC_FILES = \
+    ../ADC/sar_adc.v \
+    ../ADC/sar_comp_latch.v \
+    ../../analog/cadence/sar_adc/sarlogic/functional/verilog.v \
+    ../ADC/sim/sky130_fd_sc_hd__nand2_1.v \
+    ../ADC/sim/sar_afe_model.v
+
 # Explicit file list — do NOT glob the sibling dirs (they contain rev0, *_old.v
 # and other testbenches that would collide with these modules).
 VERILOG_FILES = \
@@ -11,7 +20,7 @@ VERILOG_FILES = \
     ./adc_apb_wrapper_rev2_tb.v \
     ../FSM/wrapper_control_2.v \
     ../FIFO/fifo_apb_adc.v \
-    ../Dummy/dummy_adc.v \
+    $(ADC_FILES) \
     ../Dummy/dummy_amux.v \
     ../Dummy/dummy_pll.v \
     ../RTC/rtc_control_2.v \
@@ -35,7 +44,7 @@ RAND_FILES = \
     ./adc_apb_wrapper_rand_tb.v \
     ../FSM/wrapper_control_2.v \
     ../FIFO/fifo_apb_adc.v \
-    ../Dummy/dummy_adc.v \
+    $(ADC_FILES) \
     ../Dummy/dummy_amux.v \
     ../Dummy/dummy_pll.v \
     ../RTC/rtc_control_2.v \

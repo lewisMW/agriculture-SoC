@@ -56,12 +56,15 @@ module fifo_apb_adc #(
 
     // Counter Logic
     always @(posedge clk or negedge rst_n) begin
-        if (!rst_n || fifo_clear)
+        if (!rst_n) begin
             count <= 0;
-        else if (do_wr & ~do_rd)
+        end else if (fifo_clear) begin
+            count <= 0;
+        end else if (do_wr & ~do_rd) begin
             count <= count + 1'b1;
-        else if (~do_wr & do_rd)
+        end else if (~do_wr & do_rd) begin
             count <= count - 1'b1;
+        end
     end
 
     // Status Signals

@@ -1,0 +1,29 @@
+// Analysis + solver settings for TRANSISTOR-LEVEL (sky130) SAR runs.
+// Use with AMS_ACF=$(ACCELERATOR_DIR)/AMS/acf_sky130.scs
+//
+// Why this differs from the behavioural acf.scs:
+// With real FETs the default error control is not tight enough and the Newton
+// solve diverges mid-transient on the device-internal body nodes
+// (<inst>.MNM0.msky130_fd_pr__nfet_01v8:int_b runs away to several volts).
+// errpreset=conservative tightens the local-truncation-error control and fixes
+// it. This is purely a numerical accuracy setting - it changes how finely the
+// circuit is solved, not what circuit is solved.
+//
+// Measured by ablation on adc_trigger_test (2026-08-01), each setting alone:
+//   maxstep=20n            -> still diverges
+//   options gmin=1e-10     -> still diverges
+//   errpreset=conservative -> converges, Test Passed, 2.9 s CPU
+// So neither a smaller max timestep nor extra gmin conductance is needed; do
+// not add them back "for safety" - gmin in particular is an unphysical leak to
+// ground, and maxstep roughly doubles the runtime.
+
+// Both the inverter-only and full-CDAC device-level swaps complete cleanly with
+// just errpreset=conservative. Two things that look tempting but are NOT needed:
+//   options max_minstep_nonconv=... : does not help. When the CDAC transient was
+//     stalling, raising it only made the solver grind (5 s -> 56 s CPU) before
+//     failing at the same point. The stall was a stiff testbench source (fixed
+//     in sar_ams_shim with a finite RSRC), not a lack of retries.
+//   options gmin / maxstep          : ablated and shown unnecessary (see above).
+simulator lang=spectre
+
+tran1 tran start=0 stop=50m method=trap errpreset=conservative

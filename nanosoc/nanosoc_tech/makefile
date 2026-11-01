@@ -38,7 +38,12 @@ VCD_SIM ?= no
 #-------------------------------------
 # - AutoConfig Overloaded Variables
 #-------------------------------------
-include $(SOCLABS_PROJECT_DIR)/autoconfig
+# autoconfig is optional: nothing in this repo generates it, and a hard
+# include makes every target fail with "No rule to make target autoconfig".
+# Defaults below apply when it is absent (TOOL_CHAIN defaults in
+# flows/makefile.software).
+-include $(SOCLABS_PROJECT_DIR)/autoconfig
+SIMULATOR ?= mti
 export TOOL_CHAIN
 export SIMULATOR
 
@@ -158,7 +163,11 @@ ifdef SAR_AMS_INCLUDE
 	AMS = yes
 	NANOSOC_DEFINES += SAR_AMS
 	DEFINES_VC += +define+SAR_AMS
-	FLIST_INCLUDES += $(ACCELERATOR_DIR)/AMS/sar_ams.flist
+	# Override to swap behavioural cells for transistor/extracted views. A cell
+	# bound to a SPICE subckt must NOT also be compiled as Verilog-A, or the
+	# Verilog-A view in worklib wins and the SPICE netlist is silently ignored.
+	SAR_AMS_FLIST ?= $(ACCELERATOR_DIR)/AMS/sar_ams.flist
+	FLIST_INCLUDES += $(SAR_AMS_FLIST)
 endif
 
 ifdef_any_of = $(filter-out yes,$(foreach v,$(1),$(origin $(v))))

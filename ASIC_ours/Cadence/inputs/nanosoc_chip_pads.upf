@@ -1,107 +1,172 @@
 set_design_top nanosoc_chip_pads
 
 #######################################
+# Create Power Domains
+######################################
+create_power_domain PD_TOP -include_scope -supply {SS_TOP} -supply {SS_IO} -supply {SS_IO_Q} -supply {SS_ANALOG}
+
+set all_io_cell_names [get_db [get_cells uPAD*] .name]
+#lappend all_io_cell_names P0
+#lappend all_io_cell_names P1
+set all_io_elems uPAD_NRST_I/XRES_H_N
+
+create_power_domain PD_IO -supply {SS_IO} -supply {SS_IO_Q} -elements {}
+create_power_domain PD_ANALOG -supply {SS_ANALOG} -elements {}
+
+#create_power_domain PD_MEM -elements {u_nanosoc_chip/u_system/u_ss_cpu/u_region_dmem_0/u_dmem_0/u_sram u_nanosoc_chip/u_system/u_ss_cpu/u_region_imem_0/u_imem_0/u_sram u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_h/u_expram_h/u_sram u_nanosoc_chip/u_system/u_ss_expansion/u_region_expram_l/u_expram_l/u_sram}
+
+#######################################
 # Create Supply Ports
 #######################################
-# Top Port Supplies 
-create_supply_port VDD 
-create_supply_net VDD
-connect_supply_net VDD -ports VDD 
+# Top Port Supplies
 
-create_supply_port VSS 
-create_supply_net VSS 
-connect_supply_net VSS -ports VSS 
+set all_supplies [dict create \
+  VDD     [dict create supply_cell_name "uPAD_VDD_*" domain "PD_TOP" supply_pin_name "VCCD" connect_net_name "VCCD"] \
+  VSS     [dict create supply_cell_name "uPAD_VSS_*" domain "PD_TOP" supply_pin_name "VSSD" connect_net_name "VSSD"] \
+  VDDIO   [dict create supply_cell_name "uPAD_VDDIO_*" domain "PD_IO" supply_pin_name "VDDIO" connect_net_name "VDDIO"] \
+  VSSIO   [dict create supply_cell_name "uPAD_VSSIO_*" domain "PD_IO" supply_pin_name "VSSIO" connect_net_name "VSSIO"] \
+  VDDIO_Q [dict create supply_cell_name "uPAD_VDDIOQ_*" domain "PD_IO" supply_pin_name "VDDIO" connect_net_name "VDDIO_Q"] \
+  VSSIO_Q [dict create supply_cell_name "uPAD_VSSIOQ_*" domain "PD_IO" supply_pin_name "VSSIO" connect_net_name "VSSIO_Q"] \
+  VDDA    [dict create supply_cell_name "uPAD_VDDA_*" domain "PD_ANALOG" supply_pin_name "VDDA" connect_net_name "VDDA"] \
+  VSSA    [dict create supply_cell_name "uPAD_VSSA_*" domain "PD_ANALOG" supply_pin_name "VSSA" connect_net_name "VSSA"] \
+]
 
-# create_supply_port VDDACC
-# create_supply_net VDDACC
-# connect_supply_net VDDACC -ports VDDACC
+set_domain_supply_net PD_TOP    -primary_power_net VDD -primary_ground_net VSS
+set_domain_supply_net PD_IO     -primary_power_net VDDIO -primary_ground_net VSSIO
+set_domain_supply_net PD_ANALOG -primary_power_net VDDA -primary_ground_net VSSA
 
-create_supply_port VDDIO 
-create_supply_net VDDIO
-connect_supply_net VDDIO -ports VDDIO
+# auxillary power pins, that don't have power supplies
+# in this flow VSWITCH connected to VDDIO, VCCHIB to VCCD
+set all_supplies_nets [dict merge $all_supplies [dict create \
+  VSWITCH [dict create domain "PD_IO" connect_net_name "VSWITCH"] \
+  VCCHIB  [dict create domain "PD_TOP" connect_net_name "VCCHIB"] \
+]]
 
-create_supply_port VSSIO 
-create_supply_net VSSIO
-connect_supply_net VSSIO -ports VSSIO
+dict map {supply_name supply_args} $all_supplies_nets {
+  #create_supply_net $supply_name -domain [dict get $supply_args domain]
+  create_supply_net $supply_name -domain "PD_TOP"
+}  
 
-#connect_supply_net VDD -ports uPAD_VDD_0/VCCD_PAD
-#connect_supply_net VDD -ports uPAD_VDD_1/VCCD_PAD
-#connect_supply_net VDD -ports uPAD_VDD_2/VCCD_PAD
-#connect_supply_net VDD -ports uPAD_VDD_3/VCCD_PAD
-
-for {set i 0} {$i < 4} {incr i} {
-  create_supply_port uPAD_VDD_${i}/VCCD_PAD
-  connect_supply_net VDD -ports uPAD_VDD_${i}/VCCD_PAD
-  create_supply_port uPAD_VDDIO_${i}/VDDIO_PAD
-  connect_supply_net VDDIO -ports uPAD_VDDIO_${i}/VDDIO_PAD
-  create_supply_port uPAD_VSS_${i}/VSSD_PAD
-  connect_supply_net VSS -ports uPAD_VSS_${i}/VSSD_PAD
-  create_supply_port uPAD_VSSIO_${i}/VSSIO_PAD
-  connect_supply_net VSSIO -ports uPAD_VSSIO_${i}/VSSIO_PAD
+dict map {supply_name supply_args} $all_supplies {
+  # 1: connect the supplies to their verilog equivalent ports
+  # TODO is this correct?
+  create_supply_port $supply_name -direction inout 
+  connect_supply_net $supply_name -ports $supply_name
+  # 2: connect net to the power supply cells
+  # this step is mainly for VDDIO_Q, VSSIO_Q, because they connect to a different pin name than their supply
+  # In this case I have to connect their VDDIO/VSSIO pin to VDDIO_Q, VSSIO_Q
+  set all_supply_cells_name [get_db [get_cells [dict get $supply_args supply_cell_name]] .name]
+  set supply_pin_name [dict get $supply_args supply_pin_name]
+  foreach supply_cell_name $all_supply_cells_name {
+    set supply_pad_pin [get_db [get_pins $supply_cell_name/$supply_pin_name] .name]
+    #create_supply_port $supply_pad_pin
+    connect_supply_net $supply_name -ports $supply_pad_pin
+  }
 }
 
-# connect_supply_net VDDACC -ports uPAD_VDDACC_0/ASIG5V
-# connect_supply_net VDDACC -ports uPAD_VDDACC_1/ASIG5V
-# connect_supply_net VDDACC -ports uPAD_VDDACC_2/ASIG5V
+# I think the other connections should be automatic...
 
+# after connecting supplies, connect the IO ring.
+#dict map {supply_name supply_args} $all_supplies_nets {
+#  set connect_net_name [dict get $supply_args connect_net_name]
+#  foreach cell_pin [get_db [get_pins uPAD*/$connect_net_name] .name] {
+#    connect_supply_net $supply_name -ports $cell_pin
+#  }
+#}  
+
+# I don't think this is necessary anymore as I've setup the primary power + ground
 # Supply ports for the memories. They are under a different name for some reason.
-create_supply_net VCCD1
-connect_supply_net VCCD1 -ports VDD
+# do this later, in the power planning stage I think???
+#set srams [ list u_nanosoc_chip_u_system_u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram u_nanosoc_chip_u_system_u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram u_nanosoc_chip_u_system_u_ss_cpu_u_region_bootrom_0_u_bootrom_cpu_0_u_bootrom_u_sl_rom ]
+
+# foreach sram $srams {
+#  connect_supply_net VDD -ports ${sram}.VCCD1
+#   connect_supply_net VSS -ports ${sram}.VSSD1
+# }
 
 #######################################
 # Create Supply Sets
 ######################################
-create_supply_set SS_TOP -function {power VDD} -function {ground VSS}
-create_supply_set SS_IO  -function {power VDDIO} -function {ground VSSIO}
-# create_supply_set SS_ACC -function {power VDDACC} -function {ground VSS}
+create_supply_set PD_TOP.SS_TOP   -function {power VDD} -function {ground VSS} -update
+create_supply_set PD_TOP.SS_IO    -function {power VDDIO} -function {ground VSSIO} -update
+create_supply_set PD_TOP.SS_IO_Q  -function {power VDDIO_Q} -function {ground VSSIO_Q} -update
+create_supply_set PD_TOP.SS_ANALOG  -function {power VDDA} -function {ground VSSA} -update
+create_supply_set PD_IO.SS_IO     -function {power VDDIO} -function {ground VSSIO} -update
+create_supply_set PD_IO.SS_IO_Q   -function {power VDDIO_Q} -function {ground VSSIO_Q} -update
+create_supply_set PD_ANALOG.SS_ANALOG  -function {power VDDA} -function {ground VSSA} -update
 
-#######################################
-# Create Power Domains
-######################################
-create_power_domain PD_TOP -include_scope -supply {primary SS_TOP}
+# This is not right...
+# set_port_attributes -ports {SE} -receiver_supply PD_IO.SS_IO
+# Set the outside + inside to be the SS_IO domain???
+set_port_attributes -ports {uPAD_NRST_I/XRES_H_N} -driver_supply_set PD_IO.SS_IO -receiver_supply_set PD_IO.SS_IO
 
-# create_power_domain PD_ACC -supply {primary SS_ACC} \
-#     -elements u_nanosoc_chip/u_system/u_ss_expansion/u_region_exp/u_ss_accelerator
 
 #######################################
 # Add Power States
 ######################################
+add_port_state VDD              -state {ON_SLOW 1.62}
+add_port_state VDD              -state {ON_TYP  1.80}
+add_port_state VDD              -state {ON_FAST 1.98}
 add_port_state VSS              -state {ON_SLOW 0.0}
 add_port_state VSS              -state {ON_TYP  0.0}
 add_port_state VSS              -state {ON_FAST 0.0}
-# add_port_state VDD              -state {ON_SLOW 1.08}
-# add_port_state VDD              -state {ON_TYP  1.20}
-# add_port_state VDD              -state {ON_FAST 1.32}
-add_port_state VDD              -state {ON_SLOW 1.44}
-add_port_state VDD              -state {ON_TYP  1.60}
-add_port_state VDD              -state {ON_FAST 1.76}
-# add_port_state VDDACC           -state {ON_SLOW 1.08}
-# add_port_state VDDACC           -state {ON_TYP  1.20}
-# add_port_state VDDACC           -state {ON_FAST 1.32}
 add_port_state VDDIO            -state {ON_SLOW 2.97}
 add_port_state VDDIO            -state {ON_TYP  3.30}
 add_port_state VDDIO            -state {ON_FAST 3.63}
 add_port_state VSSIO            -state {ON_SLOW 0}
 add_port_state VSSIO            -state {ON_TYP  0}
 add_port_state VSSIO            -state {ON_FAST 0}
+add_port_state VDDIO_Q          -state {ON_SLOW 2.97}
+add_port_state VDDIO_Q          -state {ON_TYP  3.30}
+add_port_state VDDIO_Q          -state {ON_FAST 3.63}
+add_port_state VSSIO_Q          -state {ON_SLOW 0}
+add_port_state VSSIO_Q          -state {ON_TYP  0}
+add_port_state VSSIO_Q          -state {ON_FAST 0}
+add_port_state VDDA             -state {ON_SLOW 1.62}
+add_port_state VDDA             -state {ON_TYP  1.80}
+add_port_state VDDA             -state {ON_FAST 1.98}
+add_port_state VSSA             -state {ON_SLOW 0.0}
+add_port_state VSSA             -state {ON_TYP  0.0}
+add_port_state VSSA             -state {ON_FAST 0.0}
 
-add_power_state SS_TOP          -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.44} && ground == `{FULL_ON, 0.0}}}
-add_power_state SS_TOP          -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.60} && ground == `{FULL_ON, 0.0}}}
-add_power_state SS_TOP          -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.76} && ground == `{FULL_ON, 0.0}}}
-add_power_state SS_IO           -state ON_SLOW {-supply_expr {power == `{FULL_ON, 2.97} && ground == `{FULL_ON, 0.0}}}
-add_power_state SS_IO           -state ON_TYP  {-supply_expr {power == `{FULL_ON, 3.30} && ground == `{FULL_ON, 0.0}}}
-add_power_state SS_IO           -state ON_FAST {-supply_expr {power == `{FULL_ON, 3.63} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_TOP.SS_TOP         -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.62} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_TOP.SS_TOP         -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.80} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_TOP.SS_TOP         -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.98} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_IO           -state ON_SLOW {-supply_expr {power == `{FULL_ON, 2.97} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_IO           -state ON_TYP  {-supply_expr {power == `{FULL_ON, 3.30} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_IO           -state ON_FAST {-supply_expr {power == `{FULL_ON, 3.63} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_IO_Q         -state ON_SLOW {-supply_expr {power == `{FULL_ON, 2.97} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_IO_Q         -state ON_TYP  {-supply_expr {power == `{FULL_ON, 3.30} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_IO_Q         -state ON_FAST {-supply_expr {power == `{FULL_ON, 3.63} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_TOP.SS_ANALOG   -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.62} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_TOP.SS_ANALOG   -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.80} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_TOP.SS_ANALOG   -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.98} && ground == `{FULL_ON, 0.0}}}
 
 create_pst top_pst -supplies {\
-    VSS \
     VDD \
+    VSS \
     VDDIO \
     VSSIO \
-    }
-
-#    VDDACC \
+    VDDIO_Q \
+    VSSIO_Q \
+    VDDA \
+    VSSA \
+}
  
 
-add_pst_state all_on_slow -pst top_pst -state       {ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  } 
-add_pst_state all_on_typ -pst top_pst -state        {ON_TYP   ON_TYP   ON_TYP   ON_TYP   } 
-add_pst_state all_on_fast -pst top_pst -state       {ON_FAST  ON_FAST  ON_FAST  ON_FAST  } 
+add_pst_state all_on_slow -pst top_pst -state       {ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  } 
+add_pst_state all_on_typ -pst top_pst -state        {ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   } 
+add_pst_state all_on_fast -pst top_pst -state       {ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  } 
+
+# Add the level shifters
+# TODO this is not too right - it's including too much, including some pins that are not needed...
+#foreach domain [list PD_TOP PD_IO PD_ANALOG] {
+#  # apply to both inputs + outputs, and both directions
+#  set_level_shifter LS_${domain} \
+#    -domain $domain \
+#    -applies_to both \
+#    -rule both
+#}
+set_level_shifter LS_PD_TOP_GENERAL -domain PD_TOP -source PD_TOP.SS_IO -sink PD_TOP.SS_TOP
+#set_level_shifter LS_PD_TOP_TO_PD_TO -domain PD_TOP -source PD_TOP.SS_TOP -sink PD_IO.SS_IO
+#set_level_shifter LS_PD_IO_TO_PD_TOP -domain PD_TOP -source PD_TOP.SS_IO -sink PD_IO.SS_TOP
