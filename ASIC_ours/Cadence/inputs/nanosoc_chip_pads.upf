@@ -12,7 +12,7 @@ set all_io_cell_names [get_db [get_cells uPAD*] .name]
 set all_io_elems uPAD_NRST_I/XRES_H_N
 
 create_power_domain PD_IO -supply {SS_TOP} -supply {SS_IO} -supply {SS_SWITCH} -supply {SS_HIB} -supply {SS_IO_Q} -supply {SS_ANALOG} -elements $all_io_cell_names
-create_power_domain PD_ANALOG -supply {SS_ANALOG} -elements {}
+create_power_domain PD_ANALOG -supply {SS_ANALOG} -supply {SS_ANALOG_VREF} -elements {}
 
 # special domain for level shifters as I can autogenerate the floorplan
 create_power_domain PD_LEVEL_SHIFTERS -supply {SS_TOP} -supply {SS_IO} -supply {SS_ANALOG} -elements {}
@@ -23,14 +23,15 @@ create_power_domain PD_LEVEL_SHIFTERS -supply {SS_TOP} -supply {SS_IO} -supply {
 # Top Port Supplies
 
 set all_supplies [dict create \
-  VDD     [dict create supply_cell_name "uPAD_VDD_*" domain "PD_TOP" supply_pin_name "VCCD" connect_net_name "VCCD" voltage 1.8] \
-  VSS     [dict create supply_cell_name "uPAD_VSS_*" domain "PD_TOP" supply_pin_name "VSSD" connect_net_name "VSSD" voltage 0] \
-  VDDIO   [dict create supply_cell_name "uPAD_VDDIO_*" domain "PD_IO" supply_pin_name "VDDIO" connect_net_name "VDDIO" voltage 3.3] \
-  VSSIO   [dict create supply_cell_name "uPAD_VSSIO_*" domain "PD_IO" supply_pin_name "VSSIO" connect_net_name "VSSIO" voltage 0] \
-  VDDIO_Q [dict create supply_cell_name "uPAD_VDDIOQ_*" domain "PD_IO" supply_pin_name "VDDIO" connect_net_name "VDDIO_Q" voltage 3.3] \
-  VSSIO_Q [dict create supply_cell_name "uPAD_VSSIOQ_*" domain "PD_IO" supply_pin_name "VSSIO" connect_net_name "VSSIO_Q" voltage 0] \
-  VDDA    [dict create supply_cell_name "uPAD_VDDA_*" domain "PD_ANALOG" supply_pin_name "VDDA" connect_net_name "VDDA" voltage 1.8] \
-  VSSA    [dict create supply_cell_name "uPAD_VSSA_*" domain "PD_ANALOG" supply_pin_name "VSSA" connect_net_name "VSSA" voltage 0] \
+  VDD      [dict create supply_cell_name "uPAD_VDD_*" domain "PD_TOP" supply_pin_name "VCCD" connect_net_name "VCCD" voltage 1.8] \
+  VSS      [dict create supply_cell_name "uPAD_VSS_*" domain "PD_TOP" supply_pin_name "VSSD" connect_net_name "VSSD" voltage 0] \
+  VDDIO    [dict create supply_cell_name "uPAD_VDDIO_*" domain "PD_IO" supply_pin_name "VDDIO" connect_net_name "VDDIO" voltage 3.3] \
+  VSSIO    [dict create supply_cell_name "uPAD_VSSIO_*" domain "PD_IO" supply_pin_name "VSSIO" connect_net_name "VSSIO" voltage 0] \
+  VDDIO_Q  [dict create supply_cell_name "uPAD_VDDIOQ_*" domain "PD_IO" supply_pin_name "VDDIO" connect_net_name "VDDIO_Q" voltage 3.3] \
+  VSSIO_Q  [dict create supply_cell_name "uPAD_VSSIOQ_*" domain "PD_IO" supply_pin_name "VSSIO" connect_net_name "VSSIO_Q" voltage 0] \
+  VDDA     [dict create supply_cell_name "uPAD_VDDA_*" domain "PD_ANALOG" supply_pin_name "VDDA" connect_net_name "VDDA" voltage 1.8] \
+  VSSA     [dict create supply_cell_name "uPAD_VSSA_*" domain "PD_ANALOG" supply_pin_name "VSSA" connect_net_name "VSSA" voltage 0] \
+  ADC_VREF [dict create supply_cell_name "uPAD_ADC_VREF_GEN" domain "PD_ANALOG" supply_pin_name "vinref" connect_net_name "ADC_VREF" voltage 1.7985] \
 ]
 
 # auxillary power pins, that don't have power supplies
@@ -45,7 +46,6 @@ dict map {supply_name supply_args} $all_supplies_nets {
   # TODO is this correct?
   create_supply_port $supply_name -direction inout 
   connect_supply_net $supply_name -ports $supply_name
-  #create_supply_net $supply_name -domain "PD_TOP"
   create_supply_net $supply_name -domain [dict get $supply_args domain]
 }
 
@@ -58,15 +58,13 @@ set_domain_supply_net PD_ANALOG -primary_power_net VDDA -primary_ground_net VSSA
 # Create Supply Sets
 ######################################
 create_supply_set PD_TOP.SS_TOP   -function {power VDD} -function {ground VSS} -update
-#create_supply_set PD_TOP.SS_IO    -function {power VDDIO} -function {ground VSSIO} -update
-#create_supply_set PD_TOP.SS_IO_Q  -function {power VDDIO_Q} -function {ground VSSIO_Q} -update
-#create_supply_set PD_TOP.SS_ANALOG  -function {power VDDA} -function {ground VSSA} -update
 create_supply_set PD_IO.SS_IO     -function {power VDDIO} -function {ground VSSIO} -update
 # not completely needed, but here to avoid ambiguity
 create_supply_set PD_IO.SS_SWITCH   -function {power VSWITCH} -function {ground VSSIO_Q} -update
 create_supply_set PD_IO.SS_HIB   -function {power VCCHIB} -function {ground VSS} -update
 create_supply_set PD_IO.SS_IO_Q   -function {power VDDIO_Q} -function {ground VSSIO_Q} -update
 create_supply_set PD_ANALOG.SS_ANALOG  -function {power VDDA} -function {ground VSSA} -update
+create_supply_set PD_ANALOG.SS_ANALOG_VREF  -function {power ADC_VREF} -function {ground VSSA} -update
 
 # associate_supply_set <existing supply> -handle <the other name>
 associate_supply_set PD_TOP.SS_TOP       -handle PD_IO.SS_TOP
@@ -132,6 +130,34 @@ set gpio_supply_set_mapping [dict create \
   PAD_A_ESD_0_H      PD_IO.SS_IO \
   PAD_A_ESD_1_H      PD_IO.SS_IO \
   PAD_A_NOESD_H      PD_IO.SS_IO \
+  TIE_WEAK_HI_H      PD_IO.SS_IO \
+  PAD_A_ESD_H        PD_IO.SS_IO \
+  XRES_H_N           PD_IO.SS_IO \
+  DISABLE_PULLUP_H   PD_IO.SS_IO \
+  EN_VDDIO_SIG_H     PD_IO.SS_IO \
+  INP_SEL_H          PD_IO.SS_IO \
+  FILT_IN_H          PD_IO.SS_IO \
+  PULLUP_H           PD_IO.SS_IO \
+  in1_vddio_hv       PD_IO.SS_IO \
+  in2_vddio_hv       PD_IO.SS_IO \
+  in3_vddio_hv       PD_IO.SS_IO \
+  rst_por_hv_n       PD_IO.SS_IO \
+  in1_vddd_hv        PD_IO.SS_TOP \
+  in2_vddd_hv        PD_IO.SS_TOP \
+  in3_vddd_hv        PD_IO.SS_TOP \
+  vddio_present_vddd_hv PD_IO.SS_TOP \
+  out1_vddd_hv       PD_IO.SS_TOP \
+  out2_vddd_hv       PD_IO.SS_TOP \
+  out3_vddd_hv       PD_IO.SS_TOP \
+  vddd_present_vddio_hv PD_IO.SS_IO \
+  out1_vddio_hv      PD_IO.SS_IO \
+  out2_vddio_hv      PD_IO.SS_IO \
+  out3_vddio_hv      PD_IO.SS_IO \
+  tie_lo_esd         PD_IO.SS_IO \
+  ref_sel            PD_IO.SS_TOP \
+  enable_h           PD_IO.SS_IO \
+  hld_h_n            PD_IO.SS_IO \
+  vrefgen_en         PD_IO.SS_TOP \
 ]
 # TODO the other pins like for XRES
 foreach pin_name [get_db [get_pins uPAD*/*] .name] {
@@ -171,10 +197,10 @@ foreach gpio_pad_pin [get_db [get_pins uPAD_*/PAD] .name] { # all pads
 # explicitly rather than left to the domain's primary supply. The instance path
 # is the RTL one (sar_adc.v's header), as this file is read before synthesis.
 set sar_afe_inst u_nanosoc_chip/u_system/u_ss_expansion/u_region_exp/u_ss_accelerator/sensor_wrapper/u_adc/u_afe
-connect_supply_net VDD  -ports [list $sar_afe_inst/vdd]
-connect_supply_net VSS  -ports [list $sar_afe_inst/vss]
-connect_supply_net VDDA -ports [list $sar_afe_inst/vdda $sar_afe_inst/vref]
-
+connect_supply_net VDD      -ports [list $sar_afe_inst/vdd]
+connect_supply_net VSS      -ports [list $sar_afe_inst/vss]
+connect_supply_net VDDA     -ports [list $sar_afe_inst/vdda]
+connect_supply_net ADC_VREF -ports [list $sar_afe_inst/vref]
 
 # This is not right...
 # set_port_attributes -ports {SE} -receiver_supply PD_IO.SS_IO
@@ -197,27 +223,27 @@ dict map {supply_name supply_args} $all_supplies_nets {
   add_port_state $supply_name -state [list ON_FAST $voltage_fast]
 }
 
-add_power_state PD_TOP.SS_TOP         -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.62} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_TOP.SS_TOP         -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.80} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_TOP.SS_TOP         -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.98} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_IO.SS_IO           -state ON_SLOW {-supply_expr {power == `{FULL_ON, 2.97} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_IO.SS_IO           -state ON_TYP  {-supply_expr {power == `{FULL_ON, 3.30} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_IO.SS_IO           -state ON_FAST {-supply_expr {power == `{FULL_ON, 3.63} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_IO.SS_IO_Q         -state ON_SLOW {-supply_expr {power == `{FULL_ON, 2.97} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_IO.SS_IO_Q         -state ON_TYP  {-supply_expr {power == `{FULL_ON, 3.30} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_IO.SS_IO_Q         -state ON_FAST {-supply_expr {power == `{FULL_ON, 3.63} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_IO.SS_SWITCH       -state ON_SLOW {-supply_expr {power == `{FULL_ON, 2.97} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_IO.SS_SWITCH       -state ON_TYP  {-supply_expr {power == `{FULL_ON, 3.30} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_IO.SS_SWITCH       -state ON_FAST {-supply_expr {power == `{FULL_ON, 3.63} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_IO.SS_HIB          -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.62} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_IO.SS_HIB          -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.80} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_IO.SS_HIB          -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.98} && ground == `{FULL_ON, 0.0}}}
-#add_power_state PD_TOP.SS_ANALOG      -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.62} && ground == `{FULL_ON, 0.0}}}
-#add_power_state PD_TOP.SS_ANALOG      -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.80} && ground == `{FULL_ON, 0.0}}}
-#add_power_state PD_TOP.SS_ANALOG      -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.98} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_ANALOG.SS_ANALOG   -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.62} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_ANALOG.SS_ANALOG   -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.80} && ground == `{FULL_ON, 0.0}}}
-add_power_state PD_ANALOG.SS_ANALOG   -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.98} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_TOP.SS_TOP              -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.62} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_TOP.SS_TOP              -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.80} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_TOP.SS_TOP              -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.98} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_IO                -state ON_SLOW {-supply_expr {power == `{FULL_ON, 2.97} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_IO                -state ON_TYP  {-supply_expr {power == `{FULL_ON, 3.30} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_IO                -state ON_FAST {-supply_expr {power == `{FULL_ON, 3.63} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_IO_Q              -state ON_SLOW {-supply_expr {power == `{FULL_ON, 2.97} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_IO_Q              -state ON_TYP  {-supply_expr {power == `{FULL_ON, 3.30} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_IO_Q              -state ON_FAST {-supply_expr {power == `{FULL_ON, 3.63} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_SWITCH            -state ON_SLOW {-supply_expr {power == `{FULL_ON, 2.97} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_SWITCH            -state ON_TYP  {-supply_expr {power == `{FULL_ON, 3.30} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_SWITCH            -state ON_FAST {-supply_expr {power == `{FULL_ON, 3.63} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_HIB               -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.62} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_HIB               -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.80} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_IO.SS_HIB               -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.98} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_ANALOG.SS_ANALOG        -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.62} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_ANALOG.SS_ANALOG        -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.80} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_ANALOG.SS_ANALOG        -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.98} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_ANALOG.SS_ANALOG_VREF   -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.61865} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_ANALOG.SS_ANALOG_VREF   -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.7985} && ground == `{FULL_ON, 0.0}}}
+add_power_state PD_ANALOG.SS_ANALOG_VREF   -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.97835} && ground == `{FULL_ON, 0.0}}}
 
 create_pst top_pst -supplies {\
     VDD \
@@ -230,25 +256,13 @@ create_pst top_pst -supplies {\
     VSSA \
     VSWITCH \
     VCCHIB \
+    ADC_VREF \
 }
  
-add_pst_state all_on_slow -pst top_pst -state       {ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  } 
-add_pst_state all_on_typ -pst top_pst -state        {ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   } 
-add_pst_state all_on_fast -pst top_pst -state       {ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  } 
+add_pst_state all_on_slow -pst top_pst -state       {ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  ON_SLOW  } 
+add_pst_state all_on_typ -pst top_pst -state        {ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   ON_TYP   } 
+add_pst_state all_on_fast -pst top_pst -state       {ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  ON_FAST  } 
 
-# Add the level shifters
-# TODO this is not too right - it's including too much, including some pins that are not needed...
-#foreach domain [list PD_TOP PD_IO PD_ANALOG] {
-#  # apply to both inputs + outputs, and both directions
-#  set_level_shifter LS_${domain} \
-#    -domain $domain \
-#    -applies_to both \
-#    -rule both
-#}
-
-set_level_shifter LS_PD_TOP_GENERAL -domain PD_TOP -applies_to both -rule both
-set_level_shifter LS_PD_IO_GENERAL  -domain PD_IO  -applies_to both -rule both
-#set_level_shifter LS_PD_TOP_GENERAL -domain PD_TOP -source PD_TOP.SS_IO -sink PD_TOP.SS_TOP -elements {uPAD_NRST_I/XRES_H_N}
-# set_level_shifter LS_PD_TOP_GENERAL -domain PD_TOP -source PD_TOP.SS_IO -sink PD_TOP.SS_TOP
-#set_level_shifter LS_PD_TOP_TO_PD_TO -domain PD_TOP -source PD_TOP.SS_TOP -sink PD_IO.SS_IO
-#set_level_shifter LS_PD_IO_TO_PD_TOP -domain PD_TOP -source PD_TOP.SS_IO -sink PD_IO.SS_TOP
+# I shouldn't need level shifters at this stage.
+#set_level_shifter LS_PD_TOP_GENERAL -domain PD_TOP -applies_to both -rule both
+#set_level_shifter LS_PD_IO_GENERAL  -domain PD_IO  -applies_to both -rule both
