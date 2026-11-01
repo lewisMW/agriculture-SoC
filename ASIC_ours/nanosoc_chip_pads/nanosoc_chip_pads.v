@@ -103,7 +103,8 @@ module nanosoc_chip_pads (
 // POR for the IO ring. This is less than a system reset, but rather
 // a reset to setup the IO cells to a correct state.
 // TODO wire this up correctly
-wire        por_h_io; 
+wire        por_h_io; // in the vddio domain 
+wire        por_h_i;  // in the vdd domain
 
 //------------------------------------
 // internal wires
@@ -162,6 +163,8 @@ wire pad_se_i;
 // sar_adc u_adc -> sar_afe u_afe vinp/vinn. Analog nets: P&R must not buffer them.
 wire pad_adc_vinp;
 wire pad_adc_vinn;
+// VREF for the ADC - again should not buffer
+wire ADC_VREF;
 
 // connect up high order GPIOs
 assign soc_gpio_port0_i[15:GPIO_TIO] = pad_gpio_port0_i[15:GPIO_TIO];
@@ -268,7 +271,7 @@ nanosoc_chip_cfg #(
   .swdclk_i(pad_swdclk_i),
   .ADC_VINP(pad_adc_vinp), // SAR ADC analog inputs, from uPAD_ADC_VINP/VINN
   .ADC_VINN(pad_adc_vinn)
-  );
+);
 
 
  // --------------------------------------------------------------------------------
@@ -444,7 +447,7 @@ sky130_fd_io__top_xres4v2 uPAD_NRST_I (
    .PAD_A_ESD_H(nrst_weak_pullup),
    .XRES_H_N(pad_nrst_io), 
    .DISABLE_PULLUP_H(nrst_tie_lo_esd), // 0 = enable pull-up on reset pad
-   .EN_VDDIO_SIG_H(nrst_tie_lo_esd),  // No idea.
+   .EN_VDDIO_SIG_H(nrst_tie_lo_esd),  // No idea. TODO what is this?
    .INP_SEL_H(nrst_tie_lo_esd), // 1 = use filt_in_h else filter the pad input
    .FILT_IN_H(nrst_tie_lo_esd), // Alternate input for glitch filter
    .PULLUP_H(nrst_tie_lo_esd), // Pullup connection for alternate filter input
@@ -455,8 +458,81 @@ sky130_fd_io__top_xres4v2 uPAD_NRST_I (
    .ENABLE_VDDIO(1'b1), // it's done like this in caravel
    .AMUXBUS_A(), .AMUXBUS_B()
 );
-// as above, pad_nrst_i should be in VDD domain
-assign pad_nrst_i = pad_nrst_io;
+
+// power on reset + power detections
+// provides 3 level shifters from VDD <-> VDDIO
+// I only need one I think?
+// XRES (vddio) -> reset (vdd)
+// 
+wire pwrdet_tie_lo_esd;
+sky130_fd_io__top_pwrdetv2 uPAD_PWRDET (
+   .vddd2(VDD),
+   .vddd1(VDD),
+   .vddio_q(VDDIO_Q),
+   .vccd(VDD),
+   .vssa(VSSA),
+   .vssd(VSSD),
+   .vssio_q(VSSIO_Q),
+   .in1_vddio_hv(pad_nrst_io),
+   .in2_vddio_hv(),
+   .in3_vddio_hv(),
+   // The rst_por_hv_n pin should be hooked up to the rst_por_hv_n coming from the SRSS IP for proper functionality.
+   // TODO this part is not ready yet.
+   .rst_por_hv_n(pwrdet_tie_lo_esd),
+   .in1_vddd_hv(),
+   .in2_vddd_hv(),
+   .in3_vddd_hv(),
+   // vddio is present in vdd domain
+   // TODO is the por_* connections correct?
+   // 1: the POR functionality
+   // 2: if the fanout to all gpio is too large
+   .vddio_present_vddd_hv(por_h_i),
+   .out1_vddd_hv(pad_nrst_i),
+   .out2_vddd_hv(),
+   .out3_vddd_hv(),
+   // vdd is present in vddio domain
+   .vddd_present_vddio_hv(por_h_io),
+   .out1_vddio_hv(),
+   .out2_vddio_hv(),
+   .out3_vddio_hv(),
+   .tie_lo_esd(pwrdet_tie_lo_esd),
+);
+
+sky130_fd_io__top_gpiovrefv2 uPAD_ADC_VREF_GEN (
+   // this is annoying, the pinnames are lower case
+   .vccd(VDD),
+   .vssa(VSS),
+   .vdda(VDDA),
+   .vssa(VSSA),
+   .vcchib(VCCHIB),
+   .vswitch(VSWITCH), 
+   .vddio(VDDIO),
+   .vssio(VSSIO),
+   .vddio_q(VDDIO_Q),
+   .vssio_q(VSSIO_Q),
+   // set VREF = VDDA = 1.8V
+   // vinref = (13n+184)*VDDIO/600
+   .ref_sel(5'b01011), // 11 -> 1.7985V
+   .enable_h(por_h_io),
+   .hld_h_n(por_h_io),
+   .vrefgen_en(1'b1),
+   .vinref(ADC_VREF),
+);
+
+sky130_fd_io__top_vrefcapv2 uPAD_ADC_VREF_CAP (
+   .vccd(VDD),
+   .vssa(VSS),
+   .vdda(VDDA),
+   .vssa(VSSA),
+   .vcchib(VCCHIB),
+   .vswitch(VSWITCH), 
+   .vddio(VDDIO),
+   .vssio(VSSIO),
+   .vddio_q(VDDIO_Q),
+   .vssio_q(VSSIO_Q),
+   .cpos(ADC_VREF),
+   .cneg(VSSIO_Q)
+);
 
 // scan pins. TODO I might need to set them up differently??
 sky130_ef_io__gpiov2_pad_wrapped uPAD_SWDIO_IO (
@@ -506,13 +582,13 @@ sky130_ef_io__gpiov2_pad_wrapped uPAD_P``PORT``_``IDX ( \
    // enables, disables for the chip \
    // resets: \
    .ENABLE_H(por_h_io), // for input (vddio domain, just the io cells?) \
-   .ENABLE_VDDA_H(por_h_io),// for analog domains \
+   .ENABLE_VDDA_H(por_h_i),// for analog domains \
    // technically resets??? \
    .ENABLE_VSWITCH_H(gpio_``PORT``_``IDX``_tie_hi_esd), // in design VSWITCH is there but connected to VDDIO. TODO check this \
    // TODO like for the reset cell - I have no idea if this is correct. \
    // What does "in VCCHIB domain" mean here? \
    // I think it's saying the signal should be given in VCCHIB (VCCD) domain \
-   .ENABLE_VDDIO(por_h_io), // TODO see the reset cell connection, should there be the slew thing? \
+   .ENABLE_VDDIO(por_h_i), // TODO see the reset cell connection, should there be the slew thing? \
    .HLD_H_N(gpio_``PORT``_``IDX``_tie_hi_esd), // hold state control, 1 to use as default \
    .HLD_OVR(1'b0), // actually freeze value, ignored with hld_h_n is 1 \
    .SLOW(1'b0) // default slew rate \

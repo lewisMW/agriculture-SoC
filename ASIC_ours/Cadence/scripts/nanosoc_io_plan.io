@@ -61,10 +61,14 @@
 # 18 um short of its pin's level, so each input is a short met3 run with one jog.
 # VSSA below and VDDA above them; uPAD_VDDA_0's core-side met3 VDDA pins (y 571-646)
 # face the macro's block ring, which power_plan.tcl joins them to.
-	(inst  name="uPAD_VSSA_0"	orientation=R90	place_status=fixed offset=346 )
-	(inst  name="uPAD_ADC_VINN"	orientation=R90	place_status=fixed space=0 )
+#	(inst  name="uPAD_VSSA_0"	orientation=R90	place_status=fixed offset=346 )
+#	(inst  name="uPAD_ADC_VINN"	orientation=R90	place_status=fixed space=0 )
+#	(inst  name="uPAD_ADC_VINP"	orientation=R90	place_status=fixed space=0 )
+#	(inst  name="uPAD_VDDA_0"	orientation=R90	place_status=fixed space=0 )
+	(inst  name="uPAD_ADC_VINN"	orientation=R90	place_status=fixed offset=346 )
 	(inst  name="uPAD_ADC_VINP"	orientation=R90	place_status=fixed space=0 )
-	(inst  name="uPAD_VDDA_0"	orientation=R90	place_status=fixed space=0 )
+	(inst  name="uPAD_ADC_VREF_GEN"	orientation=R90	place_status=fixed space=0 )
+	(inst  name="uPAD_ADC_VREF_CAP"	orientation=R90	place_status=fixed space=0 )
 # the rest, y 646-3842: 14 pads and the connect slice, 138 um gaps, 144 um to the top-left corner
 	(inst  name="uPAD_VDDIO_1"	orientation=R90	place_status=fixed space=138 )
 	(inst  name="uPAD_CONN_L"	orientation=R90 cell=sky130_ef_io__connect_vcchib_vccd_and_vswitch_vddio_slice_20um	place_status=fixed space=0 )
@@ -115,7 +119,7 @@
 # y 200-3838: 12 pads and the connect slice, 205 um gaps, 213 um to the top-right corner
 	(inst  name="uPAD_VDDIOQ_1"	orientation=R270	place_status=fixed offset=405 )
 	(inst  name="uPAD_CONN_R"	orientation=R270 cell=sky130_ef_io__connect_vcchib_vccd_and_vswitch_vddio_slice_20um	place_status=fixed space=0 )
-	(inst  name="uPAD_VSSIOQ_1"	orientation=R270	place_status=fixed space=205 )
+#	(inst  name="uPAD_VSSIOQ_1"	orientation=R270	place_status=fixed space=205 )
 	(inst  name="uPAD_CLK_I"	orientation=R270	place_status=fixed space=205 )
 	(inst  name="uPAD_P0_00"	orientation=R270	place_status=fixed space=205 )
 	(inst  name="uPAD_P0_01"	orientation=R270	place_status=fixed space=205 )
@@ -125,6 +129,7 @@
 	(inst  name="uPAD_P0_14"	orientation=R270	place_status=fixed space=205 )
 	(inst  name="uPAD_P1_09"	orientation=R270	place_status=fixed space=205 )
 	(inst  name="uPAD_P1_10"	orientation=R270	place_status=fixed space=205 )
-  (inst  name="uPAD_NRST_I"	orientation=R270	place_status=fixed space=205 )
+    (inst  name="uPAD_NRST_I"	orientation=R270	place_status=fixed space=205 )
+	(inst  name="uPAD_PWRDET"	orientation=R270	place_status=fixed space=205 )
     )
 )

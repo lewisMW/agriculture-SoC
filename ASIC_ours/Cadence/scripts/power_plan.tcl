@@ -8,10 +8,11 @@
 
 # TODO I don't think this is exactly right. Might need to connect to VDDIO/VSSIO???
 
-#connect_global_net VDD -type pg_pin -pin_base_name VPWR  -inst_base_name *
-#connect_global_net VDD -type pg_pin -pin_base_name VPB   -inst_base_name *
-#connect_global_net VSS -type pg_pin -pin_base_name VGND  -inst_base_name *
-#connect_global_net VSS -type pg_pin -pin_base_name VNB   -inst_base_name *
+connect_global_net VDD -type pg_pin -pin_base_name VPWR  -inst_base_name *
+connect_global_net VDD -type pg_pin -pin_base_name VPB   -inst_base_name *
+connect_global_net VSS -type pg_pin -pin_base_name VGND  -inst_base_name *
+connect_global_net VSS -type pg_pin -pin_base_name VNB   -inst_base_name *
+# the rest of the nets should be connected already since the synthesis step...
 #connect_global_net VDD -type pg_pin -pin_base_name vccd1 -inst_base_name *
 #connect_global_net VSS -type pg_pin -pin_base_name vssd1 -inst_base_name *
 ## These were spelt -overrride, which Innovus 22.1 rejects (IMPTCM-48), stopping the place
@@ -27,11 +28,11 @@
 # vref (the CDAC reference, set by the bit-driver inverters) both go to VDDA: vref
 # shares the analog supply until the chip has a dedicated, decoupled reference. This
 # matches nanosoc_chip_pads.upf. The instance name is the flattened one from synthesis.
-set sar_afe_name [get_db [get_db insts -if {.base_cell.name == sar_afe}] .name]
-connect_global_net VDD  -type pg_pin -pin_base_name vdd  -inst_base_name $sar_afe_name
-connect_global_net VSS  -type pg_pin -pin_base_name vss  -inst_base_name $sar_afe_name
-connect_global_net VDDA -type pg_pin -pin_base_name vdda -inst_base_name $sar_afe_name
-connect_global_net VDDA -type pg_pin -pin_base_name vref -inst_base_name $sar_afe_name
+# set sar_afe_name [get_db [get_db insts -if {.base_cell.name == sar_afe}] .name]
+# connect_global_net VDD  -type pg_pin -pin_base_name vdd  -inst_base_name $sar_afe_name
+# connect_global_net VSS  -type pg_pin -pin_base_name vss  -inst_base_name $sar_afe_name
+# connect_global_net VDDA -type pg_pin -pin_base_name vdda -inst_base_name $sar_afe_name
+# connect_global_net VDDA -type pg_pin -pin_base_name vref -inst_base_name $sar_afe_name
 # The pads' VDDA pins (the VDDA pads' core-side met3 pins and every pad's ring bus) by
 # name, as VDDIO/VSSIO above: the synthesised netlist leaves the pads' power pins out
 # and the CPF has no connections, so without this VDDA would have no pad pin to route.
@@ -298,7 +299,7 @@ pad_supply_to_ring uPAD_VDD_* VCCD VDD ring
 pad_supply_to_ring uPAD_VSS_* VSSD VSS ring
 
 ### SAR ADC macro: its supply straps (use_lef: the LEF pins as drawn) onto its block ring.
-route_special -connect {block_pin} -inst $sar_afe_name -nets {VDD VSS VDDA} -block_pin use_lef -block_pin_target nearest_target -layer_change_range {met1 met5} -crossover_via_layer_range {met1 met5} -target_via_layer_range {met1 met5} -allow_jogging 1 -allow_layer_change 1
+route_special -connect {block_pin} -inst $sar_afe_name -nets {VDD VSS VDDA ADC_VREF} -block_pin use_lef -block_pin_target nearest_target -layer_change_range {met1 met5} -crossover_via_layer_range {met1 met5} -target_via_layer_range {met1 met5} -allow_jogging 1 -allow_layer_change 1
 
 # Followpins only, and their row ends only to rings and stripes (not first_after_row_end):
 # rows ending at an SRAM's halo were run onto its vccd1 ring corner with an M3M4 stack,
@@ -315,7 +316,7 @@ sram_ring_straps
 
 ### No power wire may be on li1: the rails are met1, the macro and pad pins met3/met4, and
 ### li1 belongs to the cells (an li1 stripe over an SRAM shorted VDD to VSS, see above).
-set _li1 [get_db [get_db nets {VDD VSS VDDA}] .special_wires -if {.layer.name == li1}]
+set _li1 [get_db [get_db nets {VDD VSS VDDA ADC_VREF}] .special_wires -if {.layer.name == li1}]
 if {[llength $_li1]} {
   error "power_plan.tcl: [llength $_li1] power wires on li1, e.g. [get_db [lindex $_li1 0] .net.name] [get_db [lindex $_li1 0] .rect]"
 }
