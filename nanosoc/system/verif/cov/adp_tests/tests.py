@@ -151,7 +151,8 @@ def sens_ahb():
     t.rd(S + 0x1200, expect=0, desc="read of 0x6000_1200 must read 0 like every other alias", bug="F5")
     t.wr(S + 0x1200, 0x0, desc="write to 0x6000_1200 (RTCDR alias) is OKAY")
     t.wr(AMUX + 2, 0x00, size=1)       # byte lane 2 strobe
-    t.rd(AMUX, mask=0x3, expect=0x0, desc="byte write to AMUX lane 2 completes (lane 2 strobe)")
+    # F6 fixed: a lane-2 byte write must leave the input select (lane 0) alone
+    t.rd(AMUX, mask=0x3, expect=0x2, desc="byte write to AMUX lane 2 completes and keeps the input select")
     t.wr(RTCMR, 0xFFFFFF00)        # park the alarm far away again
     t.wr(AMUX, 0); t.wr(PLL, 0); t.wr(ALARM, 5)
     t.wr(RTCCTRL, 1, desc="RTC_CTRL re-enabled")
