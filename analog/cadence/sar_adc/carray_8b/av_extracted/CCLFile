@@ -1,0 +1,56 @@
+#
+# OPTION COMMAND FILE created byCadence Quantus Extraction Version 23.1.2-p001 from CCL
+#
+capacitance \
+	 -decoupling_factor 1.0 \
+	 -ground_net "vssa"
+extract \
+	 -selection "all" \
+	 -type "rc_decoupled"
+extraction_setup \
+	 -array_vias_spacing "auto" \
+	 -max_fracture_length infinite \
+	 -max_fracture_length_unit "MICRONS" \
+	 -max_via_array_size \
+		"auto" \
+	 -net_name_space "LAYOUT" \
+	 -split_via_by_unit_area false
+filter_res \
+	 -merge_parallel_res false \
+	 -min_res 0.001
+input_db -type pegasus \
+	 -design_cell_name "carray_8b layout sar_adc" \
+	 -directory_name "/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/svdb" \
+	 -format "DFII" \
+	 -library_definitions_file "/root/agriculture-SoC/analog/cadence/cds.lib" \
+	 -run_name "carray_8b"
+log_file \
+	 -file_name "/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/svdb/qrc.carray_8b.log"
+output_db -type extracted_view \
+	 -cap_component "pcapacitor" \
+	 -cap_property_name "c" \
+	 -cdl_out_map_directory \
+		"/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS" \
+	 -device_finger_delimiter "@" \
+	 -enable_cellview_check true \
+	 -include_cap_model "false" \
+	 -include_parasitic_cap_model "false" \
+	 -include_parasitic_res_model "comment" \
+	 -include_parasitic_res_width true \
+	 -include_res_model "false" \
+	 -res_component "presistor" \
+	 -res_property_name "r" \
+	 -transfer_net_expression true \
+	 -view_name "av_extracted"
+output_setup \
+	 -directory_name "/root/agriculture-SoC/analog/cadence/pegasus_runs/LVS/svdb" \
+	 -temporary_directory_name "carray_8b"
+process_technology \
+	 -technology_corner \
+		"typical" \
+	 -technology_library_file "/opt/pdk/sky130_release_0.1.0/pvtech.lib" \
+	 -technology_name "sky130" \
+	 -temperature \
+		"25.0"
+
+

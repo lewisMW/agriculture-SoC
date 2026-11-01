@@ -35,6 +35,13 @@ module nanosoc_chip #(
   output wire                uart_txd_o,  // UART TXD
   input  wire                swd_mode,    // SWD mode
 //`endif
+`ifdef ACCELERATOR_SUBSYSTEM
+  // agriculture-SoC: SAR ADC analog inputs. Analog nets: connect each to the
+  // core side of an analog pad (e.g. sky130_ef_io__analog_pad P_CORE) in
+  // nanosoc_chip_pads; they reach the sar_afe macro with no logic in between.
+  input  wire          ADC_VINP,
+  input  wire          ADC_VINN,
+`endif
   input  wire          clk_i,
 //  output wire          xtal_clk_o,
   input  wire          test_i,
@@ -159,6 +166,12 @@ module nanosoc_chip #(
       .CPU_0_SWCLK(CPU_0_SWCLK),
       .CPU_0_SWDO(CPU_0_SWDO),
       .CPU_0_SWDOEN(CPU_0_SWDOEN),
+
+`ifdef ACCELERATOR_SUBSYSTEM
+      // agriculture-SoC: SAR ADC analog inputs
+      .ADC_VINP(ADC_VINP),
+      .ADC_VINN(ADC_VINN),
+`endif
 
       // GPIO
       .P0_IN(P0_IN),

@@ -1,0 +1,38 @@
+// AMS control file: bind the whole ADC analog front end, sar_afe (both CDACs
+// with their bootstrapped switches, and the comparator), to its sky130
+// SCHEMATIC (transistor level, no parasitics) netlist.
+// sarlogic and sr_latch stay digital; everything analog is inside sar_afe.
+//
+// The netlist is generated, never hand-edited:
+//   analog/cadence/pv/netlist_spectre.sh sar_adc sar_afe ...   (see analog/cadence/pv/README.md)
+// and copied to AMS/spice/sar_afe.sch.scs.
+//
+// Must be passed to xrun as a SOURCE FILE, not via -analogcontrol:
+//
+//   make ... SAR_AMS_INCLUDE=yes \
+//            XRUN_EXTRA_SRC=$(ACCELERATOR_DIR)/AMS/amsd_sky130_afe_sch.scs \
+//            AMS_ACF=$(ACCELERATOR_DIR)/AMS/acf_sky130.scs
+//
+// VERIFY in the Spectre "Circuit inventory": bsim4 and the MIM caps appear
+// and no worklib__*__vams__* behavioural cells of the front end remain
+// (cdac_8b, switch_adc, carray_8b, inverter, comparator). A passing test
+// alone proves nothing - grep SENSING_CHECK.
+
+simulator lang=spectre
+
+// ---- sky130 models ---------------------------------------------------------
+simulator lang=spice
+.include "$SKY130/models/corners/tt.spice"
+.include "$SKY130/models/r+c/res_typical__cap_typical.spice"
+.include "$SKY130/models/r+c/res_typical__cap_typical__lin.spice"
+simulator lang=spectre
+
+// ---- device-level front end (generated, SPECTRE syntax) --------------------
+include "$ACCELERATOR_DIR/AMS/spice/sar_afe.sch.scs"
+
+amsd {
+    // the one swap: sar_afe's Verilog-AMS view -> the Spectre subckt.
+    // Ports bind by name (bus bits ctlp[7] <-> ctlp<7>), not by order.
+    portmap subckt=sar_afe porttype=name
+    config cell=sar_afe use=spice
+}

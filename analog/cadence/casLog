@@ -1,6 +1,443 @@
 
-*** Checking layout cellview 'sar_adc/mim_cap_adc/layout' against source cellview 'sar_adc/mim_cap_adc/schematic'. - Fri Sep 25 08:52:50 2026 ***
+*** Checking layout cellview 'sar_adc/carray_8b/layout' against source cellview 'sar_adc/carray_8b/schematic'. - Mon Oct 12 00:19:38 2026 ***
 
+INFO (LX-1090): Layout net 'vssa' has signal type 'signal', but is bound to schematic net 'vssa' of signal type 'ground'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C0'
+but is '34.6223f' on layout instance 'C0'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C1/C0'
+but is '34.6223f' on layout instance 'C1|C0'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C1/C1'
+but is '34.6223f' on layout instance 'C1|C1'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C10/C0'
+but is '34.6223f' on layout instance 'C10|C0'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C10/C2'
+but is '34.6223f' on layout instance 'C10|C2'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C10/C3'
+but is '34.6223f' on layout instance 'C10|C3'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C2/C0'
+but is '34.6223f' on layout instance 'C2|C0'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C2/C1'
+but is '34.6223f' on layout instance 'C2|C1'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C2/C2'
+but is '34.6223f' on layout instance 'C2|C2'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C2/C3'
+but is '34.6223f' on layout instance 'C2|C3'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C3/C0'
+but is '34.6223f' on layout instance 'C3|C0'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C3/C1'
+but is '34.6223f' on layout instance 'C3|C1'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C3/C2'
+but is '34.6223f' on layout instance 'C3|C2'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C3/C3'
+but is '34.6223f' on layout instance 'C3|C3'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C3/C4'
+but is '34.6223f' on layout instance 'C3|C4'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C3/C5'
+but is '34.6223f' on layout instance 'C3|C5'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C3/C6'
+but is '34.6223f' on layout instance 'C3|C6'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C3/C7'
+but is '34.6223f' on layout instance 'C3|C7'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C0'
+but is '34.6223f' on layout instance 'C4|C0'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C1'
+but is '34.6223f' on layout instance 'C4|C1'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C10'
+but is '34.6223f' on layout instance 'C4|C10'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C11'
+but is '34.6223f' on layout instance 'C4|C11'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C12'
+but is '34.6223f' on layout instance 'C4|C12'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C13'
+but is '34.6223f' on layout instance 'C4|C13'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C14'
+but is '34.6223f' on layout instance 'C4|C14'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C15'
+but is '34.6223f' on layout instance 'C4|C15'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C2'
+but is '34.6223f' on layout instance 'C4|C2'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C3'
+but is '34.6223f' on layout instance 'C4|C3'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C4'
+but is '34.6223f' on layout instance 'C4|C4'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C5'
+but is '34.6223f' on layout instance 'C4|C5'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C6'
+but is '34.6223f' on layout instance 'C4|C6'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C7'
+but is '34.6223f' on layout instance 'C4|C7'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C8'
+but is '34.6223f' on layout instance 'C4|C8'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C4/C9'
+but is '34.6223f' on layout instance 'C4|C9'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C0'
+but is '34.6223f' on layout instance 'C5|C0'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C1'
+but is '34.6223f' on layout instance 'C5|C1'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C10'
+but is '34.6223f' on layout instance 'C5|C10'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C11'
+but is '34.6223f' on layout instance 'C5|C11'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C12'
+but is '34.6223f' on layout instance 'C5|C12'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C13'
+but is '34.6223f' on layout instance 'C5|C13'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C14'
+but is '34.6223f' on layout instance 'C5|C14'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C15'
+but is '34.6223f' on layout instance 'C5|C15'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C16'
+but is '34.6223f' on layout instance 'C5|C16'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C17'
+but is '34.6223f' on layout instance 'C5|C17'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C18'
+but is '34.6223f' on layout instance 'C5|C18'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C19'
+but is '34.6223f' on layout instance 'C5|C19'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C2'
+but is '34.6223f' on layout instance 'C5|C2'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C20'
+but is '34.6223f' on layout instance 'C5|C20'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C21'
+but is '34.6223f' on layout instance 'C5|C21'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C22'
+but is '34.6223f' on layout instance 'C5|C22'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C23'
+but is '34.6223f' on layout instance 'C5|C23'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C24'
+but is '34.6223f' on layout instance 'C5|C24'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C25'
+but is '34.6223f' on layout instance 'C5|C25'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C26'
+but is '34.6223f' on layout instance 'C5|C26'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C27'
+but is '34.6223f' on layout instance 'C5|C27'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C28'
+but is '34.6223f' on layout instance 'C5|C28'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C29'
+but is '34.6223f' on layout instance 'C5|C29'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C3'
+but is '34.6223f' on layout instance 'C5|C3'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C30'
+but is '34.6223f' on layout instance 'C5|C30'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C31'
+but is '34.6223f' on layout instance 'C5|C31'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C4'
+but is '34.6223f' on layout instance 'C5|C4'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C5'
+but is '34.6223f' on layout instance 'C5|C5'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C6'
+but is '34.6223f' on layout instance 'C5|C6'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C7'
+but is '34.6223f' on layout instance 'C5|C7'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C8'
+but is '34.6223f' on layout instance 'C5|C8'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C5/C9'
+but is '34.6223f' on layout instance 'C5|C9'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C0'
+but is '34.6223f' on layout instance 'C6|C0'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C1'
+but is '34.6223f' on layout instance 'C6|C1'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C10'
+but is '34.6223f' on layout instance 'C6|C10'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C11'
+but is '34.6223f' on layout instance 'C6|C11'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C12'
+but is '34.6223f' on layout instance 'C6|C12'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C13'
+but is '34.6223f' on layout instance 'C6|C13'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C14'
+but is '34.6223f' on layout instance 'C6|C14'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C15'
+but is '34.6223f' on layout instance 'C6|C15'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C16'
+but is '34.6223f' on layout instance 'C6|C16'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C17'
+but is '34.6223f' on layout instance 'C6|C17'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C18'
+but is '34.6223f' on layout instance 'C6|C18'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C19'
+but is '34.6223f' on layout instance 'C6|C19'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C2'
+but is '34.6223f' on layout instance 'C6|C2'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C20'
+but is '34.6223f' on layout instance 'C6|C20'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C21'
+but is '34.6223f' on layout instance 'C6|C21'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C22'
+but is '34.6223f' on layout instance 'C6|C22'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C23'
+but is '34.6223f' on layout instance 'C6|C23'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C24'
+but is '34.6223f' on layout instance 'C6|C24'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C25'
+but is '34.6223f' on layout instance 'C6|C25'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C26'
+but is '34.6223f' on layout instance 'C6|C26'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C27'
+but is '34.6223f' on layout instance 'C6|C27'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C28'
+but is '34.6223f' on layout instance 'C6|C28'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C29'
+but is '34.6223f' on layout instance 'C6|C29'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C3'
+but is '34.6223f' on layout instance 'C6|C3'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C30'
+but is '34.6223f' on layout instance 'C6|C30'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C31'
+but is '34.6223f' on layout instance 'C6|C31'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C32'
+but is '34.6223f' on layout instance 'C6|C32'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C33'
+but is '34.6223f' on layout instance 'C6|C33'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C34'
+but is '34.6223f' on layout instance 'C6|C34'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C35'
+but is '34.6223f' on layout instance 'C6|C35'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C36'
+but is '34.6223f' on layout instance 'C6|C36'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C37'
+but is '34.6223f' on layout instance 'C6|C37'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C38'
+but is '34.6223f' on layout instance 'C6|C38'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C39'
+but is '34.6223f' on layout instance 'C6|C39'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C4'
+but is '34.6223f' on layout instance 'C6|C4'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C40'
+but is '34.6223f' on layout instance 'C6|C40'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C41'
+but is '34.6223f' on layout instance 'C6|C41'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C42'
+but is '34.6223f' on layout instance 'C6|C42'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C43'
+but is '34.6223f' on layout instance 'C6|C43'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C44'
+but is '34.6223f' on layout instance 'C6|C44'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C45'
+but is '34.6223f' on layout instance 'C6|C45'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C46'
+but is '34.6223f' on layout instance 'C6|C46'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C47'
+but is '34.6223f' on layout instance 'C6|C47'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C48'
+but is '34.6223f' on layout instance 'C6|C48'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C49'
+but is '34.6223f' on layout instance 'C6|C49'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C5'
+but is '34.6223f' on layout instance 'C6|C5'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C50'
+but is '34.6223f' on layout instance 'C6|C50'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C51'
+but is '34.6223f' on layout instance 'C6|C51'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C52'
+but is '34.6223f' on layout instance 'C6|C52'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C53'
+but is '34.6223f' on layout instance 'C6|C53'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C54'
+but is '34.6223f' on layout instance 'C6|C54'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C55'
+but is '34.6223f' on layout instance 'C6|C55'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C56'
+but is '34.6223f' on layout instance 'C6|C56'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C57'
+but is '34.6223f' on layout instance 'C6|C57'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C58'
+but is '34.6223f' on layout instance 'C6|C58'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C59'
+but is '34.6223f' on layout instance 'C6|C59'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C6'
+but is '34.6223f' on layout instance 'C6|C6'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C60'
+but is '34.6223f' on layout instance 'C6|C60'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C61'
+but is '34.6223f' on layout instance 'C6|C61'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C62'
+but is '34.6223f' on layout instance 'C6|C62'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C63'
+but is '34.6223f' on layout instance 'C6|C63'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C7'
+but is '34.6223f' on layout instance 'C6|C7'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C8'
+but is '34.6223f' on layout instance 'C6|C8'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C6/C9'
+but is '34.6223f' on layout instance 'C6|C9'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C100'
+but is '34.6223f' on layout instance 'C7|C100'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C101'
+but is '34.6223f' on layout instance 'C7|C101'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C102'
+but is '34.6223f' on layout instance 'C7|C102'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C103'
+but is '34.6223f' on layout instance 'C7|C103'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C104'
+but is '34.6223f' on layout instance 'C7|C104'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C105'
+but is '34.6223f' on layout instance 'C7|C105'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C106'
+but is '34.6223f' on layout instance 'C7|C106'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C107'
+but is '34.6223f' on layout instance 'C7|C107'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C108'
+but is '34.6223f' on layout instance 'C7|C108'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C109'
+but is '34.6223f' on layout instance 'C7|C109'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C110'
+but is '34.6223f' on layout instance 'C7|C110'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C111'
+but is '34.6223f' on layout instance 'C7|C111'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C112'
+but is '34.6223f' on layout instance 'C7|C112'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C113'
+but is '34.6223f' on layout instance 'C7|C113'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C114'
+but is '34.6223f' on layout instance 'C7|C114'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C115'
+but is '34.6223f' on layout instance 'C7|C115'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C116'
+but is '34.6223f' on layout instance 'C7|C116'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C117'
+but is '34.6223f' on layout instance 'C7|C117'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C118'
+but is '34.6223f' on layout instance 'C7|C118'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C119'
+but is '34.6223f' on layout instance 'C7|C119'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C120'
+but is '34.6223f' on layout instance 'C7|C120'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C121'
+but is '34.6223f' on layout instance 'C7|C121'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C122'
+but is '34.6223f' on layout instance 'C7|C122'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C123'
+but is '34.6223f' on layout instance 'C7|C123'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C124'
+but is '34.6223f' on layout instance 'C7|C124'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C125'
+but is '34.6223f' on layout instance 'C7|C125'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C126'
+but is '34.6223f' on layout instance 'C7|C126'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C127'
+but is '34.6223f' on layout instance 'C7|C127'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C70'
+but is '34.6223f' on layout instance 'C7|C70'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C71'
+but is '34.6223f' on layout instance 'C7|C71'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C72'
+but is '34.6223f' on layout instance 'C7|C72'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C73'
+but is '34.6223f' on layout instance 'C7|C73'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C74'
+but is '34.6223f' on layout instance 'C7|C74'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C75'
+but is '34.6223f' on layout instance 'C7|C75'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C76'
+but is '34.6223f' on layout instance 'C7|C76'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C77'
+but is '34.6223f' on layout instance 'C7|C77'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C78'
+but is '34.6223f' on layout instance 'C7|C78'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C79'
+but is '34.6223f' on layout instance 'C7|C79'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C80'
+but is '34.6223f' on layout instance 'C7|C80'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C81'
+but is '34.6223f' on layout instance 'C7|C81'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C82'
+but is '34.6223f' on layout instance 'C7|C82'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C83'
+but is '34.6223f' on layout instance 'C7|C83'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C84'
+but is '34.6223f' on layout instance 'C7|C84'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C85'
+but is '34.6223f' on layout instance 'C7|C85'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C86'
+but is '34.6223f' on layout instance 'C7|C86'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C87'
+but is '34.6223f' on layout instance 'C7|C87'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C88'
+but is '34.6223f' on layout instance 'C7|C88'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C89'
+but is '34.6223f' on layout instance 'C7|C89'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C90'
+but is '34.6223f' on layout instance 'C7|C90'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C91'
+but is '34.6223f' on layout instance 'C7|C91'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C92'
+but is '34.6223f' on layout instance 'C7|C92'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C93'
+but is '34.6223f' on layout instance 'C7|C93'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C94'
+but is '34.6223f' on layout instance 'C7|C94'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C96'
+but is '34.6223f' on layout instance 'C7|C96'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C97'
+but is '34.6223f' on layout instance 'C7|C97'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C98'
+but is '34.6223f' on layout instance 'C7|C98'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C7/C99'
+but is '34.6223f' on layout instance 'C7|C99'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C8'
+but is '34.6223f' on layout instance 'C8'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C1'
+but is '34.6223f' on layout instance 'C9|C1'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C13'
+but is '34.6223f' on layout instance 'C9|C13'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C15'
+but is '34.6223f' on layout instance 'C9|C15'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C16'
+but is '34.6223f' on layout instance 'C9|C16'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C17'
+but is '34.6223f' on layout instance 'C9|C17'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C18'
+but is '34.6223f' on layout instance 'C9|C18'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C20'
+but is '34.6223f' on layout instance 'C9|C20'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C21'
+but is '34.6223f' on layout instance 'C9|C21'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C28'
+but is '34.6223f' on layout instance 'C9|C28'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C3'
+but is '34.6223f' on layout instance 'C9|C3'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C31'
+but is '34.6223f' on layout instance 'C9|C31'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C32'
+but is '34.6223f' on layout instance 'C9|C32'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C33'
+but is '34.6223f' on layout instance 'C9|C33'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C34'
+but is '34.6223f' on layout instance 'C9|C34'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C35'
+but is '34.6223f' on layout instance 'C9|C35'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C4'
+but is '34.6223f' on layout instance 'C9|C4'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C40'
+but is '34.6223f' on layout instance 'C9|C40'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C44'
+but is '34.6223f' on layout instance 'C9|C44'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C47'
+but is '34.6223f' on layout instance 'C9|C47'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C48'
+but is '34.6223f' on layout instance 'C9|C48'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C49'
+but is '34.6223f' on layout instance 'C9|C49'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C50'
+but is '34.6223f' on layout instance 'C9|C50'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C52'
+but is '34.6223f' on layout instance 'C9|C52'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C53'
+but is '34.6223f' on layout instance 'C9|C53'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C54'
+but is '34.6223f' on layout instance 'C9|C54'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C55'
+but is '34.6223f' on layout instance 'C9|C55'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C61'
+but is '34.6223f' on layout instance 'C9|C61'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C62'
+but is '34.6223f' on layout instance 'C9|C62'.
+INFO (LX-1005): Parameter 'c' is set to '1f' on schematic instance 'C9/C63'
+but is '34.6223f' on layout instance 'C9|C63'.
+INFO (LX-1001): Schematic instance 'C7/C95' has no corresponding layout instance.
+INFO (LX-1001): Layout instance 'C7|95' has no corresponding schematic instance.
 
 *** Check Against Source complete. ***
 

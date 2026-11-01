@@ -3,12 +3,23 @@
 `include "constants.vams"
 `include "disciplines.vams"
 
-module switch_adc ( p, n, ctrl );
+// vdd/vss are unused by this behavioural model, but the sky130 replacement
+// (bootstrap_switch_lib/bootstrap_sw, a bootstrapped sampling switch) needs
+// supplies. Views of a cell must share an interface for the AMS `config
+// cell=switch_adc use=spice` swap to bind, so they are declared here too.
+module switch_adc ( p, n, ctrl, vdd, vss );
 	input ctrl;
 	inout p, n;
+	inout vdd, vss;
 	electrical p, n;
 	electrical ctrl;
+	electrical vdd, vss;
 
+	// NOTE: 10 milliohm is not a physical MOS switch (a real one is hundreds of
+	// ohms). It makes the sampled node a ~90 fs time constant against the CDAC
+	// caps, which stalls the transient once the caps are device-level - see
+	// RSRC in agriculture_soc_main/AMS/sar_ams_shim.vams. Prefer swapping in
+	// bootstrap_sw over tuning this.
 	parameter real ron   = 10e-3;       // on-resistance  (?)
 	parameter real roff  = 1e12;         // off-resistance (?)
 	parameter real trise = 1e-9;        // switch-on  time (s)

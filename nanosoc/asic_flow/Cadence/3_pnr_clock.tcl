@@ -16,7 +16,7 @@ source ../scripts/config.tcl
 set_multi_cpu_usage -local_cpu 8
 puts "Starting CTS Flow ..."
 
-read_db $block_name
+read_db ${block_name}_place
 source $env(SOCLABS_ASIC_FLOW_DIR)/Cadence/procs.tcl
 
 source ../scripts/cts_setup.tcl
@@ -39,7 +39,7 @@ if {$DFT == 1} {
 
 report_end_step 03_cts_opt $REPORT_DIR
 
-write_db $block_name
+write_db ${block_name}_cts
 
 exit
 

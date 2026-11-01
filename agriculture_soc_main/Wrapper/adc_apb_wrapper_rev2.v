@@ -9,7 +9,10 @@
 //   - wrapper_control_2 (FSM) : on each trigger runs one ADC conversion and
 //                    pushes the sample into the FIFO. Lets the CPU sleep between
 //                    polls.
-//   - dummy_adc / dummy_amux / dummy_pll : behavioural analog stand-ins.
+//   - sar_adc      : the 8-bit SAR ADC (agriculture_soc_main/ADC): sarlogic, the
+//                    comparator latch and the sar_afe analog macro, on a clock
+//                    divided from PCLK. Its analog inputs are ADC_VINP/ADC_VINN.
+//   - dummy_amux / dummy_pll : behavioural stand-ins.
 //   - fifo_apb_adc : buffers samples until firmware drains them.
 //
 // Register map (byte offsets from the peripheral base) — keep in sync with
@@ -30,7 +33,9 @@ module adc_apb_wrapper_rev2 #(
     parameter ADDR_WIDTH = 12,
     parameter DATA_WIDTH = 32,
     parameter SAMPLE_WIDTH = 8,
-    parameter [31:0] DEFAULT_ALARM_OFFSET = 32'd5   // seconds between polls
+    parameter [31:0] DEFAULT_ALARM_OFFSET = 32'd5,  // seconds between polls
+    parameter ADC_CLK_DIV  = 4                      // PCLK cycles per ADC clock half
+                                                    // period (sar_adc.sdc must match)
 )(
     // Clock and reset
     input  wire                  PCLK,
@@ -51,7 +56,11 @@ module adc_apb_wrapper_rev2 #(
     // Unused APB sidebands (kept for interface parity)
     input  wire                  APBACTIVE,
     input  wire [2:0]            PPROT,
-    input  wire [3:0]            PSTRB
+    input  wire [3:0]            PSTRB,
+
+    // SAR ADC analog inputs: analog nets from the pads, straight to sar_afe
+    input  wire                  ADC_VINP,
+    input  wire                  ADC_VINN
 );
 
     // --------------------------------------------------------------------------
@@ -124,9 +133,10 @@ module adc_apb_wrapper_rev2 #(
     wire        rtc_pslverr;
 
     // --------------------------------------------------------------------------
-    // ADC valid CDC: the real SAR ADC runs on a slower clock, so synchronise
-    // its valid into PCLK and capture the result on the rising edge. (Harmless
-    // extra latency when the dummy shares PCLK.)
+    // ADC valid CDC: sar_adc runs on PCLK / (2*ADC_CLK_DIV), so synchronise its
+    // valid into PCLK and capture the result on the synchronised rising edge.
+    // sar_adc holds result until its next conversion completes, >= 10 ADC
+    // clocks later (constraints: agriculture_soc_main/ADC/sar_adc.sdc).
     // --------------------------------------------------------------------------
     reg  adc_valid_s1, adc_valid_s2, adc_valid_s3;
     always @(posedge PCLK or negedge PRESETn) begin
@@ -271,6 +281,80 @@ module adc_apb_wrapper_rev2 #(
     end
 `endif
 
+`ifdef SENSING_CHECK
+    // ------------------------------------------------------------------------
+    // Automatic plausibility checks on the ADC output stream.
+    //
+    // WHY: the sensing firmware tests only assert that the FIFO becomes
+    // non-empty after a trigger - they never look at the sample VALUE. A run
+    // with a completely dead converter (every code 0x00) still printed
+    // "Test Passed!". These checks validate the ANALOG result instead: driven
+    // by a differential sine (VCM 0.9 V, +/-0.4 V; sar_ams_shim's in the AMS
+    // flow, the behavioural sar_afe model's in plain RTL simulation) the codes
+    // must stay inside a plausible band, move smoothly between samples, and
+    // never sit at a rail.
+    //
+    // Enable with EXTRA_DEFINES=+define+SENSING_CHECK. Any violation prints a
+    // line starting "SENSING_CHECK FAIL", so a run is clean iff that string is
+    // absent from the log.
+    //
+    // Bounds are deliberately loose - they are here to catch a broken or
+    // stuck converter, not to grade linearity. Observed good runs sit in
+    // 0x73..0xb7 with steps <= ~26 LSB.
+    // ------------------------------------------------------------------------
+    localparam [7:0]  CHK_LO      = 8'h20;  // plausible code band
+    localparam [7:0]  CHK_HI      = 8'hE0;
+    localparam integer CHK_MAXSTEP = 48;    // max |delta| between consecutive samples
+    localparam integer CHK_STUCK   = 12;    // identical samples in a row => stuck
+
+    reg [7:0] chk_prev;
+    reg       chk_have_prev;
+    integer   chk_n, chk_same, chk_fail, chk_delta;
+
+    initial begin
+        chk_have_prev = 1'b0;
+        chk_n = 0; chk_same = 0; chk_fail = 0;
+    end
+
+    always @(posedge PCLK) if (PRESETn && fifo_write_en) begin
+        chk_n = chk_n + 1;
+
+        if (adc_sample == 8'h00 || adc_sample == 8'hFF) begin
+            $display("SENSING_CHECK FAIL [%0t] sample %0d at rail: 0x%02h",
+                     $time, chk_n, adc_sample);
+            chk_fail = chk_fail + 1;
+        end else if (adc_sample < CHK_LO || adc_sample > CHK_HI) begin
+            $display("SENSING_CHECK FAIL [%0t] sample %0d outside band 0x%02h..0x%02h: 0x%02h",
+                     $time, chk_n, CHK_LO, CHK_HI, adc_sample);
+            chk_fail = chk_fail + 1;
+        end
+
+        if (chk_have_prev) begin
+            chk_delta = (adc_sample > chk_prev) ? (adc_sample - chk_prev)
+                                                : (chk_prev - adc_sample);
+            if (chk_delta > CHK_MAXSTEP) begin
+                $display("SENSING_CHECK FAIL [%0t] sample %0d jumped %0d LSB (0x%02h -> 0x%02h)",
+                         $time, chk_n, chk_delta, chk_prev, adc_sample);
+                chk_fail = chk_fail + 1;
+            end
+            if (adc_sample == chk_prev) chk_same = chk_same + 1;
+            else                        chk_same = 0;
+            if (chk_same == CHK_STUCK) begin
+                $display("SENSING_CHECK FAIL [%0t] stuck: %0d identical samples at 0x%02h",
+                         $time, CHK_STUCK + 1, adc_sample);
+                chk_fail = chk_fail + 1;
+            end
+        end
+
+        chk_prev      = adc_sample;
+        chk_have_prev = 1'b1;
+
+        if ((chk_n % 8) == 0)
+            $display("SENSING_CHECK: %0d samples, %0d failures so far (last 0x%02h)",
+                     chk_n, chk_fail, adc_sample);
+    end
+`endif
+
     fifo_apb_adc #(
         .DATA_WIDTH(SAMPLE_WIDTH),
         .DEPTH(16)
@@ -286,17 +370,18 @@ module adc_apb_wrapper_rev2 #(
         .fifo_clear  (fifo_clear)
     );
 
-    // NOTE: the real SAR ADC needs its own ~100 kHz clock (from the PLL / a
-    // divider). Here the dummy shares PCLK; the adc_valid synchroniser above
-    // makes swapping in the slow-clock block safe.
+    // The SAR ADC: sarlogic, the comparator latch and the sar_afe macro, on a
+    // clock divided from PCLK inside sar_adc. Instance path for the physical
+    // flow and sar_adc.sdc: <this instance>/u_adc.
     //
-    // With SAR_AMS defined (AMS flow, xrun -ams) the behavioural Verilog-AMS
-    // SAR is instantiated instead of the dummy; sar_ams_shim owns the analog
-    // supplies, the differential input and the ADC clock divider.
+    // With SAR_AMS defined (Xcelium AMS flow) sar_ams_shim takes its place. The
+    // shim supplies the macro, drives a differential sine onto its inputs and
+    // instantiates this same sar_adc, whose sar_afe the amsd file binds to a
+    // SPICE netlist (or leaves on its Verilog-AMS view).
 `ifdef SAR_AMS
     sar_ams_shim #(
         .RESULT_WIDTH(SAMPLE_WIDTH),
-        .CLK_DIV(4)
+        .CLK_DIV(ADC_CLK_DIV)
     ) u_adc (
         .clk       (PCLK),
         .rstn      (PRESETn),
@@ -307,18 +392,17 @@ module adc_apb_wrapper_rev2 #(
         .result    (adc_result)
     );
 `else
-    dummy_adc #(
-        .RESULT_WIDTH(SAMPLE_WIDTH),
-        .CONV_CYCLES(8),
-        .RAND_SEED(8'h5A)
+    sar_adc #(
+        .CLK_DIV(ADC_CLK_DIV)
     ) u_adc (
-        .clk       (PCLK),
-        .rstn      (PRESETn),
-        .en        (adc_en),
-        .cal       (cal_reg),
-        .ANALOG_IN (analog_passthrough),
-        .valid     (adc_raw_valid),
-        .result    (adc_result)
+        .clk    (PCLK),
+        .rstn   (PRESETn),
+        .en     (adc_en),
+        .cal    (cal_reg),
+        .valid  (adc_raw_valid),
+        .result (adc_result),
+        .vinp   (ADC_VINP),
+        .vinn   (ADC_VINN)
     );
 `endif
 

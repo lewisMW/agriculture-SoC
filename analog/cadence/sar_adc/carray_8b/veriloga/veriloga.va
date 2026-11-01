@@ -1,10 +1,10 @@
-// VerilogAMS for SoC_probe, carray_8b, verilogams
+// Verilog-A for sar_adc, carray_8b, veriloga
 
 `include "constants.vams"
 `include "disciplines.vams"
 
 // ------------------------------------------------------------
-// Module: cap_array_8b
+// Module: carray_8b
 // Description:
 //   8-bit binary-weighted capacitive DAC for SAR ADC.
 //   Bottom plates are driven by digital control signals.
