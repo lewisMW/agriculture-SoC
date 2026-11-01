@@ -238,6 +238,43 @@ module fifo_apb_adc_rand_tb;
         while (!fifo_empty) fifo_pop;           // final drain checks remaining order
         check_true(model_count == 0, "random: model drained to empty");
 
+        // 10b. Sample corner values (coverage_plan.md: cg_fifo.cp_data.zero).
+        //     The real SAR ADC can return 0x00 and 0xFF; the dummy ADC's LFSR
+        //     never produces 0, so only this unit bench can push an all-zero
+        //     sample. Both must round-trip unchanged.
+        do_clear;
+        fifo_push(8'h00);
+        fifo_push(8'hFF);
+        fifo_push(8'h00);
+        fifo_pop; fifo_pop; fifo_pop;           // model compares each value
+        check_true(fifo_empty === 1'b1, "corner data: 0x00/0xFF round-trip, drained");
+
+        // 10c. fifo_clear on the same edge as a push and a pop (finding F19:
+        //     count's clear is coded inside the async-reset branch). Clear must
+        //     win over both: FIFO empty afterwards, and the FIFO must still
+        //     behave (pointers and count consistent) on the next traffic.
+        fifo_push(8'h61); fifo_push(8'h62);
+        fifo_clear = 1'b1; adc_wr_en = 1'b1; adc_data = 8'h63; apb_rd_en = 1'b1;
+        @(posedge clk); #1;
+        fifo_clear = 1'b0; adc_wr_en = 1'b0; apb_rd_en = 1'b0;
+        model_reset;
+        check_true(fifo_empty === 1'b1 && dut.count === 0,
+                   "clear+push+pop same edge: clear wins, FIFO empty");
+        check_true(dut.wr_ptr === dut.rd_ptr, "clear+push+pop: pointers equal");
+        fifo_push(8'h64); fifo_push(8'h65);
+        fifo_pop; fifo_pop;                     // must return 0x64, 0x65
+        check_true(fifo_empty === 1'b1, "clear race: FIFO healthy afterwards");
+        // clear + push only, and clear + pop only
+        fifo_push(8'h66);
+        fifo_clear = 1'b1; adc_wr_en = 1'b1; adc_data = 8'h67;
+        @(posedge clk); #1; fifo_clear = 1'b0; adc_wr_en = 1'b0; model_reset;
+        check_true(fifo_empty === 1'b1, "clear+push same edge: clear wins");
+        fifo_push(8'h68);
+        fifo_clear = 1'b1; apb_rd_en = 1'b1;
+        @(posedge clk); #1; fifo_clear = 1'b0; apb_rd_en = 1'b0; model_reset;
+        check_true(fifo_empty === 1'b1 && dut.wr_ptr === dut.rd_ptr,
+                   "clear+pop same edge: clear wins, pointers equal");
+
         // 11. Fold the continuous invariant monitor into the score
         check_true(inv_fail == 0, "invariants held for the whole run");
 

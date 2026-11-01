@@ -75,9 +75,14 @@ module apb_sva (
     input logic PENABLE,
     input logic PREADY
 );
-    // slave never stalls
-    a_pready_high: assert property (@(posedge PCLK) disable iff (!PRESETn)
-        PREADY);
+    // Wait states are legal on an RTC-passthrough collision (HANDOFF decision
+    // #2) - the old "slave never stalls" property predates that fix and failed
+    // on every legal stall (coverage_plan.md F10). What decision #2 promises
+    // instead: a stalled ACCESS completes within a bounded number of cycles
+    // (a full first-arm cycle is ~13 PCLK; 40 leaves margin).
+    a_stall_bounded: assert property (@(posedge PCLK) disable iff (!PRESETn)
+        (PSEL && PENABLE && !PREADY) |-> ##[1:40] PREADY)
+        else $error("APB stall exceeded 40 PCLK");
 
     // ACCESS phase (PENABLE) can only occur while selected
     a_enable_needs_sel: assert property (@(posedge PCLK) disable iff (!PRESETn)

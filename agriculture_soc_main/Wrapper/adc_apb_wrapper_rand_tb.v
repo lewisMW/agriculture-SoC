@@ -14,7 +14,7 @@
 //   - FIFO count never exceeds DEPTH
 //   - never write while FIFO full
 //   - FSM state always legal (0..6)
-//   - APB PREADY always high
+//   - passthrough stalls bounded (<= 40 PCLK) and never end in PSLVERR
 // and functional-coverage counters (FSM states, FIFO occupancy bins, collision
 // PSLVERR events, per-register accesses) that must all be hit by the end.
 //
@@ -71,11 +71,20 @@ module adc_apb_wrapper_rand_tb;
         end
     endtask
 
+    // APB master: hold ACCESS until PREADY is sampled high AT the clock edge
+    // (the RTC passthrough inserts wait states on a collision — HANDOFF
+    // decision #2). Sampling PREADY #1 after the edge, as this bench used to,
+    // abandoned genuinely stalled accesses (coverage_plan.md finding F20).
+    integer stall_cycles;      // wait states seen by the last transfer
     task apb_write(input [11:0] addr, input [31:0] data);
     begin
         @(posedge PCLK); #1; PSEL=1; PADDR=addr; PWDATA=data; PWRITE=1; PENABLE=0;
         @(posedge PCLK); #1; PENABLE=1;
-        @(posedge PCLK); #1; PSEL=0; PENABLE=0; PWRITE=0;
+        stall_cycles = 0;
+        @(posedge PCLK);
+        while (!PREADY) begin stall_cycles = stall_cycles + 1; @(posedge PCLK); end
+        rd_err = PSLVERR;
+        #1; PSEL=0; PENABLE=0; PWRITE=0;
     end
     endtask
 
@@ -83,7 +92,10 @@ module adc_apb_wrapper_rand_tb;
     begin
         @(posedge PCLK); #1; PSEL=1; PADDR=addr; PWRITE=0; PENABLE=0;
         @(posedge PCLK); #1; PENABLE=1;
-        @(posedge PCLK); rd = PRDATA; rd_err = PSLVERR; #1; PSEL=0; PENABLE=0;
+        stall_cycles = 0;
+        @(posedge PCLK);
+        while (!PREADY) begin stall_cycles = stall_cycles + 1; @(posedge PCLK); end
+        rd = PRDATA; rd_err = PSLVERR; #1; PSEL=0; PENABLE=0;
     end
     endtask
 
@@ -106,20 +118,27 @@ module adc_apb_wrapper_rand_tb;
     endtask
 
     // ── Continuous invariant monitors ────────────────────────────────────────
+    // The old "PREADY always high" invariant predates the wait-state fix and
+    // failed on every legal RTC-passthrough stall (finding F10). It is replaced
+    // by what decision #2 actually promises: stalls are bounded and a transfer
+    // never completes with PSLVERR.
     integer inv_fail = 0;
+    integer stall_run = 0;
     always @(posedge PCLK) begin
         if (PRESETn) begin
             if (uut.u_fifo.count > FIFO_DEPTH)             inv_fail = inv_fail + 1;
             if (uut.fifo_write_en && uut.fifo_full)        inv_fail = inv_fail + 1;
             if (uut.u_ctrl.state > 3'd6)                   inv_fail = inv_fail + 1;
-            if (PREADY !== 1'b1)                           inv_fail = inv_fail + 1;
+            if (PSEL && PENABLE && PREADY && PSLVERR)      inv_fail = inv_fail + 1;
+            stall_run = (PSEL && PENABLE && !PREADY) ? stall_run + 1 : 0;
+            if (stall_run > 40)                            inv_fail = inv_fail + 1;
         end
     end
 
     // ── Functional coverage ──────────────────────────────────────────────────
     reg [6:0] cov_state    = 7'b0;   // FSM states visited
     reg [2:0] cov_occ      = 3'b0;   // [0]=empty [1]=partial [2]=full
-    integer   cov_collision = 0;     // PSLVERR passthrough denials observed
+    integer   cov_collision = 0;     // stalled (wait-state) passthrough reads observed
     reg [7:0] cov_regacc   = 8'b0;   // which registers were accessed
     always @(posedge PCLK) begin
         if (PRESETn) begin
@@ -243,7 +262,7 @@ module adc_apb_wrapper_rand_tb;
                 4'd4: begin apb_write(A_TRIG,  32'h1);      note_regacc(A_TRIG);    end
                 4'd5: begin apb_write(A_FIFOCLR,32'h1);     note_regacc(A_FIFOCLR); end
                 4'd6: begin apb_read (A_RTC_DR);            note_regacc(A_RTC_DR);
-                            if (rd_err) cov_collision = cov_collision + 1;          end
+                            if (stall_cycles > 0) cov_collision = cov_collision + 1; end
                 4'd7: begin apb_write(A_ALARMO, 32'd2 + ($random & 4'h7)); note_regacc(A_ALARMO); end
             endcase
             repeat(($random & 4'h7)) @(posedge PCLK);
@@ -267,7 +286,7 @@ module adc_apb_wrapper_rand_tb;
         // Every register in the map accessed
         check_true(&cov_regacc,         "COV all registers accessed");
         // Passthrough collisions are a stress METRIC, not a pass/fail gate: they
-        // are probabilistic here. The deterministic PSLVERR-on-collision proof
+        // are probabilistic here. The deterministic stall-on-collision proof
         // lives in RTC tb_rtc_control P17. Report the observed count.
         $display("    COV passthrough collisions observed = %0d (deterministic proof: RTC P17)",
                  cov_collision);

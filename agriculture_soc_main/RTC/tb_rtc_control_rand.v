@@ -144,15 +144,46 @@ task ext_apb_read_bounded;
         PENABLE = 1'b0;
         @(posedge PCLK); #1;
         PENABLE = 1'b1;
-        @(posedge PCLK); #1;
+        // Sample PREADY AT the edge: sampling #1 after it abandoned stalled
+        // accesses and held completed ones an extra cycle (coverage_plan.md F20).
+        @(posedge PCLK);
         while (!PREADY) begin
             stall_cycles = stall_cycles + 1;
-            @(posedge PCLK); #1;
+            @(posedge PCLK);
         end
         rdata  = PRDATA;
         slverr = PSLVERR;
+        #1;
         PSEL    = 1'b0;
         PENABLE = 1'b0;
+    end
+endtask
+
+task ext_apb_write_bounded;
+    input  [11:0] addr;
+    input  [31:0] wdata;
+    output        slverr;
+    output integer stall_cycles;
+    begin
+        stall_cycles = 0;
+        @(posedge PCLK); #1;
+        PADDR   = addr;
+        PWDATA  = wdata;
+        PWRITE  = 1'b1;
+        PSEL    = 1'b1;
+        PENABLE = 1'b0;
+        @(posedge PCLK); #1;
+        PENABLE = 1'b1;
+        @(posedge PCLK);
+        while (!PREADY) begin
+            stall_cycles = stall_cycles + 1;
+            @(posedge PCLK);
+        end
+        slverr = PSLVERR;
+        #1;
+        PSEL    = 1'b0;
+        PENABLE = 1'b0;
+        PWRITE  = 1'b0;
     end
 endtask
 
@@ -236,6 +267,62 @@ initial begin
     check_true(trig_count > 0,
                "R4 autonomous rtc_trig fired at least once under collision storm");
     $display("Max observed passthrough stall: %0d PCLK cycles", max_stall);
+
+    // R6 - PL031 offsets beyond RTCICR (reserved 0x020-0xFDC and the PrimeCell
+    // ID block 0xFE0-0xFFC). Only reachable at this block level: the wrapper
+    // decodes 0x200-0x21C only. Reads/writes must complete without error and
+    // writes must not disturb the RTC registers (coverage_plan.md,
+    // cg_rtc_bus.cp_word.beyond_icr). Needs re-run with the real PL031.
+    poll_enable = 1'b0;
+    repeat(40) @(posedge PCLK);
+    begin : r6
+        reg [31:0] mr0, imsc0, dr0, v;
+        reg        e;
+        integer    st, bad;
+        bad = 0;
+        ext_apb_read_bounded(12'h004, mr0,   e, st); if (e || st > 40) bad = bad + 1;
+        ext_apb_read_bounded(12'h010, imsc0, e, st); if (e || st > 40) bad = bad + 1;
+        ext_apb_read_bounded(12'h000, dr0,   e, st); if (e || st > 40) bad = bad + 1;
+        ext_apb_read_bounded(12'h020, v, e, st);     if (e || st > 40) bad = bad + 1;
+        ext_apb_read_bounded(12'h0FC, v, e, st);     if (e || st > 40) bad = bad + 1;
+        ext_apb_write_bounded(12'h020, 32'hFFFF_FFFF, e, st); if (e || st > 40) bad = bad + 1;
+        ext_apb_write_bounded(12'hFE0, 32'h0, e, st);         if (e || st > 40) bad = bad + 1;
+        ext_apb_write_bounded(12'hFFC, 32'hFFFF_FFFF, e, st); if (e || st > 40) bad = bad + 1;
+        check_true(bad == 0, "R6 accesses beyond RTCICR complete, no PSLVERR");
+`ifndef PL031_STUB
+        // PrimeCell identification (PL031 TRM): PeriphID0-3 = 0x31,0x10,0x?4,0x00;
+        // PCellID0-3 = 0x0D,0xF0,0x05,0xB1. The stub has no ID registers.
+        ext_apb_read_bounded(12'hFE0, v, e, st); check_true(v[7:0] == 8'h31, "R6 RTCPeriphID0 = 0x31");
+        ext_apb_read_bounded(12'hFE4, v, e, st); check_true(v[7:0] == 8'h10, "R6 RTCPeriphID1 = 0x10");
+        ext_apb_read_bounded(12'hFE8, v, e, st); check_true(v[3:0] == 4'h4,  "R6 RTCPeriphID2[3:0] = 0x4");
+        ext_apb_read_bounded(12'hFEC, v, e, st); check_true(v[7:0] == 8'h00, "R6 RTCPeriphID3 = 0x00");
+        ext_apb_read_bounded(12'hFF0, v, e, st); check_true(v[7:0] == 8'h0D, "R6 RTCPCellID0 = 0x0D");
+        ext_apb_read_bounded(12'hFF4, v, e, st); check_true(v[7:0] == 8'hF0, "R6 RTCPCellID1 = 0xF0");
+        ext_apb_read_bounded(12'hFF8, v, e, st); check_true(v[7:0] == 8'h05, "R6 RTCPCellID2 = 0x05");
+        ext_apb_read_bounded(12'hFFC, v, e, st); check_true(v[7:0] == 8'hB1, "R6 RTCPCellID3 = 0xB1");
+`else
+        ext_apb_read_bounded(12'hFE0, v, e, st);
+        $display("SKIP R6 PrimeCell ID values: pl031_stub.v has no ID registers (check with the real PL031)");
+`endif
+        ext_apb_read_bounded(12'h004, v, e, st);
+        check_true(v == mr0, "R6 writes beyond RTCICR leave RTCMR unchanged");
+        ext_apb_read_bounded(12'h010, v, e, st);
+        check_true(v == imsc0, "R6 writes beyond RTCICR leave RTCIMSC unchanged");
+        repeat(3) @(posedge CLK1HZ);
+        ext_apb_read_bounded(12'h000, v, e, st);
+        check_true(v > dr0, "R6 RTC keeps counting after writes beyond RTCICR");
+    end
+    trig_before = trig_count;
+    poll_enable = 1'b1;
+    begin : r6_wait
+        integer t;
+        t = 0;
+        while (trig_count == trig_before && t < 20000) begin
+            @(posedge PCLK);
+            t = t + 1;
+        end
+    end
+    check_true(trig_count > trig_before, "R6 polling resumes after the beyond-ICR accesses");
 
     // =========================================================================
     // Summary

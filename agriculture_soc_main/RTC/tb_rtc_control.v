@@ -188,8 +188,12 @@ task ext_apb_write;
         PENABLE = 1'b0;
         @(posedge PCLK); #1;
         PENABLE = 1'b1;
-        @(posedge PCLK); #1;
-        while (!PREADY) begin @(posedge PCLK); #1; end
+        // PREADY is sampled AT the edge (not #1 after it, when the slave has
+        // already moved on) so a stalled access is neither abandoned nor held
+        // past its completing edge (coverage_plan.md F20).
+        @(posedge PCLK);
+        while (!PREADY) @(posedge PCLK);
+        #1;
         PSEL    = 1'b0;
         PENABLE = 1'b0;
         PWRITE  = 1'b0;
@@ -209,10 +213,14 @@ task ext_apb_read;
         PENABLE = 1'b0;
         @(posedge PCLK); #1;
         PENABLE = 1'b1;
-        @(posedge PCLK); #1;
-        while (!PREADY) begin @(posedge PCLK); #1; end
+        // PREADY is sampled AT the edge (not #1 after it, when the slave has
+        // already moved on) so a stalled access is neither abandoned nor held
+        // past its completing edge (coverage_plan.md F20).
+        @(posedge PCLK);
+        while (!PREADY) @(posedge PCLK);
         rdata  = PRDATA;
         slverr = PSLVERR;
+        #1;
         PSEL    = 1'b0;
         PENABLE = 1'b0;
     end
@@ -471,8 +479,10 @@ initial begin
     // Hold ACCESS until the slave completes (models the AHB->APB bridge).
     // Bounded so a (hypothetical) permanent stall fails loudly instead of
     // hanging the sim -- the FSM always parks within ~10 PCLK, so this exits fast.
+    // Wait for the completing edge, sampling PREADY at the edge (F20).
     stall_cycles = 0;
-    while (!PREADY && stall_cycles < 200) begin @(posedge PCLK); #1; stall_cycles = stall_cycles + 1; end
+    @(posedge PCLK);
+    while (!PREADY && stall_cycles < 200) begin @(posedge PCLK); stall_cycles = stall_cycles + 1; end
     // NOTE: check/check_true name inputs are [511:0] = 64 chars max — longer
     // literals fail Verilator elaboration ("generates N bits ... doesn't fit").
     check_true(PREADY === 1'b1, "P17c colliding access completes (bounded stall, PREADY high)");
@@ -481,6 +491,7 @@ initial begin
     #1;
     PSEL    = 1'b0;
     PENABLE = 1'b0;
+    #1;   // let the combinational PREADY settle before P18 samples it
     $display("    P17: collision stalled %0d extra cycle(s) then completed, RTCDR=0x%08h",
              stall_cycles, rd_data);
 

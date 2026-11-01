@@ -253,6 +253,21 @@ package sensing_uvm_pkg;
             `uvm_warning("SEQ", "FIFO never became non-empty")
         endtask
 
+        // After an ADC trigger: wait until STATUS[3:2] (adc_en, held from
+        // ENABLE through WAIT_DONE) reads idle. A fixed poll count was tuned for
+        // dummy_adc and is too short for sar_adc (>=10 ADC clocks/conversion).
+        // The first reads cover the FSM reaching ENABLE plus the STATUS register
+        // delay; with the FIFO full the FSM never enables the ADC, so it returns.
+        task wait_adc_idle(int unsigned max_polls = 400);
+            bit [31:0] st;
+            repeat (3) rd(REG_STATUS, st);
+            repeat (max_polls) begin
+                rd(REG_STATUS, st);
+                if (st[3:2] == 2'b00) return;
+            end
+            `uvm_warning("SEQ", "ADC never returned to idle")
+        endtask
+
         task drain(int unsigned max_reads = FIFO_DEPTH + 2);
             bit [31:0] st, d;
             repeat (max_reads) begin
@@ -316,14 +331,14 @@ package sensing_uvm_pkg;
             wr(REG_FIFO_CLR, 1);
             repeat (FIFO_DEPTH + 3) begin
                 wr(REG_ADC_TRIG, 1);
-                repeat (8) rd(REG_STATUS, st);   // let the conversion finish
+                wait_adc_idle();                 // let the conversion finish
             end
             rd(REG_STATUS, st);
             if (!st[4]) `uvm_error("SEQ", $sformatf("drop bit not set after overflow, status=0x%08h", st))
             if (st[1:0] != 2'b10) `uvm_error("SEQ", $sformatf("FIFO not full after overflow, status=0x%08h", st))
             // read while full, then clear while full
             rd(REG_MEAS_LO, d);
-            wr(REG_ADC_TRIG, 1); repeat (8) rd(REG_STATUS, st);
+            wr(REG_ADC_TRIG, 1); wait_adc_idle();
             wr(REG_FIFO_CLR, 1);
             rd(REG_STATUS, st);
             rd(REG_MEAS_LO, d);                  // read while empty

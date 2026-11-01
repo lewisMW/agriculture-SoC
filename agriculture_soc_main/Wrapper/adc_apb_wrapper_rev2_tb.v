@@ -64,11 +64,14 @@ module adc_apb_wrapper_rev2_tb;
         end
     endtask
 
+    // Hold ACCESS until PREADY is sampled high at the clock edge (RTC
+    // passthrough wait states, HANDOFF decision #2; coverage_plan.md F20).
     task apb_write(input [11:0] addr, input [31:0] data);
     begin
         @(posedge PCLK); #1; PSEL=1; PADDR=addr; PWDATA=data; PWRITE=1; PENABLE=0;
         @(posedge PCLK); #1; PENABLE=1;
-        @(posedge PCLK); #1; PSEL=0; PENABLE=0; PWRITE=0;
+        @(posedge PCLK); while (!PREADY) @(posedge PCLK);
+        #1; PSEL=0; PENABLE=0; PWRITE=0;
     end
     endtask
 
@@ -76,7 +79,8 @@ module adc_apb_wrapper_rev2_tb;
     begin
         @(posedge PCLK); #1; PSEL=1; PADDR=addr; PWRITE=0; PENABLE=0;
         @(posedge PCLK); #1; PENABLE=1;
-        @(posedge PCLK); rd = PRDATA; rd_err = PSLVERR; #1; PSEL=0; PENABLE=0;
+        @(posedge PCLK); while (!PREADY) @(posedge PCLK);
+        rd = PRDATA; rd_err = PSLVERR; #1; PSEL=0; PENABLE=0;
     end
     endtask
 

@@ -35,11 +35,20 @@ FILES = $(VL_UVM) \
         $(ROOT)/Wrapper/adc_apb_wrapper_rev2.v \
         $(ROOT)/FSM/wrapper_control_2.v \
         $(ROOT)/FIFO/fifo_apb_adc.v \
-        $(ROOT)/Dummy/dummy_adc.v $(ROOT)/Dummy/dummy_amux.v $(ROOT)/Dummy/dummy_pll.v \
+        $(ROOT)/ADC/sar_adc.v $(ROOT)/ADC/sar_comp_latch.v \
+        $(ROOT)/../analog/cadence/sar_adc/sarlogic/functional/verilog.v \
+        $(ROOT)/ADC/sim/sky130_fd_sc_hd__nand2_1.v $(ROOT)/ADC/sim/sar_afe_model.v \
+        $(ROOT)/Dummy/dummy_amux.v $(ROOT)/Dummy/dummy_pll.v \
         $(ROOT)/RTC/rtc_control_2.v $(RTC_FILES) \
         ../../cov/fifo_cov.sv ../../cov/fsm_cov.sv ../../cov/rtc_cov.sv ../../cov/wrapper_cov.sv
 
 .PHONY: all build run report clean
+
+# build -> run -> report must stay in order: verilator_1core.mk exports
+# MAKEFLAGS=-j$(JOBS), so with JOBS>1 `run` would otherwise start alongside
+# `build` and execute the PREVIOUS binary. (Verilator's own C++ compile in
+# obj_dir still uses JOBS.)
+.NOTPARALLEL:
 
 all: build run report
 
