@@ -1,4 +1,4 @@
-time,sample(vout VAR("t0") VAR("t1") "linear" ((VAR("t1") - VAR("t0")) / VAR("Nfft")))
+time,sample(vout VAR("t0") (VAR("t1") - tstep) "linear" tstep)
 41.50E-6,639.8E-3
 51.50E-6,907.0E-3
 61.50E-6,1.132
@@ -1023,4 +1023,3 @@ time,sample(vout VAR("t0") VAR("t1") "linear" ((VAR("t1") - VAR("t0")) / VAR("Nf
 10.25E-3,-260.2E-3
 10.26E-3,49.22E-3
 10.27E-3,344.5E-3
-10.28E-3,639.8E-3
