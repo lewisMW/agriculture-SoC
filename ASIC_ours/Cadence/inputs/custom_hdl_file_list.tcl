@@ -1,0 +1,1 @@
+read_hdl $env(SOCLABS_PROJECT_DIR)/../ASIC_ours/nanosoc_chip_pads/simple_por_stub.v

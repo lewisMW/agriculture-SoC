@@ -1,0 +1,289 @@
+
+Power Net Detected:
+        Voltage	    Name
+             0V	    VSSIO
+             0V	    VSS
+           1.6V	    VDDIO
+           1.6V	    VDD
+Using Power View: default_analysis_view_setup.
+AAE_INFO: opIsDesignInPostRouteState() is 1
+AAE_INFO: resetNetProps viewIdx 0 
+Starting SI iteration 1 using Infinite Timing Windows
+#################################################################################
+# Design Stage: PostRoute
+# Design Name: nanosoc_chip_pads
+# Design Mode: 130nm
+# Analysis Mode: MMMC OCV 
+# Parasitics Mode: SPEF/RCDB 
+# Signoff Settings: SI On 
+#################################################################################
+Start delay calculation (fullDC) (8 T). (MEM=4853.07)
+**WARN: (IMPMSMV-1575):	Failed to find the ENABLE_H term effective power domain by the related P/G pin nets (VDDIO,VSS). Use the PD_TOP power domain instead.
+Type 'man IMPMSMV-1575' for more detail.
+**WARN: (IMPMSMV-1575):	Failed to find the ENABLE_H term effective power domain by the related P/G pin nets (VDDIO,VSS). Use the PD_TOP power domain instead.
+Type 'man IMPMSMV-1575' for more detail.
+Total number of fetched objects 75883
+AAE_INFO: Total number of nets for which stage creation was skipped for all views 0
+AAE_INFO-618: Total number of nets in the design is 77604,  97.8 percent of the nets selected for SI analysis
+End delay calculation. (MEM=4876.95 CPU=0:00:18.4 REAL=0:00:03.0)
+End delay calculation (fullDC). (MEM=4876.95 CPU=0:00:19.2 REAL=0:00:03.0)
+Loading CTE timing window with TwFlowType 0...(CPU = 0:00:00.0, REAL = 0:00:00.0, MEM = 4876.9M)
+Add other clocks and setupCteToAAEClockMapping during iter 1
+Loading CTE timing window is completed (CPU = 0:00:00.3, REAL = 0:00:01.0, MEM = 4876.9M)
+Starting SI iteration 2
+Start delay calculation (fullDC) (8 T). (MEM=4523.18)
+Glitch Analysis: View default_analysis_view_setup -- Total Number of Nets Skipped = 0. 
+Glitch Analysis: View default_analysis_view_setup -- Total Number of Nets Analyzed = 75883. 
+Total number of fetched objects 75883
+AAE_INFO: Total number of nets for which stage creation was skipped for all views 0
+AAE_INFO-618: Total number of nets in the design is 77604,  45.7 percent of the nets selected for SI analysis
+End delay calculation. (MEM=4925.51 CPU=0:00:23.7 REAL=0:00:03.0)
+End delay calculation (fullDC). (MEM=4925.51 CPU=0:00:23.8 REAL=0:00:03.0)
+Load RC corner of view default_analysis_view_setup
+
+Begin Power Analysis
+
+             0V	    VSSIO
+             0V	    VSS
+           1.6V	    VDDIO
+           1.6V	    VDD
+
+Begin Processing Timing Library for Power Calculation
+
+Begin Processing Timing Library for Power Calculation
+
+
+
+Begin Processing Power Net/Grid for Power Calculation
+
+Ended Processing Power Net/Grid for Power Calculation: (cpu=0:00:00, real=0:00:00, mem(process/total/peak)=3971.02MB/6117.23MB/4607.12MB)
+
+Begin Processing Timing Window Data for Power Calculation
+
+clk(33.3333MHz) CK: assigning clock clk to net CLK
+swdclk(8.33333MHz) CK: assigning clock swdclk to net SWDCK
+Ended Processing Timing Window Data for Power Calculation: (cpu=0:00:00, real=0:00:00, mem(process/total/peak)=3984.77MB/6117.23MB/4607.12MB)
+
+Begin Processing User Attributes
+
+Ended Processing User Attributes: (cpu=0:00:00, real=0:00:00, mem(process/total/peak)=3985.27MB/6117.23MB/4607.12MB)
+
+Begin Processing Signal Activity
+
+
+Starting Levelizing
+2026-Sep-01 12:00:25 (2026-Sep-01 02:00:25 GMT)
+2026-Sep-01 12:00:25 (2026-Sep-01 02:00:25 GMT): 10%
+2026-Sep-01 12:00:25 (2026-Sep-01 02:00:25 GMT): 20%
+2026-Sep-01 12:00:25 (2026-Sep-01 02:00:25 GMT): 30%
+2026-Sep-01 12:00:25 (2026-Sep-01 02:00:25 GMT): 40%
+2026-Sep-01 12:00:25 (2026-Sep-01 02:00:25 GMT): 50%
+2026-Sep-01 12:00:25 (2026-Sep-01 02:00:25 GMT): 60%
+2026-Sep-01 12:00:25 (2026-Sep-01 02:00:25 GMT): 70%
+2026-Sep-01 12:00:25 (2026-Sep-01 02:00:25 GMT): 80%
+2026-Sep-01 12:00:25 (2026-Sep-01 02:00:25 GMT): 90%
+
+Finished Levelizing
+2026-Sep-01 12:00:25 (2026-Sep-01 02:00:25 GMT)
+
+Starting Activity Propagation
+2026-Sep-01 12:00:25 (2026-Sep-01 02:00:25 GMT)
+2026-Sep-01 12:00:26 (2026-Sep-01 02:00:26 GMT): 10%
+2026-Sep-01 12:00:26 (2026-Sep-01 02:00:26 GMT): 20%
+2026-Sep-01 12:00:26 (2026-Sep-01 02:00:26 GMT): 30%
+
+Finished Activity Propagation
+2026-Sep-01 12:00:26 (2026-Sep-01 02:00:26 GMT)
+Ended Processing Signal Activity: (cpu=0:00:01, real=0:00:01, mem(process/total/peak)=3999.02MB/6117.23MB/4607.12MB)
+
+Begin Power Computation
+
+      ----------------------------------------------------------
+      # of cell(s) missing both power/leakage table: 0
+      # of cell(s) missing power table: 4
+      # of cell(s) missing leakage table: 0
+      ----------------------------------------------------------
+CellName                                  Missing Table(s)
+sky130_ef_io__vccd_lvc_clamped_pad        internal power, 
+sky130_ef_io__vddio_hvc_clamped_pad       internal power, 
+sky130_ef_io__vssd_lvc_clamped_pad        internal power, 
+sky130_ef_io__vssio_hvc_clamped_pad       internal power, 
+
+
+** WARN:  (VOLTUS_POWR-3401): Leakage Power table for pg_pins VDDA VSWITCH VDDIO VDDIO_Q VCCD VCCHIB not present in library of cell sky130_ef_io__vccd_lvc_clamped_pad.
+
+** WARN:  (VOLTUS_POWR-3401): Leakage Power table for pg_pins VDDA VSWITCH VDDIO VDDIO_Q VCCD VCCHIB not present in library of cell sky130_ef_io__vssio_hvc_clamped_pad.
+
+** WARN:  (VOLTUS_POWR-3401): Leakage Power table for pg_pins VCCD VCCHIB VDDA VDDIO VDDIO_Q VSWITCH not present in library of cell sky130_ef_io__vssd_lvc_clamped_pad.
+
+** WARN:  (VOLTUS_POWR-3401): Leakage Power table for pg_pins VDDA VSWITCH VDDIO VDDIO_Q VCCD VCCHIB not present in library of cell sky130_ef_io__vddio_hvc_clamped_pad.
+
+** WARN:  (VOLTUS_POWR-3401): Leakage Power table for pg_pins VDDA VDDIO_Q VSWITCH VDDIO VCCD VCCHIB not present in library of cell sky130_ef_io__gpiov2_pad_wrapped.
+
+
+Starting Calculating power
+2026-Sep-01 12:00:26 (2026-Sep-01 02:00:26 GMT)
+  Cannot locate supply power rail for net 'FE_PSBN12792_FE_OFN412_n_11398'
+of instance FE_PSBC1307_FE_OFN412_n_11398
+  Cannot locate supply power rail for net
+'FE_PSBN12791_FE_PHN51579_FE_OFN1286_u_nanosoc_chip_P1_OUTEN_5' of instance
+FE_PSBC1306_FE_PHN51579_FE_OFN1286_u_nanosoc_chip_P1_OUTEN_5
+  Cannot locate supply power rail for net 'FE_PSBN12790_FE_PHN33381_n_9902'
+of instance FE_PSBC1305_FE_PHN33381_n_9902
+  Cannot locate supply power rail for net
+'FE_PSBN12789_FE_OFN1019_u_nanosoc_chip_u_system_u_ss_cpu_u_cpu_0_u_slcorem0_integration_u_cortexm0_u_top_u_sys_u_core_u_gpr_rb_data_hi_28'
+of instance
+FE_PSBC1304_FE_OFN1019_u_nanosoc_chip_u_system_u_ss_cpu_u_cpu_0_u_slcorem0_integration_u_cortexm0_u_top_u_sys_u_core_u_gpr_rb_data_hi_28
+  Cannot locate supply power rail for net 'FE_PSBN12788_FE_PDN166_n_9904'
+of instance FE_PSBC1303_FE_PDN166_n_9904
+  only first five unconnected nets are listed...
+2026-Sep-01 12:00:27 (2026-Sep-01 02:00:27 GMT): 10%
+2026-Sep-01 12:00:27 (2026-Sep-01 02:00:27 GMT): 20%
+2026-Sep-01 12:00:27 (2026-Sep-01 02:00:27 GMT): 30%
+2026-Sep-01 12:00:27 (2026-Sep-01 02:00:27 GMT): 40%
+2026-Sep-01 12:00:27 (2026-Sep-01 02:00:27 GMT): 50%
+2026-Sep-01 12:00:27 (2026-Sep-01 02:00:27 GMT): 60%
+2026-Sep-01 12:00:27 (2026-Sep-01 02:00:27 GMT): 70%
+2026-Sep-01 12:00:27 (2026-Sep-01 02:00:27 GMT): 80%
+2026-Sep-01 12:00:27 (2026-Sep-01 02:00:27 GMT): 90%
+
+Finished Calculating power
+2026-Sep-01 12:00:27 (2026-Sep-01 02:00:27 GMT)
+      # of MSMV cell(s) missing power_level: 0
+Ended Power Computation: (cpu=0:00:02, real=0:00:01, mem(process/total/peak)=4023.77MB/6205.26MB/4607.12MB)
+
+Begin Processing User Attributes
+
+Begin Processing set_power
+Ended Processing set_power: (cpu=0:00:00, real=0:00:00,
+mem(process/total/peak)=4024.02MB/6205.26MB/4607.12MB)
+Ended Processing User Attributes: (cpu=0:00:00, real=0:00:00, mem(process/total/peak)=4024.02MB/6205.26MB/4607.12MB)
+
+Ended Power Analysis: (cpu=0:00:04, real=0:00:03, mem(process/total/peak)=4024.02MB/6205.26MB/4607.12MB)
+
+Begin Boundary Leakage Calculation
+Ended Boundary Leakage Calculation: (cpu=0:00:00, real=0:00:00,
+mem(process/total/peak)=4024.02MB/6205.26MB/4607.12MB)
+Begin Static Power Report Generation
+*----------------------------------------------------------------------------------------
+*	Innovus 22.10-p001_1 (64bit) 09/29/2022 11:03 (Linux 3.10.0-693.el7.x86_64)
+*	
+*
+* 	Date & Time:	2026-Sep-01 12:00:28 (2026-Sep-01 02:00:28 GMT)
+*
+*----------------------------------------------------------------------------------------
+*
+*	Design: nanosoc_chip_pads
+*
+*	Liberty Libraries used:
+*	        default_analysis_view_setup: /home/lewis/pr112-repro/ASIC_ours/Cadence/scripts/nanosoc_chip_pads/libs/mmmc/sky130_fd_sc_hd__ss_100C_1v60.lib
+*	        default_analysis_view_setup: /home/lewis/pr112-repro/ASIC_ours/Cadence/scripts/nanosoc_chip_pads/libs/mmmc/sky130_sram_8kbyte_1rw_32x2048_8_SS_1p8V_25C.lib
+*	        default_analysis_view_setup: /home/lewis/pr112-repro/ASIC_ours/Cadence/scripts/nanosoc_chip_pads/libs/mmmc/sky130_ef_io__gpiov2_pad_wrapped_ss_ss_100C_1v60_3v00.lib
+*	        default_analysis_view_setup: /home/lewis/pr112-repro/ASIC_ours/Cadence/scripts/nanosoc_chip_pads/libs/mmmc/sky130_ef_io__vccd_lvc_clamped3_pad_ss_100C_1v60_3v00_3v00.lib
+*	        default_analysis_view_setup: /home/lewis/pr112-repro/ASIC_ours/Cadence/scripts/nanosoc_chip_pads/libs/mmmc/sky130_ef_io__vccd_lvc_clamped_pad_ss_100C_1v60_3v00_3v00.lib
+*	        default_analysis_view_setup: /home/lewis/pr112-repro/ASIC_ours/Cadence/scripts/nanosoc_chip_pads/libs/mmmc/sky130_ef_io__vdda_hvc_clamped_pad_ss_100C_1v60_3v00_3v00.lib
+*	        default_analysis_view_setup: /home/lewis/pr112-repro/ASIC_ours/Cadence/scripts/nanosoc_chip_pads/libs/mmmc/sky130_ef_io__vddio_hvc_clamped_pad_ss_100C_1v60_3v00_3v00.lib
+*	        default_analysis_view_setup: /home/lewis/pr112-repro/ASIC_ours/Cadence/scripts/nanosoc_chip_pads/libs/mmmc/sky130_ef_io__vssa_hvc_clamped_pad_ss_100C_1v60_3v00_3v00.lib
+*	        default_analysis_view_setup: /home/lewis/pr112-repro/ASIC_ours/Cadence/scripts/nanosoc_chip_pads/libs/mmmc/sky130_ef_io__vssd_lvc_clamped3_pad_ss_100C_1v60_3v00.lib
+*	        default_analysis_view_setup: /home/lewis/pr112-repro/ASIC_ours/Cadence/scripts/nanosoc_chip_pads/libs/mmmc/sky130_ef_io__vssd_lvc_clamped_pad_ss_100C_1v60_3v00.lib
+*	        default_analysis_view_setup: /home/lewis/pr112-repro/ASIC_ours/Cadence/scripts/nanosoc_chip_pads/libs/mmmc/sky130_ef_io__vssio_hvc_clamped_pad_ss_100C_1v60_3v00_3v00.lib
+*
+*	Parasitic Files used:
+*
+*       Power View : default_analysis_view_setup
+*
+*       User-Defined Activity : N.A.
+*
+*       Activity File: N.A.
+*
+*       Hierarchical Global Activity: N.A.
+*
+*       Global Activity: N.A.
+*
+*       Sequential Element Activity: 0.200000
+*
+*       Primary Input Activity: 0.200000
+*
+*       Default icg ratio: N.A.
+*
+*       Global Comb ClockGate Ratio: N.A.
+*
+*	Power Units = 1mW
+*
+*	Time Units = 1e-09 secs
+*
+*       report_power
+*
+-----------------------------------------------------------------------------------------
+*
+
+
+
+Total Power
+-----------------------------------------------------------------------------------------
+Total Internal Power:    96898184022.52555847 	  100.0000%
+Total Switching Power:      12.63176161 	    0.0000%
+Total Leakage Power:         0.74806486 	    0.0000%
+Total Power:             96898184035.91140747
+-----------------------------------------------------------------------------------------
+
+
+Group                           Internal   Switching     Leakage       Total  Percentage 
+                                Power      Power         Power         Power  (%)        
+-----------------------------------------------------------------------------------------
+Sequential                         5.411      0.7723     0.09138       6.275   6.476e-09
+Macro                           9.69e+10      0.6231      0.2963    9.69e+10         100
+IO                                     0           0           0           0           0
+Combinational                      7.666       9.672      0.3589        17.7   1.826e-08
+Clock (Combinational)             0.3745       1.564    0.001482        1.94   2.002e-09
+Clock (Sequential)                     0           0           0           0           0
+-----------------------------------------------------------------------------------------
+Total                           9.69e+10       12.63      0.7481    9.69e+10         100
+-----------------------------------------------------------------------------------------
+
+
+Rail                  Voltage   Internal   Switching     Leakage       Total  Percentage 
+                                Power      Power         Power         Power  (%)        
+-----------------------------------------------------------------------------------------
+VDDIO                     1.6      9.082      0.6108     0.02445       9.717   1.003e-08
+Default                   1.6      7.356       9.531      0.3109        17.2   1.775e-08
+VDD                       1.6   9.69e+10        2.49      0.4127    9.69e+10         100
+
+
+Clock                           Internal   Switching     Leakage       Total  Percentage 
+                                Power      Power         Power         Power  (%)        
+-----------------------------------------------------------------------------------------
+swdclk                            0.0989     0.04332   0.0006342      0.1429   1.474e-10
+clk                               0.7547        1.67    0.002019       2.427   2.505e-09
+-----------------------------------------------------------------------------------------
+Total                             0.8536       1.714    0.002653        2.57   2.652e-09
+-----------------------------------------------------------------------------------------
+Clock: swdclk
+Clock Period: 0.120000 usec 
+Clock Toggle Rate:    16.6667 Mhz 
+Clock Static Probability:  0.5000
+  
+Clock: clk
+Clock Period: 0.030000 usec 
+Clock Toggle Rate:    66.6667 Mhz 
+Clock Static Probability:  0.5000
+  
+ 
+ 
+-----------------------------------------------------------------------------------------
+*	Power Distribution Summary: 
+*              Highest Average Power: u_nanosoc_chip_u_system_u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram (sky130_sram_8kbyte_1rw_32x2048_8):        2.422e+10
+*              Highest Leakage Power: u_nanosoc_chip_u_system_u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram (sky130_sram_8kbyte_1rw_32x2048_8):          0.06793
+*                Total Cap:      1.25609e-09 F
+*                Total instances in design: 74574
+*                Total instances in design with no power:     0
+*                Total instances in design with no activty:     0
+
+*                Total Fillers and Decap:     0
+-----------------------------------------------------------------------------------------
+ 
+** INFO:  (VOLTUS_POWR-3465): There are 0 decaps and 0 fillers in the design
+
+Ended Static Power Report Generation: (cpu=0:00:00, real=0:00:00,
+mem(process/total/peak)=4048.77MB/6205.26MB/4607.12MB)
+

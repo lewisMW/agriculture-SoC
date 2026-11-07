@@ -48,14 +48,19 @@ if {[info exists top_routing_layer]} {
     set_db design_top_routing_layer $top_routing_layer
 }
 
-read_power_intent -cpf $OUT_DIR/${block_name}_gate1.cpf
+#read_power_intent -cpf $OUT_DIR/${block_name}_gate1.cpf
+read_power_intent -1801 $OUT_DIR/${block_name}_gate.upf
 
 commit_power_intent
 
 set_db design_process_node $process_node
 
+write_db ${block_name}_prefloorplan
+
 source ../scripts/floorplan.tcl
 source ../scripts/power_plan.tcl
+
+write_db ${block_name}_preplace
 
 source $env(SOCLABS_ASIC_FLOW_DIR)/Cadence/procs.tcl
 
@@ -74,7 +79,9 @@ report_end_step 01_place $REPORT_DIR
 
 source ../scripts/postplace.tcl
 
-write_db $block_name
+## -- 3_pnr_clock.tcl reads ${block_name}_place (and writes _cts, which
+## -- 4_pnr_route.tcl reads); writing $block_name here left CTS nothing to load.
+write_db ${block_name}_place
 
 exit
 
