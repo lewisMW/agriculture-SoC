@@ -42,28 +42,26 @@ module nanosoc_chip_pads (
   // package pins
   //----------------------------------
   // corresponds to # of pad cells instantiated, see below
-  inout  wire          VCCD_PAD,
+  inout  wire          VCCD_PAD0,
   inout  wire          VCCD_PAD1,
   inout  wire          VCCD_PAD2,
-  inout  wire          VSSD_PAD,
+  inout  wire          VSSD_PAD0,
   inout  wire          VSSD_PAD1,
   inout  wire          VSSD_PAD2,
 
-  inout  wire          VDDIO_PAD,
+  inout  wire          VDDIO_PAD0,
   inout  wire          VDDIO_PAD1,
-  inout  wire          VSSIO_PAD,
+  inout  wire          VSSIO_PAD0,
   inout  wire          VSSIO_PAD1,
-  inout  wire          VDDIO_Q_PAD,
+  inout  wire          VDDIO_Q_PAD0,
   inout  wire          VDDIO_Q_PAD1,
   inout  wire          VSSIO_Q_PAD,
   inout  wire          VSSIO_Q_PAD1,
 
-  inout  wire          VDDA_PAD,
+  inout  wire          VDDA_PAD0,
   inout  wire          VDDA_PAD1,
-  inout  wire          VDDA_PAD2,
-  inout  wire          VSSA_PAD,
+  inout  wire          VSSA_PAD0,
   inout  wire          VSSA_PAD1,
-  inout  wire          VSSA_PAD2,
 
   // SAR ADC analog inputs (sky130_ef_io__analog_pad), straight to the sar_afe
   // macro's vinp/vinn with no cell in between
@@ -278,6 +276,22 @@ nanosoc_chip_cfg #(
  // IOs
  // --------------------------------------------------------------------------------
 
+ /**
+  * GPIO: 16 * 2 ports = 32 cells
+  * Power:
+  *  VDD/VSS: 3 * 2 = 6 cells
+  *  VDDIO/VSSIO: 2 * 2 = 6 cells
+  *  VDDIO_Q/VSSIO_Q: 2 * 2 = 4 cells
+  *  VDDA/VSSA: 2 * 2 = 4 cells
+  *  VREF: 1 cell
+  *  analog pads: 2 cells
+  *  VREFCAP: 1 cell
+  *  NRST: 1 cell
+  *  PWRDET: 1 cell - is this enough for all of the ENABLE_H?? probably...
+  *  SE/SWDCK/SWDIO/CLK/TEST: 5 cells
+  *  total: 63 cells
+  */
+
  // power supplies
  // receive external power from their pads (<net>_PAD)
  // and allows it to be used on power ring.
@@ -314,7 +328,7 @@ nanosoc_chip_cfg #(
 // Core power supplies
 sky130_ef_io__vccd_lvc_clamped_pad uPAD_VDD_0(
    `POWER_PINS_VIO_STD
-   .VCCD_PAD(VCCD_PAD)
+   .VCCD_PAD(VCCD_PAD0)
    );
 sky130_ef_io__vccd_lvc_clamped_pad uPAD_VDD_1(
    `POWER_PINS_VIO_STD
@@ -326,7 +340,7 @@ sky130_ef_io__vccd_lvc_clamped_pad uPAD_VDD_2(
    );
 sky130_ef_io__vssd_lvc_clamped_pad uPAD_VSS_0(
    `POWER_PINS_VIO_STD
-   .VSSD_PAD(VSSD_PAD)
+   .VSSD_PAD(VSSD_PAD0)
    );
 sky130_ef_io__vssd_lvc_clamped_pad uPAD_VSS_1(
    `POWER_PINS_VIO_STD
@@ -340,24 +354,33 @@ sky130_ef_io__vssd_lvc_clamped_pad uPAD_VSS_2(
 // Pad IO power supplies
 sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIO_0(
    `POWER_PINS_VIO_STD
-   .VDDIO_PAD(VDDIO_PAD)
+   .VDDIO_PAD(VDDIO_PAD0)
    );
 sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIO_1(
    `POWER_PINS_VIO_STD
    .VDDIO_PAD(VDDIO_PAD1)
    );
+sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIO_2(
+   `POWER_PINS_VIO_STD
+   .VDDIO_PAD(VDDIO_PAD2)
+   );
 sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_0(
    `POWER_PINS_VIO_STD
-   .VSSIO_PAD(VSSIO_PAD)
+   .VSSIO_PAD(VSSIO_PAD0)
    );
 sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_1(
    `POWER_PINS_VIO_STD
    .VSSIO_PAD(VSSIO_PAD1)
    );
+sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_2(
+   `POWER_PINS_VIO_STD
+   .VSSIO_PAD(VSSIO_PAD2)
+   );
 
 // Pad IO quiet power supplies
 // need to make sure their power pin is connected to <power>_Q
 // when specifying power
+// TODO this doesn't quite work yet.
 sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIOQ_0(
    `POWER_PINS_VIO_VDDIO_Q
    .VDDIO_PAD(VDDIO_Q_PAD)
@@ -384,10 +407,6 @@ sky130_ef_io__vdda_hvc_clamped_pad uPAD_VDDA_1(
    `POWER_PINS_VIO_STD
    .VDDA_PAD(VDDA_PAD1)
    );
-sky130_ef_io__vdda_hvc_clamped_pad uPAD_VDDA_2(
-   `POWER_PINS_VIO_STD
-   .VDDA_PAD(VDDA_PAD2)
-   );
 sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_0(
    `POWER_PINS_VIO_STD
    .VSSA_PAD(VSSA_PAD)
@@ -395,10 +414,6 @@ sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_0(
 sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_1(
    `POWER_PINS_VIO_STD
    .VSSA_PAD(VSSA_PAD1)
-   );
-sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_2(
-   `POWER_PINS_VIO_STD
-   .VSSA_PAD(VSSA_PAD2)
    );
 
 // Clock, Reset and Serial Wire Debug ports
@@ -412,6 +427,24 @@ sky130_ef_io__gpiov2_pad_wrapped uPAD_SE_I (
     .PAD(SE)
    );
 
+// scan pins. TODO I might need to set them up differently??
+sky130_ef_io__gpiov2_pad_wrapped uPAD_SWDIO_IO (
+    `POWER_PINS_VIO_STD
+    .INP_DIS(~pad_swdio_z),
+    .IN(pad_swdio_i),
+    .OUT(pad_swdio_o),
+    .OE_N(pad_swdio_z),
+    .PAD(SWDIO)
+   );
+
+sky130_ef_io__gpiov2_pad_wrapped uPAD_SWDCK_I (
+    `POWER_PINS_VIO_STD
+    .INP_DIS(~tiehi),
+    .IN(pad_swdclk_i),
+    .OUT(tielo),
+    .OE_N(tiehi),
+    .PAD(SWDCK)
+   );
 
 sky130_ef_io__gpiov2_pad_wrapped uPAD_CLK_I (
     `POWER_PINS_VIO_STD
@@ -543,25 +576,6 @@ sky130_fd_io__top_vrefcapv2 uPAD_ADC_VREF_CAP (
    .cpos(ADC_VREF),
    .cneg(VSSIO_Q)
 );
-
-// scan pins. TODO I might need to set them up differently??
-sky130_ef_io__gpiov2_pad_wrapped uPAD_SWDIO_IO (
-    `POWER_PINS_VIO_STD
-    .INP_DIS(~pad_swdio_z),
-    .IN(pad_swdio_i),
-    .OUT(pad_swdio_o),
-    .OE_N(pad_swdio_z),
-    .PAD(SWDIO)
-   );
-
-sky130_ef_io__gpiov2_pad_wrapped uPAD_SWDCK_I (
-    `POWER_PINS_VIO_STD
-    .INP_DIS(~tiehi),
-    .IN(pad_swdclk_i),
-    .OUT(tielo),
-    .OE_N(tiehi),
-    .PAD(SWDCK)
-   );
 
 // GPI.I Port 0 x 16
 `define DIGITAL_IO_PIN(PORT, IDX) \
