@@ -24,7 +24,7 @@ set_db place_global_uniform_density false
 set_db place_design_floorplan_mode false 
 
 ### lower density for less congestion
-set_db place_global_max_density 0.03
+set_db place_global_max_density 0.6
 set_db opt_max_density 0.3
 
 ### Timing Analysis Type 

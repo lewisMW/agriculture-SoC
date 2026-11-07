@@ -37,6 +37,7 @@ set_clock_uncertainty -setup $INTER_CLOCK_UNCERTAINTY -rise_from [get_clocks $EX
 ### (setup_env.sh sources it), so any session that reads this SDC, read_db of a
 ### saved database included, needs that environment.
 source $::env(ACCELERATOR_DIR)/ADC/sar_adc.sdc
+set_dont_touch u_por
 
 ### Multicycle path through asynchronous clock domains
 set_multicycle_path 2 -setup -end -from SWDCK -to CLK

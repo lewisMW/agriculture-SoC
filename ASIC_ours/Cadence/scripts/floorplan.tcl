@@ -48,20 +48,8 @@
 # -no_snap_to_grid keeps the boxes exactly as given; the core box is the one Innovus
 # snapped to the rows and tracks itself.
 
-#create_group -name LEVEL_SHIFTERS -rects {261.105 3700.965 3181.185 3780.965}
-#update_group -name LEVEL_SHIFTERS -objs [get_cells LS*] -add
-
 #create_floorplan -site unithd -no_snap_to_grid -box_size {0 0 3442 4042  197.965 197.965 3244.035 3844.035  261.105 260.945 3181.185 3780.965}
 create_floorplan -no_snap_to_grid -box_size {0 0 3442 4042  197.965 197.965 3244.035 3844.035  261.105 260.945 3181.185 3780.965}
-
-# need to make for 2 sites, and have to do so manually because their sizes don't match up
-delete_row -all
-
-create_row -site unithd -area {261.105 260.945 3181.185 3700.965}
-#split_row -area {261.105 3700.965 3181.185 3780.965}
-create_row -site unithvdbl -area {261.105 3700.965 3181.185 3780.965}
-
-
 
 
 read_io_file ../scripts/nanosoc_io_plan.io
@@ -82,6 +70,10 @@ create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top
 create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram
 create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system_u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
 create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system_u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram
+
+create_relative_floorplan -ref_type core_boundary -orient R0 -horizontal_edge_separate {1 -50 1} -vertical_edge_separate {2 -50 2} -place u_por
+create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_por
+create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer -insts u_por
 
 snap_floorplan -all
 

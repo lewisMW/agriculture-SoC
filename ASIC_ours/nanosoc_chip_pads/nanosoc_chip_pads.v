@@ -464,7 +464,17 @@ sky130_fd_io__top_xres4v2 uPAD_NRST_I (
 // I only need one I think?
 // XRES (vddio) -> reset (vdd)
 // 
-wire pwrdet_tie_lo_esd;
+// TODO I have the power detector already... I might not need to use this
+wire rst_por_hv_n;
+sky130_ef_ip__simple_por u_por (
+   .vdd3v3(VDDIO_Q),
+   .vss3v3(VSSIO_Q),
+   .vdd1v8(VDD),
+   .vss1v8(VSS),
+   .porb_h(rst_por_hv_n),
+   .porb_l(),
+   .por_l()
+);
 sky130_fd_io__top_pwrdetv2 uPAD_PWRDET (
    .vddd2(VDD),
    .vddd1(VDD),
@@ -478,7 +488,7 @@ sky130_fd_io__top_pwrdetv2 uPAD_PWRDET (
    .in3_vddio_hv(),
    // The rst_por_hv_n pin should be hooked up to the rst_por_hv_n coming from the SRSS IP for proper functionality.
    // TODO this part is not ready yet.
-   .rst_por_hv_n(pwrdet_tie_lo_esd),
+   .rst_por_hv_n(rst_por_hv_n),
    .in1_vddd_hv(),
    .in2_vddd_hv(),
    .in3_vddd_hv(),
@@ -495,13 +505,13 @@ sky130_fd_io__top_pwrdetv2 uPAD_PWRDET (
    .out1_vddio_hv(),
    .out2_vddio_hv(),
    .out3_vddio_hv(),
-   .tie_lo_esd(pwrdet_tie_lo_esd),
+   .tie_lo_esd()
 );
 
 sky130_fd_io__top_gpiovrefv2 uPAD_ADC_VREF_GEN (
    // this is annoying, the pinnames are lower case
    .vccd(VDD),
-   .vssa(VSS),
+   .vssd(VSS),
    .vdda(VDDA),
    .vssa(VSSA),
    .vcchib(VCCHIB),
@@ -516,12 +526,12 @@ sky130_fd_io__top_gpiovrefv2 uPAD_ADC_VREF_GEN (
    .enable_h(por_h_io),
    .hld_h_n(por_h_io),
    .vrefgen_en(1'b1),
-   .vinref(ADC_VREF),
+   .vinref(ADC_VREF)
 );
 
 sky130_fd_io__top_vrefcapv2 uPAD_ADC_VREF_CAP (
    .vccd(VDD),
-   .vssa(VSS),
+   .vssd(VSS),
    .vdda(VDDA),
    .vssa(VSSA),
    .vcchib(VCCHIB),
