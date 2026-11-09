@@ -83,7 +83,6 @@ add_rings -nets {VDD VSS} -type core_rings -follow core -layer {top 6 bottom 6 l
 # shorts in the IO ring (first run with fillers).
 #route_special -connect {pad_pin pad_ring} -layer_change_range { met1 met5 } -block_pin_target nearest_target -pad_pin_port_connect {all_port all_geom} -pad_pin_target nearest_target -allow_jogging 1 -crossover_via_layer_range { met1 met5 } -nets { VDD VSS VDDIO VSSIO } -allow_layer_change 1 -pad_pin_width 6 -target_via_layer_range { met1 met5 }
 
-# TODO I likely need the VDDIO VSSIO rings
 
 ### SAR ADC macro: a block ring of VDD, VSS and VDDA around it, as in the macro's
 ### Innovus check (analog/cadence/pv/macro/innovus_smoke/smoke.tcl). Its supply straps
@@ -93,7 +92,13 @@ add_rings -nets {VDD VSS} -type core_rings -follow core -layer {top 6 bottom 6 l
 ### the macro and the core edge (floorplan.tcl).
 deselect_obj -all
 select_obj [get_db insts $sar_afe_name]
-add_rings -nets {VDD VSS VDDA} -type block_rings -around selected -layer {top met5 bottom met5 left met4 right met4} -width 2 -spacing 2 -offset 2
+add_rings -nets {ADC_VREF VDD VSSA VDDA} -type block_rings -around selected -layer {top met5 bottom met5 left met4 right met4} -width 2 -spacing 2 -offset 2
+
+# ring for POR and power detector
+deselect_obj -all
+select_obj [get_db insts [list [get_db [get_cells u_por] .name] [get_db [get_cells uPAD_PWRDET] .name]]]
+# cluster generates 1 ring only
+add_rings -nets {VDDIO_Q VSSIO_Q} -type block_rings -around cluster -layer {top met5 bottom met5 left met4 right met4} -width 2 -spacing 2 -offset 2
 deselect_obj -all
 
 ### Adding Stripes 
@@ -125,7 +130,9 @@ set_db add_stripes_skip_via_on_wire_shape {  noshape   }
 # met4/met5 stripes then ran straight over the SRAMs, dropping to li1 under their met4
 # obstruction (DEF: "NEW li1 1800 + SHAPE STRIPE" across the SRAM at 2307,1160), where
 # the SRAMs' own li1 shorted VDD to VSS (sign-off LVS of the first ADC chip run).
-set power_stripes_all_macros [ list u_nanosoc_chip_u_system_u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram u_nanosoc_chip_u_system_u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram u_por ]
+#set power_stripes_all_macros [ list u_nanosoc_chip_u_system_u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram u_nanosoc_chip_u_system_u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram u_por ]
+set power_stripes_all_macros [ get_db [get_cells *u_sram -hier] .name ]
+lappend power_stripes_all_macros u_por
 # The ADC macro too: the met4 stripes go around it. Its met4 is obstructed except at
 # its own supply straps, which get their VDD/VSS/VDDA from the block ring above.
 lappend power_stripes_all_macros $sar_afe_name
@@ -294,12 +301,25 @@ proc pad_supply_to_ring {pads pin net shape} {
 # The ADC's VDDA (vdda and vref) from the VDDA pads beside it to its block ring
 # (nanosoc_io_plan.io puts uPAD_VDDA_0 on the left row, uPAD_VDDA_1/2 below the macro).
 pad_supply_to_ring uPAD_VDDA_* VDDA VDDA blockring
+pad_supply_to_ring uPAD_VSSA_* VSSA VSSA blockring
+# don't think this did anything because the vinref pin is not on met3
+pad_supply_to_ring uPAD_ADC_VREF_GEN vinref ADC_VREF blockring
+# but this one connected correctly
+pad_supply_to_ring uPAD_ADC_VREF_CAP cpos ADC_VREF blockring
 # The core supply pads to the core rings.
 pad_supply_to_ring uPAD_VDD_* VCCD VDD ring
 pad_supply_to_ring uPAD_VSS_* VSSD VSS ring
 
 ### SAR ADC macro: its supply straps (use_lef: the LEF pins as drawn) onto its block ring.
-route_special -connect {block_pin} -inst $sar_afe_name -nets {VDD VSS VDDA ADC_VREF} -block_pin use_lef -block_pin_target nearest_target -layer_change_range {met1 met5} -crossover_via_layer_range {met1 met5} -target_via_layer_range {met1 met5} -allow_jogging 1 -allow_layer_change 1
+route_special -connect {block_pin} -inst $sar_afe_name -nets {VDD VSS VDDA ADC_VREF VDDIO_Q VSSIO_Q} -block_pin use_lef -block_pin_target nearest_target -layer_change_range {met1 met5} -crossover_via_layer_range {met1 met5} -target_via_layer_range {met1 met5} -allow_jogging 1 -allow_layer_change 1
+
+# as above, because pad_supply_to_ring didn't quite work, just use route_special
+# NOTE! to make this work, I had to change the vinref lef definition from USE SIGNAL to USE POWER
+# treated as a power pin in my design anyway. doesn't matter
+route_special -connect {pad_pin pad_ring core_pin block_pin} -nets {ADC_VREF} -block_pin use_lef -block_pin_target nearest_target -layer_change_range {met1 met5} -crossover_via_layer_range {met1 met5} -target_via_layer_range {met1 met5} -allow_jogging 1 -allow_layer_change 1
+
+route_special -connect {block_pin} -nets {VDD VSS VDDIO_Q VSSIO_Q} -inst u_por -block_pin use_lef -block_pin_target nearest_target -layer_change_range {met1 met5} -crossover_via_layer_range {met1 met5} -target_via_layer_range {met1 met5} -allow_jogging 1 -allow_layer_change 1
+route_special -connect {block_pin} -nets {VDD VSS VDDIO_Q VSSIO_Q VSSA} -inst uPAD_PWRDET -block_pin use_lef -block_pin_target nearest_target -layer_change_range {met1 met5} -crossover_via_layer_range {met1 met5} -target_via_layer_range {met1 met5} -allow_jogging 1 -allow_layer_change 1
 
 # Followpins only, and their row ends only to rings and stripes (not first_after_row_end):
 # rows ending at an SRAM's halo were run onto its vccd1 ring corner with an M3M4 stack,
@@ -310,6 +330,7 @@ route_special -connect {block_pin} -inst $sar_afe_name -nets {VDD VSS VDDA ADC_V
 # macro halos. The SRAMs get their supply from the met5 stripes, the ADC from its own
 # route_special above.
 route_special -connect {core_pin} -layer_change_range { met1 met5 } -block_pin_target nearest_target -pad_pin_port_connect {all_port one_geom} -pad_pin_target nearest_target -core_pin_target {ring stripe} -floating_stripe_target {block_ring pad_ring ring stripe ring_pin block_pin followpin} -allow_jogging 1 -power_domains { PD_TOP } -crossover_via_layer_range { met1 met5 } -nets { VDD VSS } -allow_layer_change 1 -block_pin use_lef -target_via_layer_range { met1 met5 }
+
 
 ### The SRAMs' ring straps (sram_ring_straps above), now that the followpins are in.
 sram_ring_straps

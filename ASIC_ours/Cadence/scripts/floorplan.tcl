@@ -48,34 +48,53 @@
 # -no_snap_to_grid keeps the boxes exactly as given; the core box is the one Innovus
 # snapped to the rows and tracks itself.
 
-#create_floorplan -site unithd -no_snap_to_grid -box_size {0 0 3442 4042  197.965 197.965 3244.035 3844.035  261.105 260.945 3181.185 3780.965}
-create_floorplan -no_snap_to_grid -box_size {0 0 3442 4042  197.965 197.965 3244.035 3844.035  261.105 260.945 3181.185 3780.965}
+create_floorplan -site unithd -no_snap_to_grid -box_size {0 0 3442 4042 197.965 197.965 3244.035 3844.035  261.105 260.945 3181.185 3780.965}
+# TODO vertical die size is no longer correct
+#create_floorplan -no_snap_to_grid -box_size {0 0 3442 4042  197.965 197.965 3244.035 3844.035  261.105 260.945 3181.185 3780.965}
+
+#set_db floorplan_snap_all_corners_to_grid true
+#create_floorplan -box_size {0 0 3442 4041.992  197.965 197.965 3244.035 3844.035  261.105 260.945 3181.185 3780.965}
+#create_floorplan -box_size {0.05 0.05 3442 4041.992  197.965 197.965 3244.035 3844.035  261.105 260.945 3181.185 3780.965}
 
 
 read_io_file ../scripts/nanosoc_io_plan.io
 
+#snap_floorplan -all
+
+set core_bbox [get_db current_design .core_bbox]
+set sram_x [expr {0.46 * 326}]
+set sram_y [expr {0.68 * 367}]
+
+
 # these are for the SRAMS. I don't think I need to further touch this
-create_relative_floorplan -ref_type core_boundary -orient R90 -horizontal_edge_separate {1  -150  1} -vertical_edge_separate {0  150  0} -place u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
-create_relative_floorplan -ref_type object -orient R90 -horizontal_edge_separate {3  -250  1} -vertical_edge_separate {3  0  3} -place u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram -ref u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
+create_relative_floorplan -ref_type core_boundary -orient R90 -horizontal_edge_separate {1  -249.9  1} -vertical_edge_separate {0  149.96  0} -place u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
+create_relative_floorplan -ref_type object -orient R90 -horizontal_edge_separate {3  -249.56  1} -vertical_edge_separate {3  0  3} -place u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram -ref u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
 
-create_relative_floorplan -ref_type core_boundary -orient R270 -horizontal_edge_separate {1  -150  1} -vertical_edge_separate {2  -150  2} -place u_nanosoc_chip_u_system_u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
-create_relative_floorplan -ref_type object -orient R270 -horizontal_edge_separate {3  -250  1} -vertical_edge_separate {3  0  3} -place u_nanosoc_chip_u_system_u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram -ref u_nanosoc_chip_u_system_u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
+create_relative_floorplan -ref_type core_boundary -orient R270 -horizontal_edge_separate {1  -249.9  1} -vertical_edge_separate {2  -149.96  2} -place u_nanosoc_chip_u_system/u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
+create_relative_floorplan -ref_type object -orient R270 -horizontal_edge_separate {3  -249.56  1} -vertical_edge_separate {3  0  3} -place u_nanosoc_chip_u_system/u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram -ref u_nanosoc_chip_u_system/u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
 
-create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
-create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram
-create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_nanosoc_chip_u_system_u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
-create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_nanosoc_chip_u_system_u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram
+create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
+create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram
+create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_nanosoc_chip_u_system/u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
+create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_nanosoc_chip_u_system/u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram
 
-create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer -insts u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
-create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system_u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram
-create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system_u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
-create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system_u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram
+create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer -insts u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
+create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram
+create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system/u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
+create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system/u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram
 
-create_relative_floorplan -ref_type core_boundary -orient R0 -horizontal_edge_separate {1 -50 1} -vertical_edge_separate {2 -50 2} -place u_por
+set pwrdet_x [expr {-0.46 * 109}]
+set pwrdet_y [expr {-0.68 * 73}]
+set por_x [expr {-0.46 * 109}]
+set por_y [expr {-0.68 * 176}]
+
+create_relative_floorplan -ref_type core_boundary -orient R90 -horizontal_edge_separate {1 -50.32 1} -vertical_edge_separate {2 -50.14 2} -place uPAD_PWRDET
+create_relative_floorplan -ref_type core_boundary -orient R0 -horizontal_edge_separate {1 -120.02 1} -vertical_edge_separate {2 -50.14 2} -place u_por
+
+create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts uPAD_PWRDET
 create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_por
+create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer -insts uPAD_PWRDET
 create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer -insts u_por
-
-snap_floorplan -all
 
 ### Close the pad ring. Between the pads there was nothing, so every ring bus that exists
 ### only by abutment (VDDA, VSSA, VSWITCH, VCCHIB, VDDIO_Q, the enables, AMUXBUS_A/B) was
@@ -136,9 +155,8 @@ if {[llength $sar_afe_inst] != 1} {
     error "floorplan.tcl: expected one sar_afe instance, found [llength $sar_afe_inst]"
 }
 set sar_afe_name [get_db $sar_afe_inst .name]
-set sar_afe_core [get_db current_design .core_bbox]
-set sar_afe_x [expr {[lindex $sar_afe_core 0 0] + 0.46 * 44}]
-set sar_afe_y [expr {[lindex $sar_afe_core 0 1] + 0.68 * 30}]
+set sar_afe_x [expr {[lindex $core_bbox 0 0] + 0.46 * 44}]
+set sar_afe_y [expr {[lindex $core_bbox 0 1] + 0.68 * 30}]
 place_inst $sar_afe_name [list $sar_afe_x $sar_afe_y] r0 -fixed
 # Same place halo as the SRAMs. The route halo keeps signal routing 4.8 um off the
 # macro on met1-met4 (it is obstructed li1-met4 except at its pins); met5 is free over

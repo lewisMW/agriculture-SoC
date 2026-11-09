@@ -197,13 +197,23 @@ foreach gpio_pad_pin [get_db [get_pins uPAD_*/PAD] .name] { # all pads
 # is the RTL one (sar_adc.v's header), as this file is read before synthesis.
 set sar_afe_inst u_nanosoc_chip/u_system/u_ss_expansion/u_region_exp/u_ss_accelerator/sensor_wrapper/u_adc/u_afe
 connect_supply_net VDD      -ports [list $sar_afe_inst/vdd]
-connect_supply_net VSS      -ports [list $sar_afe_inst/vss]
+connect_supply_net VSSA     -ports [list $sar_afe_inst/vss]
 connect_supply_net VDDA     -ports [list $sar_afe_inst/vdda]
 # I have to explicitly specify the connections of vref to be supply ports, as they are note defined in the lib as such
 create_supply_port uPAD_ADC_VREF_GEN/vinref -direction inout
 create_supply_port uPAD_ADC_VREF_CAP/cpos   -direction inout
 create_supply_port uPAD_ADC_VREF_CAP/cneg   -direction inout
-connect_supply_net ADC_VREF -ports [list $sar_afe_inst/vref]
+create_supply_port $sar_afe_inst/vref       -direction inout
+connect_supply_net ADC_VREF -ports uPAD_ADC_VREF_GEN/vinref
+connect_supply_net ADC_VREF -ports uPAD_ADC_VREF_CAP/cpos
+connect_supply_net VDDIO_Q  -ports uPAD_ADC_VREF_CAP/cneg
+connect_supply_net ADC_VREF -ports $sar_afe_inst/vref
+
+# POR connections
+connect_supply_net VDDIO_Q -ports u_por/vdd3v3
+connect_supply_net VSSIO_Q -ports u_por/vss3v3
+connect_supply_net VDD     -ports u_por/vdd1v8
+connect_supply_net VSS     -ports u_por/vss1v8
 
 # This is not right...
 # set_port_attributes -ports {SE} -receiver_supply PD_IO.SS_IO

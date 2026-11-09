@@ -508,13 +508,16 @@ sky130_ef_ip__simple_por u_por (
    .porb_l(),
    .por_l()
 );
+
+reg pad_nrst_i_async;
 sky130_fd_io__top_pwrdetv2 uPAD_PWRDET (
    .vddd2(VDD),
    .vddd1(VDD),
    .vddio_q(VDDIO_Q),
    .vccd(VDD),
-   .vssa(VSSA),
-   .vssd(VSSD),
+   //.vssa(VSSA), // but why do I need VSSA connection, as opposed to another ground?
+   .vssa(VDDIO_Q),
+   .vssd(VSS),
    .vssio_q(VSSIO_Q),
    .in1_vddio_hv(pad_nrst_io),
    .in2_vddio_hv(),
@@ -576,6 +579,17 @@ sky130_fd_io__top_vrefcapv2 uPAD_ADC_VREF_CAP (
    .cpos(ADC_VREF),
    .cneg(VSSIO_Q)
 );
+
+sky130_ef_io__analog_pad uPAD_ADC_VINP (
+   .P_PAD(ADC_VINP),
+   .P_CORE(pad_adc_vinp),
+   .AMUXBUS_A(), .AMUXBUS_B()
+   );
+sky130_ef_io__analog_pad uPAD_ADC_VINN (
+   .P_PAD(ADC_VINN),
+   .P_CORE(pad_adc_vinn),
+   .AMUXBUS_A(), .AMUXBUS_B()
+   );
 
 // GPI.I Port 0 x 16
 `define DIGITAL_IO_PIN(PORT, IDX) \

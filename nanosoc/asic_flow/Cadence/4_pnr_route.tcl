@@ -13,7 +13,7 @@
 source ../scripts/config.tcl
 
 set_multi_cpu_usage -local_cpu 8
-puts "Starting CTS Flow ..."
+puts "Starting Route Flow ..."
 
 read_db ${block_name}_cts
 source $env(SOCLABS_ASIC_FLOW_DIR)/Cadence/procs.tcl

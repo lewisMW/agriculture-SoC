@@ -10,7 +10,7 @@ connect_global_net VDD -type pg_pin -pin_base_name VPWR -inst_base_name WELLTAP*
 connect_global_net VSS -type pg_pin -pin_base_name VGND -inst_base_name WELLTAP*
 puts "preplace.tcl: [llength [get_db insts -if {.base_cell.name == sky130_fd_sc_hd__tapvpwrvgnd_1}]] well taps"
 
-set_db place_global_cong_effort high 
+set_db place_global_cong_effort auto 
 set_db place_global_timing_effort high 
 
 ### Uniform Cell Distribution and fill gap
@@ -24,7 +24,7 @@ set_db place_global_uniform_density false
 set_db place_design_floorplan_mode false 
 
 ### lower density for less congestion
-set_db place_global_max_density 0.6
+set_db place_global_max_density 0.4
 set_db opt_max_density 0.3
 
 ### Timing Analysis Type 
