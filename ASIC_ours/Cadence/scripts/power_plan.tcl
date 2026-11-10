@@ -74,7 +74,7 @@ set_db add_rings_stacked_via_top_layer 6
 set_db add_rings_stacked_via_bottom_layer 2
 
 ### Adding Rings 
-add_rings -nets {VDD VSS} -type core_rings -follow core -layer {top 6 bottom 6 left 5 right 5} -width {top 10 bottom 10 left 10 right 10} -spacing {top 5 bottom 5 left 5 right 5} -offset {top 1.8 bottom 1.8 left 1.8 right 1.8} -center 0 -threshold 0 -jog_distance 0 -snap_wire_center_to_grid none
+add_rings -nets {VDD VSS} -type core_rings -follow core -layer {top 6 bottom 6 left 5 right 5} -width {top 10 bottom 10 left 10 right 10} -spacing {top 5 bottom 5 left 5 right 5} -offset {top 2 bottom 2 left 2 right 2} -center 0 -threshold 0 -jog_distance 0 -snap_wire_center_to_grid none
 # route_special -connect {pad_pin pad_ring} is off (both calls). pad_pin joins nothing:
 # route_special takes only CLASS CORE pad ports, and the sky130 pad LEFs have none
 # (IMPSR-1256; pad_supply_to_ring below does that job). pad_ring bridged the ring buses
@@ -329,6 +329,13 @@ route_special -connect {block_pin} -nets {VDD VSS VDDIO_Q VSSIO_Q VSSA} -inst uP
 # met2/met3 VDD/VSS wires through the standard-cell area to reach the stripe ends at the
 # macro halos. The SRAMs get their supply from the met5 stripes, the ADC from its own
 # route_special above.
+# Block met3 PG routing on each SRAM right face: via3 layer blockages are ignored by route_special
+# for PG nets. Blocking met3 (the wire layer) prevents the corewire connection entirely.
+# M3M4 corewire vias land ~1.6 um below the SRAM top corner, so full-height strip needed.
+foreach _m [get_db insts -if {.base_cell.name == sky130_sram_*}] {
+    lassign [lindex [get_db $_m .bbox] 0] _x1 _y1 _x2 _y2
+    create_route_blockage -layers {met3} -pg_nets -rects [list [list [expr {$_x2 - 0.3}] [expr {$_y1 - 0.3}] [expr {$_x2 + 0.5}] [expr {$_y2 + 0.3}]]]
+}
 route_special -connect {core_pin} -layer_change_range { met1 met5 } -block_pin_target nearest_target -pad_pin_port_connect {all_port one_geom} -pad_pin_target nearest_target -core_pin_target {ring stripe} -floating_stripe_target {block_ring pad_ring ring stripe ring_pin block_pin followpin} -allow_jogging 1 -power_domains { PD_TOP } -crossover_via_layer_range { met1 met5 } -nets { VDD VSS } -allow_layer_change 1 -block_pin use_lef -target_via_layer_range { met1 met5 }
 
 

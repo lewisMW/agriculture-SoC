@@ -35,6 +35,7 @@ Normalisation of the library netlists (they were written for netgen/ngspice):
 """
 import argparse
 import collections
+import glob as _glob
 import os
 import re
 import sys
@@ -45,6 +46,8 @@ SRAM_DIR = os.environ.get(
 HERE = os.path.dirname(os.path.abspath(__file__))
 MACRO_DIR = os.environ.get(
     "SAR_AFE_DIR", os.path.normpath(os.path.join(HERE, "..", "..", "macros", "sar_afe")))
+EFIP_DIR = os.environ.get(
+    "EFIP_DIR", os.path.normpath(os.path.join(HERE, "..", "..", "..", "efabless")))
 
 LIB = {
     "sc_cdl": PDK + "/libs.ref/sky130_fd_sc_hd/cdl/sky130_fd_sc_hd.cdl",
@@ -636,6 +639,7 @@ def main():
     lef_paths = [LIB["io_lef_ef"], LIB["io_lef_fd"], LIB["sram_lef"],
                  MACRO_DIR + "/sar_afe.lef", MACRO_DIR + "/sar_afe_r.lef",
                  MACRO_DIR + "/sar_afe_b.lef"]
+    lef_paths += _glob.glob(os.path.join(EFIP_DIR, "*/lef/*.lef"))
     # IO / SRAM / macro cells in the netlist that are not black-boxed and not
     # compared in full still need a definition: stub them too, but say so.
     full_io = "io" in a.full

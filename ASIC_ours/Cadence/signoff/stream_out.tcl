@@ -15,6 +15,7 @@
 #   PDK_ROOT     open PDK               (default /opt/pdk/sky130A)
 #   SRAM_ROOT    SRAM macro directory   (default /opt/pdk/sram_macros)
 #   MACRO_ROOT   repo hard macros       (default <this dir>/../../macros)
+#   EFIP_ROOT    efabless IP macros     (default <this dir>/../../../efabless)
 #   CPUS         default 8
 #
 # Writes into OUT:
@@ -37,7 +38,9 @@ if {![file exists $SD/sky130_stream.map] && [info exists ::env(SIGNOFF_DIR)]} { 
 set MAP $SD/sky130_stream.map
 if {![file exists $MAP]} { so_die "layer map not found: $MAP" }
 foreach {v d} [list PDK_ROOT /opt/pdk/sky130A SRAM_ROOT /opt/pdk/sram_macros \
-               MACRO_ROOT [file normalize $SD/../../macros] CPUS 8 LABEL_PORTS 1 EXTRA_GDS {}] {
+               MACRO_ROOT [file normalize $SD/../../macros] \
+               EFIP_ROOT [file normalize $SD/../../../efabless] \
+               CPUS 8 LABEL_PORTS 1 EXTRA_GDS {}] {
     if {![info exists $v]} { set $v $d }
 }
 file mkdir $OUT
@@ -79,6 +82,11 @@ foreach m [lsort [array names cnt]] {
         set src $IO_DIR/sky130_fd_io.gds
     } elseif {$m eq "sky130_sram_8kbyte_1rw_32x2048_8"} {
         set src $SRAM_GDS
+    } elseif {[string match sky130_ef_ip__* $m]} {
+        # efabless IP cells (e.g. simple_por): <EFIP_ROOT>/sky130_ef_ip_*/gds/<name>.gds[.gz]
+        foreach _g [glob -nocomplain $EFIP_ROOT/*/gds/$m.gds $EFIP_ROOT/*/gds/$m.gds.gz] {
+            set src $_g; break
+        }
     } elseif {[file exists $MACRO_ROOT/sar_afe/$m.gds]} {
         # sar_afe, sar_afe_r, sar_afe_b: subcells prefixed <cell>__, no clashes
         set src $MACRO_ROOT/sar_afe/$m.gds

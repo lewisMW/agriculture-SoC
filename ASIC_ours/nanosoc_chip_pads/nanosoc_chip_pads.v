@@ -516,7 +516,7 @@ sky130_fd_io__top_pwrdetv2 uPAD_PWRDET (
    .vddio_q(VDDIO_Q),
    .vccd(VDD),
    //.vssa(VSSA), // but why do I need VSSA connection, as opposed to another ground?
-   .vssa(VDDIO_Q),
+   .vssa(VSSIO_Q),
    .vssd(VSS),
    .vssio_q(VSSIO_Q),
    .in1_vddio_hv(pad_nrst_io),

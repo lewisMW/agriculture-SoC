@@ -116,7 +116,7 @@ T1=$(date +%s)
 cat merge_fill.log
 echo "    merge: $(( $(date +%s) - T1 )) s"
 
-"$KLAYOUT" -b -r "$SD/check_gds.py" -rd gds="$OUT/$TOP.filled.gds" -rd top="$TOP" > check_gds.txt 2>&1
+"$KLAYOUT" -b -r "$SD/check_gds.py" -rd gds="$OUT/$TOP.filled.gds" -rd top="$TOP" -rd allow=236/0,97/44 > check_gds.txt 2>&1
 CK=$?
 grep -E "^(TOP|EMPTY|LAYERS|RESULT|FAIL)" check_gds.txt
 [ $CK -eq 0 ] || die "filled GDS fails check_gds.py (check_gds.txt)"

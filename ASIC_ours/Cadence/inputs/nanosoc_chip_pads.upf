@@ -206,7 +206,7 @@ create_supply_port uPAD_ADC_VREF_CAP/cneg   -direction inout
 create_supply_port $sar_afe_inst/vref       -direction inout
 connect_supply_net ADC_VREF -ports uPAD_ADC_VREF_GEN/vinref
 connect_supply_net ADC_VREF -ports uPAD_ADC_VREF_CAP/cpos
-connect_supply_net VDDIO_Q  -ports uPAD_ADC_VREF_CAP/cneg
+connect_supply_net VSSIO_Q  -ports uPAD_ADC_VREF_CAP/cneg
 connect_supply_net ADC_VREF -ports $sar_afe_inst/vref
 
 # POR connections

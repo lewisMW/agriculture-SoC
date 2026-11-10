@@ -67,21 +67,21 @@ set sram_y [expr {0.68 * 367}]
 
 
 # these are for the SRAMS. I don't think I need to further touch this
-create_relative_floorplan -ref_type core_boundary -orient R90 -horizontal_edge_separate {1  -249.9  1} -vertical_edge_separate {0  149.96  0} -place u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
+create_relative_floorplan -ref_type core_boundary -orient R90 -horizontal_edge_separate {1  -199.92  1} -vertical_edge_separate {0  150.42  0} -place u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
 create_relative_floorplan -ref_type object -orient R90 -horizontal_edge_separate {3  -249.56  1} -vertical_edge_separate {3  0  3} -place u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram -ref u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
 
-create_relative_floorplan -ref_type core_boundary -orient R270 -horizontal_edge_separate {1  -249.9  1} -vertical_edge_separate {2  -149.96  2} -place u_nanosoc_chip_u_system/u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
+create_relative_floorplan -ref_type core_boundary -orient R270 -horizontal_edge_separate {1  -199.92  1} -vertical_edge_separate {2  -150.42  2} -place u_nanosoc_chip_u_system/u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
 create_relative_floorplan -ref_type object -orient R270 -horizontal_edge_separate {3  -249.56  1} -vertical_edge_separate {3  0  3} -place u_nanosoc_chip_u_system/u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram -ref u_nanosoc_chip_u_system/u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
 
-create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
-create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram
-create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_nanosoc_chip_u_system/u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
-create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts u_nanosoc_chip_u_system/u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram
+create_place_halo -halo_deltas {12 12 12 12} -insts u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
+create_place_halo -halo_deltas {12 12 12 12} -insts u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram
+create_place_halo -halo_deltas {12 12 12 12} -insts u_nanosoc_chip_u_system/u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
+create_place_halo -halo_deltas {12 12 12 12} -insts u_nanosoc_chip_u_system/u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram
 
-create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer -insts u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
-create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram
-create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system/u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
-create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system/u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram
+create_route_halo -bottom_layer $bottom_routing_layer -space 9.6 -top_layer $top_routing_layer -insts u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_l_u_expram_l_u_sram_genblk1.u_sram
+create_route_halo -bottom_layer $bottom_routing_layer -space 9.6 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system/u_ss_expansion_u_region_expram_h_u_expram_h_u_sram_genblk1.u_sram
+create_route_halo -bottom_layer $bottom_routing_layer -space 9.6 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system/u_ss_cpu_u_region_imem_0_u_imem_0_u_sram_genblk1.u_sram
+create_route_halo -bottom_layer $bottom_routing_layer -space 9.6 -top_layer $top_routing_layer  -insts u_nanosoc_chip_u_system/u_ss_cpu_u_region_dmem_0_u_dmem_0_u_sram_genblk1.u_sram
 
 set pwrdet_x [expr {-0.46 * 109}]
 set pwrdet_y [expr {-0.68 * 73}]
@@ -161,8 +161,8 @@ place_inst $sar_afe_name [list $sar_afe_x $sar_afe_y] r0 -fixed
 # Same place halo as the SRAMs. The route halo keeps signal routing 4.8 um off the
 # macro on met1-met4 (it is obstructed li1-met4 except at its pins); met5 is free over
 # most of it, for the power stripes.
-create_place_halo -insts $sar_afe_name -halo_deltas {9.6 9.6 9.6 9.6}
-create_route_halo -insts $sar_afe_name -space 4.8 -bottom_layer met1 -top_layer met4
+create_place_halo -insts $sar_afe_name -halo_deltas {21 21 15 15}
+create_route_halo -insts $sar_afe_name -space 9.6 -bottom_layer met1 -top_layer met4
 puts "floorplan.tcl: sar_afe $sar_afe_name at [get_db $sar_afe_inst .bbox]"
 
 ### The analog pads' P_CORE must be the GDS-true one from ../inputs/sky130_ef_io__analog_pad.lef

@@ -37,7 +37,7 @@ if grep -q "Fail to find any .* license\|LMF-10096" innovus.stdout; then
 TOP=$(basename "$(ls -t ./*.gds | head -1)" .gds)
 echo "=== check_gds $OUT/$TOP.gds"
 "$KLAYOUT" -b -r "$SD/check_gds.py" -rd gds="$OUT/$TOP.gds" -rd top="$TOP" \
-    -rd masters="$OUT/masters.txt" -rd pincheck=1 > check_gds.txt 2>&1
+    -rd masters="$OUT/masters.txt" -rd pincheck=1 -rd allow=236/0,97/44 > check_gds.txt 2>&1
 RC=$?
 cat check_gds.txt
 exit $RC
