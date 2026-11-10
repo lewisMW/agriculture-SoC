@@ -64,7 +64,7 @@ module sarlogic (
 		clkc <= (~clk & en_co_clk);
 	end
 
-	always @(posedge clk or negedge rstn) begin
+	always @(posedge clk) begin
 		if (!rstn) begin
 			state <= sInit;
 			mask <= 0;

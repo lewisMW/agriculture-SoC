@@ -30,6 +30,15 @@ set_clock_uncertainty $CLK_ERROR [get_clocks $SWDCLK]
 set_clock_uncertainty -setup $INTER_CLOCK_UNCERTAINTY -rise_from [get_clocks $SWDCLK] -rise_to [get_clocks $EXTCLK]
 set_clock_uncertainty -setup $INTER_CLOCK_UNCERTAINTY -rise_from [get_clocks $EXTCLK] -rise_to [get_clocks $SWDCLK]
 
+### SAR ADC (agriculture_soc_main/ADC/sar_adc.sdc): the ADC's generated clocks
+### (sar_clk, sar_clkc), the comparator latch's loop break and dont_touch, and the
+### sar_clk -> clk crossing. It derives them from $EXTCLK, so it has to come after
+### the create_clock lines above. ACCELERATOR_DIR comes from env/dependency_env.sh
+### (setup_env.sh sources it), so any session that reads this SDC, read_db of a
+### saved database included, needs that environment.
+source $::env(ACCELERATOR_DIR)/ADC/sar_adc.sdc
+# set_dont_touch u_por
+
 ### Multicycle path through asynchronous clock domains
 set_multicycle_path 2 -setup -end -from SWDCK -to CLK
 set_multicycle_path 1 -hold -end -from SWDCK -to CLK
@@ -82,6 +91,13 @@ foreach uPAD_cell [get_db [get_cells -regexp "uPAD_P[01]_.*" -hierarchical] .nam
     set_multicycle_path 2 -setup -through [get_pins -regexp "${uPAD_cell}/(OE_N)|(IN)"]
     set_multicycle_path 1 -hold -through [get_pins -regexp "${uPAD_cell}/(OE_N)|(IN)"]
 }
+
+# async reset. Although most in the design uses a derived sync reset, so it's okay
+set_false_path -setup -from [get_ports NRST]
+set_ideal_network [get_ports NRST]
+
+# scan pin feeds through clocks, ignore
+set_false_path -setup -through [get_nets soc_scan_mode]
 
 #### DELAY DEFINITION
 

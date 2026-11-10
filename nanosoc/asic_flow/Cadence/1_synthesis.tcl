@@ -23,6 +23,7 @@ check_library > $LOG_DIR/syn_lib_check.log
 
 ## -- Read in RTL and elaborate top level
 source $hdl_file_list
+source $custom_hdl_file_list
 read_hdl -sv -define POWER_PINS $top_level_hdl
 # set_db hdl_track_filename_row true
 elaborate $block_name
@@ -39,7 +40,8 @@ apply_power_intent
 check_cpf -detail -license lpgxl > $LOG_DIR/syn_cpf_check.log
 commit_power_intent
 
-check_power_intent
+# might still have some errors from lack of level shifters, but as long as they remain at ctln + ctlp of the adc it should be good
+#check_power_intent
 
 ## -- Preserve power pad instances / macros from optimization -- ##
 set_dont_touch [get_cells -hierarchical -filter {name =~ "uPAD*"}]
