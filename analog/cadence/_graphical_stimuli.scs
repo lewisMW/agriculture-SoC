@@ -1,0 +1,6 @@
+_vvp (vp 0) vsource dc=v_cm delay=5*1/fclk ampl=v1 freq=fin_1 ampl2=v2 freq2=fin_2 type=sine
+_vvn (vn 0) vsource dc=v_cm delay=5*1/fclk ampl=v1 sinephase=180 freq=fin_1 ampl2=v2 sinephase2=180 freq2=fin_2 type=sine
+_vvdda (vdda 0) vsource dc=vdda type=dc
+_vvdd (vdd 0) vsource dc=vdda type=dc
+_vvssa (vssa 0) vsource dc=vssa type=dc
+_vvss (vss 0) vsource dc=vssa type=dc
