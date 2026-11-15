@@ -24,7 +24,8 @@
 //   viol_pslverr         wrapper signalled PSLVERR (never allowed, by design)
 // -----------------------------------------------------------------------------
 module nsc_sens_apb_cov #(
-    parameter int ADDR_WIDTH = 12
+    parameter int          ADDR_WIDTH         = 12,
+    parameter logic [31:0] DEFAULT_ALARM_OFFSET = 32'd5   // the wrapper's reset value
 )(
     input logic                  PCLK,
     input logic                  PRESETn,
@@ -59,8 +60,10 @@ module nsc_sens_apb_cov #(
     wire        rtc_rg = ((off & 12'hFE0) == 12'h200);   // same mask the RTL uses
 
     function automatic reg_e decode(input logic [ADDR_WIDTH-1:0] a);
-        if (((a[11:0] & 12'hFE0) == 12'h200)) return R_RTC;   // aliases with upper bits (F5)
+        // F5 is fixed: the RTC region decodes the full PADDR width like every
+        // other register, so an alias above 4 KB is unmapped.
         if ((ADDR_WIDTH > 12) && (|(a >> 12))) return R_UNMAPPED;
+        if (((a[11:0] & 12'hFE0) == 12'h200)) return R_RTC;
         case (a[11:0])
             12'h004: return R_STATUS;
             12'h008: return R_MEAS_HI;
@@ -115,7 +118,7 @@ module nsc_sens_apb_cov #(
             R_PLL:     return d == 32'h0;
             R_AMUX:    return d == 32'h0;
             R_CAL:     return d == 32'h0;
-            R_ALARM:   return d == 32'd5;                // DEFAULT_ALARM_OFFSET
+            R_ALARM:   return d == DEFAULT_ALARM_OFFSET;
             R_RTCCTRL: return d == 32'h1;                // polling enabled
             R_TRIG, R_FCLR, R_UNMAPPED: return d == 32'h0; // WO / unmapped read 0
             default:   return 1'b1;                      // MEAS_LO / RTC: data-dependent

@@ -61,7 +61,9 @@ module fsm_cov (
             bins wait_done  = {S_WAIT_DONE};
             bins write      = {S_WRITE};
             bins err_full   = {S_ERR_FULL};
-            illegal_bins unused = {3'd7};
+            // must never happen; a viol_ bin (an illegal_bins hit would abort
+            // the run without writing coverage)
+            bins viol_illegal_state = {3'd7};
         }
 
         cp_arc : coverpoint {st_q, state} iff (hist != 0) {

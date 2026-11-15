@@ -85,23 +85,28 @@ module nsc_rtc_boundary_cov (
     wire stall_done = PSEL && PENABLE && PREADY && stalled_q;
 
     // ---------------- RTCINTR -----------------------------------------------
-    // What last made a match possible: 0 none, 1 FSM RTCMR write, 2 firmware
-    // RTCMR/RTCLR write. Cleared by any RTCICR write.
+    // What made this RTCINTR rise possible, since the previous rise: 0 none,
+    // 1 FSM RTCMR write, 2 firmware RTCMR/RTCLR write, 3 an RTCIMSC write
+    // unmasking a raw interrupt that was already pending. Consumed by the rise.
+    // (2026-11-15: an RTCICR write no longer clears it. Clearing the interrupt
+    // does not clear RTCMR, so the armed match still fires later; the WRP-6
+    // soak hit viol_unarmed on exactly that legal sequence.)
     logic intr_q;  int unsigned intr_high;  logic [1:0] armed;
+    wire  intr_rise = RTCINTR && !intr_q;
     wire fw_arm  = rtc_access && rtc_pwrite && ext_sel &&
                    (rtc_paddr == 10'h001 || rtc_paddr == 10'h002);
-    wire icr_wr  = rtc_access && rtc_pwrite && (rtc_paddr == 10'h007);
+    wire imsc_wr = rtc_access && rtc_pwrite && (rtc_paddr == 10'h004) && rtc_pwdata[0];
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) begin intr_q <= 1'b0; intr_high <= 0; armed <= 2'd0; end
         else begin
             intr_q <= RTCINTR;
             intr_high <= RTCINTR ? intr_high + 1 : 0;
-            if (match_written)  armed <= 2'd1;
-            else if (fw_arm)    armed <= 2'd2;
-            else if (icr_wr)    armed <= 2'd0;
+            if (match_written)              armed <= 2'd1;
+            else if (fw_arm)                armed <= 2'd2;
+            else if (imsc_wr && armed == 0) armed <= 2'd3;
+            else if (intr_rise)             armed <= 2'd0;
         end
     end
-    wire intr_rise = RTCINTR && !intr_q;
     wire intr_fall = !RTCINTR && intr_q;
 
     // passthrough-port protocol of whoever drives it (see nsc_sens_apb_cov, F20)
@@ -123,26 +128,44 @@ module nsc_rtc_boundary_cov (
         }
         cp_dir : coverpoint rtc_pwrite iff (rtc_access) { bins read = {0}; bins write = {1}; }
         cp_src : coverpoint ext_sel iff (rtc_access) { bins fsm = {0}; bins firmware = {1}; }
-        x_word_dir_src : cross cp_word, cp_dir, cp_src {
-            // rtc_control_2 itself only ever reads RTCDR and writes RTCCR,
-            // RTCMR, RTCIMSC, RTCICR. Every other FSM-sourced combination is
-            // structurally impossible, so it is excluded rather than left as a
-            // permanent hole. (Firmware-sourced bins all stay.)
-            ignore_bins fsm_rd_not_dr = binsof(cp_src.fsm) && binsof(cp_dir.read) &&
-                binsof(cp_word) intersect {[10'h001:10'h3FF]};
-            ignore_bins fsm_wr_dr     = binsof(cp_src.fsm) && binsof(cp_dir.write) && binsof(cp_word.rtcdr);
-            ignore_bins fsm_wr_lr     = binsof(cp_src.fsm) && binsof(cp_dir.write) && binsof(cp_word.rtclr);
-            ignore_bins fsm_wr_ris    = binsof(cp_src.fsm) && binsof(cp_dir.write) && binsof(cp_word.rtcris);
-            ignore_bins fsm_wr_mis    = binsof(cp_src.fsm) && binsof(cp_dir.write) && binsof(cp_word.rtcmis);
-            ignore_bins fsm_wr_beyond = binsof(cp_src.fsm) && binsof(cp_dir.write) && binsof(cp_word.beyond_icr);
+        // {source, direction, word}: only the combinations that can legally
+        // occur are goals (binsof() cannot be relied
+        // on in Verilator 5.052). rtc_control_2 itself only reads RTCDR and
+        // writes RTCCR / RTCMR / RTCIMSC / RTCICR (RTC_RTC* localparams, states
+        // S_ENABLE_*, S_READ_*, S_MATCH_*, S_IMSC_*, S_ICR_*): any other
+        // FSM-sourced access is a viol_ bin. Value = {ext_sel, pwrite, word[9:0]}.
+        x_word_dir_src : coverpoint {ext_sel, rtc_pwrite, rtc_paddr} iff (rtc_access) {
+            bins fw_rd_rtcdr   = {12'h800}; bins fw_rd_rtcmr   = {12'h801};
+            bins fw_rd_rtclr   = {12'h802}; bins fw_rd_rtccr   = {12'h803};
+            bins fw_rd_rtcimsc = {12'h804}; bins fw_rd_rtcris  = {12'h805};
+            bins fw_rd_rtcmis  = {12'h806}; bins fw_rd_rtcicr  = {12'h807};
+            bins fw_wr_rtcdr   = {12'hC00}; bins fw_wr_rtcmr   = {12'hC01};
+            bins fw_wr_rtclr   = {12'hC02}; bins fw_wr_rtccr   = {12'hC03};
+            bins fw_wr_rtcimsc = {12'hC04}; bins fw_wr_rtcris  = {12'hC05};
+            bins fw_wr_rtcmis  = {12'hC06}; bins fw_wr_rtcicr  = {12'hC07};
+            // words above RTCICR: reachable at the rtc_control_2 port (RTC block
+            // bench) only - the wrapper's rtc_region forwards words 0-7.
+            bins fw_rd_beyond_icr = {[12'h808:12'hBFF]};
+            bins fw_wr_beyond_icr = {[12'hC08:12'hFFF]};
+            bins fsm_rd_rtcdr   = {12'h000};
+            bins fsm_wr_rtcmr   = {12'h401};
+            bins fsm_wr_rtccr   = {12'h403};
+            bins fsm_wr_rtcimsc = {12'h404};
+            bins fsm_wr_rtcicr  = {12'h407};
+            bins viol_fsm_read_not_rtcdr = {[12'h001:12'h3FF]};
+            bins viol_fsm_write_other    = {12'h400, 12'h402, 12'h405, 12'h406, [12'h408:12'h7FF]};
         }
         cp_wdata_class : coverpoint rtc_pwdata iff (rtc_access && rtc_pwrite && ext_sel) {
             bins zero = {32'h0}; bins one = {32'h1}; bins all_ones = {32'hFFFF_FFFF};
             bins other = default;
         }
         cp_stall_len : coverpoint stall_len iff (stall_done) {
-            bins one = {1}; bins two_to_4 = {[2:4]}; bins five_to_12 = {[5:12]};
-            bins viol_long = {[13:$]};             // > a full arm cycle: should be impossible
+            // Worst case since the PL031-APB fix (no grant in S_IDLE once the
+            // counter is out of reset): an access whose SETUP coincides with
+            // S_ICR_SETUP waits through ICR_ACCESS, PULSE_TRIG, IDLE, the 8
+            // arm states, the drain cycle and its own forced SETUP = 13 PCLK.
+            bins one = {1}; bins two_to_4 = {[2:4]}; bins five_to_13 = {[5:13]};
+            bins viol_long = {[14:$]};             // > service + full re-arm: impossible
         }
         cp_pslverr : coverpoint PSLVERR iff (PSEL && PENABLE && PREADY) {
             bins okay = {1'b0}; bins viol_pslverr = {1'b1};
@@ -167,7 +190,8 @@ module nsc_rtc_boundary_cov (
         cp_rise_source : coverpoint armed iff (intr_rise) {
             bins fsm_alarm      = {2'd1};
             bins firmware_match = {2'd2};  // firmware wrote RTCMR/RTCLR via passthrough
-            bins viol_unarmed   = {2'd0};  // interrupt with no match/load since last clear
+            bins unmask         = {2'd3};  // RTCIMSC write with the raw interrupt already set
+            bins viol_unarmed   = {2'd0};  // interrupt with no RTCMR/RTCLR/RTCIMSC write since the previous one
         }
         cp_high_time : coverpoint intr_high iff (intr_fall || (RTCINTR && intr_high == 5000)) {
             bins short_lt8   = {[1:7]};

@@ -121,6 +121,61 @@ adptests:
 	cd $(COV_DIR)/adp_tests && python3 tests.py $(T)
 	$(MAKE) --no-print-directory report
 
+# -----------------------------------------------------------------------------
+# Firmware runs for chip-level coverage (SYS-4/SYS-5). A separate top
+# (harness/nsc_fw_harness_top.sv) and build directory (build_fw/): the ADP
+# targets above are unchanged.
+#   make build_fw [REAL_ARM=1]      compile the firmware harness
+#   make fw FW=<testcode>           run system/testcodes/<FW>/<FW>.hex (or the
+#                                   upstream nanosoc_tech/testcodes one) as
+#                                   image.hex; UART2 -> runs/fw_<FW>/logs/uart2.log;
+#                                   coverage_fw_<FW>.dat; "=== FW-<FW>: ... ==="
+#   make fws                        every image in FW_LIST, then report
+# Build the .hex first with the testcode makefile (a toolchain without newlib
+# cannot build it). Without REAL_ARM=1 the CPU is an idle stand-in: the run reaches
+# FW_MAX_CYCLES with an empty uart2.log and reports FAILED - needs REAL_ARM=1.
+# -----------------------------------------------------------------------------
+BUILD_FW      := $(COV_DIR)/build_fw
+FW_MAX_CYCLES ?= 40000000
+UP_TESTCODES   = $(SOCLABS_NANOSOC_TECH_DIR)/testcodes
+UART_CAPTURE   = $(SOCLABS_NANOSOC_TECH_DIR)/verif/trace/verilog/nanosoc_uart_capture.v
+FW_LIST ?= adc_trigger_test fifo_drain_test sensing_driver_test rtc_time_test \
+           adc_autonomous_test pslverr_test fault_recovery_test \
+           sensing_regmap_test sensing_rtc_regs_test sensing_stress_test \
+           sensing_sleep_poll_test sensing_reset_test sensing_cal_test \
+           interrupt_demo sleep_demo watchdog_demo self_reset_demo default_slaves_tests \
+           apb_mux_tests memory_tests romtable_tests uart_tests timer_tests dualtimer_demo gpio_tests
+
+.PHONY: build_fw fw fws
+
+build_fw: $(BUILD)/dut.vc
+	@mkdir -p $(BUILD_FW)
+	grep -v 'nsc_cov_harness_top.sv' $(BUILD)/dut.vc > $(BUILD_FW)/dut.vc
+	grep -q 'nanosoc_uart_capture.v' $(BUILD_FW)/dut.vc || echo $(UART_CAPTURE) >> $(BUILD_FW)/dut.vc
+	echo $(HARNESS)/nsc_fw_harness_top.sv >> $(BUILD_FW)/dut.vc
+	cd $(BUILD_FW) && $(RUN_LIMITED) $(VERILATOR) $(subst nsc_cov_harness_top,nsc_fw_harness_top,$(VL_FLAGS)) \
+	    -f dut.vc -o Vnsc_fw > build.log 2>&1 || { tail -40 $(BUILD_FW)/build.log; false; }
+	@grep -c "%Warning" $(BUILD_FW)/build.log | xargs echo "build_fw ok, warnings:"
+
+fw:
+	@test -n "$(FW)" || { echo "usage: make fw FW=<testcode>"; false; }
+	@test -x $(BUILD_FW)/obj_dir/Vnsc_fw || $(MAKE) build_fw
+	@hex=$(NANOSOC_DIR)/system/testcodes/$(FW)/$(FW).hex; test -f $$hex || hex=$(UP_TESTCODES)/$(FW)/$(FW).hex; \
+	 test -f $$hex || { echo "no $(FW).hex found (build the testcode first)"; false; }; \
+	 rm -rf $(RUNS)/fw_$(FW) && mkdir -p $(RUNS)/fw_$(FW)/logs && cp $$hex $(RUNS)/fw_$(FW)/image.hex
+	-cd $(RUNS)/fw_$(FW) && $(RUN_LIMITED) $(BUILD_FW)/obj_dir/Vnsc_fw +max_cycles=$(FW_MAX_CYCLES) \
+	    +verilator+coverage+file+coverage.dat > sim.log 2>&1; tail -2 $(RUNS)/fw_$(FW)/sim.log
+	@if [ -f $(RUNS)/fw_$(FW)/coverage.dat ]; then cp $(RUNS)/fw_$(FW)/coverage.dat $(COV_DIR)/coverage_fw_$(FW).dat; fi
+	@u=$(RUNS)/fw_$(FW)/logs/uart2.log; p=0; f=1; \
+	 if [ -f $$u ] && grep -q 'FAIL' $$u; then :; \
+	 elif [ -f $$u ] && grep -qE 'TEST PASSED|Test Passed!|: PASS' $$u; then p=1; f=0; \
+	 else echo "no pass line in $$u (idle CPU stand-in, hang, or max_cycles)"; fi; \
+	 echo "=== FW-$(FW): $$p PASSED, $$f FAILED ==="
+
+fws:
+	@for t in $(FW_LIST); do $(MAKE) --no-print-directory fw FW=$$t; done
+	$(MAKE) --no-print-directory report
+
 report:
 	verilator_coverage --write $(COV_DIR)/merged.dat $(COV_DIR)/coverage_*.dat
 	@verilator_coverage --filter-type covergroup --report summary $(COV_DIR)/merged.dat | grep covergroup

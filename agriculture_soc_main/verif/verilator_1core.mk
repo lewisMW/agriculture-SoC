@@ -24,6 +24,14 @@ UVM_HOME   ?= /opt/uvm
 
 export MAKEFLAGS := -j$(JOBS)
 
+# Where Verilator build directories go. Empty = next to the makefile (as
+# before). Set BUILD_ROOT to a directory on a fast local disk when the checkout
+# is on a slow or nearly full filesystem (the dev container mounts it over 9p):
+#   make signoff STUB_RTC=1 BUILD_ROOT=/tmp/sens_build
+# Each makefile uses its own sub-directory of BUILD_ROOT.
+BUILD_ROOT ?=
+export BUILD_ROOT
+
 # Prefix for every heavy command
 RUN_LIMITED = ulimit -v $(MEMCAP_KB); nice -n 19
 

@@ -57,24 +57,24 @@ def sens_ahb():
     t.A(STATUS); t.R(2, size=2, check=lambda v, c: True, desc="STATUS halfword reads OKAY")
     # sub-word writes: AMBA APB4 - only the strobed byte lanes may change (F6)
     t.wr(PLL + 1, 0xAA, size=1)
-    t.rd(PLL, expect=0x1122AA44, desc="byte write to PLL lane 1 changes only that byte", bug="F6")
+    t.rd(PLL, expect=0x1122AA44, desc="byte write to PLL lane 1 changes only that byte")
     t.wr(PLL, 0x11223344); t.wr(PLL + 2, 0xBBCC, size=2)
-    t.rd(PLL, expect=0xBBCC3344, desc="halfword write to PLL[31:16] changes only that half", bug="F6")
+    t.rd(PLL, expect=0xBBCC3344, desc="halfword write to PLL[31:16] changes only that half")
     t.wr(PLL, 0x11223344); t.wr(PLL, 0xDD, size=1)
-    t.rd(PLL, expect=0x112233DD, desc="byte write to PLL lane 0 changes only that byte", bug="F6")
+    t.rd(PLL, expect=0x112233DD, desc="byte write to PLL lane 0 changes only that byte")
     t.wr(PLL, 0x11223344); t.wr(PLL, 0x5566, size=2)
-    t.rd(PLL, expect=0x11225566, desc="halfword write to PLL[15:0] changes only that half", bug="F6")
+    t.rd(PLL, expect=0x11225566, desc="halfword write to PLL[15:0] changes only that half")
     t.wr(AMUX, 0x2); t.wr(AMUX + 3, 0xFF, size=1)
-    t.rd(AMUX, expect=0xFF000002, desc="byte write to AMUX lane 3 keeps the input select", bug="F6")
+    t.rd(AMUX, expect=0xFF000002, desc="byte write to AMUX lane 3 keeps the input select")
     t.wr(AMUX, 0)
     t.wr(CAL, 1); t.wr(CAL + 1, 0x00, size=1)
-    t.rd(CAL, expect=1, desc="byte write to ADC_CAL lane 1 leaves CAL set", bug="F6")
+    t.rd(CAL, expect=1, desc="byte write to ADC_CAL lane 1 leaves CAL set")
     t.wr(CAL, 0)
     t.wr(ALARM, 5); t.wr(ALARM + 1, 0x01, size=1)
-    t.rd(ALARM, expect=0x105, desc="byte write to RTC_ALARM_OFFSET lane 1 keeps lane 0", bug="F6")
+    t.rd(ALARM, expect=0x105, desc="byte write to RTC_ALARM_OFFSET lane 1 keeps lane 0")
     t.wr(ALARM, 5)
     t.wr(RTCCTRL, 1); t.wr(RTCCTRL + 2, 0x0000, size=2)
-    t.rd(RTCCTRL, expect=1, desc="halfword write to RTC_CTRL[31:16] leaves polling enabled", bug="F6")
+    t.rd(RTCCTRL, expect=1, desc="halfword write to RTC_CTRL[31:16] leaves polling enabled")
     t.wr(RTCCTRL, 0)
     t.spin(0x80)
     t.wr(FCLR, 1)
@@ -90,11 +90,11 @@ def sens_ahb():
     t.wr(TRIG + 2, 0x0001, size=2)
     t.spin(0x80)
     t.rd(STATUS, mask=0x3, expect=0x0,
-         desc="halfword write to ADC_TRIGGER[31:16] does not trigger (bit0 not strobed)", bug="F6")
+         desc="halfword write to ADC_TRIGGER[31:16] does not trigger (bit0 not strobed)")
     t.wr(FCLR, 1)
     t.wr(TRIG + 1, 0x01, size=1)
     t.spin(0x80)
-    t.rd(STATUS, mask=0x3, expect=0x0, desc="byte write to ADC_TRIGGER lane 1 does not trigger", bug="F6")
+    t.rd(STATUS, mask=0x3, expect=0x0, desc="byte write to ADC_TRIGGER lane 1 does not trigger")
     t.wr(FCLR, 1)
     # reserved offsets inside the 4 KB decode: read 0, write ignored, never ERROR
     t.wr(PLL, 0xCAFEF00D); t.wr(AMUX, 0x1); t.wr(CAL, 0x1); t.wr(ALARM, 7)
@@ -147,8 +147,8 @@ def sens_ahb():
     t.rd(RTCMR, capture="mr0")
     t.wr(S + 0x1204, 0x5A5A5A5A)
     t.rd(RTCMR, check=lambda v, c: v == c["mr0"],
-         desc="write to 0x6000_1204 must not change PL031 RTCMR (all other aliases are unmapped)", bug="F5")
-    t.rd(S + 0x1200, expect=0, desc="read of 0x6000_1200 must read 0 like every other alias", bug="F5")
+         desc="write to 0x6000_1204 must not change PL031 RTCMR (all other aliases are unmapped)")
+    t.rd(S + 0x1200, expect=0, desc="read of 0x6000_1200 must read 0 like every other alias")
     t.wr(S + 0x1200, 0x0, desc="write to 0x6000_1200 (RTCDR alias) is OKAY")
     t.wr(AMUX + 2, 0x00, size=1)       # byte lane 2 strobe
     # F6 fixed: a lane-2 byte write must leave the input select (lane 0) alone
@@ -156,7 +156,92 @@ def sens_ahb():
     t.wr(RTCMR, 0xFFFFFF00)        # park the alarm far away again
     t.wr(AMUX, 0); t.wr(PLL, 0); t.wr(ALARM, 5)
     t.wr(RTCCTRL, 1, desc="RTC_CTRL re-enabled")
+    t.wr(RTCCTRL, 0)
+    t.spin(0x80)
+    sys1_matrix(t)
     return t
+
+
+# -----------------------------------------------------------------------------
+# SYS-1: every register x {byte lane 0-3, half low, half high, word} write over
+# AHB, each followed by a read-back. The
+# expectations are the adopted policy (F6 fixed): only strobed lanes change;
+# single-bit controls (ADC_CAL, RTC_CTRL, ADC_TRIGGER) act only when lane 0 is
+# strobed; FIFO_CLEAR acts on any strobed lane; sub-word writes to the RTC
+# passthrough are dropped (PL031 has no PSTRB) and complete OKAY.
+ACCESSES = [(0, 1, "byte lane 0"), (1, 1, "byte lane 1"), (2, 1, "byte lane 2"), (3, 1, "byte lane 3"),
+            (0, 2, "half [15:0]"), (2, 2, "half [31:16]"), (0, 4, "word")]
+
+
+def lanes(off, size):
+    return [(off + i) for i in range(size)]
+
+
+def merge(old, new, off, size):
+    v = old
+    for b in lanes(off, size):
+        v = (v & ~(0xFF << (8 * b))) | (new & (0xFF << (8 * b)))
+    return v & 0xFFFFFFFF
+
+
+def sys1_matrix(t):
+    PAT = 0xA5C3_5A3C
+    # multi-byte registers: only the strobed lanes change
+    for reg, name in ((PLL, "PLL_CONTROL"), (AMUX, "AMUX"), (ALARM, "RTC_ALARM_OFFSET")):
+        for off, size, kind in ACCESSES:
+            base = 0x0F0F_0F0F if reg != ALARM else 0x0000_0007
+            t.wr(reg, base)
+            data = (PAT >> (8 * off)) & ((1 << (8 * size)) - 1)
+            t.wr(reg + off, data, size=size)
+            t.rd(reg, expect=merge(base, PAT, off, size),
+                 desc="SYS-1 %s %s write changes only the strobed lanes" % (name, kind))
+        t.wr(reg, 0 if reg != ALARM else 5)
+    # single-bit controls: act only with lane 0 strobed
+    for reg, name, rst in ((CAL, "ADC_CAL", 0), (RTCCTRL, "RTC_CTRL", 0)):
+        for off, size, kind in ACCESSES:
+            t.wr(reg, 0)
+            t.wr(reg + off, 0xFFFFFFFF & ((1 << (8 * size)) - 1), size=size)
+            t.rd(reg, expect=(1 if off == 0 else 0),
+                 desc="SYS-1 %s %s write of all-ones: bit0 %s" % (name, kind, "set (lane 0 strobed)" if off == 0 else "unchanged (lane 0 not strobed)"))
+        t.wr(reg, rst)
+    # ADC_TRIGGER: one sample only when lane 0 is strobed with bit0 = 1
+    t.wr(RTCCTRL, 0)
+    for off, size, kind in ACCESSES:
+        t.wr(FCLR, 1)
+        t.wr(TRIG + off, 0xFFFFFFFF & ((1 << (8 * size)) - 1), size=size)
+        if off == 0:
+            wait_sample(t, "SYS-1 ADC_TRIGGER %s write of all-ones takes one sample" % kind)
+        else:
+            t.spin(0x80)
+            fifo_empty(t, "SYS-1 ADC_TRIGGER %s write does not trigger (lane 0 not strobed)" % kind)
+    # FIFO_CLEAR: any strobed lane flushes
+    for off, size, kind in ACCESSES:
+        t.wr(TRIG, 1)
+        wait_sample(t, "SYS-1 sample taken before the FIFO_CLEAR %s case" % kind)
+        t.wr(FCLR + off, 0, size=size)
+        fifo_empty(t, "SYS-1 FIFO_CLEAR %s write flushes the FIFO" % kind)
+    # read-only registers: any write is ignored
+    for reg, name in ((STATUS, "STATUS"), (MEAS_HI, "MEAS_HI"), (MEAS_LO, "MEAS_LO")):
+        for off, size, kind in ACCESSES:
+            t.wr(reg + off, 0xFFFFFFFF & ((1 << (8 * size)) - 1), size=size,
+                 desc="SYS-1 %s %s write is OKAY" % (name, kind))
+        fifo_empty(t, "SYS-1 writes to %s neither push nor pop" % name)
+    t.rd(STATUS, mask=0xFFFFFFC0, expect=0, desc="SYS-1 STATUS reserved bits still 0 after the RO writes")
+    t.rd(MEAS_HI, expect=0, desc="SYS-1 MEAS_HI still 0 after the RO writes")
+    # RTC passthrough: sub-word writes dropped, word writes land
+    for reg, name, val in ((RTCMR, "RTCMR", 0x1234_5678), (RTCLR, "RTCLR", 20000), (RTCIMSC, "RTCIMSC", 1)):
+        t.wr(reg, val)
+        t.rd(reg, capture="rtc0_%x" % reg)
+        for off, size, kind in ACCESSES[:-1]:
+            t.wr(reg + off, 0xFFFFFFFF & ((1 << (8 * size)) - 1), size=size,
+                 desc="SYS-1 %s %s write completes OKAY (dropped)" % (name, kind))
+        if reg == RTCLR:
+            t.rd(RTCLR, expect=val, desc="SYS-1 RTCLR unchanged by the sub-word writes")
+        else:
+            t.rd(reg, check=lambda v, c, k="rtc0_%x" % reg: v == c[k],
+                 desc="SYS-1 %s unchanged by the sub-word writes" % name)
+    t.wr(RTCMR, 0xFFFFFF00)
+    t.wr(RTCCTRL, 1)
 
 
 # -----------------------------------------------------------------------------
@@ -249,11 +334,11 @@ def sens_rtc():
     arm(t, 0)
     t.spin(0xFFF)
     t.rd(STATUS, mask=0x3, check=lambda v, c: v != 0,
-         desc="offset 0: autonomous sampling must not stop (alarm armed at 'now')", bug="F8-OFFSET0")
+         desc="offset 0: autonomous sampling must not stop (alarm armed at 'now')")
     arm(t, 1)
     t.spin(0x800)
     t.rd(STATUS, mask=0x3, check=lambda v, c: v != 0,
-         desc="offset 1: autonomous sampling continues", bug="F8-OFFSET1")
+         desc="offset 1: autonomous sampling continues")
     arm(t, 0xFFFFFFFF)
     t.spin(0x800)
     fifo_empty(t, "offset 0xFFFFFFFF: no sample (alarm armed one second in the past = 2^32-1 s)")
@@ -264,9 +349,27 @@ def sens_rtc():
     t.wr(FCLR, 1)
     t.spin(0xFFF)
     t.rd(STATUS, mask=0x3, check=lambda v, c: v != 0,
-         desc="autonomous sampling continues after RTCLR sets the clock forward", bug="RTCLR-FWD")
+         desc="autonomous sampling continues after RTCLR sets the clock forward")
     arm(t, 5)
     wait_sample(t, "firmware re-arm (pause, RTCMR, resume) restores autonomous sampling")
+    # SYS-2: firmware tampering with the PL031 while polling keeps sampling
+    # (missed-alarm watchdog, 1 Nov fixes) - plain checks now
+    arm(t, 2)
+    t.wr(RTCLR, 100)                      # backwards
+    t.wr(FCLR, 1); t.spin(0xFFF)
+    t.rd(STATUS, mask=0x3, check=lambda v, c: v != 0, desc="SYS-2 sampling continues after RTCLR sets the clock backwards")
+    t.rd(RTCDR, capture="now")
+    t.wr(RTCMR, 5)                        # in the past
+    t.wr(FCLR, 1); t.spin(0xFFF)
+    t.rd(STATUS, mask=0x3, check=lambda v, c: v != 0, desc="SYS-2 sampling continues after RTCMR is written in the past")
+    t.wr(RTCIMSC, 0)                      # masked
+    t.wr(FCLR, 1); t.spin(0xFFF)
+    t.rd(STATUS, mask=0x3, check=lambda v, c: v != 0, desc="SYS-2 sampling continues with RTCIMSC = 0 (watchdog)")
+    t.rd(RTCIMSC, mask=1, expect=1, desc="SYS-2 the controller re-enabled RTCIMSC on its next arm")
+    t.wr(RTCICR, 1)                       # clear whatever is pending
+    t.wr(FCLR, 1); t.spin(0xFFF)
+    t.rd(STATUS, mask=0x3, check=lambda v, c: v != 0, desc="SYS-2 sampling continues after firmware RTCICR writes")
+    t.wr(ALARM, 5)
     return t
 
 

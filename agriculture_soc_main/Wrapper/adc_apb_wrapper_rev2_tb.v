@@ -16,6 +16,7 @@
 module adc_apb_wrapper_rev2_tb;
     parameter ADDR_WIDTH = 12;
     parameter DATA_WIDTH = 32;
+    parameter [31:0] DEFAULT_ALARM_OFFSET = 32'd5;   // WRP-7 also builds 1
     parameter PCLK_PERIOD   = 10;
     parameter CLK1HZ_PERIOD = 1000;
 
@@ -44,7 +45,8 @@ module adc_apb_wrapper_rev2_tb;
 
     adc_apb_wrapper_rev2 #(
         .ADDR_WIDTH(ADDR_WIDTH),
-        .DATA_WIDTH(DATA_WIDTH)
+        .DATA_WIDTH(DATA_WIDTH),
+        .DEFAULT_ALARM_OFFSET(DEFAULT_ALARM_OFFSET)
     ) uut (
         .PCLK(PCLK), .CLK1HZ(CLK1HZ), .PRESETn(PRESETn), .nPOR(nPOR),
         .PSEL(PSEL), .PADDR(PADDR), .PENABLE(PENABLE), .PWRITE(PWRITE),
@@ -94,8 +96,10 @@ module adc_apb_wrapper_rev2_tb;
     endtask
 
     initial begin
-        $dumpfile("waveform.vcd");
-        $dumpvars(0, adc_apb_wrapper_rev2_tb);
+        if ($test$plusargs("vcd")) begin
+            $dumpfile("waveform.vcd");
+            $dumpvars(0, adc_apb_wrapper_rev2_tb);
+        end
 
         PSEL=0; PENABLE=0; PWRITE=0; PADDR=0; PWDATA=0;
 
@@ -112,6 +116,10 @@ module adc_apb_wrapper_rev2_tb;
         // 1. FIFO empty out of reset
         apb_read(A_STATUS);
         check_true((rd & 32'h3) == 32'h0, "FIFO empty after reset");
+
+        // 1b. RTC_ALARM_OFFSET resets to the DEFAULT_ALARM_OFFSET parameter (WRP-7)
+        apb_read(A_ALARMO);
+        check_true(rd == DEFAULT_ALARM_OFFSET, "RTC_ALARM_OFFSET reset value = DEFAULT_ALARM_OFFSET");
 
         // 2. Autonomous poll: short period so the RTC alarm fires quickly
         apb_write(A_ALARMO, 32'd3);
@@ -184,6 +192,7 @@ module adc_apb_wrapper_rev2_tb;
     initial begin
         #50_000_000;
         $display("WATCHDOG TIMEOUT");
+        $display("\n=== WRAPPER: %0d PASSED, %0d FAILED (TIMEOUT) ===", pass_count, fail_count + 1);
         $finish;
     end
 endmodule

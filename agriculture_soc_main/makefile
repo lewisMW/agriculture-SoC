@@ -159,48 +159,37 @@ reset_rand:
 	./obj_dir/V$(RESET_RAND_MODULE);
 
 # -----------------------------------------------------------------------------
-# Unit-test regression. Runs every self-checking block testbench and aggregates
-# the per-block "=== NAME: N PASSED, M FAILED ===" summary lines.
+# Unit-test regression and sign-off. One step table, in verif/signoff.py:
 #
-#   make verify        # full suite (RTC + Wrapper need ARM_IP_LIBRARY_PATH set)
-#   make verify-free   # only the blocks that need no ARM IP (FIFO + FSM)
+#   make verify        every bench (RTC/Wrapper need the PL031 or STUB_RTC=1;
+#                      the full-SoC check/reset_rand need the Cortex-M0 kit and
+#                      are SKIPPED without it)
+#   make verify-free   only the benches that need no ARM IP
+#   make signoff       verify + functional coverage gate + code coverage gate;
+#                      writes verif/cov/SIGNOFF_REPORT.txt and
+#                      verif/cov/OPEN_BUGS_REPORT.md
+#   make signoff ONLY=gap,clo   a subset of steps (python3 verif/signoff.py --list)
 #
-# Each block builds in its own dir/obj_dir, so there are no cross-block
-# collisions. Failures in one block do not stop the others (leading '-').
+#   STUB_RTC=1       PL031 stand-in (no ARM IP needed; verdict is marked STUB, not sign-off)
+#   BUILD_ROOT=dir   build dirs + step logs on a local disk
+#   OPEN_BUGS_OK=1   exit 0 when the only failures are [SUSPECTED RTL BUG <ID>]
+#                    checks with <ID> in verif/cov/open_bugs.txt. They are still
+#                    counted, still printed, and named in the verdict.
+# A bench that does not print its "=== NAME: N PASSED, M FAILED ===" line
+# (build failure, SVA abort, missing file) fails the run.
 # -----------------------------------------------------------------------------
-VERIF_LOG = verif_run.log
+SIGNOFF = python3 verif/signoff.py $(if $(ONLY),--only $(ONLY))
 
-.PHONY: verify verify-free _verify_summary
+.PHONY: verify verify-free signoff
 
-verify: _run_free _run_ip _verify_summary
+verify:
+	$(SIGNOFF) --benches
 
-verify-free: _run_free _verify_summary
+verify-free:
+	$(SIGNOFF) --free
 
-_run_free:
-	@rm -f $(VERIF_LOG)
-	@echo "===== UNIT TEST REGRESSION ====="
-	-@$(MAKE) --no-print-directory -C FIFO rand 2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory -C FSM  all  2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory -C FSM  seq  2>&1 | tee -a $(VERIF_LOG)
-
-_run_ip:
-	-@$(MAKE) --no-print-directory -C RTC     all  2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory -C RTC     rand 2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory -C Wrapper all  2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory -C Wrapper rand 2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory check        2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory reset_rand   2>&1 | tee -a $(VERIF_LOG)
-
-_verify_summary:
-	@echo ""
-	@echo "===== REGRESSION SUMMARY ====="
-	@grep -E "===.*PASSED,.*FAILED.*===" $(VERIF_LOG) || echo "(no summary lines — did a build fail? RTC/Wrapper need ARM_IP_LIBRARY_PATH)"
-	@echo "=============================="
-	@if grep -qE "[1-9][0-9]* FAILED" $(VERIF_LOG); then \
-	    echo "RESULT: FAILURES PRESENT"; false; \
-	 else \
-	    echo "RESULT: ALL REPORTED SUITES PASS"; \
-	 fi
+signoff:
+	$(SIGNOFF)
 
 # -----------------------------------------------------------------------------
 # Lint (sign-off gate 2). Two scopes:

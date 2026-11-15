@@ -14,6 +14,10 @@
 //     self-clears on the next successful cycle
 //   - every FSM state is reached (functional coverage)
 //   - constrained-random trigger/fifo_full stream vs. a reference count
+//   - FSM-1..4: a one-cycle trigger in
+//     every busy state, a held (level) trigger, adc_valid stuck high / low
+//     (no conversion timeout before FIX-2), and fifo_full rising
+//     after the pre-check (unit-only case; built with -DSVA_FSM_UNIT)
 //
 // Standalone (uses dummy_adc, no ARM IP).  Run: make -C FSM seq
 // -----------------------------------------------------------------------------
@@ -29,7 +33,11 @@ module wrapper_control_seq_tb;
     wire fifo_write_en;
     wire adc_en;
     wire err_fifo_full;
-    wire adc_valid;
+    wire adc_valid;          // from dummy_adc
+    reg  v_force = 1'b0;     // FSM-3: drive the FSM's adc_valid by hand
+    reg  v_val   = 1'b0;
+    wire adc_valid_fsm = v_force ? v_val : adc_valid;
+    reg  inv_off = 1'b0;     // FSM-4: the write-while-full invariant is not a unit property
 
     integer pass_count = 0;
     integer fail_count = 0;
@@ -40,7 +48,7 @@ module wrapper_control_seq_tb;
         .fifo_full(fifo_full),
         .fifo_write_en(fifo_write_en),
         .adc_en(adc_en),
-        .adc_valid(adc_valid),
+        .adc_valid(adc_valid_fsm),
         .err_fifo_full(err_fifo_full)
     );
 
@@ -69,7 +77,7 @@ module wrapper_control_seq_tb;
             if (fifo_write_en) wr_count = wr_count + 1;
             state_seen[uut.state] = 1'b1;
             // Safety invariant: never write while the FIFO is full.
-            if (fifo_write_en && fifo_full)
+            if (fifo_write_en && fifo_full && !inv_off)
                 check_true(1'b0, "INVARIANT VIOLATED: write while FIFO full");
         end
     end
@@ -91,13 +99,58 @@ module wrapper_control_seq_tb;
         end
     endtask
 
+
+    // ── FSM-1..4 helpers ─────────────────────────────────────────────────────
+    task wait_state(input [2:0] st, input integer tmo);
+        integer k;
+        begin
+            k = 0;
+            while (uut.state !== st && k < tmo) begin @(posedge clk); #1; k = k + 1; end
+            if (k >= tmo) begin $display("  (waiting for state %0d, FSM in %0d)", st, uut.state); check_true(1'b0, "wait_state timeout"); end
+        end
+    endtask
+    task wait_idle(input integer tmo);
+        integer k;
+        begin
+            k = 0;
+            while (uut.state !== S_IDLE && k < tmo) begin @(posedge clk); #1; k = k + 1; end
+            if (k >= tmo) check_true(1'b0, "FSM returns to IDLE (timeout)");
+        end
+    endtask
+
+    // FSM-1: one-cycle trigger while the FSM is in state `st`
+    task fsm1_case(input [2:0] st, input full);
+        integer w0;
+        reg [8*14-1:0] nm;
+        begin
+            @(posedge clk); #1;                  // align: run_episode returns on the edge itself
+            wait_idle(100);
+            w0 = wr_count;
+            fifo_full = full;
+            pulse_trig;
+            wait_state(st, 100);
+            sample_trig = 1'b1; @(posedge clk); #1; sample_trig = 1'b0;   // the extra trigger
+            wait_idle(100);
+            repeat (3) @(posedge clk); #1;
+            check_true(uut.state === S_IDLE, "FSM-1 extra trigger in a busy state: FSM back in IDLE, no second episode");
+            if (wr_count != w0 + (full ? 0 : 1)) $display("  (state %0d: %0d writes)", st, wr_count - w0);
+            check_true(wr_count == w0 + (full ? 0 : 1), "FSM-1 extra trigger in a busy state produces no write");
+            fifo_full = 1'b0;
+            w0 = wr_count;
+            run_episode(60);
+            check_true(wr_count == w0 + 1, "FSM-1 the next trigger after it works");
+        end
+    endtask
+
     integer i;
     integer exp_writes;
     integer wr_before;
 
     initial begin
-        $dumpfile("waveform.vcd");
-        $dumpvars(0, wrapper_control_seq_tb);
+        if ($test$plusargs("vcd")) begin
+            $dumpfile("waveform.vcd");
+            $dumpvars(0, wrapper_control_seq_tb);
+        end
 
         clk = 0; rstn = 0; sample_trig = 0; fifo_full = 0;
         repeat (3) @(posedge clk);
@@ -154,6 +207,101 @@ module wrapper_control_seq_tb;
         end
         check_true(wr_count == exp_writes, "C5 random: write count matches reference model");
         fifo_full = 1'b0;
+
+
+        // ── FSM-1: one-cycle trigger in every busy state ─────────────────────
+        fsm1_case(S_CHECK_FIFO, 1'b0);
+        fsm1_case(S_ENABLE,     1'b0);
+        fsm1_case(S_WAIT_START, 1'b0);
+        fsm1_case(S_WAIT_DONE,  1'b0);
+        fsm1_case(S_WRITE,      1'b0);
+        fsm1_case(S_ERR_FULL,   1'b1);
+
+        // ── FSM-2: level trigger; trigger on the cycle the FSM re-enters IDLE ─
+        begin : fsm2
+            integer w0, passes, k;
+            reg     in_idle_q;
+            @(posedge clk); #1;
+            wait_idle(100);
+            w0 = wr_count; passes = 0; in_idle_q = 1'b1;
+            sample_trig = 1'b1;
+            for (k = 0; k < 120; k = k + 1) begin
+                @(posedge clk); #1;
+                if (uut.state == S_CHECK_FIFO) passes = passes + 1;
+            end
+            sample_trig = 1'b0;
+            wait_idle(100);
+            $display("  FSM-2 held trigger: %0d passes, %0d writes", passes, wr_count - w0);
+            check_true(passes >= 4 && wr_count - w0 == passes,
+                       "FSM-2 held trigger: back-to-back samples, exactly one per pass through IDLE");
+            // a one-cycle trigger in the very cycle the FSM is back in IDLE
+            w0 = wr_count;
+            pulse_trig;
+            wait_state(S_WRITE, 100);
+            @(posedge clk); #1;                           // now in IDLE
+            check_true(uut.state === S_IDLE, "FSM-2 FSM re-entered IDLE");
+            pulse_trig;                                   // accepted at once
+            wait_state(S_CHECK_FIFO, 3);
+            wait_idle(100);
+            check_true(wr_count == w0 + 2, "FSM-2 trigger on the re-entry cycle starts the next sample");
+        end
+
+        // ── FSM-3: adc_valid stuck (no conversion timeout - documented, O-2) ─
+        begin : fsm3
+            integer w0, k, n_hi;
+            integer holds [0:2];
+            holds[0] = 1; holds[1] = 10; holds[2] = 500;
+            for (k = 0; k < 3; k = k + 1) begin
+                @(posedge clk); #1;
+                wait_idle(100);
+                // let the ADC finish the back-to-back conversion it starts after
+                // every sample (adc_en is still high at its done step), so valid
+                // is high from a finished conversion, as a real ADC leaves it
+                v_force = 1'b0;
+                repeat (40) @(posedge clk); #1;
+                w0 = wr_count;
+                v_force = 1'b1; v_val = 1'b1;              // valid still high from the last conversion
+                pulse_trig;
+                wait_state(S_WAIT_START, 10);
+                repeat (holds[k]) begin
+                    @(posedge clk); #1;
+                end
+                check_true(uut.state === S_WAIT_START && adc_en === 1'b1 && wr_count == w0,
+                           "FSM-3 valid held high: FSM waits in S_WAIT_START, adc_en high, no write");
+                v_val = 1'b0;                              // conversion starts
+                @(posedge clk); #1;
+                check_true(uut.state === S_WAIT_DONE, "FSM-3 valid fell: S_WAIT_DONE");
+                if (k == 2) begin
+                    repeat (500) @(posedge clk); #1;
+                    check_true(uut.state === S_WAIT_DONE && adc_en === 1'b1 && wr_count == w0,
+                               "FSM-3 valid held low 500 cycles: FSM waits in S_WAIT_DONE, no write");
+                end
+                v_val = 1'b1;                              // the real rise
+                @(posedge clk); #1;
+                check_true(uut.state === S_WRITE && fifo_write_en === 1'b1, "FSM-3 write only on the real rise");
+                @(posedge clk); #1;
+                check_true(wr_count == w0 + 1, "FSM-3 exactly one write");
+            end
+            v_force = 1'b0;
+            $display("NOTE FSM-3 property: wrapper_control_2 has no conversion timeout; a dead ADC parks it in S_WAIT_START/S_WAIT_DONE (status[3:2] = 1) until reset (see FIX-2)");
+        end
+
+        // ── FSM-4: fifo_full rising after the pre-check (unit-only case) ─────
+        begin : fsm4
+            integer w0;
+            @(posedge clk); #1;
+            wait_idle(100);
+            w0 = wr_count;
+            inv_off = 1'b1;
+            pulse_trig;
+            wait_state(S_ENABLE, 10);
+            fifo_full = 1'b1;                              // after S_CHECK_FIFO passed
+            wait_idle(100);
+            check_true(wr_count == w0 + 1, "FSM-4 fifo_full after the pre-check: the FSM still writes (the FIFO drops the push)");
+            $display("NOTE FSM-4 property: the FSM checks fifo_full only in S_CHECK_FIFO; a_no_write_when_full is a property of the integrated design (only the FSM pushes), checked by the wrapper benches, not by this unit case");
+            fifo_full = 1'b0;
+            inv_off = 1'b0;
+        end
 
         // C6: functional coverage — every state must have been reached
         check_true(state_seen[S_IDLE],       "COV S_IDLE reached");

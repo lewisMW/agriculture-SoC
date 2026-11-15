@@ -20,6 +20,9 @@
 //                     while full
 //   cp_wait         : APB access that saw wait states (RTC collision)
 //   cp_b2b          : back-to-back transfers (PSEL held between transfers)
+//   cp_status_adc / cp_status_rtcintr / cp_status_drop_clear / cp_status_resv
+//                   : the ADC, RTC-interrupt, drop and reserved fields of STATUS
+//                     as read by firmware (closure spec WRP-1)
 // -----------------------------------------------------------------------------
 module wrapper_cov #(
     parameter ADDR_WIDTH = 12
@@ -51,6 +54,15 @@ module wrapper_cov #(
         else          begin adc_en_q <= adc_en; xfer_q <= xfer; end
     end
     wire conv_start = adc_en && !adc_en_q;
+
+    // STATUS read completing this cycle, and the drop bit the previous STATUS
+    // read returned.
+    wire  st_read = xfer && !PWRITE && (PADDR == 12'h004);
+    logic last_drop_rd;
+    always @(posedge PCLK or negedge PRESETn) begin
+        if (!PRESETn)     last_drop_rd <= 1'b0;
+        else if (st_read) last_drop_rd <= status_reg[4];
+    end
 
     covergroup cg_wrap;
         option.per_instance = 1;
@@ -96,6 +108,26 @@ module wrapper_cov #(
         }
         cp_status_drop : coverpoint status_reg[4] iff (xfer && !PWRITE && PADDR == 12'h004) {
             bins drop_seen = {1'b1};
+        }
+
+        // ── closure additions (WRP-1): status as READ by firmware ─────────────
+        cp_status_adc : coverpoint status_reg[3:2] iff (st_read) {
+            bins idle       = {2'b00};
+            bins converting = {2'b01};
+            bins viol_reserved_value = {2'b10, 2'b11};
+        }
+        cp_status_rtcintr : coverpoint status_reg[5] iff (st_read) {
+            bins clear   = {1'b0};
+            bins pending = {1'b1};
+        }
+        // drop flag read as 1, then read as 0 after the next accepted sample
+        cp_status_drop_clear : coverpoint {last_drop_rd, status_reg[4]} iff (st_read) {
+            bins drop_then_clear = {2'b10};
+            bins drop_held       = {2'b11};
+        }
+        cp_status_resv : coverpoint (status_reg[31:6] != 26'd0) {
+            bins zero = {1'b0};
+            bins viol_reserved_bits_set = {1'b1};
         }
 
         cp_pop_ctx : coverpoint fifo_empty iff (xfer && !PWRITE && PADDR == 12'h00C) {

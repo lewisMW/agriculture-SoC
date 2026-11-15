@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 module fifo_apb_adc #(
     parameter DATA_WIDTH = 64,
     parameter DEPTH = 16

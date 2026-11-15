@@ -1,0 +1,51 @@
+# -----------------------------------------------------------------------------
+# open_bugs.txt - suspected RTL bugs that are known, reported, and NOT fixed in
+# this tree because the RTL belongs to another team (the analog team's
+# sarlogic, vendored nanosoc and ARM IP are reported, never edited).
+#
+# A bench reports such a bug as a FAILED check tagged
+#     FAIL [<time>] [SUSPECTED RTL BUG <ID>] <check name>
+# The failure always counts. `make signoff` stays red and names every open ID.
+# With OPEN_BUGS_OK=1 it exits 0 only if EVERY failure of the run carries an
+# ID listed here; any untagged failure, unknown ID, missing summary line,
+# coverage hole or viol_ hit still fails it. Each run also writes
+# verif/cov/OPEN_BUGS_REPORT.md: one section per bug with the failing checks of
+# that run, ready to hand to the owner.
+#
+# An ID listed here that no bench reports any more is flagged STALE (fixed?
+# remove it). Format: one [ID] section per bug, configparser syntax.
+# -----------------------------------------------------------------------------
+
+[ADC-CAL]
+owner    = analog team (sarlogic)
+file     = analog/cadence/sar_adc/sarlogic/functional/verilog.v:120-145
+found    = 2026-11-15, sar_adc_cal_tb ADC-2
+title    = Offset calibration has the wrong polarity and always ends on a trim rail
+detail   = In sCal each trial trim bit is kept when the comparator read 0 in
+    the majority of its 7 samples (verilog.v:126-127). With the sar_afe model
+    a kept bit moves the comparator offset further in the direction that made
+    it read 0, so the loop runs away: every calibration finishes at trim 0 or
+    31 and leaves the offset worse than before (0 mV -> -155 mV, +10 mV ->
+    +165 mV, -40 mV -> -195 mV). The vote/mask logic itself is correct (the
+    scripted-vote cases ADC-2b pass and reach every final-trim bin); the sense
+    of the keep decision (or of trima/trimb) is inverted relative to the AFE.
+    Either the keep condition should be cal_count <= 7, or trima/trimb swap.
+    Please confirm against the real AFE netlist before changing it.
+expected = for an offset inside the trim range the final trim is the one
+    predicted from VTRIM_LSB and a 0 V input then reads mid-scale +-1 LSB
+repro    = make -C agriculture_soc_main/ADC cal     (STUB_RTC not needed)
+
+[ADC-CLKC]
+owner    = analog team (sarlogic)
+file     = analog/cadence/sar_adc/sarlogic/functional/verilog.v:63-65
+found    = 2026-11-15, sar_adc_cal_tb ADC-4
+title    = clkc stays high through a reset asserted in the low half of sar_clk (sim/synthesis mismatch)
+detail   = `always @(clk) clkc <= ~clk & en_co_clk;` is only sensitive to clk.
+    When rstn falls while sar_clk is low, en_co_clk goes to 0 but the block
+    does not re-evaluate, so in RTL simulation clkc stays 1 until sar_clk next
+    toggles (after the reset is released). Synthesis builds the AND gate, so
+    the netlist drops clkc at once: RTL and gates disagree. Fix: make it
+    combinational on both inputs, e.g. `assign clkc = ~clk & en_co_clk;` or
+    `always @*`.
+expected = clkc is 0 whenever en_co_clk is 0 (including in reset)
+repro    = make -C agriculture_soc_main/ADC cal     (ADC-4 "sar_clk low" cases)

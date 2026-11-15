@@ -51,6 +51,7 @@ package sensing_uvm_pkg;
         bit [7:0] data;
         bit       dropped;   // push attempted while full
         bit       clear;     // FIFO clear pulse (not a push)
+        bit       reset;     // PRESETn asserted: every register and the FIFO reset
         `uvm_object_utils(sample_item)
         function new(string name = "sample_item"); super.new(name); endfunction
     endclass
@@ -74,6 +75,7 @@ package sensing_uvm_pkg;
             // scoreboard must process the read first. Publishing mid-cycle
             // removes the same-timestep ordering race between the two monitors.
             sample_item s;
+            bit in_reset = 0;
             forever begin
                 // Explicit reset each cycle: a variable declared inside the
                 // `forever` body is NOT re-initialised per iteration under
@@ -81,7 +83,18 @@ package sensing_uvm_pkg;
                 // re-published every cycle.
                 s = null;
                 @(posedge vif.clk);
-                if (!vif.rst_n) continue;
+                if (!vif.rst_n) begin
+                    // publish one reset item per reset pulse
+                    if (!in_reset) begin
+                        s = sample_item::type_id::create("rst");
+                        s.reset = 1;
+                        ap.write(s);
+                        s = null;
+                    end
+                    in_reset = 1;
+                    continue;
+                end
+                in_reset = 0;
                 if (vif.clear) begin
                     s = sample_item::type_id::create("clr");
                     s.clear = 1;
@@ -109,7 +122,7 @@ package sensing_uvm_pkg;
 
         bit [31:0] mirror[bit [11:0]];   // RW register mirror
         bit [7:0]  fifo_model[$];
-        int unsigned n_checks, n_errors, n_samples_checked, n_drops, n_waited, max_wait;
+        int unsigned n_checks, n_errors, n_samples_checked, n_drops, n_waited, max_wait, n_resets;
 
         function new(string name, uvm_component parent);
             super.new(name, parent);
@@ -142,6 +155,7 @@ package sensing_uvm_pkg;
 
         // FSM -> FIFO pushes
         function void write_smp(sample_item s);
+            if (s.reset) begin reset_model(); n_resets++; return; end
             if (s.clear) begin fifo_model.delete(); return; end
             if (s.dropped) begin n_drops++; return; end
             fifo_model.push_back(s.data);
@@ -183,8 +197,9 @@ package sensing_uvm_pkg;
         endfunction
 
         function void report_phase(uvm_phase phase);
-            `uvm_info("SB", $sformatf("checks=%0d errors=%0d samples-checked=%0d drops=%0d waited-xfers=%0d max-wait=%0d",
-                      n_checks, n_errors, n_samples_checked, n_drops, n_waited, max_wait), UVM_NONE)
+            `uvm_info("SB", $sformatf("checks=%0d errors=%0d samples-checked=%0d drops=%0d waited-xfers=%0d max-wait=%0d resets=%0d",
+                      n_checks, n_errors, n_samples_checked, n_drops, n_waited, max_wait, n_resets), UVM_NONE)
+            check(max_wait <= 13, $sformatf("longest RTC passthrough stall %0d PCLK <= 13", max_wait));
         endfunction
     endclass
 
@@ -241,7 +256,32 @@ package sensing_uvm_pkg;
     // ── Sequences ───────────────────────────────────────────────────────────
     class sensing_base_seq extends apb_base_seq;
         `uvm_object_utils(sensing_base_seq)
+        virtual sample_if svif;
         function new(string name = "sensing_base_seq"); super.new(name); endfunction
+
+        task pre_body();
+            if (!uvm_config_db#(virtual sample_if)::get(null, "*", "svif", svif))
+                `uvm_fatal("NOVIF", "sample_if not set")
+        endtask
+
+        // reset pulses, driven between transfers (the driver is idle)
+        task warm_reset(int unsigned cycles = 4, int unsigned after = 3);
+            repeat (2) @(posedge svif.clk);
+            svif.seq_presetn = 1'b0;
+            repeat (cycles) @(posedge svif.clk);
+            svif.seq_presetn = 1'b1;
+            repeat (after) @(posedge svif.clk);
+        endtask
+        task power_on_reset(bit with_presetn, int unsigned cycles = 6);
+            repeat (2) @(posedge svif.clk);
+            svif.seq_npor = 1'b0;
+            if (with_presetn) svif.seq_presetn = 1'b0;
+            repeat (cycles) @(posedge svif.clk);
+            svif.seq_npor = 1'b1;
+            repeat (2) @(posedge svif.clk);
+            svif.seq_presetn = 1'b1;
+            repeat (3) @(posedge svif.clk);
+        endtask
 
         // Poll STATUS until the FIFO field is non-empty (or give up).
         task wait_fifo_nonempty(int unsigned max_polls = 200);
@@ -418,6 +458,183 @@ package sensing_uvm_pkg;
         endtask
     endclass
 
+
+    // WRP-8: back-to-back (no idle) passthrough and register bursts, writes to
+    // every PL031 register, long / mid / wrap offsets, simultaneous triggers.
+    class rtc_b2b_seq extends sensing_base_seq;
+        `uvm_object_utils(rtc_b2b_seq)
+        function new(string name = "rtc_b2b_seq"); super.new(name); endfunction
+        task body();
+            bit [11:0] a[];
+            bit        w[];
+            bit [31:0] v[], r[];
+            bit [31:0] d, now;
+            // random_reg_seq may have left autonomous polling paused
+            wr(REG_RTC_CTRL, 1);
+            wr(REG_ALARM_OFF, 1);
+            // back-to-back read bursts across alarms (deferral)
+            repeat (20) begin
+                int n = $urandom_range(2, 12);
+                a = new[n]; w = new[n]; v = new[n];
+                foreach (a[i]) begin
+                    a[i] = (i % 3 == 2) ? REG_STATUS : 12'h200 + 4 * $urandom_range(0, 7);
+                    w[i] = 0; v[i] = 0;
+                end
+                burst(a, w, v, r);
+                drain();
+            end
+            // writes to every PL031 register, back to back with reads
+            rd(REG_RTCDR, now);
+            a = '{REG_RTCCR, REG_RTCIMSC, REG_RTCMR, REG_RTCICR, REG_RTCMIS, REG_RTCLR, REG_RTCICR, REG_RTCLR};
+            w = '{1, 1, 1, 1, 1, 0, 0, 1};
+            v = '{32'h1, 32'h1, now + 2, 32'h1, 32'h0, 32'h0, 32'h0, now};
+            burst(a, w, v, r);
+            repeat (10) rd(REG_RTCDR, d, 4);
+            wr(REG_RTCIMSC, 0);                     // masked: the watchdog keeps sampling
+            repeat (10) rd(REG_STATUS, d, 8);
+            wr(REG_RTCIMSC, 1);
+            rd(REG_RTCLR, d); rd(REG_RTCICR, d); rd(REG_RTCMIS, d);
+            // mid / long / wrap offsets, then the RTCMR workaround to shorten them
+            begin
+                bit [31:0] offs[3] = '{32'd20, 32'd5000, 32'hFFFF_FFFF};
+                foreach (offs[i]) begin
+                    wr(REG_ALARM_OFF, offs[i]);
+                    repeat (40) rd(REG_STATUS, d, 4);   // let the current period end and re-arm long
+                    rd(REG_RTCDR, now);
+                    wr(REG_RTCMR, now + 2);              // +2: a tick between the read and the write still matches
+                    repeat (60) rd(REG_STATUS, d, 4);
+                    drain();
+                end
+            end
+            wr(REG_ALARM_OFF, 1);
+            // simultaneous manual + RTC triggers: hammer ADC_TRIG back to back
+            // across a few alarms so some writes land on the rtc_trig cycle
+            repeat (6) begin
+                a = new[24]; w = new[24]; v = new[24];
+                foreach (a[i]) begin a[i] = REG_ADC_TRIG; w[i] = 1; v[i] = 1; end
+                burst(a, w, v, r);
+                drain();
+            end
+            // back-to-back register traffic mixing every wrapper register
+            repeat (10) begin
+                a = '{REG_PLL, REG_PLL, REG_AMUX, REG_AMUX, REG_ADC_CAL, REG_ADC_CAL, REG_STATUS, REG_MEAS_LO, REG_MEAS_HI, REG_ALARM_OFF};
+                w = '{1, 0, 1, 0, 1, 0, 0, 0, 0, 0};
+                v = '{$urandom, 0, $urandom, 0, 32'h0, 0, 0, 0, 0, 0};
+                burst(a, w, v, r);
+            end
+            wr(REG_ALARM_OFF, 5);
+            drain();
+        endtask
+    endclass
+
+    // WRP-8: warm reset (PRESETn only: RTC time survives) and power-on resets
+    // (nPOR alone, and nPOR with PRESETn), each followed by a check that the
+    // registers are back at reset values and sampling restarts.
+    class reset_seq extends sensing_base_seq;
+        `uvm_object_utils(reset_seq)
+        function new(string name = "reset_seq"); super.new(name); endfunction
+        task body();
+            bit [31:0] t0, t1, d;
+            wr(REG_ALARM_OFF, 1);
+            wr(REG_PLL, 32'hA5A5_0001);
+            wr(REG_ADC_TRIG, 1);
+            repeat (20) rd(REG_RTCDR, t0, 8);
+            // warm reset, mid-traffic (a sample may be in flight)
+            wr(REG_ADC_TRIG, 1);
+            warm_reset();
+            rd(REG_PLL, d);                        // scoreboard: back at 0
+            rd(REG_ALARM_OFF, d);                  // back at 5
+            rd(REG_RTC_CTRL, d);                   // back at 1
+            rd(REG_RTCDR, t1);
+            if (t1 < t0) `uvm_error("RST", $sformatf("RTC time went backwards across a warm reset (%0d -> %0d)", t0, t1))
+            wr(REG_ALARM_OFF, 1);
+            wait_fifo_nonempty(400);
+            drain();
+            // nPOR alone (counter domain only)
+            power_on_reset(0);
+            repeat (60) rd(REG_STATUS, d, 4);
+            rd(REG_RTCDR, t0);
+            repeat (40) rd(REG_STATUS, d, 4);
+            rd(REG_RTCDR, t1);
+            if (!(t1 > t0)) `uvm_error("RST", $sformatf("RTC counter not running after nPOR (%0d -> %0d)", t0, t1))
+            wait_fifo_nonempty(400);
+            drain();
+            // full power-on reset
+            power_on_reset(1);
+            rd(REG_ALARM_OFF, d);
+            wr(REG_ALARM_OFF, 1);
+            wait_fifo_nonempty(600);
+            drain();
+            wr(REG_ALARM_OFF, 5);
+        endtask
+    endclass
+
+
+    // WRP-8 coverage: traffic shapes the other sequences do not produce -
+    // long back-to-back trigger bursts (trigger in every FSM state, RTC and
+    // manual in one cycle, FSM back-to-back write/drop -> check), a long RTC
+    // read burst over an alarm (deferral beyond the watchdog), fast polling
+    // toggles (disable inside the RTCICR service), offset writes while arming,
+    // RTC reads straight after a warm reset (stall in the enable states), and
+    // 40 samples without a clear (FIFO pointer wrap).
+    class cov_fill_seq extends sensing_base_seq;
+        `uvm_object_utils(cov_fill_seq)
+        function new(string name = "cov_fill_seq"); super.new(name); endfunction
+        task trig_burst(int n);
+            bit [11:0] a[]; bit w[]; bit [31:0] v[], r[];
+            a = new[n]; w = new[n]; v = new[n];
+            foreach (a[i]) begin a[i] = REG_ADC_TRIG; w[i] = 1; v[i] = 1; end
+            burst(a, w, v, r);
+        endtask
+        task body();
+            bit [11:0] a[]; bit w[]; bit [31:0] v[], r[];
+            bit [31:0] d;
+            wr(REG_RTC_CTRL, 1);
+            wr(REG_ALARM_OFF, 1);
+            wr(REG_FIFO_CLR, 1);
+            // triggers back to back for longer than a conversion, FIFO not full
+            repeat (4) begin trig_burst(150); drain(); end
+            // ... and with the FIFO full (drop -> check back to back)
+            repeat (FIFO_DEPTH + 2) begin wr(REG_ADC_TRIG, 1); wait_adc_idle(); end
+            repeat (2) trig_burst(150);
+            drain(); wr(REG_FIFO_CLR, 1);
+            // a long RTC read burst across an alarm: deferred past the watchdog
+            repeat (3) begin
+                a = new[120]; w = new[120]; v = new[120];
+                foreach (a[i]) begin a[i] = REG_RTCDR + 4 * (i % 8); w[i] = 0; v[i] = 0; end
+                burst(a, w, v, r);
+                drain();
+            end
+            // short bursts of 5..30 RTC reads (defer 9..64 cycles)
+            for (int n = 5; n <= 30; n += 5) begin
+                a = new[n]; w = new[n]; v = new[n];
+                foreach (a[i]) begin a[i] = REG_RTCDR; w[i] = 0; v[i] = 0; end
+                burst(a, w, v, r);
+            end
+            // fast polling toggles
+            repeat (300) begin wr(REG_RTC_CTRL, 0); wr(REG_RTC_CTRL, 1); end
+            drain();
+            // offset rewritten (changing) at random points of the arm cycle
+            repeat (40) begin wr(REG_ALARM_OFF, 2, $urandom_range(0, 5)); wr(REG_ALARM_OFF, 1, $urandom_range(0, 5)); end
+            // RTC reads at 0..4 cycles after a warm reset release
+            for (int k = 0; k < 5; k++) begin
+                warm_reset(4, k);
+                rd(REG_RTCDR, d, 0);
+            end
+            wr(REG_ALARM_OFF, 1);
+            // 40 manual samples drained one by one, no clear: pointers wrap
+            wr(REG_RTC_CTRL, 0);
+            repeat (40) begin
+                wr(REG_ADC_TRIG, 1);
+                wait_fifo_nonempty();
+                rd(REG_MEAS_LO, d);
+            end
+            wr(REG_RTC_CTRL, 1);
+            wr(REG_ALARM_OFF, 5);
+            drain();
+        endtask
+    endclass
+
     // ── Tests ───────────────────────────────────────────────────────────────
     class sensing_base_test extends uvm_test;
         `uvm_component_utils(sensing_base_test)
@@ -457,6 +674,9 @@ package sensing_uvm_pkg;
             run_seq(rtc_passthru_seq::type_id::create("pt"));
             run_seq(poll_toggle_seq::type_id::create("poll"));
             run_seq(random_reg_seq::type_id::create("rnd"));
+            run_seq(rtc_b2b_seq::type_id::create("b2b"));
+            run_seq(reset_seq::type_id::create("rst"));
+            run_seq(cov_fill_seq::type_id::create("fill"));
             phase.drop_objection(this);
         endtask
     endclass

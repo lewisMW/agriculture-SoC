@@ -27,8 +27,10 @@
 // Run (no ARM IP needed with the stub; sign-off needs the real PL031):
 //   make -C verif/cov gap STUB_RTC=1      (coverage)
 // =============================================================================
-module sens_gap_tb;
-    localparam int AW = 16;     // nanosoc: ACC_ADDR_W = 16
+module sens_gap_tb #(
+    parameter int          AW      = 16,      // nanosoc: ACC_ADDR_W = 16 (WRP-7 also builds 12)
+    parameter logic [31:0] DEF_OFF = 32'd5    // DEFAULT_ALARM_OFFSET (WRP-7 also builds 1)
+);
 
     localparam logic [15:0]
         A_STATUS = 16'h004, A_MEAS_HI = 16'h008, A_MEAS_LO = 16'h00C,
@@ -57,7 +59,7 @@ module sens_gap_tb;
     wire  [31:0]   PRDATA;
     wire           PREADY, PSLVERR;
 
-    adc_apb_wrapper_rev2 #(.ADDR_WIDTH(AW)) uut (
+    adc_apb_wrapper_rev2 #(.ADDR_WIDTH(AW), .DEFAULT_ALARM_OFFSET(DEF_OFF)) uut (
         .PCLK(PCLK), .CLK1HZ(CLK1HZ), .PRESETn(PRESETn), .nPOR(nPOR),
         .PSEL(PSEL), .PADDR(PADDR), .PENABLE(PENABLE), .PWRITE(PWRITE),
         .PWDATA(PWDATA), .PRDATA(PRDATA), .PREADY(PREADY), .PSLVERR(PSLVERR),
@@ -319,7 +321,7 @@ module sens_gap_tb;
         rd(A_TRIG, d);    check(d == 32'h0, {ctx, ": ADC_TRIGGER (WO) reads 0"});
         rd(A_CAL, d);     check(d == 32'h0, {ctx, ": ADC_CAL = 0"});
         rd(A_FCLR, d);    check(d == 32'h0, {ctx, ": FIFO_CLEAR (WO) reads 0"});
-        rd(A_ALARM, d);   check(d == 32'd5, {ctx, ": RTC_ALARM_OFFSET = 5"});
+        rd(A_ALARM, d);   check(d == DEF_OFF, {ctx, ": RTC_ALARM_OFFSET = DEFAULT_ALARM_OFFSET"});
         rd(A_RTCCTRL, d); check(d == 32'h1, {ctx, ": RTC_CTRL = 1 (polling on)"});
         rd(16'h0F0, d);   check(d == 32'h0, {ctx, ": reserved offset 0x0F0 reads 0"});
     endtask
@@ -365,7 +367,7 @@ module sens_gap_tb;
         eo  = (offset == 32'd0) ? 32'd1 : offset;
         cap = mr - eo;
         // With a CLK1HZ edge injected after the re-arm and a 1 s offset, the new
-        // alarm can legitimately fire before the controller parks again.
+        // alarm can legitimately fire prev_val the controller parks again.
         ok = got && (n_rtc_trig == trig0 + 1 || (race_k >= 0 && n_rtc_trig == trig0 + 2)) &&
              (cap >= t_lo) && (cap <= t_hi);
         check(n_rtc_trig == trig0 + 1 || (race_k >= 0 && eo == 32'd1 && n_rtc_trig == trig0 + 2),
@@ -443,24 +445,27 @@ module sens_gap_tb;
         wr(16'h105, 32'h3);   rd(16'h105, d); check(d == 32'h0, "T3 misaligned 0x105 reads 0");
         wr(16'h101, 32'h0);
         rd(16'h00D, d);       check(d == 32'h0, "T3 misaligned 0x00D (MEAS_LO+1) reads 0");
-        // aliases above 4 KB that do not hit the RTC region
-        rd(16'h1004, d);      check(d == 32'h0, "T3 alias 0x1004 reads 0 (unmapped)");
-        rd(16'h800C, d);      check(d == 32'h0, "T3 alias 0x800C reads 0 and does not pop");
-        wr(16'h1104, 32'h3);  wr(16'h1220, 32'h1); wr(16'hF228, 32'h0); wr(16'h1108, 32'h1);
+        // aliases above 4 KB (only exist with a PADDR wider than 12 bits)
+        if (AW > 12) begin
+            rd(16'h1004, d);      check(d == 32'h0, "T3 alias 0x1004 reads 0 (unmapped)");
+            rd(16'h800C, d);      check(d == 32'h0, "T3 alias 0x800C reads 0 and does not pop");
+            wr(16'h1104, 32'h3);  wr(16'h1220, 32'h1); wr(16'hF228, 32'h0); wr(16'h1108, 32'h1);
+        end
         cycles(40);
         snapshot(s1);
         check(snap_eq(s0, s1), "T3 reserved/misaligned/aliased writes left every register unchanged");
         check(sb.size() == n0, "T3 no FIFO push/pop/clear from reserved/aliased accesses");
-        // RTC-region alias: 0x1200-0x121C decodes to the PL031 (16-bit PADDR
-        // masked with a 12-bit constant). Every other register is unmapped
-        // above 4 KB, so this must behave as unmapped too.
-        rd(A_RTCMR, m0);
-        wr(16'h1204, m0 ^ 32'h0000_5555);
-        rd(A_RTCMR, d);
-        bugcheck(d == m0, "F5", "T3 write to alias 0x1204 must not change PL031 RTCMR");
-        wr(A_RTCMR, m0);
-        rd(16'h1200, d);
-        bugcheck(d == 32'h0, "F5", "T3 read of alias 0x1200 must read 0 like every other alias");
+        // RTC-region alias: 0x1200-0x121C must be unmapped like every other
+        // register above 4 KB (F5, fixed: full-width RTC region decode).
+        if (AW > 12) begin
+            rd(A_RTCMR, m0);
+            wr(16'h1204, m0 ^ 32'h0000_5555);
+            rd(A_RTCMR, d);
+            check(d == m0, "T3 write to alias 0x1204 does not change PL031 RTCMR (F5)");
+            wr(A_RTCMR, m0);
+            rd(16'h1200, d);
+            check(d == 32'h0, "T3 read of alias 0x1200 reads 0 like every other alias (F5)");
+        end
         read_meas_check("T3");
         wr(A_PLL, 32'h0); wr(A_AMUX, 32'h0); wr(A_CAL, 32'h0); wr(A_ALARM, 32'd5);
     endtask
@@ -540,7 +545,36 @@ module sens_gap_tb;
         end
         // one undefined-pattern strobe (0101) for cp_wr_strb.other
         wr(a, base); wrs(a, pat & lane_mask(4'h5), 4'h5);
-        bugcheck(bad == 0, "F6", $sformatf("T5 %s: sub-word writes update only the strobed byte lanes (%0d/7 wrong)", nm, bad));
+        check(bad == 0, $sformatf("T5 %s: sub-word writes update only the strobed byte lanes (%0d/7 wrong)", nm, bad));
+    endtask
+    // RTC passthrough registers: the PL031 has no PSTRB, so the adopted policy
+    // (adc_apb_wrapper_rev2 rtc_partial_wr) is that a sub-word write to ANY RTC
+    // passthrough register is dropped: it completes with PREADY and no PSLVERR,
+    // without wait states, and leaves the register unchanged.
+    task automatic pstrb_rtc_dropped(input logic [15:0] a, input logic [31:0] full_val,
+                                     input bit readable, input string nm);
+        logic [3:0]  sv [7];
+        logic [31:0] prev_val;
+        int          bad, n_err0;
+        sv  = '{4'h3, 4'hC, 4'h1, 4'h2, 4'h4, 4'h8, 4'h5};
+        bad = 0; n_err0 = n_pslverr;
+        if (full_val != 32'hFFFF_FFFF || readable) begin
+            wr(a, full_val);                         // a full-word write is forwarded
+            rd(a, d);
+            if (readable && d != full_val) bad++;
+        end
+        rd(a, prev_val);
+        foreach (sv[j]) begin
+            wrs(a, ~full_val & lane_mask(sv[j]), sv[j]);
+            if (stalls != 0 || slverr) bad++;        // completes at once, no error
+            rd(a, d);
+            if (readable && d != prev_val) begin
+                bad++;
+                if (bad == 1) $display("      %s PSTRB=%b: 0x%08h -> 0x%08h (must be unchanged)", nm, sv[j], prev_val, d);
+            end
+        end
+        check(bad == 0 && n_pslverr == n_err0 && n_hang == 0,
+              $sformatf("T5 %s: sub-word writes dropped - PREADY, no PSLVERR, register unchanged (%0d wrong)", nm, bad));
     endtask
     task automatic t5_pstrb();
         logic [3:0] sv [7];
@@ -555,7 +589,34 @@ module sens_gap_tb;
         pstrb_rw(A_AMUX,  32'hFFFF_FFFF, "AMUX");
         pstrb_rw(A_CAL,   32'h0000_0001, "ADC_CAL");
         pstrb_rw(A_ALARM, 32'hFFFF_FFFF, "RTC_ALARM_OFFSET");
-        pstrb_rw(A_RTCMR, 32'hFFFF_FFFF, "RTC passthrough RTCMR");
+        // RTC passthrough: polling is paused here, so nothing else
+        // rewrites these registers during the check.
+        wait_parked(ok2);
+        pstrb_rtc_dropped(A_RTCMR,   32'h1122_3345, 1'b1, "RTC passthrough RTCMR");
+        pstrb_rtc_dropped(A_RTCIMSC, 32'h0000_0001, 1'b1, "RTC passthrough RTCIMSC");
+        pstrb_rtc_dropped(A_RTCCR,   32'h0000_0001, 1'b1, "RTC passthrough RTCCR");
+        begin
+            // RTCLR: a dropped sub-word write must not load the counter
+            logic [31:0] ta, tb2;
+            rd(A_RTCDR, ta);
+            wrs(A_RTCLR, 32'h0000_0000, 4'h1); wrs(A_RTCLR, 32'hFFFF_0000, 4'hC);
+            wrs(A_RTCLR, 32'h0000_0000, 4'h3);
+            rd(A_RTCDR, tb2);
+            check(tb2 >= ta && tb2 - ta <= 32'd3, "T5 RTC passthrough RTCLR: sub-word writes do not load the counter");
+            // RTCICR: a dropped sub-word write must not clear a pending interrupt
+            wr(A_RTCICR, 32'h1);
+            rd(A_RTCDR, ta); wr(A_RTCMR, ta + 32'd2);
+            rtc_seconds(4);
+            rd(A_RTCRIS, d);
+            check(d[0], "T5 precondition: match raised RTCRIS while paused");
+            wrs(A_RTCICR, 32'h0000_0001, 4'h1); wrs(A_RTCICR, 32'h0001_0001, 4'h3);
+            wrs(A_RTCICR, 32'hFFFF_0000, 4'hC);
+            rd(A_RTCRIS, d);
+            check(d[0], "T5 RTC passthrough RTCICR: sub-word writes do not clear the interrupt");
+            wr(A_RTCICR, 32'h1);
+            rd(A_RTCRIS, d);
+            check(!d[0], "T5 RTC passthrough RTCICR: the full-word write clears it");
+        end
         wr(A_PLL, 32'h0); wr(A_AMUX, 32'h0); wr(A_CAL, 32'h0); wr(A_ALARM, 32'd5);
         // ADC_TRIGGER: APB4 -> trigger iff lane 0 is strobed and bit0 = 1
         wr(A_FCLR, 32'h1);
@@ -783,7 +844,7 @@ module sens_gap_tb;
         int trig0, deferred, bad, waited;
         $display("\n--- T11 back-to-back passthrough reads across an alarm ---");
         force_arm(32'd2, -1, 0, mr, ok);
-        // poll until one second before the alarm
+        // poll until one second prev_val the alarm
         for (i = 0; i < 1000; i++) begin rd(A_RTCDR, d); if (d + 1 >= mr) break; cycles(10); end
         trig0 = n_rtc_trig; bad = 0; last = d;
         n0 = n_intr_rise_pt;
@@ -836,7 +897,7 @@ module sens_gap_tb;
         logic [31:0] tb4, ta;
         bit ok2;
         rd(A_RTCDR, tb4);
-        if (phase == 0) cycles(2);     // bus idle for a full cycle before the reset
+        if (phase == 0) cycles(2);     // bus idle for a full cycle prev_val the reset
         if (phase == 1) begin
             @(posedge PCLK); #1;
             PSEL = 1'b1; PENABLE = 1'b0; PWRITE = 1'b1; PADDR = A_PLL; PWDATA = 32'hDEAD_BEEF; PSTRB = 4'hF;
@@ -889,10 +950,15 @@ module sens_gap_tb;
         check(uut.adc_en && sb.size() == 1,
               $sformatf("T13 precondition: conversion running (%0d), FIFO holding a sample (%0d)", uut.adc_en, sb.size()));
         assert_reset(1'b0); cycles(3); release_reset(1'b0);
+        j = n_rtc_trig;                // polling is on again after the reset (rtc_ctrl resets to 1)
         cycles(40);
         fifo_field(f);
         check(f == 2'b00, "T13 reset mid-conversion: FIFO empty, aborted conversion not pushed");
-        rd(A_STATUS, d); check(d[3:2] == 2'b00, "T13 reset mid-conversion: ADC idle");
+        // ADC idle - unless autonomous polling (on out of reset) has legitimately
+        // started a new conversion since the release: with DEFAULT_ALARM_OFFSET 1
+        // (WRP-7 build) the first alarm comes within ~a tick of the release
+        rd(A_STATUS, d); check(d[3:2] == 2'b00 || n_rtc_trig != j,
+                               "T13 reset mid-conversion: ADC idle (or running a sample triggered after the reset)");
         manual_sample(ok2); check(ok2, "T13 manual sampling works after a reset mid-conversion");
         read_meas_check("T13 post-reset sample");
         // RTC controller arming / servicing / idle when reset hits

@@ -12,6 +12,9 @@
 # -----------------------------------------------------------------------------
 include ../../verilator_1core.mk
 
+# build directory: BUILD_ROOT/uvm_fifo when BUILD_ROOT is set (local disk), else obj_dir
+UVM_OBJ = $(if $(BUILD_ROOT),$(BUILD_ROOT)/uvm_fifo,obj_dir)
+
 ROOT   = ../../..
 TOP    = fifo_tb_top
 TEST  ?= fifo_full_test
@@ -35,16 +38,16 @@ all: build run report
 
 build:
 	@echo "===== BUILD $(TOP) (single core; first UVM build is slow) ====="
-	$(RUN_LIMITED) $(VERILATOR) $(VL_COMMON) $(VL_COV_UVM) --top $(TOP) -o V$(TOP) \
+	$(RUN_LIMITED) $(VERILATOR) $(VL_COMMON) $(VL_COV_UVM) --Mdir $(UVM_OBJ) --top $(TOP) -o V$(TOP) \
 	    $(FILES) > build.log 2>&1 || { grep -E "^%Error" build.log | head -30; tail -5 build.log; false; }
 	@grep -c "^%Warning" build.log | xargs echo "warnings (see build.log):"
 
 run:
-	./obj_dir/V$(TOP) +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=$(VERB) +verilator+seed+$(SEED) \
+	$(UVM_OBJ)/V$(TOP) +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=$(VERB) +verilator+seed+$(SEED) \
 	    +verilator+coverage+file+coverage.dat | tee run.log
 
 report:
 	@python3 ../../cov/holes.py coverage.dat
 
 clean:
-	rm -rf obj_dir build.log run.log coverage.dat
+	rm -rf $(UVM_OBJ) obj_dir build.log run.log coverage.dat

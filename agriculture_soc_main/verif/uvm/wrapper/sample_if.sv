@@ -9,4 +9,8 @@ interface sample_if (input logic clk);
     logic [7:0] data;     // sample being pushed
     logic       full;     // FIFO full at the push (-> dropped)
     logic       clear;    // fifo_clear pulse
+    // reset control for the warm-reset / power-on sequences (WRP-8): the top
+    // drives PRESETn / nPOR from these
+    logic       seq_presetn = 1'b1;
+    logic       seq_npor    = 1'b1;
 endinterface

@@ -671,6 +671,7 @@ initial begin
     // =========================================================================
     $display("\n─────────────────────────────────────");
     $display("Results: %0d PASSED, %0d FAILED", pass_count, fail_count);
+    $display("=== RTC: %0d PASSED, %0d FAILED ===", pass_count, fail_count);
     $display("─────────────────────────────────────");
 
     #100;
@@ -681,6 +682,7 @@ end
 initial begin
     #50_000_000;
     $display("WATCHDOG TIMEOUT - simulation hung");
+    $display("=== RTC: %0d PASSED, %0d FAILED (TIMEOUT) ===", pass_count, fail_count + 1);
     $finish;
 end
 

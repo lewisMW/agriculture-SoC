@@ -13,6 +13,9 @@
 # -----------------------------------------------------------------------------
 include ../../verilator_1core.mk
 
+# build directory: BUILD_ROOT/uvm_wrapper when BUILD_ROOT is set (local disk), else obj_dir
+UVM_OBJ = $(if $(BUILD_ROOT),$(BUILD_ROOT)/uvm_wrapper,obj_dir)
+
 ROOT   = ../../..
 TOP    = sensing_tb_top
 TEST  ?= sensing_full_test
@@ -40,7 +43,8 @@ FILES = $(VL_UVM) \
         $(ROOT)/ADC/sim/sky130_fd_sc_hd__nand2_1.v $(ROOT)/ADC/sim/sar_afe_model.v \
         $(ROOT)/Dummy/dummy_amux.v $(ROOT)/Dummy/dummy_pll.v \
         $(ROOT)/RTC/rtc_control_2.v $(RTC_FILES) \
-        ../../cov/fifo_cov.sv ../../cov/fsm_cov.sv ../../cov/rtc_cov.sv ../../cov/wrapper_cov.sv
+        ../../cov/fifo_cov.sv ../../cov/fsm_cov.sv ../../cov/rtc_cov.sv ../../cov/wrapper_cov.sv \
+        ../../sensing_assertions.sv
 
 .PHONY: all build run report clean
 
@@ -54,16 +58,16 @@ all: build run report
 
 build:
 	@echo "===== BUILD $(TOP) (single core; first UVM build is slow) ====="
-	$(RUN_LIMITED) $(VERILATOR) $(VL_COMMON) $(VL_COV_UVM) -DSIMULATION $(RTC_INC) --top $(TOP) -o V$(TOP) \
+	$(RUN_LIMITED) $(VERILATOR) $(VL_COMMON) $(VL_COV_UVM) --assert --Mdir $(UVM_OBJ) -DSIMULATION $(RTC_INC) --top $(TOP) -o V$(TOP) \
 	    $(FILES) > build.log 2>&1 || { grep -E "^%Error" build.log | head -30; tail -5 build.log; false; }
 	@grep -c "^%Warning" build.log | xargs echo "warnings (see build.log):"
 
 run:
-	./obj_dir/V$(TOP) +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=$(VERB) +verilator+seed+$(SEED) \
+	$(UVM_OBJ)/V$(TOP) +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=$(VERB) +verilator+seed+$(SEED) \
 	    +verilator+coverage+file+coverage.dat | tee run.log
 
 report:
 	@python3 ../../cov/holes.py coverage.dat
 
 clean:
-	rm -rf obj_dir build.log run.log coverage.dat
+	rm -rf $(UVM_OBJ) obj_dir build.log run.log coverage.dat

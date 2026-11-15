@@ -22,6 +22,18 @@
 //                    deferred servicing by a cycle)
 //   cg_reset       : warm reset (PRESETn low, nPOR high — RTC counter must
 //                    survive) vs power-on reset (nPOR low)
+// Closure additions:
+//   cp_service_cause    : what made the FSM leave WAITING to sample - the
+//                         PL031 interrupt, the missed-alarm watchdog, or both
+//   cp_wd_frozen        : a CLK1HZ tick arrived while polling was paused (the
+//                         watchdog count must not move)
+//   cp_disable_state    : poll_enable fell while waiting / in the ICR write /
+//                         in the trigger pulse
+//   cp_pending_defer_len: for how long a due alarm waited behind a passthrough
+//   cp_offset_change_ctx: alarm_offset changed while arming / waiting / paused
+//   cp_fw_touch         : firmware wrote RTCMR/RTCIMSC/RTCICR/RTCLR/RTCCR
+//                         while the controller was armed and polling
+// Must-never-happen bins are named viol_* (holes.py fails the report if hit).
 // -----------------------------------------------------------------------------
 module rtc_cov (
     input logic        PCLK,
@@ -39,7 +51,9 @@ module rtc_cov (
     input logic [11:0] PADDR,
     input logic        PREADY,
     input logic        PSLVERR,
-    input logic        ext_sel
+    input logic        ext_sel,
+    input logic        wd_expired,
+    input logic        clk1hz_tick
 );
     localparam logic [4:0]
         S_IDLE          = 5'd0,
@@ -80,6 +94,30 @@ module rtc_cov (
         if (!PRESETn) begin st_q <= S_IDLE; hist_valid <= 1'b0; end
         else          begin st_q <= state;  hist_valid <= 1'b1; end
     end
+
+    // ── closure additions: derived signals ───────────────────────────────────
+    // The cycle in which rtc_control_2 decides to service (leave S_WAITING).
+    wire alarm_due   = (RTCINTR || wd_expired) && poll_enable && (state == S_WAITING);
+    wire service_now = alarm_due && !ext_sel;
+    // Cycles a due alarm has been held off by a granted passthrough.
+    int unsigned defer_cnt;
+    logic        poll_q;
+    logic [31:0] off_q;
+    always @(posedge PCLK or negedge PRESETn) begin
+        if (!PRESETn) begin defer_cnt <= 0; poll_q <= 1'b1; off_q <= 32'd0; end
+        else begin
+            if (alarm_due && ext_sel)  defer_cnt <= defer_cnt + 1;
+            else                       defer_cnt <= 0;
+            poll_q <= poll_enable;
+            off_q  <= alarm_offset;
+        end
+    end
+    wire poll_fall   = poll_q && !poll_enable;
+    wire off_changed = hist_valid && (alarm_offset != off_q);
+    // 1 arming, 2 waiting (polling), 3 paused, 0 anything else (idle/servicing)
+    wire [1:0] off_ctx = (state == S_WAITING) ? (poll_enable ? 2'd2 : 2'd3)
+                       : ((state >= S_ENABLE_SETUP && state <= S_IMSC_ACCESS) || state == S_READ_CAPTURE) ? 2'd1
+                       : 2'd0;
 
     covergroup cg_rtc;
         option.per_instance = 1;
@@ -149,13 +187,16 @@ module rtc_cov (
             bins one    = {1};
             bins few    = {[2:5]};
             bins many   = {[6:15]};
-            bins excess = {[16:$]};   // > a full re-arm: worth a look if hit
+            // Longer than a full service + re-arm (13 PCLK worst case, see
+            // nsc_rtc_boundary_cov cp_stall_len): must never happen.
+            bins viol_excess = {[16:$]};
         }
 
-        // Must NEVER be hit (by design). Counted, not illegal, so a
-        // violation still leaves a coverage.dat to inspect.
+        // Must NEVER be hit (by design). A viol_ bin, not illegal,
+        // so a violation still leaves a coverage.dat to inspect.
         cp_pslverr : coverpoint PSLVERR iff (pt_complete) {
-            bins error_seen = {1'b1};
+            bins okay = {1'b0};
+            bins viol_error_seen = {1'b1};
         }
 
         cp_poll : coverpoint poll_enable {
@@ -175,6 +216,40 @@ module rtc_cov (
 
         cp_trig : coverpoint rtc_trig {
             bins pulse = {1'b1};
+        }
+
+        // ── closure additions ────────────────────────────────────────────────
+        cp_service_cause : coverpoint {RTCINTR, wd_expired} iff (service_now) {
+            bins rtcintr  = {2'b10};
+            bins watchdog = {2'b01};
+            bins both     = {2'b11};   // interrupt serviced late, after the watchdog also ran out
+        }
+        cp_wd_frozen : coverpoint (clk1hz_tick && !poll_enable && state == S_WAITING) {
+            bins tick_while_paused = {1'b1};
+        }
+        cp_disable_state : coverpoint state iff (poll_fall) {
+            bins waiting    = {S_WAITING};
+            bins icr_setup  = {S_ICR_SETUP};
+            bins icr_access = {S_ICR_ACCESS};
+            bins pulse      = {S_PULSE_TRIG};
+        }
+        cp_pending_defer_len : coverpoint defer_cnt iff (service_now && defer_cnt != 0) {
+            bins one        = {1};
+            bins two_to_8   = {[2:8]};
+            bins nine_to_64 = {[9:64]};
+            bins over_64    = {[65:$]};
+        }
+        cp_offset_change_ctx : coverpoint off_ctx iff (off_changed) {
+            bins arming  = {2'd1};
+            bins waiting = {2'd2};
+            bins paused  = {2'd3};
+        }
+        cp_fw_touch : coverpoint PADDR[4:2] iff (pt_complete && PWRITE && state == S_WAITING && poll_enable) {
+            bins rtcmr   = {3'd1};
+            bins rtclr   = {3'd2};
+            bins rtccr   = {3'd3};
+            bins rtcimsc = {3'd4};
+            bins rtcicr  = {3'd7};
         }
     endgroup
 
@@ -219,5 +294,7 @@ bind rtc_control_2 rtc_cov u_rtc_cov (
     .PADDR       (PADDR),
     .PREADY      (PREADY),
     .PSLVERR     (PSLVERR),
-    .ext_sel     (ext_sel)
+    .ext_sel     (ext_sel),
+    .wd_expired  (wd_expired),
+    .clk1hz_tick (clk1hz_tick)
 );

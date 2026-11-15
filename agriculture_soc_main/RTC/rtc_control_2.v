@@ -98,6 +98,17 @@ end
 
 wire nRTCRST = nRTCRST_ff2;
 
+// nRTCRST seen from the PCLK domain. nRTCRST is a CLK1HZ-domain flop; the FSM
+// and the bus arbiter below use this 2-flop-synchronised copy, never nRTCRST
+// itself (it used to feed the combinational APB grant directly - an
+// asynchronous signal in the PREADY/PSEL path).
+reg nrtcrst_s1, nrtcrst_s2;
+always @(posedge PCLK or negedge PRESETn) begin
+    if (!PRESETn) {nrtcrst_s1, nrtcrst_s2} <= 2'b00;
+    else          {nrtcrst_s1, nrtcrst_s2} <= {nRTCRST, nrtcrst_s1};
+end
+wire nrtcrst_pclk = nrtcrst_s2;
+
 
 // -----------------------------------------------------------------------------
 // Passthrough — the external master's APB ports (PSEL/PENABLE/... in the port
@@ -187,7 +198,7 @@ localparam [4:0]
 // -----------------------------------------------------------------------------
 reg [4:0]  state;
 reg [31:0] alarm_target;
-reg        rtc_enabled;     // set after first RTCCR write, never cleared
+reg        rtc_enabled;     // set by the RTCCR write; cleared while nRTCRST is low
 
 // -----------------------------------------------------------------------------
 // Missed-alarm watchdog (fixes F8-OFFSET0/1 and RTCLR-FWD)
@@ -244,11 +255,11 @@ end
 // first WAITING cycle). Gating on !fsm_psel keeps the bus "busy" for that one
 // drain cycle so a passthrough can't clobber the FSM's write.
 // S_IDLE only counts as free while the counter is still in reset (nRTCRST
-// low, the FSM then stays in IDLE). Once nRTCRST is high the FSM always leaves
+// low as seen through nrtcrst_pclk; the FSM then stays in IDLE). Once nRTCRST is high the FSM always leaves
 // IDLE on the next cycle and takes the bus for a whole arm cycle, so granting
 // there let a passthrough SETUP be split from its ACCESS by ~12 cycles of FSM
 // transfers — an APB violation at the PL031 port (bug PL031-APB).
-wire bus_free   = (((state == S_IDLE) && !nRTCRST) || (state == S_WAITING)) && !fsm_psel;
+wire bus_free   = (((state == S_IDLE) && !nrtcrst_pclk) || (state == S_WAITING)) && !fsm_psel;
 
 // An external transfer that collides with an arm cycle is STALLED (PREADY held
 // low) until the FSM parks — it is never failed with PSLVERR. The FSM is
@@ -258,7 +269,15 @@ wire bus_free   = (((state == S_IDLE) && !nRTCRST) || (state == S_WAITING)) && !
 // always completes. This removes the PSLVERR -> AHB-error -> Cortex-M0 HardFault
 // hang vector: firmware can read/write the RTC region at any time without
 // pausing autonomous polling first.
-wire grant = PSEL & bus_free;           // external owns the RTC bus this cycle
+// A transfer whose SETUP has been granted keeps the bus for its ACCESS even if
+// bus_free drops in between: that happens when the counter reset releases
+// (nrtcrst_pclk rises) right after a SETUP granted in S_IDLE. The FSM only
+// drives the bus two cycles after leaving S_IDLE, so the ACCESS never
+// collides with it (the ~fsm_psel term keeps that true by construction).
+// Before, the grant was lost: the PL031 saw a SETUP with no ACCESS, and ~13
+// cycles later an ACCESS with no SETUP (bug RTC-RSTREL, found by the WRP-6
+// soak, regression RTC/tb_rtc_closure.sv RTC-10b).
+wire grant = PSEL & (bus_free | (pt_setup_done & ~fsm_psel));   // external owns the RTC bus this cycle
 wire ext_sel = grant;
 
 // Track whether the RTC has already been shown a SETUP cycle for the current
@@ -328,7 +347,7 @@ always @(posedge PCLK or negedge PRESETn) begin
             // Subsequent times: skip straight to reading time.
        
             S_IDLE: begin
-                if (nRTCRST) begin
+                if (nrtcrst_pclk) begin
                     if (!rtc_enabled)
                         state <= S_ENABLE_SETUP;
                     else
@@ -475,6 +494,17 @@ always @(posedge PCLK or negedge PRESETn) begin
             default: state <= S_IDLE;
 
         endcase
+
+        // A power-on reset of the counter domain (nPOR low -> nRTCRST low)
+        // without an APB reset leaves this FSM running but may stop the PL031
+        // (RTCCR.start is reset with the counter in the PL031 stand-in, and
+        // must be assumed to be in the real IP). Forget that the counter was
+        // enabled, so the next arm cycle goes through S_ENABLE_* and writes
+        // RTCCR = 1 again. Placed after the case so it wins over the set in
+        // S_ENABLE_ACCESS if the reset lands mid-enable. (Bug RTC-NPOR, found
+        // by RTC/tb_rtc_closure.sv RTC-10: the counter stayed at 0 for good.)
+        if (!nrtcrst_pclk)
+            rtc_enabled <= 1'b0;
     end
 end
 

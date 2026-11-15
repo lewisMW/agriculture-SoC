@@ -15,6 +15,23 @@
 // One sample per trigger; the FIFO accumulates samples across many polls until
 // firmware drains it. If the FIFO is full at the pre-check the sample is
 // dropped and err_fifo_full is raised.
+//
+// Stale-conversion guard (bug FSM-STALE): sarlogic decides whether to start a
+// back-to-back conversion on the same sar_clk edge that raises valid, and this
+// FSM only sees valid through the wrapper's synchroniser, so adc_en is still
+// high at that edge: after every sample the ADC runs one more conversion that
+// nobody asked for. A trigger arriving while it runs finds valid already low;
+// treating that as "our conversion started" stored a sample taken up to one
+// conversion BEFORE the trigger, with the previous ADC_CAL setting. Now the
+// FSM tracks it (adc_quiet): cleared in S_WRITE (an unrequested conversion is
+// starting), set again by the next rising edge of valid (it finished). A
+// valid fall only counts as the start of our conversion while adc_quiet is
+// set; if the unrequested one is still running, its completion comes first,
+// and because adc_en is then high at its sDone edge the ADC goes straight on
+// into the conversion this trigger asked for. Out of reset the ADC is idle
+// (valid low), so adc_quiet resets to 1. With an ADC that does not restart,
+// adc_quiet simply waits for the requested conversion's own edges: at worst
+// one extra conversion, never a hang (adc_en stays high meanwhile).
 // -----------------------------------------------------------------------------
 module wrapper_control_2 (
     input  wire clk,
@@ -41,6 +58,8 @@ module wrapper_control_2 (
         S_ERR_FULL   = 3'd6;   // FIFO full at pre-check: drop the sample
 
     reg [2:0] state, next_state;
+    reg       adc_quiet;   // no unrequested conversion in flight (see header)
+    reg       adc_valid_q; // adc_valid last cycle, for its rising edge
 
     // ── Next-state (combinational) ──────────────────────────────────────────
     always @(*) begin
@@ -49,7 +68,7 @@ module wrapper_control_2 (
             S_IDLE:       if (sample_trig) next_state = S_CHECK_FIFO;
             S_CHECK_FIFO: next_state = fifo_full ? S_ERR_FULL : S_ENABLE;
             S_ENABLE:     next_state = S_WAIT_START;
-            S_WAIT_START: if (!adc_valid)  next_state = S_WAIT_DONE;  // conversion started
+            S_WAIT_START: if (!adc_valid && adc_quiet) next_state = S_WAIT_DONE;  // our conversion started
             S_WAIT_DONE:  if (adc_valid)   next_state = S_WRITE;      // conversion done
             S_WRITE:      next_state = S_IDLE;
             S_ERR_FULL:   next_state = S_IDLE;
@@ -73,8 +92,13 @@ module wrapper_control_2 (
         if (!rstn) begin
             state         <= S_IDLE;
             err_fifo_full <= 1'b0;
+            adc_quiet     <= 1'b1;
+            adc_valid_q   <= 1'b0;
         end else begin
-            state <= next_state;
+            state       <= next_state;
+            adc_valid_q <= adc_valid;
+            if (state == S_WRITE)               adc_quiet <= 1'b0;   // ADC saw adc_en at its sDone edge
+            else if (adc_valid && !adc_valid_q) adc_quiet <= 1'b1;   // that conversion has finished
             if (state == S_ERR_FULL)
                 err_fifo_full <= 1'b1;               // latch the drop
             else if (state == S_CHECK_FIFO && !fifo_full)

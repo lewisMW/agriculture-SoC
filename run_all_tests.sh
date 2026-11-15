@@ -41,7 +41,9 @@ STEP_TIMEOUT="${STEP_TIMEOUT:-5400}"      # seconds per step (UVM first build is
 SOCSIM_TIMEOUT="${SOCSIM_TIMEOUT:-3600}"  # seconds per firmware test
 
 SOCSIM_TESTS=(adc_trigger_test fifo_drain_test sensing_driver_test rtc_time_test
-              adc_autonomous_test pslverr_test fault_recovery_test)
+              adc_autonomous_test pslverr_test fault_recovery_test
+              sensing_regmap_test sensing_rtc_regs_test sensing_stress_test
+              sensing_sleep_poll_test sensing_reset_test sensing_cal_test)
 
 # ---------------------------------------------------------------- arguments --
 DO_LINT=1 DO_UNIT=1 DO_COV=1 DO_UVM=1 DO_NSCCOV=1 DO_SOCSIM=1
@@ -286,8 +288,8 @@ if [ "$DO_SOCSIM" = 1 ]; then
         record FAIL "fw-$t" "no uart2.log (build failed? exit ${sexit:-?}) -> $log [${dt}s]"
       elif grep -qE 'FAIL' "$uart"; then
         record FAIL "fw-$t" "$(grep -m1 -E 'FAIL' "$uart" | tr -d '\r') -> $OUT/fw-$t.uart2.log [${dt}s]"
-      elif grep -qE 'Test Passed!|: PASS' "$uart"; then
-        record PASS "fw-$t" "$(grep -m1 -E 'Test Passed!|: PASS' "$uart" | tr -d '\r') [${dt}s]"
+      elif grep -qE 'Test Passed!|: PASS|\*\* TEST PASSED \*\*' "$uart"; then
+        record PASS "fw-$t" "$(grep -m1 -E 'Test Passed!|: PASS|\*\* TEST PASSED \*\*' "$uart" | tr -d '\r') [${dt}s]"
       elif grep -q 'SKIPPED' "$uart"; then
         record WARN "fw-$t" "$(grep -m1 SKIPPED "$uart" | tr -d '\r') [${dt}s]"
       else

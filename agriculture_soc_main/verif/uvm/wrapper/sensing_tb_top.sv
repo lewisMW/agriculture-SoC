@@ -28,9 +28,12 @@ module sensing_tb_top;
         CLK1HZ = ~CLK1HZ;
     end
 
-    logic nPOR;
+    logic nPOR_init, presetn_init;
     apb_if    #(.ADDR_WIDTH(12)) apb (PCLK);
     sample_if                    smp (PCLK);
+    // power-on sequence below, then whatever the reset sequences ask for
+    wire nPOR = nPOR_init & smp.seq_npor;
+    assign apb.PRESETn = presetn_init & smp.seq_presetn;
 
     adc_apb_wrapper_rev2 dut (
         .PCLK     (PCLK),
@@ -58,12 +61,12 @@ module sensing_tb_top;
     assign smp.clear = dut.fifo_clear;
 
     initial begin
-        nPOR        = 1'b0;
-        apb.PRESETn = 1'b0;
+        nPOR_init    = 1'b0;
+        presetn_init = 1'b0;
         repeat (4) @(posedge PCLK);
-        nPOR = 1'b1;
+        nPOR_init = 1'b1;
         repeat (2) @(posedge PCLK);
-        apb.PRESETn = 1'b1;
+        presetn_init = 1'b1;
     end
 
     initial begin

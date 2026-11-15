@@ -20,6 +20,10 @@ package apb_uvm_pkg;
         rand bit                      write;
         rand bit [31:0]               wdata;
         rand int unsigned             idle_cycles;   // gap before this transfer
+        // b2b: the NEXT item follows with no idle cycle (PSEL stays high, its
+        // SETUP is driven on the edge this transfer completes). Only set by
+        // apb_base_seq::burst, which supplies the next item in zero time.
+        bit                           b2b;
         // response
         bit [31:0]   rdata;
         bit          slverr;
@@ -55,22 +59,29 @@ package apb_uvm_pkg;
         endfunction
 
         task run_phase(uvm_phase phase);
+            bit chained = 0;
             vif.PSEL <= 0; vif.PENABLE <= 0; vif.PWRITE <= 0;
             vif.PADDR <= '0; vif.PWDATA <= '0;
             forever begin
                 seq_item_port.get_next_item(req);
-                drive(req);
+                if (!vif.PRESETn) chained = 0;
+                drive(req, chained);
+                chained = req.b2b;
                 seq_item_port.item_done();
             end
         endtask
 
-        task drive(apb_item t);
-            repeat (t.idle_cycles) begin
+        task drive(apb_item t, bit chained);
+            if (!chained) begin
+                repeat (t.idle_cycles) begin
+                    @(posedge vif.PCLK);
+                    vif.PSEL <= 0; vif.PENABLE <= 0;
+                end
+                // SETUP on the next edge (after an idle cycle)
                 @(posedge vif.PCLK);
-                vif.PSEL <= 0; vif.PENABLE <= 0;
             end
-            // SETUP
-            @(posedge vif.PCLK);
+            // (chained: we are on the edge the previous transfer completed on,
+            // so this SETUP follows its ACCESS with no idle cycle)
             vif.PSEL    <= 1;
             vif.PENABLE <= 0;
             vif.PWRITE  <= t.write;
@@ -89,7 +100,7 @@ package apb_uvm_pkg;
             end
             t.rdata  = vif.PRDATA;
             t.slverr = vif.PSLVERR;
-            vif.PSEL    <= 0;
+            if (!t.b2b) vif.PSEL <= 0;
             vif.PENABLE <= 0;
         endtask
     endclass
@@ -158,6 +169,25 @@ package apb_uvm_pkg;
             if (!t.randomize() with { addr == local::addr; write == 1; wdata == local::data; idle_cycles == local::idle; })
                 `uvm_fatal("RAND", "apb wr randomize failed")
             finish_item(t);
+        endtask
+
+        // Back-to-back burst: n transfers with no idle cycle between them
+        // (PSEL held). wr_mask[i] selects a write of wdata[i]; reads return in
+        // rdata[i]. The items are issued in zero time, as the driver requires.
+        task burst(bit [APB_ADDR_WIDTH-1:0] addr[], bit wr_mask[], bit [31:0] wdata[], output bit [31:0] rdata[]);
+            apb_item t[];
+            t = new[addr.size()];
+            rdata = new[addr.size()];
+            foreach (addr[i]) begin
+                t[i] = apb_item::type_id::create("b2b");
+                start_item(t[i]);
+                if (!t[i].randomize() with { addr == local::addr[i]; write == local::wr_mask[i];
+                                             wdata == local::wdata[i]; idle_cycles == 0; })
+                    `uvm_fatal("RAND", "apb burst randomize failed")
+                t[i].b2b = (i + 1 < addr.size());
+                finish_item(t[i]);
+                rdata[i] = t[i].rdata;
+            end
         endtask
 
         task rd(bit [APB_ADDR_WIDTH-1:0] addr, output bit [31:0] data, input int unsigned idle = 0);

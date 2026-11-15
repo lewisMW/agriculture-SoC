@@ -1,32 +1,34 @@
-VERILATOR = verilator
-# TB_MODULE = arm_rtc_tb
-TB_MODULE = tb_rtc_control
-TB_FILE   = $(TB_MODULE).v
+# -----------------------------------------------------------------------------
+# RTC/Makefile - rtc_control_2 block benches.
+#   make        tb_rtc_control       directed (P01-P32)
+#   make rand   tb_rtc_control_rand  constrained-random collision / liveness
+#   make clo    tb_rtc_closure       closure tests RTC-1..RTC-12 (+ FIX-1) with
+#                                    the bound SVA (--assert)
+#   STUB_RTC=1  PL031 stand-in (no ARM IP; NOT sign-off) - otherwise the real
+#               PL031 from ARM_IP_LIBRARY_PATH
+# Explicit file lists: this directory also holds rtc_control.v, *_old.v and
+# older testbenches, which must not be compiled in.
+# One core / BUILD_ROOT: see ../verif/block_tb.mk.
+# -----------------------------------------------------------------------------
+include ../verif/block_tb.mk
 
-# ARM_IP_LIBRARY_PATH ?= /path/to/nanosoc_arm_ip
+RTC_DUT   = ./rtc_control_2.v $(RTC_FILES)
+DIR_FILES = ./tb_rtc_control.v $(RTC_DUT)
+RND_FILES = ./tb_rtc_control_rand.v $(RTC_DUT)
+CLO_FILES = ./tb_rtc_closure.sv $(RTC_DUT) $(SVA_FILE)
 
-rtc_ip = $(ARM_IP_LIBRARY_PATH)/PL031/PL031-r1p3-00rel0/PL031-BU-00000-r1p3-00rel0/PL031_VC/rtc_pl031/verilog/rtl_source
+RTC_FLAGS = $(RTC_INC) -Wno-WIDTHEXPAND
 
-VERILOG_FILES = $(shell find . -type f -name "*.v") $(shell find $(rtc_ip) -type f -name "*.v")
-
-simulation_defs = -DSIMULATION
-VERILATOR_FLAGS = -Wno-WIDTHEXPAND
-
-.PHONY: all rand clean
+.PHONY: all rand clo clean
 
 all:
-	$(VERILATOR) --cc --trace --exe --main $(VERILATOR_FLAGS) --top $(TB_MODULE) $(VERILOG_FILES) --timing $(simulation_defs) -I$(rtc_ip)
-	$(MAKE) -C obj_dir -f V$(TB_MODULE).mk
-	./obj_dir/V$(TB_MODULE)
-
-# Constrained-random collision/liveness stress test (see tb_rtc_control_rand.v).
-RAND_MODULE = tb_rtc_control_rand
+	$(call tb_run,rtc,tb_rtc_control,$(DIR_FILES),$(RTC_FLAGS) --trace,)
 
 rand:
-	$(VERILATOR) --cc --trace --exe --main $(VERILATOR_FLAGS) --top $(RAND_MODULE) $(VERILOG_FILES) --timing $(simulation_defs) -I$(rtc_ip)
-	$(MAKE) -C obj_dir -f V$(RAND_MODULE).mk
-	./obj_dir/V$(RAND_MODULE)
+	$(call tb_run,rtc_rand,tb_rtc_control_rand,$(RND_FILES),$(RTC_FLAGS) --trace,)
+
+clo:
+	$(call tb_run,rtc_clo,tb_rtc_closure,$(CLO_FILES),$(RTC_FLAGS) --assert,)
 
 clean:
-	rm -rf obj_dir waveform.vcd
-
+	rm -rf $(OBJ)/obj_rtc* obj_dir build_*.log waveform.vcd
