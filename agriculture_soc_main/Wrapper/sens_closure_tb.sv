@@ -220,6 +220,14 @@ module sens_closure_tb #(
     end
     always @(posedge uut.adc_raw_valid) begin last_start_t = done_start_t; last_cal = done_cal; end
 
+    // FIX-2: conversion timeouts (expected only while the ADC valid is forced)
+    int unsigned n_timeout = 0, n_timeout_expected = 0;
+    bit          tmo_forcing = 1'b0;
+    always @(posedge PCLK) if (PRESETn && uut.u_ctrl.state == 3'd7) begin
+        if (tmo_forcing) n_timeout_expected++;
+        else begin n_timeout++; $display("FAIL [%0t] unexpected ADC conversion timeout", $time); end
+    end
+
     // Pop through the bus and compare with the model's front
     int unsigned n_pop_bad = 0;
     // The expected value is the model's front in the ACCESS cycle itself: a
@@ -269,11 +277,11 @@ module sens_closure_tb #(
         wait_fsm(F_WDONE, 100, ok);
         rd(A_STATUS, s);
         check(ok && s[3:2] == 2'b01, $sformatf("WRP-1 STATUS[3:2] reads 1 during a conversion (0x%08h)", s));
-        if (s[31:6] != 0) resv_bad++;
+        if (s[31:7] != 0) resv_bad++;
         wait_fsm_idle();
         rd(A_STATUS, s);
         check(s[3:2] == 2'b00 && s[1:0] == 2'b01, $sformatf("WRP-1 STATUS[3:2] reads 0 after it, FIFO partial (0x%08h)", s));
-        if (s[31:6] != 0) resv_bad++;
+        if (s[31:7] != 0) resv_bad++;
         // fill, drop, then the next good sample clears [4]
         while (fq.size() < 16) manual_sample();
         rd(A_STATUS, s);
@@ -288,7 +296,7 @@ module sens_closure_tb #(
         manual_sample();
         rd(A_STATUS, s);
         check(s[4] == 1'b0, $sformatf("WRP-1 STATUS[4] clears on the next accepted sample (0x%08h)", s));
-        if (s[31:6] != 0) resv_bad++;
+        if (s[31:7] != 0) resv_bad++;
         wr(A_FCLR, 32'h1); cyc(2);
         // alarm pending while paused: [5]
         wait_rtc_parked();
@@ -296,12 +304,12 @@ module sens_closure_tb #(
         cyc(3);
         rd(A_STATUS, s);
         check(uut.u_rtc.RTCINTR && s[5] == 1'b1, $sformatf("WRP-1 STATUS[5] reads 1 while an alarm is pending, polling paused (0x%08h)", s));
-        if (s[31:6] != 0) resv_bad++;
+        if (s[31:7] != 0) resv_bad++;
         set_poll(1'b1);
         cyc(20);
         rd(A_STATUS, s);
         check(s[5] == 1'b0, $sformatf("WRP-1 STATUS[5] reads 0 once the alarm is serviced (0x%08h)", s));
-        check(resv_bad == 0, "WRP-1 STATUS[31:6] always 0");
+        check(resv_bad == 0, "WRP-1 STATUS[31:7] always 0");
         wait_fsm_idle();
     endtask
 
@@ -565,6 +573,45 @@ module sens_closure_tb #(
         set_poll(1'b1);
     endtask
 
+
+    // ---------------------------------------------------------------- FIX-2
+    // A dead ADC (raw valid stuck 0, then stuck 1) times out: STATUS[6] sets,
+    // STATUS[3:2] returns to 0, the RTC keeps triggering, and sampling
+    // recovers when the ADC comes back; the flag clears on the next sample.
+    task automatic fix2_wrapper();
+        logic [31:0] s;
+        int unsigned t0, p0;
+        $display("--- FIX-2 ADC conversion timeout through the wrapper ---");
+        wr(A_ALARM, 32'd1); set_poll(1'b1);
+        for (int k = 0; k < 2; k++) begin
+            wait_fsm_idle();
+            tmo_forcing = 1'b1;
+            if (k == 0) force uut.adc_valid_s1 = 1'b0; else force uut.adc_valid_s1 = 1'b1;   // dead valid as the wrapper sees it
+            t0 = n_rtc_trig;
+            begin int g = 0; while (n_timeout_expected == 0 && g < 20000) begin cyc(1); g++; end end
+            cyc(4);
+            rd(A_STATUS, s);
+            check(s[6] == 1'b1, $sformatf("FIX-2 valid stuck %0d: STATUS[6] reads 1 (0x%08h)", k, s));
+            begin int g = 0; while (uut.u_ctrl.state != F_IDLE && g < 4000) begin cyc(1); g++; end end
+            cyc(3); rd(A_STATUS, s);
+            check(s[3:2] == 2'b00 || uut.u_ctrl.state != F_IDLE, $sformatf("FIX-2 valid stuck %0d: STATUS[3:2] returns to 0 after the timeout", k));
+            begin int g = 0; while (n_rtc_trig < t0 + 2 && g < 20 * tick()) begin cyc(1); g++; end end
+            check(n_rtc_trig >= t0 + 2, $sformatf("FIX-2 valid stuck %0d: the RTC keeps triggering", k));
+            release uut.adc_valid_s1;
+            wait_fsm_idle();
+            tmo_forcing = 1'b0;
+            p0 = n_push;
+            begin int g = 0; while (n_push == p0 && g < 20 * tick()) begin cyc(1); g++; end end
+            check(n_push > p0, $sformatf("FIX-2 valid stuck %0d: sampling recovers after the ADC comes back", k));
+            wait_fsm_idle(); cyc(4);
+            rd(A_STATUS, s);
+            check(s[6] == 1'b0, "FIX-2 the next written sample clears STATUS[6]");
+            n_timeout_expected = 0;
+        end
+        wr(A_ALARM, 32'd5);
+        wr(A_FCLR, 32'h1); cyc(2);
+    endtask
+
     // ---------------------------------------------- RTC cases at wrapper level
     task automatic sampling_continues(input string nm, input int max_ticks);
         int unsigned t0 = n_rtc_trig;
@@ -638,8 +685,10 @@ module sens_closure_tb #(
         end
         adc6();
         stale();
+        if (!adc_only) fix2_wrapper();
         if (!adc_only) rtc_wrapper();
         check(n_pslverr == 0, "PSLVERR never seen");
+        check(n_timeout == 0, $sformatf("FIX-2 no genuine conversion (incl. calibrations, ADC_CLK_DIV %0d) ever timed out", ADC_CLK_DIV));
         check(sb_err == 0 && n_pop_bad == 0, "FIFO scoreboard: every pop matched the model");
         check(max_stall <= 13, $sformatf("longest APB stall %0d PCLK <= 13", max_stall));
         check(n_stale == 0 && n_calmis == 0, $sformatf("no sample from a conversion older than its trigger, all run (%0d samples checked)", n_age_checked));

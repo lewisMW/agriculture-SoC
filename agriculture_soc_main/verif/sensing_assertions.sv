@@ -92,7 +92,9 @@ bind fifo_apb_adc fifo_sva #(.DEPTH(DEPTH), .DW(DATA_WIDTH)) u_fifo_sva (
 );
 
 // ── Sampling FSM (wrapper_control_2) ─────────────────────────────────────────
-module fsm_sva (
+module fsm_sva #(
+    parameter CONV_TIMEOUT = 1344
+)(
     input logic       clk,
     input logic       rstn,
     input logic [2:0] state,
@@ -103,7 +105,7 @@ module fsm_sva (
 );
     localparam logic [2:0] S_IDLE = 3'd0, S_CHECK_FIFO = 3'd1, S_ENABLE = 3'd2,
                            S_WAIT_START = 3'd3, S_WAIT_DONE = 3'd4, S_WRITE = 3'd5,
-                           S_ERR_FULL = 3'd6;
+                           S_ERR_FULL = 3'd6, S_ERR_TIMEOUT = 3'd7;
 
     // $past / $stable refer to the previous clock edge: only meaningful from
     // the second edge after a reset (the clock may not even run during reset).
@@ -113,10 +115,15 @@ module fsm_sva (
         else        past_ok <= 1'b1;
     end
 
-    // state stays within the legal encoding (no illegal/unreachable state)
-    a_legal_state: assert property (@(posedge clk) disable iff (!rstn)
-        state <= 3'd6)
-        else $error("wrapper_control_2 illegal state %0d", state);
+    // FIX-2: every 3-bit encoding is a state now (S_ERR_TIMEOUT = 7), so the
+    // legal-state check is replaced by the bound the timeout guarantees:
+    // adc_en is never high for more than CONV_TIMEOUT + 3 cycles
+    int unsigned en_run;
+    always @(posedge clk or negedge rstn)
+        if (!rstn) en_run <= 0; else en_run <= adc_en ? en_run + 1 : 0;
+    a_adc_en_bounded: assert property (@(posedge clk) disable iff (!rstn)
+        en_run <= CONV_TIMEOUT + 3)
+        else $error("adc_en high for %0d cycles (CONV_TIMEOUT %0d)", en_run, CONV_TIMEOUT);
 
 `ifndef SVA_FSM_UNIT
     // the FSM must never push a sample while the FIFO is full
@@ -141,20 +148,22 @@ module fsm_sva (
     a_arc_enable: assert property (@(posedge clk) disable iff (!rstn)
         (state == S_ENABLE)     |=> (state == S_WAIT_START));
     a_arc_wstart: assert property (@(posedge clk) disable iff (!rstn)
-        (state == S_WAIT_START) |=> (state == S_WAIT_START || state == S_WAIT_DONE));
+        (state == S_WAIT_START) |=> (state == S_WAIT_START || state == S_WAIT_DONE || state == S_ERR_TIMEOUT));
     a_arc_wdone:  assert property (@(posedge clk) disable iff (!rstn)
-        (state == S_WAIT_DONE)  |=> (state == S_WAIT_DONE || state == S_WRITE));
+        (state == S_WAIT_DONE)  |=> (state == S_WAIT_DONE || state == S_WRITE || state == S_ERR_TIMEOUT));
     a_arc_write:  assert property (@(posedge clk) disable iff (!rstn)
         (state == S_WRITE)      |=> (state == S_IDLE));
     a_arc_err:    assert property (@(posedge clk) disable iff (!rstn)
         (state == S_ERR_FULL)   |=> (state == S_IDLE));
+    a_arc_timeout: assert property (@(posedge clk) disable iff (!rstn)
+        (state == S_ERR_TIMEOUT) |=> (state == S_IDLE));
 
     // the drop flag rises only in the cycle after S_ERR_FULL
     a_err_rise: assert property (@(posedge clk) disable iff (!rstn)
         (past_ok && $rose(err_fifo_full)) |-> ($past(state) == S_ERR_FULL));
 endmodule
 
-bind wrapper_control_2 fsm_sva u_fsm_sva (
+bind wrapper_control_2 fsm_sva #(.CONV_TIMEOUT(CONV_TIMEOUT)) u_fsm_sva (
     .clk(clk), .rstn(rstn), .state(state),
     .fifo_write_en(fifo_write_en), .fifo_full(fifo_full),
     .adc_en(adc_en), .err_fifo_full(err_fifo_full)
@@ -259,7 +268,7 @@ module wrap_sva #(
 
     // reserved status bits read 0
     a_status_reserved: assert property (@(posedge PCLK) disable iff (!PRESETn)
-        status_reg[31:6] == 26'd0)
+        status_reg[31:7] == 25'd0)     // [6] = ADC timeout (FIX-2)
         else $error("status_reg reserved bits set: 0x%08h", status_reg);
 endmodule
 

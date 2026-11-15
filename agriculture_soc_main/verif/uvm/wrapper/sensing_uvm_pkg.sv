@@ -190,7 +190,7 @@ package sensing_uvm_pkg;
                     n_samples_checked++;
                 end
             end else if (t.addr == REG_STATUS) begin
-                check(t.rdata[31:6] == 0, $sformatf("STATUS reserved bits set: 0x%08h", t.rdata));
+                check(t.rdata[31:7] == 0, $sformatf("STATUS reserved bits set: 0x%08h", t.rdata));
             end else if (!is_mapped(t.addr)) begin
                 check(t.rdata == 0, $sformatf("unmapped 0x%03h must read 0, got 0x%08h", t.addr, t.rdata));
             end

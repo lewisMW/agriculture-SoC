@@ -35,7 +35,7 @@ def wait_sample(t, desc, bug=None, count=0xFFF):
 def sens_ahb():
     t = AdpTest("sens_ahb", "sensing peripheral register interface over AHB")
     # First accesses after the prologue's debugger reset ("C 201"): reset values.
-    t.rd(STATUS, check=lambda v, c: (v >> 6) == 0, desc="STATUS[31:6] read 0 after reset")
+    t.rd(STATUS, check=lambda v, c: (v >> 7) == 0, desc="STATUS[31:7] read 0 after reset")
     t.rd(MEAS_HI, expect=0, desc="MEAS_HI reset value 0")
     t.rd(MEAS_LO, mask=0xFFFFFF00, expect=0, desc="MEAS_LO is an 8-bit sample, zero-extended")
     for a, v, n in [(PLL, 0, "PLL_CONTROL"), (AMUX, 0, "AMUX"), (TRIG, 0, "ADC_TRIGGER (WO)"),
@@ -114,7 +114,7 @@ def sens_ahb():
     t.wr(MEAS_HI, 0xFFFFFFFF, desc="write to RO MEAS_HI is OKAY")
     t.wr(MEAS_LO, 0xFFFFFFFF, desc="write to RO MEAS_LO is OKAY")
     fifo_empty(t, "writes to RO registers do not push")
-    t.rd(STATUS, mask=0xFFFFFFC0, expect=0, desc="writes to RO STATUS do not stick")
+    t.rd(STATUS, mask=0xFFFFFF80, expect=0, desc="writes to RO STATUS do not stick")
     t.rd(TRIG, expect=0, desc="ADC_TRIGGER (WO) reads 0")
     t.rd(FCLR, expect=0, desc="FIFO_CLEAR (WO) reads 0")
     # reserved bits
@@ -226,7 +226,7 @@ def sys1_matrix(t):
             t.wr(reg + off, 0xFFFFFFFF & ((1 << (8 * size)) - 1), size=size,
                  desc="SYS-1 %s %s write is OKAY" % (name, kind))
         fifo_empty(t, "SYS-1 writes to %s neither push nor pop" % name)
-    t.rd(STATUS, mask=0xFFFFFFC0, expect=0, desc="SYS-1 STATUS reserved bits still 0 after the RO writes")
+    t.rd(STATUS, mask=0xFFFFFF80, expect=0, desc="SYS-1 STATUS reserved bits still 0 after the RO writes")
     t.rd(MEAS_HI, expect=0, desc="SYS-1 MEAS_HI still 0 after the RO writes")
     # RTC passthrough: sub-word writes dropped, word writes land
     for reg, name, val in ((RTCMR, "RTCMR", 0x1234_5678), (RTCLR, "RTCLR", 20000), (RTCIMSC, "RTCIMSC", 1)):

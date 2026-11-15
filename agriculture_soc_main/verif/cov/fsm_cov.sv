@@ -25,7 +25,8 @@ module fsm_cov (
     input logic       sample_trig,
     input logic       fifo_full,
     input logic       adc_valid,
-    input logic       err_fifo_full
+    input logic       err_fifo_full,
+    input logic       err_adc_timeout
 );
     // Mirrors wrapper_control_2's localparams (kept local: bind can't see them)
     localparam logic [2:0]
@@ -35,7 +36,8 @@ module fsm_cov (
         S_WAIT_START = 3'd3,
         S_WAIT_DONE  = 3'd4,
         S_WRITE      = 3'd5,
-        S_ERR_FULL   = 3'd6;
+        S_ERR_FULL   = 3'd6,
+        S_ERR_TIMEOUT= 3'd7;   // FIX-2
 
     // Transitions are covered as {previous, current} value bins: Verilator
     // 5.052 transition bins `(a => b)` only accept literal numbers (a named
@@ -61,9 +63,7 @@ module fsm_cov (
             bins wait_done  = {S_WAIT_DONE};
             bins write      = {S_WRITE};
             bins err_full   = {S_ERR_FULL};
-            // must never happen; a viol_ bin (an illegal_bins hit would abort
-            // the run without writing coverage)
-            bins viol_illegal_state = {3'd7};
+            bins err_timeout= {S_ERR_TIMEOUT};    // FIX-2: all 8 encodings are states
         }
 
         cp_arc : coverpoint {st_q, state} iff (hist != 0) {
@@ -78,6 +78,13 @@ module fsm_cov (
             bins wdone_to_write   = {{S_WAIT_DONE,  S_WRITE}};
             bins write_to_idle    = {{S_WRITE,      S_IDLE}};
             bins err_to_idle      = {{S_ERR_FULL,   S_IDLE}};
+            bins wstart_to_timeout= {{S_WAIT_START, S_ERR_TIMEOUT}};   // FIX-2
+            bins wdone_to_timeout = {{S_WAIT_DONE,  S_ERR_TIMEOUT}};
+            bins timeout_to_idle  = {{S_ERR_TIMEOUT, S_IDLE}};
+        }
+        cp_timeout_flag : coverpoint err_adc_timeout {   // FIX-2
+            bins set   = (1'b0 => 1'b1);
+            bins clear = (1'b1 => 1'b0);
         }
 
         cp_trig_ctx : coverpoint state iff (sample_trig) {
@@ -85,7 +92,7 @@ module fsm_cov (
             bins ignored_checking  = {S_CHECK_FIFO};
             bins ignored_enabling  = {S_ENABLE};
             bins ignored_converting= {S_WAIT_START, S_WAIT_DONE};
-            bins ignored_writing   = {S_WRITE, S_ERR_FULL};
+            bins ignored_writing   = {S_WRITE, S_ERR_FULL, S_ERR_TIMEOUT};
         }
 
         cp_full_check : coverpoint fifo_full iff (state == S_CHECK_FIFO) {
@@ -121,5 +128,6 @@ bind wrapper_control_2 fsm_cov u_fsm_cov (
     .sample_trig  (sample_trig),
     .fifo_full    (fifo_full),
     .adc_valid    (adc_valid),
-    .err_fifo_full(err_fifo_full)
+    .err_fifo_full(err_fifo_full),
+    .err_adc_timeout(err_adc_timeout)
 );

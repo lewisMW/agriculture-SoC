@@ -38,6 +38,7 @@ typedef struct
 #define STATUS_ADC_SHIFT      2
 #define STATUS_FIFO_DROP_MASK 0x10   // [4] last sample dropped (FIFO was full)
 #define STATUS_RTC_INTR_MASK  0x20   // [5] RTC interrupt pending
+#define STATUS_ADC_TIMEOUT_MASK 0x40 // [6] last conversion timed out (FIX-2); clears on the next written sample
 
 #define STATUS_FIFO_EMPTY     0x00
 #define STATUS_FIFO_READY     0x01

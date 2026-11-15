@@ -102,11 +102,26 @@ static inline int sensing_fifo_empty(void)    { return GET_FIFO_STATUS(sensing_s
 static inline int sensing_fifo_full(void)     { return GET_FIFO_STATUS(sensing_status()) == STATUS_FIFO_FULL; }
 static inline int sensing_sample_dropped(void){ return (sensing_status() & STATUS_FIFO_DROP_MASK) != 0; }
 static inline int sensing_rtc_intr(void)      { return (sensing_status() & STATUS_RTC_INTR_MASK) != 0; }
+/* STATUS[6] (FIX-2): the last conversion timed out (dead ADC); no sample was
+ * written. Sticky until the next sample is written. */
+static inline int sensing_adc_timed_out(void) { return (sensing_status() & STATUS_ADC_TIMEOUT_MASK) != 0; }
 
 /* Wait until the ADC is idle (STATUS[3:2] != running). */
 static inline void sensing_wait_adc_idle(void)
 {
     while (GET_ADC_STATUS(sensing_status()) == STATUS_ADC_RUNNING) { }
+}
+
+/* Manual one-shot conversion, waited to completion. Returns 1 if the ADC
+ * completed, 0 if the conversion timed out (STATUS[6], FIX-2) - no sample was
+ * written then. A sample dropped on a full FIFO is reported separately by
+ * sensing_sample_dropped(). The settle lets the trigger reach the ADC. */
+static inline int sensing_trigger_wait(void)
+{
+    sensing_trigger_oneshot();
+    sensing_delay(SENSING_PARK_SETTLE);
+    sensing_wait_adc_idle();
+    return !sensing_adc_timed_out();
 }
 
 /* Stop autonomous sampling and wait out any conversion already in flight, so

@@ -52,7 +52,7 @@ int main(void)
     sp_str("sensing_regmap_test: start\n");
 
     /* ---- reset values (first accesses after boot) ---- */
-    SC_CHECK((R32(BASE + 0x004) >> 6) == 0, "STATUS[31:6] reset 0");
+    SC_CHECK((R32(BASE + 0x004) >> 7) == 0, "STATUS[31:7] reset 0");
     SC_CHECK(R32(BASE + 0x008) == 0,        "MEASUREMENT_HI reset 0");
     SC_CHECK(R32(BASE + 0x100) == 0,        "PLL_CONTROL reset 0");
     SC_CHECK(R32(BASE + 0x104) == 0,        "AMUX reset 0");
@@ -142,7 +142,7 @@ int main(void)
     R32(BASE + 0x004) = 0xFFFFFFFFu; R32(BASE + 0x008) = 0xFFFFFFFFu; R32(BASE + 0x00C) = 0xFFFFFFFFu;
     R8(BASE + 0x005) = 0xFF; R16(BASE + 0x00E) = 0xFFFF;
     SC_CHECK(sensing_fifo_empty(),           "writes to RO STATUS/MEASUREMENT neither push nor pop");
-    SC_CHECK((R32(BASE + 0x004) >> 6) == 0,  "STATUS reserved bits still 0 after RO writes");
+    SC_CHECK((R32(BASE + 0x004) >> 7) == 0,  "STATUS reserved bits still 0 after RO writes");
     SC_CHECK(R32(BASE + 0x008) == 0,         "MEASUREMENT_HI still 0 after RO writes");
 
     /* ---- unmapped offsets: read 0, writes ignored, no fault ---- */
@@ -162,7 +162,7 @@ int main(void)
     /* ---- aliases: 64 KB repeat and the EXP mirror reach the registers ---- */
     SC_CHECK(R32(0x60010100u) == 0xCAFEF00Du, "0x6001_0100 aliases PLL_CONTROL (64 KB repeat)");
     SC_CHECK(R32(0xA0000100u) == 0xCAFEF00Du, "0xA000_0100 (EXP mirror) reads PLL_CONTROL");
-    SC_CHECK((R32(0x60010004u) >> 6) == 0 && (R32(0xA0000004u) >> 6) == 0, "STATUS through 0x6001_0004 and 0xA000_0004");
+    SC_CHECK((R32(0x60010004u) >> 7) == 0 && (R32(0xA0000004u) >> 7) == 0, "STATUS through 0x6001_0004 and 0xA000_0004");
     R32(0xA0000104u) = 0x2;
     SC_CHECK(R32(BASE + 0x104) == 0x2, "write via 0xA000_0104 reached AMUX");
     R32(BASE + 0x104) = 0;

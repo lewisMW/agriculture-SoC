@@ -113,7 +113,7 @@ module nsc_sens_apb_cov #(
 
     function automatic logic reset_value_ok(input reg_e rr, input logic [31:0] d);
         case (rr)
-            R_STATUS:  return d[31:6] == 0;               // live status; upper bits 0
+            R_STATUS:  return d[31:7] == 0;  // [6] = ADC timeout (FIX-2)               // live status; upper bits 0
             R_MEAS_HI: return d == 32'h0;
             R_PLL:     return d == 32'h0;
             R_AMUX:    return d == 32'h0;

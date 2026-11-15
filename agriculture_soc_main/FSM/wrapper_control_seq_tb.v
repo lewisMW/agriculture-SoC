@@ -25,7 +25,8 @@ module wrapper_control_seq_tb;
 
     // FSM state encodings (mirror wrapper_control_2.v)
     localparam [2:0] S_IDLE=3'd0, S_CHECK_FIFO=3'd1, S_ENABLE=3'd2,
-                     S_WAIT_START=3'd3, S_WAIT_DONE=3'd4, S_WRITE=3'd5, S_ERR_FULL=3'd6;
+                     S_WAIT_START=3'd3, S_WAIT_DONE=3'd4, S_WRITE=3'd5, S_ERR_FULL=3'd6,
+                     S_ERR_TIMEOUT=3'd7;
 
     reg  clk, rstn;
     reg  sample_trig;
@@ -42,14 +43,17 @@ module wrapper_control_seq_tb;
     integer pass_count = 0;
     integer fail_count = 0;
 
-    wrapper_control_2 uut (
+    localparam integer TMO = 60;            // CONV_TIMEOUT for this unit bench
+    wire err_adc_timeout;
+    wrapper_control_2 #(.CONV_TIMEOUT(TMO)) uut (
         .clk(clk), .rstn(rstn),
         .sample_trig(sample_trig),
         .fifo_full(fifo_full),
         .fifo_write_en(fifo_write_en),
         .adc_en(adc_en),
         .adc_valid(adc_valid_fsm),
-        .err_fifo_full(err_fifo_full)
+        .err_fifo_full(err_fifo_full),
+        .err_adc_timeout(err_adc_timeout)
     );
 
     // Real behavioural ADC: exercises the enable->valid handshake for real.
@@ -71,7 +75,7 @@ module wrapper_control_seq_tb;
 
     // ── Monitors: count write pulses and record every state visited ──────────
     integer wr_count = 0;
-    reg [6:0] state_seen = 7'b0;
+    reg [7:0] state_seen = 8'b0;
     always @(posedge clk) begin
         if (rstn) begin
             if (fifo_write_en) wr_count = wr_count + 1;
@@ -246,44 +250,47 @@ module wrapper_control_seq_tb;
             check_true(wr_count == w0 + 2, "FSM-2 trigger on the re-entry cycle starts the next sample");
         end
 
-        // ── FSM-3: adc_valid stuck (no conversion timeout - documented, O-2) ─
+        // ── FSM-3 / FIX-2: conversion timeout (CONV_TIMEOUT = TMO here) ──────
         begin : fsm3
-            integer w0, k, n_hi;
-            integer holds [0:2];
-            holds[0] = 1; holds[1] = 10; holds[2] = 500;
-            for (k = 0; k < 3; k = k + 1) begin
+            integer w0, k, waitc;
+            // (a) valid stuck high (never starts), (b) stuck low (never finishes)
+            for (k = 0; k < 2; k = k + 1) begin
                 @(posedge clk); #1;
                 wait_idle(100);
-                // let the ADC finish the back-to-back conversion it starts after
-                // every sample (adc_en is still high at its done step), so valid
-                // is high from a finished conversion, as a real ADC leaves it
-                v_force = 1'b0;
-                repeat (40) @(posedge clk); #1;
+                v_force = 1'b0; repeat (40) @(posedge clk); #1;
                 w0 = wr_count;
-                v_force = 1'b1; v_val = 1'b1;              // valid still high from the last conversion
+                v_force = 1'b1; v_val = 1'b1;
                 pulse_trig;
                 wait_state(S_WAIT_START, 10);
-                repeat (holds[k]) begin
-                    @(posedge clk); #1;
-                end
-                check_true(uut.state === S_WAIT_START && adc_en === 1'b1 && wr_count == w0,
-                           "FSM-3 valid held high: FSM waits in S_WAIT_START, adc_en high, no write");
-                v_val = 1'b0;                              // conversion starts
-                @(posedge clk); #1;
-                check_true(uut.state === S_WAIT_DONE, "FSM-3 valid fell: S_WAIT_DONE");
-                if (k == 2) begin
-                    repeat (500) @(posedge clk); #1;
-                    check_true(uut.state === S_WAIT_DONE && adc_en === 1'b1 && wr_count == w0,
-                               "FSM-3 valid held low 500 cycles: FSM waits in S_WAIT_DONE, no write");
-                end
-                v_val = 1'b1;                              // the real rise
-                @(posedge clk); #1;
-                check_true(uut.state === S_WRITE && fifo_write_en === 1'b1, "FSM-3 write only on the real rise");
-                @(posedge clk); #1;
-                check_true(wr_count == w0 + 1, "FSM-3 exactly one write");
+                if (k == 1) begin v_val = 1'b0; end         // starts, never finishes
+                waitc = 0;
+                while (uut.state == S_WAIT_START || uut.state == S_WAIT_DONE) begin @(posedge clk); #1; waitc = waitc + 1; end
+                check_true(uut.state === S_ERR_TIMEOUT && waitc == TMO,
+                           k == 0 ? "FSM-3/FIX-2 valid stuck high: S_ERR_TIMEOUT after exactly CONV_TIMEOUT cycles"
+                                  : "FSM-3/FIX-2 valid stuck low: S_ERR_TIMEOUT after exactly CONV_TIMEOUT cycles");
+                check_true(adc_en === 1'b0 && fifo_write_en === 1'b0, "FSM-3/FIX-2 S_ERR_TIMEOUT: adc_en low, no write");
+                sample_trig = 1'b1; @(posedge clk); #1; sample_trig = 1'b0;   // trigger during S_ERR_TIMEOUT
+                check_true(uut.state === S_IDLE && err_adc_timeout === 1'b1, "FSM-3/FIX-2 back to IDLE after one cycle, flag set");
+                repeat (5) @(posedge clk); #1;
+                check_true(uut.state === S_IDLE && wr_count == w0, "FSM-3/FIX-2 trigger during S_ERR_TIMEOUT ignored, no write");
             end
+            // (c) a conversion finishing on the last allowed cycle is accepted
+            w0 = wr_count;
+            v_val = 1'b1;
+            pulse_trig;
+            wait_state(S_WAIT_START, 10);
+            v_val = 1'b0;                                  // starts at once (cycle 1)
+            repeat (TMO - 2) @(posedge clk); #1;           // TMO-1 cycles waited so far
+            v_val = 1'b1;                                  // done on the last allowed cycle
+            @(posedge clk); #1;
+            check_true(uut.state === S_WRITE, "FSM-3/FIX-2 conversion completing on the last allowed cycle is accepted");
+            @(posedge clk); #1;
+            check_true(wr_count == w0 + 1 && err_adc_timeout === 1'b0, "FSM-3/FIX-2 the written sample clears the timeout flag");
+            // (d) the flag stays set until a sample is written, then clears
             v_force = 1'b0;
-            $display("NOTE FSM-3 property: wrapper_control_2 has no conversion timeout; a dead ADC parks it in S_WAIT_START/S_WAIT_DONE (status[3:2] = 1) until reset (see FIX-2)");
+            run_episode(200);
+            check_true(err_adc_timeout === 1'b0, "FSM-3/FIX-2 flag stays clear after a good conversion");
+            $display("NOTE FSM-3/FIX-2: a dead ADC now times out after CONV_TIMEOUT cycles (status[6] in the wrapper) instead of parking the FSM");
         end
 
         // ── FSM-4: fifo_full rising after the pre-check (unit-only case) ─────
@@ -311,6 +318,7 @@ module wrapper_control_seq_tb;
         check_true(state_seen[S_WAIT_DONE],  "COV S_WAIT_DONE reached");
         check_true(state_seen[S_WRITE],      "COV S_WRITE reached");
         check_true(state_seen[S_ERR_FULL],   "COV S_ERR_FULL reached");
+        check_true(state_seen[S_ERR_TIMEOUT],"COV S_ERR_TIMEOUT reached (FIX-2)");
 
         $display("\n=== FSM-SEQ: %0d PASSED, %0d FAILED ===", pass_count, fail_count);
         #20 $finish;

@@ -227,7 +227,7 @@ module sens_soak_tb #(
         int unsigned burst = ($urandom_range(0, 9) == 0) ? $urandom_range(2, 4) : 1;
         for (int b = 0; b < burst; b++) begin
             keep_sel = (b + 1 < burst);
-            if      (k < 18) begin n_op[0]++;  xfer(1'b0, A_STATUS, 0, 0, r); if (r[31:6] != 0) check(1'b0, "STATUS[31:6] == 0"); end
+            if      (k < 18) begin n_op[0]++;  xfer(1'b0, A_STATUS, 0, 0, r); if (r[31:7] != 0) check(1'b0, "STATUS[31:7] == 0"); end
             else if (k < 34) begin n_op[1]++;  xfer(1'b0, A_MEAS_LO, 0, 0, r); end
             else if (k < 37) begin n_op[2]++;  xfer(1'b0, A_MEAS_HI, 0, 0, r); if (r != 0) check(1'b0, "MEASUREMENT_HI == 0"); end
             else if (k < 42) begin n_op[3]++;  xfer(1'b1, A_PLL, $urandom, rand_strb(), r); end

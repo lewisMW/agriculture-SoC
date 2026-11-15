@@ -8,7 +8,8 @@ fifo_ptr        a_ptr_count                  fifo    PROVEN       fired: a_ptr_c
 fifo_step       a_count_step                 fifo    PROVEN       fired: a_count_le_depth, a_count_step, a_ptr_count
 fifo_clear      a_clear                      fifo    PROVEN       fired: a_clear, a_ptr_count
 fifo_data       a_empty_data                 fifo    PROVEN       fired: a_empty_data
-fsm_legal       a_legal_state                fsm     PROVEN       fired: a_arc_err, a_legal_state
+fsm_en_bound    a_adc_en_bounded             fsm     PROVEN       fired: a_adc_en_bounded
+fsm_arc_tmo     a_arc_timeout                fsm     PROVEN       fired: a_arc_timeout
 fsm_full_wr     a_no_write_when_full         clo     PROVEN       fired: a_no_write_when_full
 fsm_wr_1cyc     a_write_one_cycle            fsm     PROVEN       fired: a_write_one_cycle
 fsm_en_states   a_adc_en_states              fsm     PROVEN       fired: a_adc_en_states
@@ -47,4 +48,4 @@ sar_result      a_result_only_in_done        adccal  PROVEN       fired: a_resul
 sar_valid       a_valid_falls                adccal  PROVEN       fired: a_valid_falls
 sar_clkc        a_clkc_gated                 adccal  PROVEN       fired: a_clkc_gated
 
-RESULT: 45/45 PROVEN
+RESULT: 46/46 PROVEN

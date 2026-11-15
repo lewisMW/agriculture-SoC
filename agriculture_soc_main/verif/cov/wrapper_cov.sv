@@ -125,7 +125,11 @@ module wrapper_cov #(
             bins drop_then_clear = {2'b10};
             bins drop_held       = {2'b11};
         }
-        cp_status_resv : coverpoint (status_reg[31:6] != 26'd0) {
+        cp_status_timeout : coverpoint status_reg[6] iff (st_read) {   // FIX-2
+            bins ok        = {1'b0};
+            bins timed_out = {1'b1};
+        }
+        cp_status_resv : coverpoint (status_reg[31:7] != 25'd0) {
             bins zero = {1'b0};
             bins viol_reserved_bits_set = {1'b1};
         }

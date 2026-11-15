@@ -75,7 +75,9 @@ MUTS = [
     ("fifo_data",     "a_empty_data",     "fifo", F, "assign apb_rd_data = fifo_empty ? {DATA_WIDTH{1'b0}} : fifo_mem[rd_ptr];",
                                                      "assign apb_rd_data = fifo_mem[rd_ptr];"),
     # ---- sampling FSM
-    ("fsm_legal",     "a_legal_state",    "fsm", CT, "S_ERR_FULL:   next_state = S_IDLE;", "S_ERR_FULL:   next_state = 3'd7;"),
+    ("fsm_en_bound",  "a_adc_en_bounded", "fsm", CT, "wire          tmo_hit = (tmo_cnt == CONV_TIMEOUT - 1);",
+                                                     "wire          tmo_hit = 1'b0;"),
+    ("fsm_arc_tmo",   "a_arc_timeout",    "fsm", CT, "S_ERR_TIMEOUT: next_state = S_IDLE;", "S_ERR_TIMEOUT: next_state = S_ERR_FULL;"),
     ("fsm_full_wr",   "a_no_write_when_full", "clo", CT, "S_CHECK_FIFO: next_state = fifo_full ? S_ERR_FULL : S_ENABLE;",
                                                          "S_CHECK_FIFO: next_state = S_ENABLE;"),
     ("fsm_wr_1cyc",   "a_write_one_cycle", "fsm", CT, "S_WRITE:                             fifo_write_en = 1'b1;",
@@ -89,8 +91,8 @@ MUTS = [
     ("fsm_arc_enable", "a_arc_enable",    "fsm", CT, "S_ENABLE:     next_state = S_WAIT_START;", "S_ENABLE:     next_state = S_WAIT_DONE;"),
     ("fsm_arc_wstart", "a_arc_wstart",    "fsm", CT, "if (!adc_valid && adc_quiet) next_state = S_WAIT_DONE;",
                                                      "if (!adc_valid && adc_quiet) next_state = S_WRITE;"),
-    ("fsm_arc_wdone", "a_arc_wdone",      "fsm", CT, "S_WAIT_DONE:  if (adc_valid)   next_state = S_WRITE;",
-                                                     "S_WAIT_DONE:  if (adc_valid)   next_state = S_IDLE;"),
+    ("fsm_arc_wdone", "a_arc_wdone",      "fsm", CT, "S_WAIT_DONE:  if (adc_valid)                next_state = S_WRITE;",
+                                                     "S_WAIT_DONE:  if (adc_valid)                next_state = S_IDLE;"),
     ("fsm_arc_write", "a_arc_write",      "fsm", CT, "S_WRITE:      next_state = S_IDLE;", "S_WRITE:      next_state = S_CHECK_FIFO;"),
     ("fsm_arc_err",   "a_arc_err",        "fsm", CT, "S_ERR_FULL:   next_state = S_IDLE;", "S_ERR_FULL:   next_state = S_CHECK_FIFO;"),
     ("fsm_err_rise",  "a_err_rise",       "fsm", CT, "if (state == S_ERR_FULL)\n                err_fifo_full <= 1'b1;",
@@ -118,8 +120,8 @@ MUTS = [
     ("wrap_pop_empty", "a_no_pop_when_empty", "soak", W, "fifo_rd_en <= (read_enable && (PADDR == MEASUREMENT_LO) && !fifo_empty);",
                                                          "fifo_rd_en <= (read_enable && (PADDR == MEASUREMENT_LO));"),
     ("wrap_capture",  "a_sample_capture",  "clo", W, "else if (adc_valid_rise) adc_sample <= adc_result;", "else adc_sample <= adc_result;"),
-    ("wrap_status",   "a_status_reserved", "clo", W, "status_reg[DATA_WIDTH-1:6] <= {(DATA_WIDTH-6){1'b0}};",
-                                                     "status_reg[DATA_WIDTH-1:6] <= {(DATA_WIDTH-6){adc_en}};"),
+    ("wrap_status",   "a_status_reserved", "clo", W, "status_reg[DATA_WIDTH-1:7] <= {(DATA_WIDTH-7){1'b0}};",
+                                                     "status_reg[DATA_WIDTH-1:7] <= {(DATA_WIDTH-7){adc_en}};"),
     # ---- RTC controller / PL031 port
     ("rtc_legal",     "a_legal_state",     "rtc", R, "rtc_trig <= 1'b1;\n                state    <= S_IDLE;",
                                                      "rtc_trig <= 1'b1;\n                state    <= 5'd15;"),
@@ -177,6 +179,7 @@ def run(mid, aname, bench, src, old, new):
     except subprocess.TimeoutExpired as e:
         out = (e.stdout or b"").decode(errors="replace") if isinstance(e.stdout, bytes) else (e.stdout or "")
     open(os.path.join(d, "run.log"), "w").write(out)
+    shutil.rmtree(os.path.join(d, "obj"), ignore_errors=True)   # ~90 MB per mutant; keep only the logs
     fired = sorted(set(re.findall(r"Assertion failed in \S*?\.(a_\w+)", out)))
     if aname in fired:
         return "PROVEN", "fired: " + ", ".join(fired)

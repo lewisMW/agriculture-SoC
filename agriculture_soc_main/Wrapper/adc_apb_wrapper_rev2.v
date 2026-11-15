@@ -18,6 +18,7 @@
 // Register map (byte offsets from the peripheral base) — keep in sync with
 // software/.../sensing_ip.h:
 //   0x004 status        (RO) [1:0]=FIFO [3:2]=ADC [4]=fifo-drop [5]=rtc-intr
+//                            [6]=ADC conversion timeout (FIX-2), [31:7] = 0
 //   0x008 measurement_hi(RO) upper sample bits (0 for an 8-bit ADC)
 //   0x00C measurement_lo(RO) sample; reading it pops the FIFO
 //   0x100 pll_control   (RW)
@@ -140,6 +141,7 @@ module adc_apb_wrapper_rev2 #(
     // FSM / trigger
     // --------------------------------------------------------------------------
     wire err_fifo_full;
+    wire err_adc_timeout;                    // FIX-2: sticky, status[6]
     reg  manual_trig;                        // one-shot from an adc_trigger write
     wire rtc_trig;                           // periodic alarm pulse from RTC
     wire sample_trig = rtc_trig | manual_trig;
@@ -240,7 +242,8 @@ module adc_apb_wrapper_rev2 #(
             status_reg[3:2]  <= adc_en ? 2'b01 : 2'b00;   // ADC running vs idle
             status_reg[4]    <= err_fifo_full;            // last sample dropped (FIFO full)
             status_reg[5]    <= ctrl_intr_flag;           // RTC interrupt pending
-            status_reg[DATA_WIDTH-1:6] <= {(DATA_WIDTH-6){1'b0}};
+            status_reg[6]    <= err_adc_timeout;          // last conversion timed out (FIX-2)
+            status_reg[DATA_WIDTH-1:7] <= {(DATA_WIDTH-7){1'b0}};
         end
     end
 
@@ -446,7 +449,9 @@ module adc_apb_wrapper_rev2 #(
         .reset       (PRESETn)
     );
 
-    wrapper_control_2 u_ctrl (
+    // CONV_TIMEOUT: 4x a calibration (42 sar_clk, the longest legal
+    // conversion) at 2*ADC_CLK_DIV PCLK per sar_clk (1344 PCLK at ADC_CLK_DIV 4)
+    wrapper_control_2 #(.CONV_TIMEOUT(4 * 42 * 2 * ADC_CLK_DIV)) u_ctrl (
         .clk           (PCLK),
         .rstn          (PRESETn),
         .sample_trig   (sample_trig),
@@ -454,7 +459,8 @@ module adc_apb_wrapper_rev2 #(
         .fifo_write_en (fifo_write_en),
         .adc_en        (adc_en),
         .adc_valid     (adc_valid_sync),
-        .err_fifo_full (err_fifo_full)
+        .err_fifo_full (err_fifo_full),
+        .err_adc_timeout(err_adc_timeout)
     );
 
     rtc_control_2 #(
