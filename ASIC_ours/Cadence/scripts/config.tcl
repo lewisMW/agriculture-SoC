@@ -84,7 +84,33 @@ set BASE_LEF            [list ${sky130_digital_dir}/techlef/sky130_fd_sc_hd__nom
 # ../inputs/sky130_ef_io__analog_pad.lef first: the ADC input pad with its P_CORE pin as
 # drawn in the GDS (the PDK LEF's is 3 um wider on each side, and routes landed off the
 # metal). Innovus keeps the first definition of a MACRO, so it must precede the PDK LEF.
-# NOTE! in sky130_fd_io.lef the bus bit character mixes [] and <> for some obscure reason. lef needs to be manually edited to replace <> with []
+# NOTE! in sky130_fd_io.lef the bus bit character mixes [] and <> for some obscure reason
+# (BUSBITCHARS is "[]", 48 pins are written <n>). The flow reads a corrected copy, made
+# here from the PDK's file on every run and written to ../outputs (not in git):
+#   - every <n> becomes [n];
+#   - vinref of sky130_fd_io__top_gpiovrefv2 is USE POWER instead of USE SIGNAL.
+# It is byte for byte the hand-edited copy the flow used before.
+proc make_io_lef {src dst} {
+    set f [open $src r]; set lef [read $f]; close $f
+    regsub -all {<([0-9]+)>} $lef {[\1]} lef
+    set m [string first "MACRO sky130_fd_io__top_gpiovrefv2\n" $lef]
+    set p [string first "  PIN vinref\n" $lef $m]
+    set e [string first "  END vinref\n" $lef $p]
+    set u [string first "USE SIGNAL ;" $lef $p]
+    if {$m < 0 || $p < 0 || $e < 0 || $u < 0 || $u > $e} {
+        error "make_io_lef: no 'USE SIGNAL' on vinref of sky130_fd_io__top_gpiovrefv2 in $src"
+    }
+    set lef [string replace $lef $u [expr {$u + 11}] "USE POWER ;"]
+    set old ""
+    if {[file exists $dst]} { set f [open $dst r]; set old [read $f]; close $f }
+    if {$old ne $lef} {
+        file mkdir [file dirname $dst]
+        set f [open $dst w]; puts -nonewline $f $lef; close $f
+    }
+    return $dst
+}
+set IO_LEF_FIXED [make_io_lef ${sky130_open_dir}/libs.ref/sky130_fd_io/lef/sky130_fd_io.lef \
+                              [file normalize ../outputs/sky130_fd_io.busfix.lef]]
 #set IO_PAD_DRIVER_LEF   [list \
 #  [file normalize ../inputs/sky130_ef_io__analog_pad.lef] \
 #  ${sky130_open_dir}/libs.ref/sky130_fd_io/lef/sky130_fd_io.lef \
@@ -92,7 +118,7 @@ set BASE_LEF            [list ${sky130_digital_dir}/techlef/sky130_fd_sc_hd__nom
 #]
 set IO_PAD_DRIVER_LEF   [list \
   [file normalize ../inputs/sky130_ef_io__analog_pad.lef] \
-  /home/daniel/sky130_open_source/sky130_fd_io.lef \
+  ${IO_LEF_FIXED} \
   ${sky130_open_dir}/libs.ref/sky130_fd_io/lef/sky130_ef_io.lef \
 ]
 set SRAM_LEF            ${sram_dir}/sky130_sram_8kbyte_1rw_32x2048_8/sky130_sram_8kbyte_1rw_32x2048_8.lef
