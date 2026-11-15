@@ -24,7 +24,7 @@
 						<value>spectre</value>
 					</option>
 					<option>view
-						<value>schematic</value>
+						<value>config</value>
 					</option>
 					<option>state
 						<value>active</value>
@@ -45,6 +45,24 @@
 					<output>/en
 						<evalType>point</evalType>
 					</output>
+					<output>/C0/PLUS
+						<evalType>point</evalType>
+					</output>
+					<output>/bs_switch/vbsh
+						<evalType>point</evalType>
+					</output>
+					<output>/bs_switch/vbsl
+						<evalType>point</evalType>
+					</output>
+					<output>/bs_switch/net2
+						<evalType>point</evalType>
+					</output>
+					<output>/bs_switch/enb
+						<evalType>point</evalType>
+					</output>
+					<output>"/"
+						<evalType>point</evalType>
+					</output>
 				</outputs>
 			</test>
 		</tests>
@@ -58,6 +76,7 @@
 		<currentmode>Single Run, Sweeps and Corners</currentmode>
 		<checksasserts netlist="0">
 			<test netlist="0" netlistscope="all">bootstrap_switch_lib_bootstrap_sw_tb_1</test>
+			<test netlist="0" netlistscope="all">bootstrap_switch_lib_bootstrap_sw_tb_1_1</test>
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
@@ -84,10 +103,184 @@
 			<plottingoption>distributedplot_enabled
 				<value>no</value>
 			</plottingoption>
+			<plottingoption>autoplotsignals
+				<value>yes</value>
+			</plottingoption>
+			<plottingoption>autoplotwaveexpr
+				<value>yes</value>
+			</plottingoption>
+			<plottingoption>autoplotscalarexpr
+				<value>yes</value>
+			</plottingoption>
+			<plottingoption>autoplotmode
+				<value>Replace</value>
+			</plottingoption>
+			<plottingoption>annotatedesignname
+				<value>yes</value>
+			</plottingoption>
+			<plottingoption>annotatesimdate
+				<value>yes</value>
+			</plottingoption>
+			<plottingoption>annotatetemperature
+				<value>no</value>
+			</plottingoption>
+			<plottingoption>annotatedesignvars
+				<value>no</value>
+			</plottingoption>
+			<plottingoption>annotatescalaroutputs
+				<value>yes</value>
+			</plottingoption>
+			<plottingoption>annotatespecmarkers
+				<value>no</value>
+			</plottingoption>
+			<plottingoption>histogramtype
+				<value>pass/fail</value>
+			</plottingoption>
+			<plottingoption>histogrambins
+				<value>10</value>
+			</plottingoption>
+			<plottingoption>showhistogramdensity
+				<value>yes</value>
+			</plottingoption>
+			<plottingoption>showhistogramdeviation
+				<value>yes</value>
+			</plottingoption>
+			<plottingoption>showhistogrampercentmarkers
+				<value>no</value>
+			</plottingoption>
+			<plottingoption>histogramqqplot
+				<value>no</value>
+			</plottingoption>
+			<plottingoption>showhistogrampoints
+				<value>yes</value>
+			</plottingoption>
+			<plottingoption>additionalcalcs
+				<value>yes</value>
+			</plottingoption>
+			<plottingoption>exactmatchonly
+				<value>no</value>
+			</plottingoption>
+			<plottingoption>createnewstrips
+				<value>no</value>
+			</plottingoption>
+			<plottingoption>usecolorbank
+				<value>no</value>
+			</plottingoption>
+			<plottingoption>quickplotenable
+				<value>yes</value>
+			</plottingoption>
+			<plottingoption>useExpressionDB
+				<value>no</value>
+			</plottingoption>
+			<plottingoption>probingmode
+				<value>current</value>
+			</plottingoption>
+			<plottingoption>directplotmode
+				<value>Append</value>
+			</plottingoption>
+			<plottingoption>directplotafter
+				<value>All Selections Are Made</value>
+			</plottingoption>
+			<plottingoption>printafter
+				<value>Each Selection</value>
+			</plottingoption>
+			<plottingoption>distributedplot_linger_time
+				<value>60</value>
+			</plottingoption>
 		</plottingoptions>
 		<exploreroptions>
 			<exploreroption>waveformtemplate
 				<value>(None)</value>
+			</exploreroption>
+			<exploreroption>autoplotmode
+				<value>Replace</value>
+			</exploreroption>
+			<exploreroption>plottype
+				<value>Auto</value>
+			</exploreroption>
+			<exploreroption>autoplotsignals
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>autoplotwaveexpr
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>autoplotscalarexpr
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>annotatedesignname
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>annotatesimdate
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>annotatetemperature
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>annotatedesignvars
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>annotatescalaroutputs
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>annotatespecmarkers
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>histogramtype
+				<value>pass/fail</value>
+			</exploreroption>
+			<exploreroption>histogrambins
+				<value>10</value>
+			</exploreroption>
+			<exploreroption>showhistogramdensity
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>showhistogramdeviation
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>showhistogrampercentmarkers
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>histogramqqplot
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>showhistogrampoints
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>additionalcalcs
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>exactmatchonly
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>createnewstrips
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>usecolorbank
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>quickplotenable
+				<value>yes</value>
+			</exploreroption>
+			<exploreroption>useExpressionDB
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>probingmode
+				<value>current</value>
+			</exploreroption>
+			<exploreroption>directplotmode
+				<value>Append</value>
+			</exploreroption>
+			<exploreroption>directplotafter
+				<value>All Selections Are Made</value>
+			</exploreroption>
+			<exploreroption>printafter
+				<value>Each Selection</value>
+			</exploreroption>
+			<exploreroption>distributedplot_enabled
+				<value>no</value>
+			</exploreroption>
+			<exploreroption>distributedplot_linger_time
+				<value>60</value>
 			</exploreroption>
 		</exploreroptions>
 		<incrementalsimsetup>
@@ -97,6 +290,7 @@
 			<copyreferenceresults>1</copyreferenceresults>
 		</incrementalsimsetup>
 		<overwritehistoryname>ExplorerRun.0</overwritehistoryname>
+		<disabledtests></disabledtests>
 	</active>
 	<history>History
 	</history>
