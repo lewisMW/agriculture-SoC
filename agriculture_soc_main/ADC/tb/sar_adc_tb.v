@@ -16,6 +16,11 @@
 //   5. Calibration: cal = 1 runs sCal (sample held for 1 + 40 sar_clk) and
 //      returns valid with code 0x00 and a new trim, which the next conversion
 //      uses. The trim the loop settles on is reported.
+//   6. Reset: asserted in the middle of a conversion, and with sarlogic put in
+//      a state its machine never leaves. sar_clk stands still while rstn is
+//      low, so only an asynchronous reset reaches sarlogic. Its initial block
+//      sets the same registers at time zero, so the reset at the start of the
+//      run proves nothing; these two cases start from states only reset clears.
 //   Throughout: every conversion's code is checked against the input the
 //   macro held for it, every clkc pulse is exactly half a sar_clk period, and
 //   comp is never x when sarlogic samples it.
@@ -367,6 +372,43 @@ module sar_adc_tb;
         if (trim_cal == 0 || trim_cal == 31)
             $display("    NOTE: the trim loop ran to its rail (trima %0d). sarlogic keeps a trial bit when comp is mostly 0, so it expects a higher trima to raise the vinp side; the macro (trima on the trim that loads vp), the AMS behavioural comparator and this model lower it.", trim_cal);
         dut.u_afe.vos = 0.0;
+
+        // ---- 6. reset ----
+        $display("--- 6. reset in mid-conversion, and from a state with no way out ---");
+        dut.u_afe.mode = 2; dut.u_afe.vdc = 0.3;
+        // (a) two bits into a conversion, while sar_clk is high
+        @(posedge clk); en_tb = 1'b1;
+        guard = 0;
+        while (dut.u_logic.state !== S_CONV && guard < 4000) begin @(posedge clk); guard = guard + 1; end
+        check(guard < 4000, "a conversion starts before the reset");
+        repeat (2) @(posedge dut.sar_clk);
+        #7 rstn = 1'b0; en_tb = 1'b0;
+        #1;
+        check(dut.u_logic.state === 3'd0 && dut.sample === 1'b0 && dut.clkc === 1'b0 &&
+              dut.ctlp === 8'h00 && dut.ctln === 8'hFF && valid === 1'b0,
+              "rstn low in mid-conversion puts sarlogic in its reset state with sar_clk stopped");
+        repeat (5) @(posedge clk);
+        check(dut.sar_clk === 1'b0 && dut.u_logic.state === 3'd0, "sar_clk and sarlogic hold still while rstn is low");
+        rstn = 1'b1;
+        wait_tail(3);
+        check(valid === 1'b0, "valid low after the reset");
+        check(dut.trima == 5'd16 && dut.trimb == 5'd15, "trim back at 16/15 (it was calibrated in 5)");
+        convert_once(code);
+        wait_tail(12);
+        check(code == exp_code(0.3, 16, 15), "conversion after a mid-conversion reset");
+        // (b) state 7 is not a state of the machine: nothing but reset leaves it
+        dut.u_logic.state = 3'd7;
+        wait_tail(2);
+        @(posedge dut.sar_clk);
+        #7 rstn = 1'b0;
+        #1;
+        check(dut.u_logic.state === 3'd0, "rstn low clears a state the machine cannot leave");
+        repeat (5) @(posedge clk);
+        rstn = 1'b1;
+        wait_tail(3);
+        convert_once(code);
+        wait_tail(12);
+        check(code == exp_code(0.3, 16, 15), "conversion after that reset");
 
         // ---- summary ----
         $display("--- clkc pulses checked: %0d (%0d wrong width); comp samples %0d, x: %0d ---",
