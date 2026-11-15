@@ -1,0 +1,2 @@
+SOFTINCLUDE /opt/cadence/installs/IC231/share/cdssetup/cds.lib
+DEFINE SoC_probe /home/hee/cadence/SoC/SoC_probe
