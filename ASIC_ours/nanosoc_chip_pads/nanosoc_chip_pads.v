@@ -299,28 +299,14 @@ nanosoc_chip_cfg #(
 `define BASE_IO_POWER_PINS \
    .VCCD(VDD), \
    .VSSD(VSS), \
-   .VDDA(VDDA), \
    .VSSA(VSSA), \
+   .VDDIO(VDDIO), \
+   .VSSIO(VSSIO), \
    .VCCHIB(VCCHIB), \
    .VSWITCH(VSWITCH), 
 
 `define POWER_PINS_VIO_STD \
-   .VDDIO(VDDIO), \
-   .VSSIO(VSSIO), \
-   .VDDIO_Q(VDDIO_Q), \
-   .VSSIO_Q(VSSIO_Q), \
-   `BASE_IO_POWER_PINS
-
-`define POWER_PINS_VIO_VDDIO_Q \
-   .VDDIO(VDDIO_Q), \
-   .VSSIO(VSSIO), \
-   .VDDIO_Q(VDDIO_Q), \
-   .VSSIO_Q(VSSIO_Q), \
-   `BASE_IO_POWER_PINS
-
-`define POWER_PINS_VIO_VSSIO_Q \
-   .VDDIO(VDDIO), \
-   .VSSIO(VSSIO_Q), \
+   .VDDA(VDDA), \
    .VDDIO_Q(VDDIO_Q), \
    .VSSIO_Q(VSSIO_Q), \
    `BASE_IO_POWER_PINS
@@ -380,22 +366,42 @@ sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIO_2(
 // Pad IO quiet power supplies
 // need to make sure their power pin is connected to <power>_Q
 // when specifying power
-// TODO this doesn't quite work yet.
-sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIOQ_0(
-   `POWER_PINS_VIO_VDDIO_Q
-   .VDDIO_PAD(VDDIO_Q_PAD)
+// The current approach for this, is to use the VDDA clamp.
+// Use those clamp to force VDDIO_Q/VSSIO_Q onto the VDDA ring,
+// but then use the disconnect_vdda_slice to isolate them,
+// then use some form of special routing to then connect the
+// isolated VDDA to the appropriate quiet rail.
+wire VDDIO_Q_src_0 , VDDIO_Q_src_1;
+wire VDDIO_Q_dest_0, VDDIO_Q_dest_1;
+wire VSSIO_Q_src_0 , VSSIO_Q_src_1;
+wire VSSIO_Q_dest_0, VSSIO_Q_dest_1;
+sky130_ef_io__vdda_hvc_clamped_pad uPAD_VDDIOQ_0(
+   `BASE_IO_POWER_PINS
+   .VDDA(VDDIO_Q_src_0),
+   .VDDIO_Q(VDDIO_Q_dest_0),
+   .VSSIO_Q(VSSIO_Q),
+   .VDDA_PAD(VDDIO_Q_PAD)
    );
-sky130_ef_io__vddio_hvc_clamped_pad uPAD_VDDIOQ_1(
-   `POWER_PINS_VIO_VDDIO_Q
-   .VDDIO_PAD(VDDIO_Q_PAD1)
+sky130_ef_io__vdda_hvc_clamped_pad uPAD_VDDIOQ_1(
+   `BASE_IO_POWER_PINS
+   .VDDA(VDDIO_Q_src_1),
+   .VDDIO_Q(VDDIO_Q_dest_1),
+   .VSSIO_Q(VSSIO_Q),
+   .VDDA_PAD(VDDIO_Q_PAD1)
    );
-sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIOQ_0(
-   `POWER_PINS_VIO_VSSIO_Q
-   .VSSIO_PAD(VSSIO_Q_PAD)
+sky130_ef_io__vdda_hvc_clamped_pad uPAD_VSSIOQ_0(
+   `BASE_IO_POWER_PINS
+   .VDDA(VSSIO_Q_src_0),
+   .VDDIO_Q(VDDIO_Q),
+   .VSSIO_Q(VSSIO_Q_dest_0),
+   .VDDA_PAD(VSSIO_Q_PAD)
    );
-sky130_ef_io__vssio_hvc_clamped_pad uPAD_VSSIOQ_1(
-   `POWER_PINS_VIO_VSSIO_Q
-   .VSSIO_PAD(VSSIO_Q_PAD1)
+sky130_ef_io__vdda_hvc_clamped_pad uPAD_VSSIOQ_1(
+   `BASE_IO_POWER_PINS
+   .VDDA(VSSIO_Q_src_1),
+   .VDDIO_Q(VDDIO_Q),
+   .VSSIO_Q(VSSIO_Q_dest_1),
+   .VDDA_PAD(VSSIO_Q_PAD1)
    );
 
 // Analog power supplies
