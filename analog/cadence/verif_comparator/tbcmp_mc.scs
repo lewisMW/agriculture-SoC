@@ -1,0 +1,16 @@
+// Mismatch statistics for Maestro Monte Carlo on sky130 nfet_01v8 / pfet_01v8.
+// The PDK ships vary lines commented out in its pm3 files. Listed here: only the
+// parameters used by all five corner models (Spectre rejects unused vary params).
+// toxe is left out: the PDK toxe slope (~3e-3) is added directly to toxe (~4e-9 m),
+// which drives toxe negative and aborts Spectre with CMI-2049. vth0 + voff remain.
+// std=1e-6 (not 1.0): the PDK formula is slope/sqrt(l*w*mult) with l,w in um, but this
+// flow passes l,w in meters. Without this scaling sigma(vth0) comes out ~1e6x too large.
+simulator lang=spectre
+statistics {
+    mismatch {
+        vary sky130_fd_pr__nfet_01v8__vth0_slope_spectre dist=gauss std=1e-6
+        vary sky130_fd_pr__nfet_01v8__voff_slope_spectre dist=gauss std=1e-6
+        vary sky130_fd_pr__pfet_01v8__vth0_slope_spectre dist=gauss std=1e-6
+        vary sky130_fd_pr__pfet_01v8__voff_slope_spectre dist=gauss std=1e-6
+    }
+}

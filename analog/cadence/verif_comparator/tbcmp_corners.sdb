@@ -1,0 +1,637 @@
+<?xml version="1.0"?>
+<setupdb version="7">tbcmp_corners
+	<active>Active Setup
+		<corners>
+			<corner enabled="1">tt_v1p62_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"tt"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">tt_v1p62_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"tt"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">tt_v1p62_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"tt"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">tt_v1p8_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"tt"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">tt_v1p8_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"tt"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">tt_v1p8_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"tt"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">tt_v1p98_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"tt"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">tt_v1p98_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"tt"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">tt_v1p98_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"tt"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ff_v1p62_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ff"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ff_v1p62_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ff"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ff_v1p62_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ff"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ff_v1p8_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ff"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ff_v1p8_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ff"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ff_v1p8_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ff"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ff_v1p98_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ff"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ff_v1p98_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ff"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ff_v1p98_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ff"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ss_v1p62_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ss"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ss_v1p62_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ss"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ss_v1p62_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ss"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ss_v1p8_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ss"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ss_v1p8_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ss"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ss_v1p8_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ss"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ss_v1p98_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ss"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ss_v1p98_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ss"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">ss_v1p98_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"ss"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">sf_v1p62_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"sf"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">sf_v1p62_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"sf"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">sf_v1p62_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"sf"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">sf_v1p8_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"sf"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">sf_v1p8_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"sf"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">sf_v1p8_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"sf"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">sf_v1p98_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"sf"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">sf_v1p98_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"sf"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">sf_v1p98_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"sf"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">fs_v1p62_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"fs"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">fs_v1p62_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"fs"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">fs_v1p62_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.62</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"fs"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">fs_v1p8_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"fs"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">fs_v1p8_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"fs"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">fs_v1p8_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.8</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"fs"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">fs_v1p98_tm40
+				<vars>
+					<var>temperature<value>-40</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"fs"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">fs_v1p98_t27
+				<vars>
+					<var>temperature<value>27</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"fs"</modelsection>
+					</model>
+				</models>
+			</corner>
+			<corner enabled="1">fs_v1p98_t125
+				<vars>
+					<var>temperature<value>125</value></var>
+					<var>vcc<value>1.98</value></var>
+				</vars>
+				<models>
+					<model enabled="1">sky130.lib.spice
+						<modeltest>All</modeltest>
+						<modelblock>Global</modelblock>
+						<modelfile>/home/admin/Documents/PDKs/sky130_release_0.1.0/models/sky130.lib.spice</modelfile>
+						<modelsection>"fs"</modelsection>
+					</model>
+				</models>
+			</corner>
+		</corners>
+	</active>
+</setupdb>
