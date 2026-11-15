@@ -507,56 +507,167 @@ module tb_rtc_closure;
     // A new alarm_offset applies from the next arm (before FIX-1 an armed
     // long period was not shortened). For 0xFFFFFFFF -> 3, the only way out is a
     // passthrough RTCMR write close to now.
+    // FIX-1 (pending team confirmation): a changed alarm_offset re-arms at
+    // once - now + new offset - without producing a sample itself.
+    int unsigned n_rearm = 0;            // S_WAITING -> S_READ_SETUP transitions
+    logic [4:0]  st_q = 5'd0;
+    always @(posedge PCLK) begin
+        st_q <= dut.state;
+        if (PRESETn && st_q == S_WAITING && dut.state == S_READ_SETUP) n_rearm++;
+    end
+
+    // wait until the controller is parked with the current offset armed
+    task automatic wait_rearmed(input int max_cyc, output bit ok, output int took);
+        took = 0; ok = 1'b0;
+        while (took < max_cyc) begin
+            if (dut.state == S_WAITING && !dut.fsm_psel && dut.armed_offset == ((alarm_offset == 0) ? 1 : alarm_offset)) begin
+                ok = 1'b1; return;
+            end
+            clk(1); took++;
+        end
+    endtask
+
     task automatic offset_change(input logic [31:0] from, input logic [31:0] to);
         bit ok; int took;
         int unsigned eff_to = (to == 0) ? 1 : to;
         int unsigned eff_from = (from == 0) ? 1 : from;
-        logic [31:0] now;
+        int unsigned t0, r0;
         set_offset_and_settle(from);
         wait_armed(ok);
         check(dut.armed_offset == eff_from, $sformatf("RTC-7 %0d -> %0d: armed with the old offset", from, to));
         clk(5);
+        t0 = trig_count; r0 = n_rearm;
         alarm_offset = to;                        // while waiting
-        if (from == 32'hFFFF_FFFF) begin
-            clk(3 * period());
-            check(dut.state == S_WAITING && dut.armed_offset == 32'hFFFF_FFFF,
-                  "RTC-7 0xFFFFFFFF -> 3: the armed long period is not shortened by the new offset");
-            apb_rd(A_DR, now);
-            apb_wr(A_MR, now + 32'd2);           // firmware workaround
-            wait_trig(4 * period() + 100, ok, took);
-            check(ok, "RTC-7 0xFFFFFFFF -> 3: RTCMR = RTCDR + 2 through the passthrough fires the alarm");
-        end else begin
-            wait_trig((eff_from + 2) * period() + 100, ok, took);
-            check(ok && took > (eff_from - 1) * period() - 30,
-                  $sformatf("RTC-7 %0d -> %0d: the current period still runs on the old offset (%0d PCLK)", from, to, took));
+        wait_rearmed(30, ok, took);
+        check(ok, $sformatf("RTC-7/FIX-1 %0d -> %0d: re-armed with the new offset within %0d PCLK", from, to, took));
+        check(trig_count == t0 && n_rearm == r0 + 1, $sformatf("RTC-7/FIX-1 %0d -> %0d: exactly one re-arm, no sample from it", from, to));
+        check(dut.alarm_target - dut.ctrl_time_value == eff_to, $sformatf("RTC-7/FIX-1 %0d -> %0d: target = now + new offset", from, to));
+        gchk = 1'b1; gmin = 1'b1; g_reset();
+        begin
+            int unsigned pt0 = trig_count;
+            wait_trig((eff_to + 1) * period() + 40, ok, took);
+            check(ok, $sformatf("RTC-7/FIX-1 %0d -> %0d: first sample within new offset + 1 ticks of the write (%0d PCLK)", from, to, took));
         end
-        wait_armed(ok);
-        check(dut.armed_offset == eff_to, $sformatf("RTC-7 %0d -> %0d: the next arm uses the new offset (%0d)", from, to, dut.armed_offset));
-        gchk = 1'b1; g_reset();
         for (int i = 0; i < 3; i++) begin
             wait_trig((eff_to + 2) * period() + 100, ok, took);
             check(ok && took >= (eff_to - 1) * period() && took <= (eff_to + 1) * period() + 20,
                   $sformatf("RTC-7 %0d -> %0d: period %0d is the new offset (%0d PCLK)", from, to, i, took));
         end
-        gchk = 1'b0;
+        gchk = 1'b0; gmin = 1'b0;
     endtask
 
     task automatic rtc7();
-        bit ok;
-        $display("--- RTC-7 alarm_offset changed while waiting ---");
+        bit ok; int took;
+        logic [31:0] now;
+        $display("--- RTC-7 alarm_offset changed while waiting (FIX-1: re-arms at once) ---");
+        offset_change(32'hFFFF_FFFF, 3);
         offset_change(5, 2);
         offset_change(2, 5);
         offset_change(5, 0);
-        offset_change(32'hFFFF_FFFF, 3);
-        // offset written while arming and while paused (cp_offset_change_ctx)
+        offset_change(0, 5);
+        // the RTCMR workaround (shorten an armed long period) still works
+        set_offset_and_settle(32'hFFFF_FFFF);
+        wait_armed(ok);
+        apb_rd(A_DR, now);
+        apb_wr(A_MR, now + 32'd2);
+        wait_trig(4 * period() + 100, ok, took);
+        check(ok, "RTC-7 RTCMR = RTCDR + 2 through the passthrough still fires an armed long period");
+        // offset written mid-arm: the arm in progress used the old one, the
+        // re-arm in S_WAITING picks up the new one
         set_offset_and_settle(2);
         wait_state(S_MATCH_SETUP, 4 * period(), ok);
         alarm_offset = 3;
-        wait_armed(ok);
-        check(dut.armed_offset == 2, "RTC-7 offset written mid-arm (after S_CALC) applies from the next arm");
-        poll_enable = 1'b0; clk(5); alarm_offset = 1; clk(5); poll_enable = 1'b1;
+        wait_rearmed(40, ok, took);
+        check(ok, "RTC-7/FIX-1 offset written mid-arm (after S_CALC) is armed as soon as the FSM parks");
+        // offset written while paused: re-arms while paused
+        poll_enable = 1'b0; clk(5); alarm_offset = 1;
+        wait_rearmed(40, ok, took);
+        check(ok && !poll_enable, "RTC-7/FIX-1 offset written while paused re-arms while paused");
+        poll_enable = 1'b1;
         set_offset_and_settle(1);
-        check(dut.armed_offset == 1, "RTC-7 offset written while paused applies from the next arm");
+    endtask
+
+    // FIX-1 cases beyond RTC-7
+    task automatic fix1();
+        bit ok; int took;
+        int unsigned t0, r0, bad;
+        logic [31:0] r;
+        $display("--- FIX-1 offset change at every PCLK of an arm cycle / alarm service, paused, stalled, rewrites ---");
+        // every PCLK from S_ICR_SETUP through the following arm cycle
+        bad = 0;
+        set_offset_and_settle(2);
+        for (int d = 0; d <= 16; d++) begin
+            logic [31:0] nv;
+            wait_state(S_ICR_SETUP, 4 * period(), ok);
+            if (d > 0) clk(d);
+            nv = (alarm_offset == 2) ? 3 : 2;
+            t0 = trig_count;
+            alarm_offset = nv;
+            wait_rearmed(40, ok, took);
+            if (!ok) bad++;
+            if (trig_count - t0 > 1) bad++;            // only the service already running may sample
+        end
+        check(bad == 0, "FIX-1 offset changed at every PCLK of an alarm service + re-arm: new offset armed, no extra sample");
+        // paused, alarm pending: re-arm keeps the interrupt pending; resume gives one sample, then the new period
+        set_offset_and_settle(2);
+        wait_armed(ok);
+        poll_enable = 1'b0;
+        begin int g = 0; while (!dut.RTCINTR && g < 6 * period()) begin clk(1); g++; end end
+        alarm_offset = 3;
+        wait_rearmed(40, ok, took);
+        check(ok && dut.RTCINTR, "FIX-1 paused with an alarm pending: re-armed, interrupt still pending");
+        t0 = trig_count;
+        poll_enable = 1'b1;
+        wait_trig(12, ok, took);
+        check(ok, "FIX-1 resume with an alarm pending: one immediate sample");
+        clk(period() / 2);
+        check(trig_count == t0 + 1, "FIX-1 resume: at most one immediate sample");
+        wait_rearmed(40, ok, took);
+        check(ok && dut.armed_offset == 3, "FIX-1 after the resume sample the new period is armed");
+        // paused, no alarm pending
+        wait_armed(ok); poll_enable = 1'b0; clk(3);
+        alarm_offset = 2;
+        wait_rearmed(40, ok, took);
+        check(ok && !dut.RTCINTR, "FIX-1 paused without an alarm pending: re-armed with the new offset");
+        poll_enable = 1'b1;
+        // change during a stalled passthrough: the re-arm waits for the transfer
+        set_offset_and_settle(2);
+        wait_state(S_ICR_SETUP, 4 * period(), ok);
+        fork
+            begin apb_rd(A_DR, r); end
+            begin clk(4); alarm_offset = 4; end
+        join
+        wait_rearmed(60, ok, took);
+        check(ok && last_stall <= 13, "FIX-1 offset changed during a stalled passthrough: transfer completes, new offset armed");
+        // change during a back-to-back burst granted in WAITING: deferred until it ends
+        set_offset_and_settle(2);
+        wait_armed(ok);
+        r0 = n_rearm;
+        for (int i = 0; i < 8; i++) begin
+            if (i == 2) alarm_offset = 3;
+            apb_rd(A_DR, r);
+            if (i < 7) check(dut.state == S_WAITING, "FIX-1 re-arm deferred while the passthrough burst holds the bus");
+        end
+        wait_rearmed(40, ok, took);
+        check(ok && n_rearm == r0 + 1, "FIX-1 re-arm runs once the burst ends");
+        // the same value rewritten 100 times: no re-arm, period unchanged
+        set_offset_and_settle(2);
+        wait_armed(ok);
+        r0 = n_rearm;
+        for (int i = 0; i < 100; i++) begin alarm_offset = 2; clk(3); end
+        check(n_rearm == r0, "FIX-1 rewriting the same offset 100 times never re-arms");
+        // 50 periods after a change, exactly one sample per period
+        alarm_offset = 3;
+        wait_rearmed(40, ok, took);
+        begin
+            int unsigned b0 = g_bad_max + g_bad_min, n0 = trig_count;
+            gchk = 1'b1; gmin = 1'b1; g_reset();
+            for (int p = 0; p < 50; p++) begin wait_trig(5 * period(), ok, took); if (!ok) break; end
+            clk(1);
+            gchk = 1'b0; gmin = 1'b0;
+            check(trig_count - n0 >= 50 && g_bad_max + g_bad_min == b0, "FIX-1 50 periods after a change: one sample per period, within the guarantee");
+        end
+        set_offset_and_settle(1);
     endtask
 
     // -------------------------------------------------------------- RTC-8
@@ -825,13 +936,21 @@ module tb_rtc_closure;
     task automatic arm_with(input logic [31:0] off, input bit raced);
         bit ok; int took;
         logic [31:0] now;
-        longint unsigned lim;
-        alarm_offset = off;
-        lim = (longint'(dut.armed_offset) + 3) * period() + 400;
-        wait_trig(int'(lim), ok, took);
-        if (raced) c1_force_rise = 3;             // synchronised tick ~T+5: between the RTCDR read and the RTCMR write
+        int unsigned eff = (off == 0) ? 1 : off;
         wait_armed(ok);
-        check(ok && dut.armed_offset == ((off == 0) ? 1 : off),
+        if (eff != dut.armed_offset) begin
+            // FIX-1: the change re-arms at once; a forced tick 2 negedges out
+            // lands in that re-arm's window (S_READ_SETUP .. RTCMR write)
+            if (raced) c1_force_rise = 2;
+            alarm_offset = off;
+        end else begin
+            // same offset: arm through an alarm service
+            alarm_offset = off;
+            wait_trig((eff + 3) * period() + 400, ok, took);
+            if (raced) c1_force_rise = 3;
+        end
+        wait_rearmed(60, ok, took);
+        check(ok && dut.armed_offset == eff,
               $sformatf("COV arm with offset %0d (%s)", off, raced ? "tick in the arm window" : "clean"));
         if (off > 8) begin
             apb_rd(A_DR, now);
@@ -907,6 +1026,7 @@ module tb_rtc_closure;
         rtc5();
         rtc6();
         rtc7();
+        fix1();
         rtc8();
         rtc9();
         rtc11();

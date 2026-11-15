@@ -51,7 +51,11 @@ static inline void sensing_delay(volatile uint32_t n)
 /* ---- configuration ------------------------------------------------------- */
 
 /* Set the autonomous poll period (RTC seconds) and calibration path, and make
- * sure autonomous polling is enabled. */
+ * sure autonomous polling is enabled. A new period is armed at once (FIX-1):
+ * the next sample comes within period_s + 1 RTC seconds of this call, even if
+ * a much longer period was armed before. (Before FIX-1 it applied only after
+ * the currently armed alarm fired; firmware had to write RTCMR to shorten it.)
+ * Period 0 is treated as 1. */
 static inline void sensing_init(uint32_t period_s, int calibrate)
 {
     SENSING_IP_REGS->rtc_alarm_offset = period_s;

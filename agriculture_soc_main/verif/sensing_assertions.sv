@@ -281,6 +281,8 @@ module rtc_sva (
     input logic        poll_enable,
     input logic [31:0] wd_ticks,
     input logic        pt_setup_done,
+    input logic [31:0] eff_offset,
+    input logic [31:0] armed_offset,
     input logic        PSEL,
     // the PL031 (Rtc) port
     input logic        rtc_psel,
@@ -289,7 +291,7 @@ module rtc_sva (
     input logic [9:0]  rtc_paddr,
     input logic [31:0] rtc_pwdata
 );
-    localparam logic [4:0] S_WAITING = 5'd10, S_PULSE_TRIG = 5'd13, S_READ_CAPTURE = 5'd14;
+    localparam logic [4:0] S_READ_SETUP = 5'd3, S_WAITING = 5'd10, S_PULSE_TRIG = 5'd13, S_READ_CAPTURE = 5'd14;
 
     // $past / $stable refer to the previous clock edge: only meaningful from
     // the second edge after a reset (the clock may not even run during reset).
@@ -332,6 +334,18 @@ module rtc_sva (
         (state == S_WAITING && !poll_enable) |=> $stable(wd_ticks))
         else $error("wd_ticks moved while polling is paused");
 
+    // FIX-1: the offset re-arm (WAITING -> READ_SETUP) never pulses rtc_trig
+    a_rearm_no_trig: assert property (@(posedge PCLK) disable iff (!PRESETn)
+        (past_ok && state == S_READ_SETUP && $past(state) == S_WAITING) |-> !rtc_trig)
+        else $error("rtc_trig on the offset re-arm path");
+    // FIX-1: parked in WAITING for 3 cycles with no passthrough and a stable
+    // offset => the armed offset is the current one
+    a_offset_armed: assert property (@(posedge PCLK) disable iff (!PRESETn)
+        (past_ok && state == S_WAITING && $past(state) == S_WAITING && $past(state, 2) == S_WAITING &&
+         !$past(ext_sel) && !$past(ext_sel, 2) &&
+         eff_offset == $past(eff_offset) && eff_offset == $past(eff_offset, 2)) |-> (armed_offset == eff_offset))
+        else $error("armed_offset %0d != alarm offset %0d while parked", armed_offset, eff_offset);
+
     // a passthrough SETUP is only recorded for a transfer that is in flight
     a_setup_done_needs_psel: assert property (@(posedge PCLK) disable iff (!PRESETn)
         pt_setup_done |-> PSEL);
@@ -341,6 +355,7 @@ bind rtc_control_2 rtc_sva u_rtc_sva (
     .PCLK(PCLK), .PRESETn(PRESETn), .state(state), .rtc_trig(rtc_trig),
     .ext_sel(ext_sel), .fsm_psel(fsm_psel), .poll_enable(poll_enable),
     .wd_ticks(wd_ticks), .pt_setup_done(pt_setup_done), .PSEL(PSEL),
+    .eff_offset(eff_offset), .armed_offset(armed_offset),
     .rtc_psel(rtc_psel), .rtc_penable(rtc_penable), .rtc_pwrite(rtc_pwrite),
     .rtc_paddr(rtc_paddr), .rtc_pwdata(rtc_pwdata)
 );

@@ -597,6 +597,20 @@ module sens_closure_tb #(
         wr(A_ALARM, 32'd1);
         sampling_continues("RTC-7w offset 5 -> 1", 8);
         sampling_continues("RTC-7w offset 1 applied", 3);
+        // FIX-1 at wrapper level: four byte-lane writes in a row re-arm up to
+        // four times and end on the final value; the new period applies at once
+        wr(A_ALARM, 32'd5);
+        sampling_continues("FIX-1w offset 5", 8);
+        wait_rtc_parked();
+        wrs(A_ALARM, 32'h0000_0002, 4'b0001);
+        wrs(A_ALARM, 32'h0000_0000, 4'b0010);
+        wrs(A_ALARM, 32'h0000_0000, 4'b0100);
+        wrs(A_ALARM, 32'h0000_0000, 4'b1000);
+        rd(A_ALARM, r);
+        check(r == 32'd2, "FIX-1w four byte-lane writes leave RTC_ALARM_OFFSET = 2");
+        begin int g = 0; while (g < 100 && !(uut.u_rtc.state == R_WAITING && uut.u_rtc.armed_offset == 2)) begin cyc(1); g++; end
+              check(uut.u_rtc.armed_offset == 2, "FIX-1w the final value is armed without waiting for the old period"); end
+        sampling_continues("FIX-1w sample within the new period + 1", 3);
         // RTC-10 at wrapper level: nPOR without PRESETn
         nPOR = 1'b0; cyc(20); nPOR = 1'b1;
         cyc(3 * tick());

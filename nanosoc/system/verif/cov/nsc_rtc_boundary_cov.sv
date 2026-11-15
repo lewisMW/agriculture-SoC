@@ -96,15 +96,21 @@ module nsc_rtc_boundary_cov (
     wire fw_arm  = rtc_access && rtc_pwrite && ext_sel &&
                    (rtc_paddr == 10'h001 || rtc_paddr == 10'h002);
     wire imsc_wr = rtc_access && rtc_pwrite && (rtc_paddr == 10'h004) && rtc_pwdata[0];
+    // A rise in the cycle after an RTCIMSC=1 write reveals a raw interrupt that
+    // was already set (an unmask); it does not consume the arming of a future
+    // match (FIX-1 re-arms write RTCIMSC without an RTCICR, so this is common).
+    logic imsc_wr_q;
+    wire  unmask_rise = intr_rise && imsc_wr_q;
+    wire [1:0] rise_src = unmask_rise ? 2'd3 : armed;
     always @(posedge PCLK or negedge PRESETn) begin
-        if (!PRESETn) begin intr_q <= 1'b0; intr_high <= 0; armed <= 2'd0; end
+        if (!PRESETn) begin intr_q <= 1'b0; intr_high <= 0; armed <= 2'd0; imsc_wr_q <= 1'b0; end
         else begin
             intr_q <= RTCINTR;
+            imsc_wr_q <= imsc_wr;
             intr_high <= RTCINTR ? intr_high + 1 : 0;
-            if (match_written)              armed <= 2'd1;
-            else if (fw_arm)                armed <= 2'd2;
-            else if (imsc_wr && armed == 0) armed <= 2'd3;
-            else if (intr_rise)             armed <= 2'd0;
+            if (match_written)                  armed <= 2'd1;
+            else if (fw_arm)                    armed <= 2'd2;
+            else if (intr_rise && !unmask_rise) armed <= 2'd0;
         end
     end
     wire intr_fall = !RTCINTR && intr_q;
@@ -187,10 +193,10 @@ module nsc_rtc_boundary_cov (
             bins paused           = {2'b00, 2'b01};
             bins during_passthru  = {2'b11};
         }
-        cp_rise_source : coverpoint armed iff (intr_rise) {
+        cp_rise_source : coverpoint rise_src iff (intr_rise) {
             bins fsm_alarm      = {2'd1};
             bins firmware_match = {2'd2};  // firmware wrote RTCMR/RTCLR via passthrough
-            bins unmask         = {2'd3};  // RTCIMSC write with the raw interrupt already set
+            bins unmask         = {2'd3};  // RTCIMSC=1 write revealing a raw interrupt already set
             bins viol_unarmed   = {2'd0};  // interrupt with no RTCMR/RTCLR/RTCIMSC write since the previous one
         }
         cp_high_time : coverpoint intr_high iff (intr_fall || (RTCINTR && intr_high == 5000)) {

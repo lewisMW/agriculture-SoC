@@ -119,6 +119,7 @@ module sens_soak_tb #(
             if (PSEL && PENABLE && PREADY) n_xfer++;
             stall_run = (PSEL && PENABLE && !PREADY) ? stall_run + 1 : 0;
             if (stall_run > max_stall) max_stall = stall_run;
+            if (stall_run == 14) $display("LONGSTALL [%0t] addr %h", $time, PADDR);
         end
     end
 
@@ -149,11 +150,15 @@ module sens_soak_tb #(
     always @(posedge CLK1HZ) tick_count <= tick_count + 1;
     int unsigned g_last_tick = 0, g_arm_off = 1, g_bad = 0, g_gaps = 0, g_excl = 0, g_max = 0;
     bit          g_valid = 1'b0, g_dirty = 1'b0;
+    logic [4:0]  rtc_st_q = 5'd0;             // WAITING -> READ_SETUP = an offset re-arm (FIX-1)
+    always @(posedge PCLK) rtc_st_q <= uut.u_rtc.state;
     always @(posedge PCLK) begin
         if (uut.u_rtc.state == R_MATCH_SETUP) g_arm_off <= uut.u_rtc.armed_offset;
         // a pause, or a firmware RTC-region access while an alarm is due,
         // makes the current interval not subject to the bound
-        if (!uut.poll_enable_reg || (uut.u_rtc.ext_sel && (uut.u_rtc.RTCINTR || uut.u_rtc.wd_expired)))
+        // FIX-1: an offset change re-arms from now, i.e. starts a new interval
+        if (!uut.poll_enable_reg || (uut.u_rtc.ext_sel && (uut.u_rtc.RTCINTR || uut.u_rtc.wd_expired)) ||
+            (uut.u_rtc.state == 5'd3 && rtc_st_q == 5'd10))
             g_dirty <= 1'b1;
         if (!PRESETn) g_valid <= 1'b0;
         else if (uut.rtc_trig) begin

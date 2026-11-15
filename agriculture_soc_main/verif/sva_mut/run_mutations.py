@@ -133,6 +133,10 @@ MUTS = [
                                                               "wire grant = PSEL & bus_free;"),
     ("rtc_wd_frozen", "a_wd_frozen_paused", "rtc", R, "if (poll_enable && clk1hz_tick && (wd_ticks != 32'hFFFF_FFFF))",
                                                       "if (clk1hz_tick && (wd_ticks != 32'hFFFF_FFFF))"),
+    ("rtc_rearm_trig", "a_rearm_no_trig",  "rtc", R, "                    state <= S_READ_SETUP;\n            end",
+                                                      "                    begin state <= S_READ_SETUP; rtc_trig <= 1'b1; end\n            end"),
+    ("rtc_offset_armed", "a_offset_armed", "rtc", R, "else if ((eff_offset != armed_offset) && !PSEL)",
+                                                     "else if (1'b0)"),
     ("rtc_setup_psel", "a_setup_done_needs_psel", "rtc", R, "else if (ext_done) pt_setup_done <= 1'b0;", "else if (1'b0)     pt_setup_done <= 1'b0;"),
     # ---- SAR ADC
     ("sar_legal",     "a_legal_state",     "adccal", SARLOGIC, "if (en) start_conv;\n\t\t\t\t\telse state <= sWait;",

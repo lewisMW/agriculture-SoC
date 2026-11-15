@@ -113,6 +113,14 @@ module rtc_cov (
         end
     end
     wire poll_fall   = poll_q && !poll_enable;
+    // FIX-1 re-arm context, from the cycle before the re-arm
+    // (after_passthru: a granted passthrough deferred the re-arm - seen in
+    // either of the two cycles before it)
+    logic       ext_q, ext_q2, intr_q2, pollen_q;
+    always @(posedge PCLK or negedge PRESETn)
+        if (!PRESETn) begin ext_q <= 1'b0; ext_q2 <= 1'b0; intr_q2 <= 1'b0; pollen_q <= 1'b1; end
+        else          begin ext_q <= ext_sel; ext_q2 <= ext_q; intr_q2 <= RTCINTR; pollen_q <= poll_enable; end
+    wire [1:0] rearm_ctx = (ext_q || ext_q2) ? 2'd3 : intr_q2 ? 2'd2 : pollen_q ? 2'd0 : 2'd1;
     wire off_changed = hist_valid && (alarm_offset != off_q);
     // 1 arming, 2 waiting (polling), 3 paused, 0 anything else (idle/servicing)
     wire [1:0] off_ctx = (state == S_WAITING) ? (poll_enable ? 2'd2 : 2'd3)
@@ -145,6 +153,14 @@ module rtc_cov (
             bins re_arm        = {{S_IDLE,       S_READ_SETUP}};
             bins alarm_service = {{S_WAITING,    S_ICR_SETUP}};
             bins trig_to_idle  = {{S_PULSE_TRIG, S_IDLE}};
+            bins offset_rearm  = {{S_WAITING,    S_READ_SETUP}};   // FIX-1
+        }
+        // FIX-1: context of an offset re-arm (WAITING -> READ_SETUP)
+        cp_rearm_ctx : coverpoint rearm_ctx iff (hist_valid && st_q == S_WAITING && state == S_READ_SETUP) {
+            bins polling        = {2'd0};
+            bins paused         = {2'd1};
+            bins alarm_pending  = {2'd2};
+            bins after_passthru = {2'd3};
         }
 
         cp_offset : coverpoint alarm_offset iff (state == S_CALC) {

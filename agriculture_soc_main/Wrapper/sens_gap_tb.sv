@@ -485,7 +485,8 @@ module sens_gap_tb #(
         wr(A_STATUS, 32'hFFFF_FFFF); wr(A_MEAS_HI, 32'hFFFF_FFFF); wr(A_MEAS_LO, 32'hFFFF_FFFF);
         cycles(30);
         rd(A_STATUS, d);
-        check(d == st0, "T4 writes to RO STATUS/MEAS_HI/MEAS_LO leave STATUS unchanged");
+        // [5] (RTC interrupt pending) moves on its own when the paused alarm comes due
+        check((d & ~32'h20) == (st0 & ~32'h20), "T4 writes to RO STATUS/MEAS_HI/MEAS_LO leave STATUS unchanged");
         check(sb.size() == n0 && n0 == 2, "T4 writes to RO registers neither push nor pop");
         read_meas_check("T4 head after RO writes");
         n0 = n_push;

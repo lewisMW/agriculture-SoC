@@ -39,6 +39,12 @@
 // time. If the alarm had not yet fired, it simply keeps waiting for the
 // already-armed target. Either way there is no stale-offset stall (the bug that
 // motivated this control): pausing/resuming never depends on alarm_offset.
+//
+// alarm_offset changes (FIX-1, pending team confirmation): a new value is
+// armed as soon as the FSM is parked in WAITING with no passthrough granted -
+// it re-reads the time and arms now + new offset, without an RTCICR write or
+// a sample (alarm service has priority). Before FIX-1 a new offset applied
+// only from the next arm, so a long armed period could not be shortened.
 // -----------------------------------------------------------------------------
 
 module rtc_control_2 #(
@@ -462,8 +468,25 @@ always @(posedge PCLK or negedge PRESETn) begin
                 // paused); saturate so a huge offset never wraps to "expired".
                 if (poll_enable && clk1hz_tick && (wd_ticks != 32'hFFFF_FFFF))
                     wd_ticks <= wd_ticks + 32'd1;
-                if ((RTCINTR || wd_expired) && !ext_sel && poll_enable)
+                // !PSEL (FIX-1): an access pending in the drain cycle (not yet
+                // granted) goes first. Only differs from !ext_sel in that one
+                // cycle; it matters because an offset re-arm can now end just
+                // as an alarm becomes due, and the access would otherwise wait
+                // through the re-arm, the service and another arm (22 PCLK).
+                if ((RTCINTR || wd_expired) && !PSEL && poll_enable)
                     state <= S_ICR_SETUP;
+                // FIX-1 (pending team confirmation): a changed alarm_offset
+                // re-arms at once - re-read the time and arm now + new offset.
+                // No RTCICR write and no rtc_trig on this path, so the re-arm
+                // itself never produces a sample; alarm service (above) has
+                // priority and re-arms with the new offset anyway. Also while
+                // paused. Change-detect (not a write strobe): rewriting the
+                // same value never re-arms, so it cannot starve sampling.
+                // !PSEL, not just !ext_sel: an external access stalled through
+                // the previous arm cycle is granted first (in the drain cycle
+                // it is not yet granted), so it never waits two arm cycles.
+                else if ((eff_offset != armed_offset) && !PSEL)
+                    state <= S_READ_SETUP;
             end
 
             // ── Clear interrupt — RTCICR = 1 ─────────────────────────────────
