@@ -1,0 +1,141 @@
+;====================Set to Maestro mode explorer =============================
+ocnSetXLMode("explorer")
+ocnxlProjectDir( "~/simulation" )
+ocnxlTargetCellView( "sar_adc" "tb_sar_adc" "maestro" )
+ocnxlResultsLocation( "" )
+ocnxlSimResultsLocation( "" )
+ocnxlMaxJobFail( 20 )
+
+;====================== Tests setup ============================================
+
+;---------- Test "sar_adc_sine_two_tone" ------------- 
+ocnxlBeginTest("sar_adc_sine_two_tone")
+simulator( 'spectre )
+design( "sar_adc" "tb_sar_adc" "config")
+modelFile( 
+    '("/opt/pdk/cadence_SKY130/sky130_release_0.1.0/libs/sky130_fd_pr_main/../../models/sky130.lib.spice" "tt")
+)
+stimulusFile( ?xlate nil
+    "/home/jaime/simulation/sar_adc/tb_sar_adc/maestro/results/maestro/.tmpADEDir_jaime/sar_adc_sine_two_tone/sar_adc_tb_sar_adc_config_spectre/netlist/_graphical_stimuli.scs")
+analysis('tran ?stop "VAR(\"t_sim\")"  )
+desVar(	  "fs" "fclk/10"	)
+desVar(	  "fclk" 1000000	)
+desVar(	  "Nfft" 1024	)
+desVar(	  "M_cycles_1" 59	)
+desVar(	  "M_cycles_2" 67	)
+desVar(	  "fin_1" "fs*M_cycles_1/Nfft"	)
+desVar(	  "fin_2" "fs*M_cycles_2/Nfft"	)
+desVar(	  "N_drop" 2	)
+desVar(	  "t_drop" "N_drop/fs"	)
+desVar(	  "t_start" 100.5u	)
+desVar(	  "t0" "t_start + t_drop"	)
+desVar(	  "t1" "t0 + M_cycles_2/fin_2"	)
+desVar(	  "vssa" 0	)
+desVar(	  "vdda" 1.8	)
+desVar(	  "v_ref" "vdda"	)
+desVar(	  "v_cm" 0.9	)
+desVar(	  "t_sim" "t_start + t_drop + (t1-t0) + 1/fs"	)
+envOption(
+	'analysisOrder  list("pz" "dcmatch" "stb" "tran" "envlp" "ac" "dc" "lf" "noise" "xf" "sp" "pss" "pac" "pstb" "pnoise" "pxf" "psp" "qpss" "qpac" "qpnoise" "qpxf" "qpsp" "hb" "hbac" "hbstb" "hbnoise" "hbxf" "sens" "acmatch" "ofa") 
+)
+option(	'pzSeverity  "None" 
+	'noiseSeverity  "None" 
+	'spSeverity  "None" 
+	'acSeverity  "None" 
+	'dcOpSeverity  "None" 
+	'dcSeverity  "None" 
+	'tranSeverity  "None" 
+	'checklimitdest  "sqldb" 
+)
+saveOption( ?infoOptions list(list("modelParameter" "models" "rawfile" "" "" "" t) list("element" "inst" "rawfile" "" "" "" t) list("outputParameter" "output" "rawfile" "" "" "" t) list("designParamVals" "parameters" "rawfile" "" "" "" t) list("primitives" "primitives" "rawfile" "" "" "" t) list("subckts" "subckts" "rawfile" "" "" "" t) list("asserts" "assert" "rawfile" "" "" "" nil) list("extremeinfo" "all" "logfile" "" "yes" "" nil) list("allcap" "allcap" "file" "" "" "" nil) list("simStatistics" "simstat" "rawfile" "" "" "" nil) list("<Click_To_Add>" "none" "rawfile" "" "" "" nil) ) )
+save( 'v "/vp" "/vn" "/result<7:0>" "/valid" "/clk" "/en" "/rstn" "/cal" "/vout" )
+temp( 27 ) 
+ocnxlOutputExpr( "dft(VT(\"/vout\") VAR(\"t0\") VAR(\"t1\") VAR(\"Nfft\") \"Rectangular\" 1 \"default\" 1.0)" ?name "fft_vout" ?plot t ?save t ?evalType 'point)
+ocnxlOutputExpr( "abs(value(fft_vout VAR(\"fin_2\")))" ?name "f2_vout" ?plot t ?save t ?evalType 'point)
+ocnxlOutputExpr( "abs(value(fft_vout VAR(\"fin_1\")))" ?name "f1_vout" ?plot t ?save t ?evalType 'point)
+ocnxlOutputExpr( "real(value(fft_vout (f2_vout - f1_vout)))" ?name "f_diff_vout" ?plot t ?save t ?evalType 'point)
+ocnxlOutputExpr( "real(value(fft_vout (f2_vout + f1_vout)))" ?name "f_sum_vout" ?plot t ?save t ?evalType 'point)
+ocnxlOutputExpr( "(10 * log10((((rms(f_diff_vout)**2) + (rms(f_sum_vout)**2)) / ((rms(VT(\"/vp\"))**2) + rms(VT(\"/vn\"))))))" ?name "IMD_vout" ?plot t ?evalType 'point)
+ocnxlOutputExpr( "((VT(\"/result<0>\") + (2 * VT(\"/result<1>\")) + (4 * VT(\"/result<2>\")) + (8 * VT(\"/result<3>\")) + (16 * VT(\"/result<4>\")) + (32 * VT(\"/result<5>\")) + (64 * VT(\"/result<6>\")) + (128 * VT(\"/result<7>\"))) / 1.8)" ?name "codes" ?save t ?evalType 'point)
+ocnxlOutputExpr( "(VT(\"/vp\") - VT(\"/vn\"))" ?name "vin" ?plot t ?evalType 'point)
+ocnxlOutputExpr( "dft(vin VAR(\"t0\") VAR(\"t1\") VAR(\"Nfft\") \"Rectangular\" 1 \"default\" 1.0)" ?name "fft_vin" ?evalType 'point)
+ocnxlOutputExpr( "spectrumMeasurement(codes t VAR(\"t0\") VAR(\"t1\") VAR(\"Nfft\") 0 50000 0 \"Rectangular\" 0 0 2 \"sfdr\")" ?name "sfdr_codes" ?plot t ?evalType 'point)
+ocnxlOutputExpr( "dft(codes VAR(\"t0\") VAR(\"t1\") VAR(\"Nfft\") \"Rectangular\" 1 \"default\" 1.0)" ?name "fft_codes" ?plot t ?evalType 'point)
+ocnxlOutputSignal( "/vp" ?plot t ?save t)
+ocnxlOutputSignal( "/vn" ?plot t ?save t)
+ocnxlOutputSignal( "/result<7:0>" ?save t)
+ocnxlOutputSignal( "/valid" ?save t)
+ocnxlOutputSignal( "/clk" ?save t)
+ocnxlOutputSignal( "/en" ?save t)
+ocnxlOutputSignal( "/rstn" ?save t)
+ocnxlOutputSignal( "/cal" ?save t)
+ocnxlOutputSignal( "/I0/cdac_pout")
+ocnxlOutputSignal( "/I0/cdac_nout")
+ocnxlOutputSignal( "/vout" ?save t)
+ocnxlOutputExpr( "spectrumMeasurement(VT(\"/vout\") t VAR(\"t0\") VAR(\"t1\") VAR(\"Nfft\") 0 50000 0 \"Rectangular\" 0 0 2 \"sfdr\")" ?name "sfdr_vout" ?plot t ?evalType 'point)
+ocnxlEndTest() ; "sar_adc_sine_two_tone"
+
+;====================== Sweeps setup ===========================================
+
+;====================== Model Group setup ==========================================
+
+;====================== Corners setup ==========================================
+
+;====================== Checks and Asserts setup ============================================
+ocnxlPutChecksAsserts(?netlist nil)
+
+;====================== Job setup ==============================================
+ocnxlJobSetup( '(
+	"blockemail" "1"
+	"cloudEnvFile" ""
+	"cloudImageFile" ""
+	"cloudPathBindings" ""
+	"cloudSSHHost" ""
+	"cloudStorePath" ""
+	"cloudUploadCmd" ""
+	"communicationtimeout" "180"
+	"configuretimeout" "300"
+	"defaultcpuvalue" "1"
+	"defaultmemoryvalue" "1000"
+	"distributionmethod" "Local"
+	"jobruntype" "LSCS"
+	"estimatecpuvalue" ""
+	"estimatememoryvalue" ""
+	"estimationsimulationmode" "0"
+	"lingertimeout" "300"
+	"maxjobs" "1"
+	"name" "Maestro Default"
+	"preemptivestart" "1"
+	"providecpuandmemorydata" "1"
+	"reconfigureimmediately" "1"
+	"remotevirtuosohome" ""
+	"runpointsvalue" "5"
+	"runtimeout" "-1"
+	"scaleestimatedbycpu" "100"
+	"scaleestimatedbymemory" "100"
+	"scalehistorybycpu" "100"
+	"scalehistorybymemory" "100"
+	"showerrorwhenretrying" "1"
+	"showoutputlogerror" "0"
+	"startmaxjobsimmed" "1"
+	"starttimeout" "300"
+	"userquotaspace" "0"
+	"userquotavalue" ""
+	"usesameprocess" "1"
+	"warndisklow" "0"
+	"warnthresholdvalue" "100"
+) )
+
+;====================== Disabled items =========================================
+
+;====================== Run Mode Options ======================================
+
+;====================== Starting Point Info ======================================
+
+;====================== Run command ============================================
+ocnxlRun( ?mode 'sweepsAndCorners ?nominalCornerEnabled t ?allCornersEnabled t ?allSweepsEnabled t)
+ocnxlOutputSummary(?exprSummary t ?specSummary t ?detailed t ?wave t)
+ocnxlOpenResults()
+
+;====================== End XL Mode command ===================================
+ocnxlEndXLMode("explorer")

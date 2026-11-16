@@ -361,7 +361,7 @@
     </namedstimuli>
     <namedstimuli>
         <stimuliname>vp</stimuliname>
-        <timeStamp>31/10/2026;3:31:25:PM</timeStamp>
+        <timeStamp>02/11/2026;9:29:25:PM</timeStamp>
         <simStopTime>1n</simStopTime>
         <isourceResistorValue>1k</isourceResistorValue>
         <libname></libname>
@@ -384,13 +384,6 @@
                 <defvalue></defvalue>
             </parameter>
             <parameter>
-                <cdfname>acm</cdfname>
-                <prompt>AC magnitude</prompt>
-                <datatype>string</datatype>
-                <value>v_ref/2</value>
-                <defvalue></defvalue>
-            </parameter>
-            <parameter>
                 <cdfname>td</cdfname>
                 <prompt>Delay time</prompt>
                 <datatype>string</datatype>
@@ -398,10 +391,24 @@
                 <defvalue></defvalue>
             </parameter>
             <parameter>
+                <cdfname>va</cdfname>
+                <prompt>Amplitude</prompt>
+                <datatype>string</datatype>
+                <value>v1</value>
+                <defvalue></defvalue>
+            </parameter>
+            <parameter>
                 <cdfname>freq</cdfname>
                 <prompt>Frequency</prompt>
                 <datatype>string</datatype>
                 <value>fin_1</value>
+                <defvalue></defvalue>
+            </parameter>
+            <parameter>
+                <cdfname>va2</cdfname>
+                <prompt>Amplitude 2</prompt>
+                <datatype>string</datatype>
+                <value>v2</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
@@ -422,7 +429,7 @@
     </namedstimuli>
     <namedstimuli>
         <stimuliname>vn</stimuliname>
-        <timeStamp>31/10/2026;3:32:3:PM</timeStamp>
+        <timeStamp>02/11/2026;9:29:38:PM</timeStamp>
         <simStopTime>1n</simStopTime>
         <isourceResistorValue>1k</isourceResistorValue>
         <libname></libname>
@@ -445,17 +452,17 @@
                 <defvalue></defvalue>
             </parameter>
             <parameter>
-                <cdfname>acm</cdfname>
-                <prompt>AC magnitude</prompt>
-                <datatype>string</datatype>
-                <value>v_ref/2</value>
-                <defvalue></defvalue>
-            </parameter>
-            <parameter>
                 <cdfname>td</cdfname>
                 <prompt>Delay time</prompt>
                 <datatype>string</datatype>
                 <value>5*1/fclk</value>
+                <defvalue></defvalue>
+            </parameter>
+            <parameter>
+                <cdfname>va</cdfname>
+                <prompt>Amplitude</prompt>
+                <datatype>string</datatype>
+                <value>v1</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
@@ -470,6 +477,13 @@
                 <prompt>Frequency</prompt>
                 <datatype>string</datatype>
                 <value>fin_1</value>
+                <defvalue></defvalue>
+            </parameter>
+            <parameter>
+                <cdfname>va2</cdfname>
+                <prompt>Amplitude 2</prompt>
+                <datatype>string</datatype>
+                <value>v2</value>
                 <defvalue></defvalue>
             </parameter>
             <parameter>
