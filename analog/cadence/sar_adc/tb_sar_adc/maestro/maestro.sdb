@@ -116,19 +116,7 @@
 					<output>(dft codes)
 						<evalType>point</evalType>
 					</output>
-					<output>fft_codes
-						<evalType>point</evalType>
-					</output>
-					<output>t0
-						<evalType>point</evalType>
-					</output>
 					<output>vin
-						<evalType>point</evalType>
-					</output>
-					<output>fft_vin
-						<evalType>point</evalType>
-					</output>
-					<output>sinad_codes
 						<evalType>point</evalType>
 					</output>
 					<output>enob
@@ -158,13 +146,31 @@
 					<output>/vout
 						<evalType>point</evalType>
 					</output>
-					<output>sinad_vout
+					<output>sinad
 						<evalType>point</evalType>
 					</output>
 					<output>fft_vout
 						<evalType>point</evalType>
 					</output>
 					<output>sigpower
+						<evalType>point</evalType>
+					</output>
+					<output>vout
+						<evalType>point</evalType>
+					</output>
+					<output>H1
+						<evalType>point</evalType>
+					</output>
+					<output>H3
+						<evalType>point</evalType>
+					</output>
+					<output>H5
+						<evalType>point</evalType>
+					</output>
+					<output>H7
+						<evalType>point</evalType>
+					</output>
+					<output>samples
 						<evalType>point</evalType>
 					</output>
 				</outputs>
@@ -179,7 +185,7 @@
 						<value>1024</value>
 					</var>
 					<var>M_cycles
-						<value>31, 509</value>
+						<value>31</value>
 					</var>
 					<var>fin_1
 						<value>fs*M_cycles/Nfft</value>
@@ -191,10 +197,10 @@
 						<value>N_drop/fs</value>
 					</var>
 					<var>t_start
-						<value>100.5u</value>
+						<value>16.5u</value>
 					</var>
 					<var>t0
-						<value>t_start + t_drop</value>
+						<value>t_start + t_drop + 5u</value>
 					</var>
 					<var>t1
 						<value>t0 + M_cycles/fin_1</value>
@@ -206,7 +212,7 @@
 						<value>1.8</value>
 					</var>
 					<var>v_ref
-						<value>vdda</value>
+						<value>1.6993 1.6043 1.4298 1.2743 0.9021 0.5692 0.18 0.0569 0.018 0.0057 0.0018</value>
 					</var>
 					<var>v_cm
 						<value>0.9</value>
@@ -216,6 +222,15 @@
 					</var>
 					<var>fin_2
 						<value>0</value>
+					</var>
+					<var>v1
+						<value>v_ref/2</value>
+					</var>
+					<var>v2
+						<value>0</value>
+					</var>
+					<var>tstep
+						<value>(t1-t0)/Nfft</value>
 					</var>
 				</vars>
 				<tooloptions>
@@ -239,29 +254,6 @@
 					</option>
 				</tooloptions>
 				<prerunscript>0</prerunscript>
-			</test>
-			<test enabled="1">sar_adc_sine_linearity
-				<tool>ADE</tool>
-				<tooloptions>
-					<option>cell
-						<value>tb_sar_adc</value>
-					</option>
-					<option>lib
-						<value>sar_adc</value>
-					</option>
-					<option>sim
-						<value>spectre</value>
-					</option>
-					<option>view
-						<value>schematic</value>
-					</option>
-					<option>path
-						<value>$AXL_SETUPDB_DIR</value>
-					</option>
-					<option>state
-						<value>active</value>
-					</option>
-				</tooloptions>
 			</test>
 			<test enabled="1">sar_adc_sine_two_tone
 				<tool>ADE</tool>
@@ -305,9 +297,6 @@
 					<output>(dft codes)
 						<evalType>point</evalType>
 					</output>
-					<output>fft_codes
-						<evalType>point</evalType>
-					</output>
 					<output>t0
 						<evalType>point</evalType>
 					</output>
@@ -329,34 +318,70 @@
 					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "afdr")
 						<evalType>point</evalType>
 					</output>
-					<output>sfdr_codes
-						<evalType>point</evalType>
-					</output>
 					<output>/vout
 						<evalType>point</evalType>
 					</output>
 					<output>fft_vout
 						<evalType>point</evalType>
 					</output>
-					<output>sfdr_vout
+					<output>V1
 						<evalType>point</evalType>
 					</output>
-					<output>f1_vout
+					<output>V2
 						<evalType>point</evalType>
 					</output>
-					<output>f2_vout
+					<output>Vmin
 						<evalType>point</evalType>
 					</output>
-					<output>f_diff_vout
-						<evalType>point</evalType>
-					</output>
-					<output>f_sum_vout
+					<output>Vplus
 						<evalType>point</evalType>
 					</output>
 					<output>(10 * log10(rms("v+")))
 						<evalType>point</evalType>
 					</output>
-					<output>IMD_vout
+					<output>IMD2
+						<evalType>point</evalType>
+					</output>
+					<output>fplus
+						<evalType>point</evalType>
+					</output>
+					<output>fmin
+						<evalType>point</evalType>
+					</output>
+					<output>vout
+						<evalType>point</evalType>
+					</output>
+					<output>IMD2_floor
+						<evalType>point</evalType>
+					</output>
+					<output>f3low
+						<evalType>point</evalType>
+					</output>
+					<output>f3high
+						<evalType>point</evalType>
+					</output>
+					<output>V3low
+						<evalType>point</evalType>
+					</output>
+					<output>V3high
+						<evalType>point</evalType>
+					</output>
+					<output>IMD3
+						<evalType>point</evalType>
+					</output>
+					<output>bin
+						<evalType>point</evalType>
+					</output>
+					<output>spec
+						<evalType>point</evalType>
+					</output>
+					<output>tone
+						<evalType>point</evalType>
+					</output>
+					<output>SFDR_2TONE
+						<evalType>point</evalType>
+					</output>
+					<output>spur
 						<evalType>point</evalType>
 					</output>
 				</outputs>
@@ -371,10 +396,10 @@
 						<value>1024</value>
 					</var>
 					<var>M_cycles_1
-						<value>59</value>
+						<value>31 61 97 127 157 191 223 257 283 317 353 383 419 449 479 499</value>
 					</var>
 					<var>M_cycles_2
-						<value>67</value>
+						<value>M_cycles_1+8</value>
 					</var>
 					<var>fin_1
 						<value>fs*M_cycles_1/Nfft</value>
@@ -389,10 +414,10 @@
 						<value>N_drop/fs</value>
 					</var>
 					<var>t_start
-						<value>100.5u</value>
+						<value>16.5u</value>
 					</var>
 					<var>t0
-						<value>t_start + t_drop</value>
+						<value>t_start + t_drop + 5u</value>
 					</var>
 					<var>t1
 						<value>t0 + M_cycles_2/fin_2</value>
@@ -404,13 +429,194 @@
 						<value>1.8</value>
 					</var>
 					<var>v_ref
-						<value>vdda</value>
+						<value>0.9</value>
 					</var>
 					<var>v_cm
 						<value>0.9</value>
 					</var>
 					<var>t_sim
 						<value>t_start + t_drop + (t1-t0) + 1/fs</value>
+					</var>
+					<var>v1
+						<value>v_ref/2</value>
+					</var>
+					<var>v2
+						<value>v_ref/2</value>
+					</var>
+				</vars>
+				<tooloptions>
+					<option>cell
+						<value>tb_sar_adc</value>
+					</option>
+					<option>lib
+						<value>sar_adc</value>
+					</option>
+					<option>path
+						<value>$AXL_SETUPDB_DIR</value>
+					</option>
+					<option>sim
+						<value>spectre</value>
+					</option>
+					<option>state
+						<value>active</value>
+					</option>
+					<option>view
+						<value>config</value>
+					</option>
+				</tooloptions>
+				<prerunscript>0</prerunscript>
+			</test>
+			<test enabled="1">sar_adc_sine_hist
+				<tool>ADE</tool>
+				<outputs>
+					<output>/vp
+						<evalType>point</evalType>
+					</output>
+					<output>/vn
+						<evalType>point</evalType>
+					</output>
+					<output>/result&lt;7:0&gt;
+						<evalType>point</evalType>
+					</output>
+					<output>/valid
+						<evalType>point</evalType>
+					</output>
+					<output>/clk
+						<evalType>point</evalType>
+					</output>
+					<output>/en
+						<evalType>point</evalType>
+					</output>
+					<output>/rstn
+						<evalType>point</evalType>
+					</output>
+					<output>/cal
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/cdac_pout
+						<evalType>point</evalType>
+					</output>
+					<output>/I0/cdac_nout
+						<evalType>point</evalType>
+					</output>
+					<output>codes
+						<evalType>point</evalType>
+					</output>
+					<output>(codes * 2)
+						<evalType>point</evalType>
+					</output>
+					<output>(dft codes)
+						<evalType>point</evalType>
+					</output>
+					<output>t0
+						<evalType>point</evalType>
+					</output>
+					<output>vin
+						<evalType>point</evalType>
+					</output>
+					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "enob")
+						<evalType>point</evalType>
+					</output>
+					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "thd")
+						<evalType>point</evalType>
+					</output>
+					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "snhr")
+						<evalType>point</evalType>
+					</output>
+					<output>spectrumMeasurement(codes t VAR("t0") VAR("t1") VAR("Nfft") 0 50000 0 "Rectangular" 0 0 1 "afdr")
+						<evalType>point</evalType>
+					</output>
+					<output>/vout
+						<evalType>point</evalType>
+					</output>
+					<output>sample(codes VT("/t0") VT("/t1") "linear" 1e-05)
+						<evalType>point</evalType>
+					</output>
+					<output>sample(codes VT("t0") VT("t1") "linear" 1e-05)
+						<evalType>point</evalType>
+					</output>
+					<output>samples
+						<evalType>point</evalType>
+					</output>
+					<output>vout
+						<evalType>point</evalType>
+					</output>
+					<output>sum
+						<evalType>point</evalType>
+					</output>
+					<output>integ(hist_cum -1 1 nil)
+						<evalType>point</evalType>
+					</output>
+					<output>integ(hist_cum -0.9 0.9 nil)
+						<evalType>point</evalType>
+					</output>
+					<output>integ(hist_cum -0.9 nil)
+						<evalType>point</evalType>
+					</output>
+				</outputs>
+				<vars>
+					<var>fs
+						<value>fclk/10</value>
+					</var>
+					<var>fclk
+						<value>1000000</value>
+					</var>
+					<var>Nfft
+						<value>1024</value>
+					</var>
+					<var>M_cycles
+						<value>31</value>
+					</var>
+					<var>fin_1
+						<value>fs*M_cycles/Nfft</value>
+					</var>
+					<var>N_drop
+						<value>2</value>
+					</var>
+					<var>t_drop
+						<value>N_drop/fs</value>
+					</var>
+					<var>t_start
+						<value>16.5u</value>
+					</var>
+					<var>t0
+						<value>t_start + t_drop + 5u</value>
+					</var>
+					<var>t1
+						<value>t0 + M_cycles/fin_1</value>
+					</var>
+					<var>vssa
+						<value>0</value>
+					</var>
+					<var>vdda
+						<value>1.8</value>
+					</var>
+					<var>v_ref
+						<value>1.81</value>
+					</var>
+					<var>v_cm
+						<value>0.9</value>
+					</var>
+					<var>t_sim
+						<value>t_start + t_drop + (t1-t0) + 1/fs</value>
+					</var>
+					<var>fin_2
+						<value>0</value>
+					</var>
+					<var>Nfft_real
+						<value>2**18</value>
+					</var>
+					<var>M_cycles_real
+						<value>7873</value>
+					</var>
+					<var>v1
+						<value>v_ref/2</value>
+					</var>
+					<var>v2
+						<value>0</value>
+					</var>
+					<var>tstep
+						<value>(t1-t0)/Nfft</value>
 					</var>
 				</vars>
 				<tooloptions>
@@ -441,6 +647,62 @@
 				<callback>_parSetupDBExtensionCB</callback>
 				<iconvalue></iconvalue>
 				<icontype></icontype>
+				<active>
+					<mode>No Parasitics/LDE</mode>
+					<parameters>
+						<device>
+							<enabled>0</enabled>
+						</device>
+						<parasitic>
+							<enabled>0</enabled>
+						</parasitic>
+					</parameters>
+				</active>
+				<modes>
+					<mode>No Parasitics/LDE
+						<schematic>
+							<lib>sar_adc</lib>
+							<cell>tb_sar_adc</cell>
+							<view>schematic</view>
+						</schematic>
+					</mode>
+					<mode>Schematic Estimates (Parasitics)
+						<schematic>
+							<lib>sar_adc</lib>
+							<cell>tb_sar_adc</cell>
+							<view>schematic</view>
+						</schematic>
+						<parasitic>
+							<lib>sar_adc</lib>
+							<cell>tb_sar_adc</cell>
+							<view>estimated</view>
+						</parasitic>
+					</mode>
+					<mode>Layout (Parasitics/LDE)
+						<schematic>
+							<lib>sar_adc</lib>
+							<cell>tb_sar_adc</cell>
+							<view>schematic</view>
+						</schematic>
+						<parasitic>
+							<lib>sar_adc</lib>
+							<cell>tb_sar_adc</cell>
+							<view>netlist_layout</view>
+						</parasitic>
+					</mode>
+					<mode>Extracted (Parasitics/LDE)
+						<schematic>
+							<lib>sar_adc</lib>
+							<cell>tb_sar_adc</cell>
+							<view>schematic</view>
+						</schematic>
+						<parasitic>
+							<lib>sar_adc</lib>
+							<cell>tb_sar_adc</cell>
+							<view>&lt;None&gt;</view>
+						</parasitic>
+					</mode>
+				</modes>
 			</extension>
 		</extensions>
 		<currentmode>Single Run, Sweeps and Corners</currentmode>
@@ -451,6 +713,8 @@
 			<test netlist="0" netlistscope="all">sar_adc_sine_test</test>
 			<test netlist="0" netlistscope="all">sar_adc_sine_fft</test>
 			<test netlist="0" netlistscope="all">sar_adc_sine_two_tone</test>
+			<test netlist="0" netlistscope="all">sar_adc_sine_hist</test>
+			<test netlist="0" netlistscope="all">sar_adc_sine_fft_1</test>
 		</checksasserts>
 		<plottingoptions>
 			<plottingoption>waveformtemplate
@@ -496,6 +760,7 @@
 					<dependentTest omitted="0">sar_adc_tb_sar_adc_1</dependentTest>
 					<dependentTest enabled="1">sar_adc_sine_fft</dependentTest>
 					<dependentTest enabled="1">sar_adc_sine_two_tone</dependentTest>
+					<dependentTest enabled="1">sar_adc_sine_hist</dependentTest>
 				</dependentTests>
 			</var>
 			<var>vss
@@ -504,6 +769,7 @@
 					<dependentTest omitted="0">sar_adc_tb_sar_adc_1</dependentTest>
 					<dependentTest enabled="1">sar_adc_sine_fft</dependentTest>
 					<dependentTest enabled="1">sar_adc_sine_two_tone</dependentTest>
+					<dependentTest enabled="1">sar_adc_sine_hist</dependentTest>
 				</dependentTests>
 			</var>
 		</vars>
