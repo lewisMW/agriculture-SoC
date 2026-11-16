@@ -30,6 +30,7 @@ testbench or the library is changed.
 | `fetch_exports.sh` | Your computer | **Step 3.** Moves the exports from the Cadence machine (deletes them there once copied) |
 | `pull_results.sh` | Your computer | **Steps 2 + 3.** Runs the export on the Cadence machine over ssh, then `fetch_exports.sh` |
 | `maestro_sweep.py` | Your computer | **Step 4.** Plots the outputs against the swept variable. `--pull` does steps 2–4 |
+| `extra_foms.py` | Your computer | Figures of merit Maestro doesn't give, from the exported codes: single-tone (ENOB at full scale, largest-spur frequency, noise floor, HD2–HD6, sine-fit offset and gain, Walden/Schreier with `--power`) and two-tone (tone levels, noise floor). Called by `maestro_sweep.py` |
 | `histogram.py` | Your computer | Histogram tests: loads `hist.csv`/`hist_info.csv`, plots them, and is where the INL/DNL code goes (`analyse()`, empty for now). Called by `maestro_sweep.py` |
 | `vm_pull.py` | Your computer | The `--pull` part of `maestro_sweep.py` (runs `pull_results.sh`); `maestro_sweep.py` itself only plots |
 | `vm_settings.sh` | Your computer | How to reach the Cadence machine (used by the two scripts above); your values go in `vm_settings.local.sh` |

@@ -5,7 +5,7 @@ against the swept variable, and write them to a CSV.
 Run it after export_results.sh (VM) and fetch_exports.sh (Mac), or with --pull, which
 runs both first (vm_pull.py -> pull_results.sh; this file only plots). It reads the copy of the results database
 (ExplorerRun.0.rdb, an SQLite file) inside an export folder. For a histogram test it
-also plots each point's histogram with histogram.py (where the INL/DNL code goes).
+also works out each point's Vos, DNL and INL with histogram.py and plots them.
 
 Usage (from ~/Documents/SoCs):
   venv_SoC/bin/python maestro_pipeline/maestro_sweep.py --pull            # export + copy the latest run, then plot it
@@ -30,8 +30,10 @@ import pandas as pd
 
 EXPORTS = Path(__file__).resolve().parent / "data" / "exports"
 # Plotted by default when the run has them: sine test, then two-tone test
-DEFAULT_YS = ["sinad", "enob", "sfdr", "thd",
-              "SFDR_2TONE", "IMD3", "IMD2"]
+DEFAULT_YS = ["sinad", "enob", "sfdr", "thd",                      # single-tone (Maestro)
+              "enob_fs", "noise_floor", "fit_offset", "fit_gain",   # single-tone (extra_foms.py)
+              "SFDR_2TONE", "IMD3", "IMD2",                          # two-tone (Maestro)
+              "noise_floor_2tone"]                                   # two-tone (extra_foms.py)
 FULL_SCALE = 1.8   # V peak differential (vref of the sar instance)
 NBITS = 8
 
@@ -138,6 +140,8 @@ def main():
     ap.add_argument("--y", nargs="+", help="outputs to plot (default: every one of "
                     + " ".join(DEFAULT_YS) + " that the run has)")
     ap.add_argument("--no-plot", action="store_true", help="save the plot without opening a window")
+    ap.add_argument("--power", type=float, metavar="W",
+                    help="ADC power in watts: adds the Walden and Schreier FoM to sine tests")
     ap.add_argument("--pull", nargs="*", metavar="ARG",
                     help="first export the latest run on the Cadence machine and copy it here "
                          "(pull_results.sh; ARGs as for export_results.sh, e.g. ExplorerRun.0 "
@@ -161,6 +165,16 @@ def main():
         short = test.replace("sar_adc_sine_", "")
         print(f"\n===== {test} =====")
 
+        # figures of merit Maestro doesn't give, from the exported codes (extra_foms.py):
+        # single-tone and two-tone each get their own set
+        from extra_foms import for_test
+        extra = for_test(rdb.parent / test, args.power)
+        if len(extra) and len(table):
+            table = table.merge(extra, on="point", how="left")
+            if "sinad_py" in table and "sinad" in table:
+                d = (table["sinad_py"] - table["sinad"]).abs().max()
+                print(f"check: SINAD from the exported codes vs Maestro's, max difference {d:.3f} dB")
+
         # outputs to plot: those asked for, else every known figure of merit the test has.
         # Names are matched without regard to case (SFDR_2TONE = sfdr_2tone).
         lower = {c.lower(): c for c in table.columns}
@@ -176,16 +190,12 @@ def main():
             table.to_csv(csv, index=False)
             print(f"wrote {csv}")
 
-        # histogram test: per-code histogram plots (and later INL/DNL) from histogram.py
+        # histogram test: Vos, DNL, INL (the notebook's calculation) per point, from histogram.py
         if "hist" in test:
-            from histogram import load_point, plot_point, analyse
-            pts = sorted((rdb.parent / test).glob("pt*/hist.csv"), key=lambda p: int(p.parent.name[2:]))
+            from histogram import run_point
+            pts = sorted((rdb.parent / test).glob("pt*/hist_info.csv"), key=lambda p: int(p.parent.name[2:]))
             for pt in (p.parent for p in pts):
-                hist, info = load_point(pt)
-                print(f"{pt.name}: {int(info['n_samples'])} samples over {info['record_time'] * 1e3:.2f} ms, "
-                      f"codes {int(info['code_min'])}..{int(info['code_max'])} ({int(info['codes_hit'])} hit)")
-                plot_point(pt, hist, info, show=not args.no_plot)
-                analyse(hist, info)
+                run_point(pt, show=not args.no_plot)
             if not pts:
                 print("no hist.csv in this export (exported before the histogram step existed?)")
 

@@ -23,3 +23,6 @@ vm_settings.local.sh
 __pycache__/
 *.pyc
 .DS_Store
+
+# histogram.py --ideal output (regenerated)
+data/ideal_hist.png
