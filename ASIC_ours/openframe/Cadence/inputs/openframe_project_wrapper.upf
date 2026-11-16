@@ -1,0 +1,47 @@
+# Power intent for nanosoc in the OpenFrame wrapper (experiment). One domain: the
+# whole user area runs on the frame's vccd1/vssd1 (1.8 V). The sar_afe macro's
+# vdda/vss take the frame's vdda1/vssa1, and its vref the ADC_VREF supply net,
+# which exists for the power states only: in the layout the macro's vref pin is on
+# the net of the analog_io[15] pad port (config.tcl, power_plan.tcl). No pad cells, so no PD_IO.
+set_design_top openframe_project_wrapper
+
+create_power_domain PD_TOP -include_scope -supply {SS_TOP} -supply {SS_ANALOG} -supply {SS_VREF}
+
+foreach _p {vccd1 vssd1 vdda1 vssa1} {
+  create_supply_port $_p -direction inout
+  create_supply_net  $_p -domain PD_TOP
+  connect_supply_net $_p -ports $_p
+}
+# the frame's other supplies are on the wrapper's port list but unused here
+foreach _p {vccd vccd2 vdda vdda2 vddio vssd vssd2 vssa vssa2 vssio} {
+  create_supply_port $_p -direction inout
+  create_supply_net  $_p -domain PD_TOP
+  connect_supply_net $_p -ports $_p
+}
+create_supply_net ADC_VREF -domain PD_TOP
+
+set_domain_supply_net PD_TOP -primary_power_net vccd1 -primary_ground_net vssd1
+create_supply_set PD_TOP.SS_TOP    -function {power vccd1}    -function {ground vssd1} -update
+create_supply_set PD_TOP.SS_ANALOG -function {power vdda1}    -function {ground vssa1} -update
+create_supply_set PD_TOP.SS_VREF   -function {power ADC_VREF} -function {ground vssa1} -update
+
+# the analog macro: vdd on the core rail, vss on the analog ground (as in the
+# chip-level intent), vdda on the analog rail, vref on the reference net
+set sar_afe_inst u_nanosoc_chip/u_system/u_ss_expansion/u_region_exp/u_ss_accelerator/sensor_wrapper/u_adc/u_afe
+connect_supply_net vccd1 -ports [list $sar_afe_inst/vdd]
+connect_supply_net vssa1 -ports [list $sar_afe_inst/vss]
+connect_supply_net vdda1 -ports [list $sar_afe_inst/vdda]
+create_supply_port $sar_afe_inst/vref -direction inout
+connect_supply_net ADC_VREF -ports $sar_afe_inst/vref
+
+# power states: everything is always on; slow/typical/fast corners as in the
+# chip-level intent (1.8 V rails, 1.8 V analog rail and reference)
+foreach _ss {PD_TOP.SS_TOP PD_TOP.SS_ANALOG PD_TOP.SS_VREF} {
+  add_power_state $_ss -state ON_SLOW {-supply_expr {power == `{FULL_ON, 1.62} && ground == `{FULL_ON, 0.0}}}
+  add_power_state $_ss -state ON_TYP  {-supply_expr {power == `{FULL_ON, 1.80} && ground == `{FULL_ON, 0.0}}}
+  add_power_state $_ss -state ON_FAST {-supply_expr {power == `{FULL_ON, 1.98} && ground == `{FULL_ON, 0.0}}}
+}
+create_pst top_pst -supplies {vccd1 vssd1 vdda1 vssa1 ADC_VREF}
+add_pst_state all_on_slow -pst top_pst -state {ON_SLOW ON_SLOW ON_SLOW ON_SLOW ON_SLOW}
+add_pst_state all_on_typ  -pst top_pst -state {ON_TYP  ON_TYP  ON_TYP  ON_TYP  ON_TYP }
+add_pst_state all_on_fast -pst top_pst -state {ON_FAST ON_FAST ON_FAST ON_FAST ON_FAST}
