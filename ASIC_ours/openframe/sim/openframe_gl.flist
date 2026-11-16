@@ -1,0 +1,41 @@
+//-----------------------------------------------------------------------------
+// Gate-level simulation of nanosoc in the OpenFrame wrapper.
+// Read by the SoC Labs makefile in place of flist/project/top.flist
+// (run_gl_sim.sh passes it as TBENCH_VC and DESIGN_VC and sets the OPENFRAME_* variables).
+// Each source line must end in the file's extension: the file-list compiler
+// tests the line before it expands the variables.
+//-----------------------------------------------------------------------------
++libext+.v+.vlib
++incdir+$(SOCLABS_PROJECT_DIR)/system/src/defines
++incdir+$(OPENFRAME_GL_RUN)
+
+// SoC Labs gate-level testbench (no references into the design's hierarchy) and its verification IP
+$(OPENFRAME_TB_DIR)/nanosoc_tb_GATE.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_fsm.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_sync.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_axis_rxport.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_axis_txport.v
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/nanosoc_vip.flist
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/corstone101_vip.flist
+
+// the testbench's debug tester is itself a small processor system: it needs the
+// processor and bus-component models (the design under test does not: it is gates)
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/corstone101_ip.flist
+-f $(SOCLABS_SLCOREM0_TECH_DIR)/flist/cortexm0_ip.flist
+
+// a synchroniser cell that one of the verification components uses
+$(SOCLABS_GENERIC_LIB_TECH_DIR)/sync/verilog/SYNCHRONIZER_EDGES.v
+
+// the frame model with the pad-level port list the testbench expects
+$(OPENFRAME_DIR)/sim/nanosoc_chip_pads_openframe.v
+
+// the design: flat gate netlist from write_sim_netlist.tcl
+$(OPENFRAME_GL_NETLIST_DIR)/openframe_project_wrapper.sim.v
+
+// standard-cell, memory and ADC models (run_gl_sim.sh writes openframe_mem_model.v:
+// an include of the OpenRAM or the DFFRAM model, whichever the netlist uses)
+$(OPENFRAME_PDK)/libs.ref/sky130_fd_sc_hd/verilog/primitives.v
+$(OPENFRAME_PDK)/libs.ref/sky130_fd_sc_hd/verilog/sky130_fd_sc_hd.v
+$(OPENFRAME_GL_RUN)/openframe_mem_model.v
+$(ACCELERATOR_DIR)/ADC/sim/sar_afe_model.v
