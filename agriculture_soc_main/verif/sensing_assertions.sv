@@ -237,7 +237,12 @@ module wrap_sva #(
     input logic                    fifo_empty,
     input logic                    adc_valid_rise,
     input logic [SAMPLE_WIDTH-1:0] adc_sample,
-    input logic [31:0]             status_reg
+    input logic [31:0]             status_reg,
+    // RTC passthrough as forwarded to rtc_control_2
+    input logic                    rtc_psel,
+    input logic                    PWRITE,
+    input logic [2:0]              rtc_word,      // PADDR[4:2]: 3 = RTCCR
+    input logic [31:0]             rtc_pwdata
 );
     // $past / $stable refer to the previous clock edge: only meaningful from
     // the second edge after a reset (the clock may not even run during reset).
@@ -270,13 +275,21 @@ module wrap_sva #(
     a_status_reserved: assert property (@(posedge PCLK) disable iff (!PRESETn)
         status_reg[31:7] == 25'd0)     // [6] = ADC timeout (FIX-2)
         else $error("status_reg reserved bits set: 0x%08h", status_reg);
+
+    // FIX-3: RTCCR.start is set-only at the wrapper - a firmware RTCCR write
+    // reaches rtc_control_2 / the PL031 with bit 0 set, so it can never stop
+    // the counter (the real PL031 clears start on a write of 0).
+    a_rtccr_never_cleared: assert property (@(posedge PCLK) disable iff (!PRESETn)
+        (rtc_psel && PWRITE && rtc_word == 3'd3) |-> rtc_pwdata[0])
+        else $error("RTCCR write forwarded with start = 0 (data 0x%08h)", rtc_pwdata);
 endmodule
 
 bind adc_apb_wrapper_rev2 wrap_sva #(.SAMPLE_WIDTH(SAMPLE_WIDTH)) u_wrap_sva (
     .PCLK(PCLK), .PRESETn(PRESETn),
     .manual_trig(manual_trig), .fifo_clear(fifo_clear), .fifo_rd_en(fifo_rd_en),
     .fifo_empty(fifo_empty), .adc_valid_rise(adc_valid_rise),
-    .adc_sample(adc_sample), .status_reg(status_reg)
+    .adc_sample(adc_sample), .status_reg(status_reg),
+    .rtc_psel(rtc_psel), .PWRITE(PWRITE), .rtc_word(PADDR[4:2]), .rtc_pwdata(rtc_pwdata)
 );
 
 // ── RTC controller and the PL031 port (rtc_control_2) ────────────────────────

@@ -345,18 +345,39 @@ module tb_rtc_closure;
         // (b) firmware clears the match between the PL031 raising it and the
         // FSM servicing it: a back-to-back read stream holds the bus across
         // the match, its last transfer is the RTCICR write.
-        for (int i = 0; i < 3; i++) begin
+        // Real PL031 (measured at its ports, 2026-11-16): RTCINTR
+        // rises as soon as the count equals the match; an RTCICR written in
+        // the first 3 PCLK after that rise does not keep it low, and an
+        // RTCICR write only takes effect the cycle AFTER its ACCESS. So when the
+        // RTCICR is the last transfer of the burst (i < 3) RTCINTR is still high
+        // in the first bus-free cycle and the FSM services the alarm on time
+        // (the stand-in used to clear in the ACCESS cycle and lose it). Only
+        // firmware that keeps the bus one more transfer after an RTCICR issued
+        // more than 3 PCLK after the rise (i >= 3) really steals the interrupt; the
+        // watchdog then samples. Either way exactly one sample follows.
+        for (int i = 0; i < 6; i++) begin
             int guard = 0;
+            bit stolen;
             wait_armed(ok);
             while (!dut.RTCINTR && guard < 4 * period()) begin
                 apb_rd(A_DR, r);            // back to back: no idle cycle
                 guard++;
             end
+            if (i >= 3) begin apb_rd(A_DR, r); apb_rd(A_DR, r); end   // RTCICR more than 3 PCLK after the rise
             apb_wr(A_ICR, 32'h1);           // still back to back
-            check(dut.RTCINTR == 1'b0 && dut.state == S_WAITING,
-                  "RTC-3b RTCICR from firmware cleared the match before the FSM serviced it");
+            if (i >= 3) apb_rd(A_DR, r);    // hold the bus while the clear takes effect
+            stolen = (dut.RTCINTR == 1'b0);
+            check(dut.state == S_WAITING,
+                  $sformatf("RTC-3b FSM still waiting after the firmware RTCICR (state %0d)", dut.state));
+            if (i >= 3)
+                check(stolen, "RTC-3b RTCICR more than 3 PCLK after the rise, bus held one more transfer: interrupt cleared before the FSM services it");
             wait_trig((2 + 2) * period() + 100, ok, took);
-            check(ok, "RTC-3b sampling continues (watchdog) after the stolen interrupt");
+            if (stolen)
+                check(ok && dut.wd_ticks == 3,
+                      $sformatf("RTC-3b stolen interrupt: the watchdog samples after offset + 1 ticks (wd_ticks %0d)", dut.wd_ticks));
+            else
+                check(ok && took <= 20,
+                      $sformatf("RTC-3b RTCICR too early to clear the match: the FSM services it on time (after %0d PCLK)", took));
         end
         check(g_bad_max == bad0, "RTC-3 every gap within the guarantee");
         gchk = 1'b0;

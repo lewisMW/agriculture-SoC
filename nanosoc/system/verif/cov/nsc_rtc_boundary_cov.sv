@@ -101,16 +101,53 @@ module nsc_rtc_boundary_cov (
     // match (FIX-1 re-arms write RTCIMSC without an RTCICR, so this is common).
     logic imsc_wr_q;
     wire  unmask_rise = intr_rise && imsc_wr_q;
-    wire [1:0] rise_src = unmask_rise ? 2'd3 : armed;
+    // Real PL031 two-stage interrupt (2026-11-16, measured at its
+    // ports): RTCINTR (masked by RTCIMSC) rises as soon as the count equals
+    // the match, and RTCRIS (sticky until RTCICR) reads set exactly
+    // 3 PCLK later. If the match value changes in between (an RTCMR/RTCLR
+    // write being applied as the count reaches the old match), the immediate
+    // RTCINTR drops after 1-2 PCLK and rises again when RTCRIS sets: TWO
+    // rises for ONE match event, the second exactly 3 PCLK after the first.
+    // That second rise is legal (bin resync), not viol_unarmed, and never uses
+    // up an arming credit (it is the same event as the first rise). The FSM
+    // services the event once (measured: soak seeds 1-3, 35/35 cases).
+    // The PL031 stand-in models the same behaviour.
+    // Second real-PL031 effect: an RTCMR/RTCLR write takes effect in the PL031
+    // 1-3 PCLK after the write (later still if it lands just as the count
+    // ticks), so the OLD match can still fire just after the write - seen
+    // in gap T8: firmware RTCMR written as the counter ticked onto the FSM's
+    // previous target. That rise belongs to the old match (bin stale_match) and
+    // must not use up the new write's arming: the new match fires later.
+    // Only a match that was still armed and unfired when it was overwritten
+    // can fire this way, and only within the 6-PCLK window (old_pending). At
+    // the port this is indistinguishable from a firmware write whose NEW match
+    // is already true; such a rise is also counted here, which only means the
+    // write's credit is kept for one more rise.
+    int unsigned since_rise;                 // PCLKs since the previous rise
+    int unsigned arm_age;                    // PCLKs since the last arming write
+    logic old_pending;                       // overwritten match still armed, may fire stale
+    // Classification order: unmask, resync (same event as the previous rise),
+    // stale (old match), then the arming credit. Only a rise attributed to the
+    // credit uses it up.
+    wire  resync_rise = intr_rise && !unmask_rise && (since_rise <= 4);
+    wire  stale_rise  = intr_rise && !unmask_rise && !resync_rise && old_pending && (arm_age <= 6);
+    wire  armed_rise  = intr_rise && !unmask_rise && !resync_rise && !stale_rise;
+    wire [2:0] rise_src = unmask_rise ? 3'd3 : resync_rise ? 3'd4 : stale_rise ? 3'd5
+                        : {1'b0, armed};
     always @(posedge PCLK or negedge PRESETn) begin
-        if (!PRESETn) begin intr_q <= 1'b0; intr_high <= 0; armed <= 2'd0; imsc_wr_q <= 1'b0; end
+        if (!PRESETn) begin intr_q <= 1'b0; intr_high <= 0; armed <= 2'd0; imsc_wr_q <= 1'b0;
+                            since_rise <= 32'hFFFF; arm_age <= 32'hFFFF; old_pending <= 1'b0; end
         else begin
             intr_q <= RTCINTR;
             imsc_wr_q <= imsc_wr;
             intr_high <= RTCINTR ? intr_high + 1 : 0;
-            if (match_written)                  armed <= 2'd1;
-            else if (fw_arm)                    armed <= 2'd2;
-            else if (intr_rise && !unmask_rise) armed <= 2'd0;
+            since_rise <= intr_rise ? 1 : (since_rise < 32'hFFFF ? since_rise + 1 : since_rise);
+            arm_age    <= (match_written || fw_arm) ? 1 : (arm_age < 32'hFFFF ? arm_age + 1 : arm_age);
+            if (match_written || fw_arm)        old_pending <= (armed != 2'd0) && !armed_rise;
+            else if (stale_rise || arm_age > 6) old_pending <= 1'b0;
+            if (match_written)                                armed <= 2'd1;
+            else if (fw_arm)                                  armed <= 2'd2;
+            else if (armed_rise)                              armed <= 2'd0;
         end
     end
     wire intr_fall = !RTCINTR && intr_q;
@@ -194,10 +231,12 @@ module nsc_rtc_boundary_cov (
             bins during_passthru  = {2'b11};
         }
         cp_rise_source : coverpoint rise_src iff (intr_rise) {
-            bins fsm_alarm      = {2'd1};
-            bins firmware_match = {2'd2};  // firmware wrote RTCMR/RTCLR via passthrough
-            bins unmask         = {2'd3};  // RTCIMSC=1 write revealing a raw interrupt already set
-            bins viol_unarmed   = {2'd0};  // interrupt with no RTCMR/RTCLR/RTCIMSC write since the previous one
+            bins fsm_alarm      = {3'd1};
+            bins firmware_match = {3'd2};  // firmware wrote RTCMR/RTCLR via passthrough
+            bins unmask         = {3'd3};  // RTCIMSC=1 write revealing a raw interrupt already set
+            bins resync         = {3'd4};  // PL031 latched interrupt re-raising the same match event <= 4 PCLK after the first rise
+            bins stale_match    = {3'd5};  // still-armed old match firing <= 6 PCLK after an RTCMR/RTCLR overwrote it, before the PL031 applied the write
+            bins viol_unarmed   = {3'd0};  // interrupt with no RTCMR/RTCLR/RTCIMSC write since the previous one
         }
         cp_high_time : coverpoint intr_high iff (intr_fall || (RTCINTR && intr_high == 5000)) {
             bins short_lt8   = {[1:7]};

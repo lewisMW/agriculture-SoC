@@ -120,6 +120,8 @@ MUTS = [
     ("wrap_pop_empty", "a_no_pop_when_empty", "soak", W, "fifo_rd_en <= (read_enable && (PADDR == MEASUREMENT_LO) && !fifo_empty);",
                                                          "fifo_rd_en <= (read_enable && (PADDR == MEASUREMENT_LO));"),
     ("wrap_capture",  "a_sample_capture",  "clo", W, "else if (adc_valid_rise) adc_sample <= adc_result;", "else adc_sample <= adc_result;"),
+    ("wrap_rtccr",    "a_rtccr_never_cleared", "gap", W, "rtc_wr_ccr ? (PWDATA | {{(DATA_WIDTH-1){1'b0}}, 1'b1}) : PWDATA;",
+                                                         "rtc_wr_ccr ? PWDATA : PWDATA;"),
     ("wrap_status",   "a_status_reserved", "clo", W, "status_reg[DATA_WIDTH-1:7] <= {(DATA_WIDTH-7){1'b0}};",
                                                      "status_reg[DATA_WIDTH-1:7] <= {(DATA_WIDTH-7){adc_en}};"),
     # ---- RTC controller / PL031 port

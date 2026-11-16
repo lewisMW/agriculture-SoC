@@ -156,6 +156,18 @@ module adc_apb_wrapper_rev2 #(
     // no PSLVERR, by design) instead of writing the stray lanes.
     wire        rtc_partial_wr = PWRITE & (PSTRB != 4'hF);
     wire        rtc_psel    = PSEL & rtc_region & ~rtc_partial_wr;
+    // RTCCR.start is set-only at this interface (FIX-3, 2026-11-16): a firmware
+    // write to 0x20C (RTCCR) is forwarded with bit 0 forced to 1, so writing 0
+    // is a no-op and RTCCR keeps reading 1. The real ARM PL031 clears start on
+    // a write of 0 (measured on the ARM PL031: RTCCR then reads 0) and stops the counter,
+    // while rtc_control_2 still believes the RTC is running (rtc_enabled stays
+    // set until nPOR): the alarm can then never match and sampling silently
+    // falls back to the watchdog against a frozen RTCDR. Firmware sets the time
+    // with RTCLR and pauses sampling with RTC_CTRL; it never needs to stop the
+    // counter. Only nPOR stops/resets the RTC. Deliberate deviation from the
+    // PL031 - documented in sensing_ip.h.
+    wire        rtc_wr_ccr  = PWRITE & (PADDR[4:2] == 3'd3);
+    wire [DATA_WIDTH-1:0] rtc_pwdata = rtc_wr_ccr ? (PWDATA | {{(DATA_WIDTH-1){1'b0}}, 1'b1}) : PWDATA;
     wire [31:0] rtc_prdata;
     wire        rtc_pready;
     wire        rtc_pslverr;
@@ -481,7 +493,7 @@ module adc_apb_wrapper_rev2 #(
         .PENABLE         (PENABLE),
         .PWRITE          (PWRITE),
         .PADDR           (rtc_paddr),
-        .PWDATA          (PWDATA),
+        .PWDATA          (rtc_pwdata),
         .PRDATA          (rtc_prdata),
         .PREADY          (rtc_pready),
         .PSLVERR         (rtc_pslverr)

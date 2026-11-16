@@ -312,7 +312,7 @@ module sens_gap_tb #(
     task automatic check_reset_values(input string ctx);
         logic [31:0] d;
         logic [1:0]  f;
-        rd(A_STATUS, d);  check(d == 32'h0, {ctx, ": STATUS = 0 (empty, ADC idle, no drop, no RTC intr)"});
+        rd(A_STATUS, d);  check(d == 32'h0, $sformatf("%s: STATUS = 0 (empty, ADC idle, no drop, no RTC intr) (read 0x%0h)", ctx, d));
         rd(A_MEAS_HI, d); check(d == 32'h0, {ctx, ": MEAS_HI = 0"});
         rd(A_MEAS_LO, d); // empty FIFO, never written since reset: value undefined (F18)
         fifo_field(f);    check(f == 2'b00, {ctx, ": MEAS_LO read on empty FIFO leaves it empty"});
@@ -684,9 +684,12 @@ module sens_gap_tb #(
         wr(A_RTCMR, 32'h1);          rd(A_RTCMR, d); check(d == 32'h1, "T6 RTCMR write 1 read-back");
         wr(A_RTCMR, 32'hFFFF_FFFF);  rd(A_RTCMR, d); check(d == 32'hFFFF_FFFF, "T6 RTCMR write all-ones read-back");
         wr(A_RTCMR, mrv);            rd(A_RTCMR, d); check(d == mrv, "T6 RTCMR restore read-back");
-        // RTCCR: once started the counter cannot be stopped (PL031 TRM)
+        // RTCCR: once started the counter cannot be stopped. The wrapper
+        // forwards RTCCR writes with bit 0 forced to 1 (FIX-3): the real PL031
+        // clears start on a write of 0, which would leave rtc_control_2
+        // believing the RTC runs while RTCDR reads 0.
         wr(A_RTCCR, 32'h0);
-        rd(A_RTCCR, d);  check(d[0] == 1'b1, "T6 RTCCR write 0 does not clear start (PL031 TRM)");
+        rd(A_RTCCR, d);  check(d[0] == 1'b1, "T6 RTCCR write 0 does not clear start (wrapper FIX-3)");
         rd(A_RTCDR, t0); rtc_seconds(2); rd(A_RTCDR, t1);
         check(t1 > t0, "T6 RTC keeps counting after RTCCR write 0");
         // RTCIMSC write 0 / 1
@@ -796,8 +799,13 @@ module sens_gap_tb #(
         force_arm(32'd3, -1, 0, mr, ok);
         rd(A_RTCDR, t0);
         wr(A_RTCLR, t0 + 32'd100);
+        // The real PL031 applies an RTCLR load a
+        // cycle or two after the write: a read straight after it can still
+        // return the old time (measured on the ARM PL031, 2026-11-16). One more
+        // access later the new time is visible.
         rd(A_RTCDR, d);
-        check(d >= t0 + 32'd100 && d <= t0 + 32'd102, "T9 RTCLR load moved the RTC forward");
+        rd(A_RTCDR, d);
+        check(d >= t0 + 32'd100 && d <= t0 + 32'd102, $sformatf("T9 RTCLR load moved the RTC forward (RTCDR %0d, loaded %0d)", d, t0 + 32'd100));
         expect_fire(12, fired);
         bugcheck(fired, "RTCLR-FWD",
                  "T9 autonomous sampling continues after firmware sets the RTC forward (RTCLR)");
@@ -897,6 +905,10 @@ module sens_gap_tb #(
     task automatic reset_mid(input bit por, input int phase, input string nm);
         logic [31:0] tb4, ta;
         bit ok2;
+        // A power-on case needs a time well above the restart window, or the
+        // "count restarted" check can't tell a reset from a counter that was
+        // already small (back-to-back POR cases leave it at ~2 s).
+        if (por) begin wr(A_RTCLR, 32'd1000); rd(A_RTCDR, tb4); end
         rd(A_RTCDR, tb4);
         if (phase == 0) cycles(2);     // bus idle for a full cycle prev_val the reset
         if (phase == 1) begin
@@ -917,7 +929,7 @@ module sens_gap_tb #(
         if (por) begin
             wait_rtc_out_of_reset(ok2);
             rd(A_RTCDR, ta);
-            check(ta <= 32'd2 && (tb4 > 32'd2), {nm, ": power-on reset restarts the RTC count"});
+            check(ta <= 32'd2 && (tb4 > 32'd2), $sformatf("%s: power-on reset restarts the RTC count (RTCDR %0d after, %0d before)", nm, ta, tb4));
         end else begin
             rd(A_RTCDR, ta);
             check(ta >= tb4, {nm, ": warm reset keeps RTC time (decision #3)"});
