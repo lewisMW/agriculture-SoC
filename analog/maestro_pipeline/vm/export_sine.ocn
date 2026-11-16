@@ -1,0 +1,168 @@
+; =====================================================================
+; export_sine.ocn -- export the results of a Maestro / ADE Explorer run of
+; the SAR ADC sine tests (sar_adc_sine_fft, sar_adc_sine_two_tone,
+; sar_adc_sine_hist) to CSV. It only READS the simulation results; nothing
+; in Maestro or the setup is touched.
+;
+; For every design point and test of the run it writes
+;   <out>/<test>/pt<N>/vout.csv      time,vout         full transient, only with ?waveforms t (large)
+;   <out>/<test>/pt<N>/samples.csv   time,vout         vout once per conversion, t0 .. t1-tstep
+;   <out>/<test>/pt<N>/fft.csv       freq,mag,dB,re,im dft(vout t0 t1 Nfft "Rectangular"), peak amplitude
+;   <out>/<test>/pt<N>/vars.csv      name,value        design variables of that point (fin_1, v_ref, ...)
+;   <out>/<test>/pt<N>/hist.csv      code,count,cumulative   histogram tests only: one row per code
+;   <out>/<test>/pt<N>/hist_info.csv name,value        histogram tests only: samples, codes hit, run time
+; Same expressions as the Maestro outputs, so fft.csv matches fft_vout.
+;
+; Normally run through export_results.sh. From the CIW:
+;   load("~/maestro_pipeline/export_sine.ocn")
+;   mxExport("~/simulation/sar_adc/tb_sar_adc/maestro/results/maestro/ExplorerRun.0" "~/maestro_pipeline/exports/test")
+; =====================================================================
+
+mxVarNames = '("fclk" "fs" "Nfft" "M_cycles" "M_cycles_1" "M_cycles_2" "fin_1" "fin_2"
+               "v_ref" "v1" "v2" "v_cm" "vdda" "vssa" "N_drop" "t_start" "t_drop"
+               "t0" "t1" "t_sim" "tstep" "Nfft_real" "M_cycles_real")
+
+; Histogram tests (test name contains "hist"): the ideal DAC in the testbench gives
+;   vout = (code + 0.5 - 2^(N-1)) * vref / 2^(N-1)
+; so each sample is turned back into its code with these two numbers.
+mxNbits   = 8
+mxDacVref = 1.8          ; vref of ideal_dac_8b (instance I3)
+
+procedure( mxOpen(file)
+  let((p)
+    p = outfile(file "w")
+    unless(p error("mxExport: cannot write %s" file))
+    p))
+
+procedure( mxWriteWave(file xname yname wave)
+  ; two-column CSV of a real waveform
+  let((p xv yv n)
+    p = mxOpen(file)
+    fprintf(p "%s,%s\n" xname yname)
+    xv = drGetWaveformXVec(wave)
+    yv = drGetWaveformYVec(wave)
+    n = drVectorLength(xv)
+    for(i 0 n-1 fprintf(p "%.10e,%.10e\n" drGetElem(xv i) drGetElem(yv i)))
+    close(p)
+    n))
+
+procedure( mxWriteFFT(file w)
+  ; freq, magnitude (peak V), dB20, real, imaginary of a complex dft() result
+  let((p fv mv dv rv iv n)
+    p = mxOpen(file)
+    fprintf(p "freq,mag,dB,re,im\n")
+    fv = drGetWaveformXVec(mag(w))
+    mv = drGetWaveformYVec(mag(w))
+    dv = drGetWaveformYVec(dB20(w))
+    rv = drGetWaveformYVec(real(w))
+    iv = drGetWaveformYVec(imag(w))
+    n = drVectorLength(fv)
+    for(i 0 n-1
+      fprintf(p "%.10e,%.10e,%.6f,%.10e,%.10e\n" drGetElem(fv i) drGetElem(mv i)
+              drGetElem(dv i) drGetElem(rv i) drGetElem(iv i)))
+    close(p)
+    n))
+
+procedure( mxWriteHist(dest samp vars)
+  ; hist.csv:      code, count, cumulative   one row per code 0 .. 2^N-1
+  ; hist_info.csv: name, value               record length, codes, run time, input
+  let((nb half yv n counts code lo hi hit cum p v)
+    nb = 2**mxNbits
+    half = nb / 2
+    counts = makeVector(nb 0)
+    yv = drGetWaveformYVec(samp)
+    n = drVectorLength(yv)
+    lo = nb  hi = -1
+    for(i 0 n-1
+      code = round(drGetElem(yv i) * half / mxDacVref + half - 0.5)
+      code = max(0 min(nb - 1 code))
+      counts[code] = counts[code] + 1
+      lo = min(lo code)  hi = max(hi code))
+    p = mxOpen(strcat(dest "/hist.csv"))
+    fprintf(p "code,count,cumulative\n")
+    cum = 0  hit = 0
+    for(k 0 nb-1
+      cum = cum + counts[k]
+      when(counts[k] > 0 hit++)
+      fprintf(p "%d,%d,%d\n" k counts[k] cum))
+    close(p)
+    v = lambda((nm) cadr(assoc(nm vars)))
+    p = mxOpen(strcat(dest "/hist_info.csv"))
+    fprintf(p "name,value\n")
+    fprintf(p "n_samples,%d\n" n)
+    fprintf(p "codes_hit,%d\n" hit)
+    fprintf(p "code_min,%d\n" lo)
+    fprintf(p "code_max,%d\n" hi)
+    fprintf(p "n_bits,%d\n" mxNbits)
+    fprintf(p "dac_vref,%g\n" mxDacVref)
+    foreach(nm '("fs" "tstep" "t0" "t1" "t_sim" "t_start" "N_drop" "Nfft" "M_cycles"
+                 "fin_1" "v_ref" "v_cm" "Nfft_real" "M_cycles_real")
+      when(funcall(v nm) fprintf(p "%s,%.10e\n" nm funcall(v nm))))
+    when(funcall(v "t0") && funcall(v "t1")
+      fprintf(p "record_time,%.10e\n" funcall(v "t1") - funcall(v "t0")))
+    close(p)
+    printf("  histogram: %d samples, codes %d..%d, %d codes hit\n" n lo hi hit)
+    n))
+
+procedure( mxSafeName(sig)
+  ; "/vout" -> "vout", "/d<7>" -> "d_7_"
+  let((s)
+    s = pcreReplace(pcreCompile("^/") sig "" 0)
+    pcreReplace(pcreCompile("[^A-Za-z0-9_]") s "_" 0)))
+
+procedure( mxExport(runDir outDir @key (signals '("/vout")) (tests nil) (waveforms nil))
+  ; runDir: .../results/maestro/ExplorerRun.0 (the dir holding 1/, 2/, ...)
+  ; tests:  list of test names to export, nil = every test
+  let((points psf dest vars waves vout t0 t1 tstep nfft n count)
+    runDir = simplifyFilename(runDir)
+    outDir = simplifyFilename(outDir)
+    unless(isDir(runDir) error("mxExport: no run directory %s" runDir))
+    createDirHier(outDir)
+    count = 0
+    points = sort(setof(d getDirFiles(runDir) pcreMatchp("^[0-9]+$" d))
+                  lambda((a b) atoi(a) < atoi(b)))
+    foreach(pt points
+      foreach(test sort(getDirFiles(strcat(runDir "/" pt)) nil)
+        psf = sprintf(nil "%s/%s/%s/psf" runDir pt test)
+        when(isFile(strcat(psf "/tran.tran.tran")) && (!tests || member(test tests))
+          dest = sprintf(nil "%s/%s/pt%s" outDir test pt)
+          createDirHier(dest)
+          openResults(psf)
+          ; read the waveforms BEFORE VAR(): VAR() changes the selected result
+          selectResult('tran)
+          waves = setof(sw mapcar(lambda((s) list(s v(s ?result "tran"))) signals) cadr(sw))
+          vars = mapcar(lambda((nm) list(nm car(errset(VAR(nm) nil)))) mxVarNames)
+          vars = setof(x vars numberp(cadr(x)))
+
+          ; design variables
+          let((p) p = mxOpen(strcat(dest "/vars.csv"))
+            fprintf(p "name,value\n")
+            foreach(x vars fprintf(p "%s,%.10e\n" car(x) cadr(x)))
+            close(p))
+
+          ; full transient of every signal (vout first -> vout.csv): large, so only if asked
+          when(waveforms foreach(sw waves
+            mxWriteWave(sprintf(nil "%s/%s.csv" dest mxSafeName(car(sw)))
+                        "time" mxSafeName(car(sw)) cadr(sw))))
+
+          vout = cadr(car(waves))
+          t0    = cadr(assoc("t0" vars))
+          t1    = cadr(assoc("t1" vars))
+          tstep = cadr(assoc("tstep" vars))
+          ; tests without a tstep variable (two-tone): one sample per conversion = 1/fs
+          when(!tstep && cadr(assoc("fs" vars)) tstep = 1.0 / cadr(assoc("fs" vars)))
+          nfft  = cadr(assoc("Nfft" vars))
+          when(vout && t0 && t1 && tstep
+            let((samp)
+              samp = sample(vout t0 (t1 - tstep) "linear" tstep)
+              n = mxWriteWave(strcat(dest "/samples.csv") "time" "vout" samp)
+              printf("  samples: %d\n" n)
+              ; histogram test: per-code histogram and its record parameters
+              when(pcreMatchp("hist" test) mxWriteHist(dest samp vars))))
+          when(vout && t0 && t1 && nfft
+            mxWriteFFT(strcat(dest "/fft.csv")
+                       dft(vout t0 t1 round(nfft) "Rectangular" 1 "default" 1.0)))
+          count++
+          printf("exported %s point %s -> %s\n" test pt dest))))
+    printf("mxExport: %d point/test results written to %s\n" count outDir)
+    count))
