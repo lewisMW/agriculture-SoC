@@ -39,6 +39,27 @@ set_clock_uncertainty -setup $INTER_CLOCK_UNCERTAINTY -rise_from [get_clocks $EX
 source $::env(ACCELERATOR_DIR)/ADC/sar_adc.sdc
 # set_dont_touch u_por
 
+### The RTC's tick. clk1hz_reg in nanosoc/system/src/accelerator_subsystem.v is a
+### flop that divides the system clock and clocks the RTC's counter and its reset
+### synchroniser (about 60 flops). Without a clock on it they are not timed and
+### get no clock tree. The constraint is for the fastest the divider can run, a
+### toggle every cycle, which also covers a fixed slower divide. The RTC meets
+### the bus side through its own synchronisers, so the clocks are asynchronous.
+set clk1hz_c [get_cells -quiet -hierarchical *clk1hz_reg_reg]
+if {[sizeof_collection $clk1hz_c] != 1} {
+    error "constraints.sdc: expected one clk1hz_reg_reg flop, found [sizeof_collection $clk1hz_c]"
+}
+set clk1hz_q [get_pins -quiet [get_object_name $clk1hz_c]/Q]
+if {[sizeof_collection $clk1hz_q] == 0} {
+    set clk1hz_q [get_pins -quiet [get_object_name $clk1hz_c]/q]    ;# Genus, before mapping
+}
+if {[sizeof_collection $clk1hz_q] != 1} {
+    error "constraints.sdc: no Q pin on [get_object_name $clk1hz_c]"
+}
+create_generated_clock -name clk1hz -source [get_ports CLK] -divide_by 2 $clk1hz_q
+set_clock_groups -asynchronous -name clk1hz_async -group [get_clocks clk1hz] \
+    -group [get_clocks [list $EXTCLK sar_clk sar_clkc]]
+
 ### Multicycle path through asynchronous clock domains
 set_multicycle_path 2 -setup -end -from SWDCK -to CLK
 set_multicycle_path 1 -hold -end -from SWDCK -to CLK
