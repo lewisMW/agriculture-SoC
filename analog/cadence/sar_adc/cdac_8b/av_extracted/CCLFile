@@ -6,7 +6,7 @@ capacitance \
 	 -ground_net "vssa"
 extract \
 	 -selection "all" \
-	 -type "rc_coupled"
+	 -type "rc_decoupled"
 extraction_setup \
 	 -array_vias_spacing "auto" \
 	 -max_fracture_length infinite \
@@ -15,9 +15,6 @@ extraction_setup \
 		"auto" \
 	 -net_name_space "LAYOUT" \
 	 -split_via_by_unit_area false
-filter_coupling_cap \
-	 -coupling_cap_threshold_absolute 0.01 \
-	 -coupling_cap_threshold_relative 0.001
 filter_res \
 	 -merge_parallel_res false \
 	 -min_res 0.001

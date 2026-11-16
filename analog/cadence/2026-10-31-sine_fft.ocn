@@ -1,7 +1,7 @@
 ;====================Set to Maestro mode explorer =============================
 ocnSetXLMode("explorer")
 ocnxlProjectDir( "~/simulation" )
-ocnxlTargetCellView( "sar_adc" "tb_sar_adc" "maestro" )
+ocnxlTargetCellView( "sar_adc" "tb_sar" "maestro_sine_fft" )
 ocnxlResultsLocation( "" )
 ocnxlSimResultsLocation( "" )
 ocnxlMaxJobFail( 20 )
@@ -10,14 +10,12 @@ ocnxlMaxJobFail( 20 )
 
 ;---------- Test "sar_adc_sine_fft" ------------- 
 ocnxlBeginTest("sar_adc_sine_fft")
-simulator( 'spectre )
-design( "sar_adc" "tb_sar_adc" "config")
-modelFile( 
-    '("/opt/pdk/cadence_SKY130/sky130_release_0.1.0/libs/sky130_fd_pr_main/../../models/sky130.lib.spice" "tt")
+simulator( 'ams )
+design( "sar_adc" "tb_sar" "config")
+modelFile(
+    '("/opt/pdk/sky130_release_0.1.0/libs/sky130_fd_pr_main/../../models/sky130.lib.spice" "tt")
 )
-stimulusFile( ?xlate nil
-    "/home/jaime/simulation/sar_adc/tb_sar_adc/maestro/results/maestro/.tmpADEDir_jaime/sar_adc_sine_fft/sar_adc_tb_sar_adc_config_spectre/netlist/_graphical_stimuli.scs")
-analysis('tran ?stop "VAR(\"t_sim\")"  )
+analysis('tran ?stop 11m  )
 desVar(	  "fs" "fclk/10"	)
 desVar(	  "fclk" 1000000	)
 desVar(	  "Nfft" 1024	)
@@ -32,7 +30,7 @@ desVar(	  "vssa" 0	)
 desVar(	  "vdda" 1.8	)
 desVar(	  "v_ref" "vdda"	)
 desVar(	  "v_cm" 0.9	)
-desVar(	  "t_sim" "t_start + t_drop + (t1-t0) + 1/fs"	)
+desVar(	  "t_stop_calc" "t_start + t_drop + (t1-t0) + 1/fs"	)
 desVar(	  "fin_2" 0	)
 envOption(
 	'analysisOrder  list("pz" "dcmatch" "stb" "tran" "envlp" "ac" "dc" "lf" "noise" "xf" "sp" "pss" "pac" "pstb" "pnoise" "pxf" "psp" "qpss" "qpac" "qpnoise" "qpxf" "qpsp" "hb" "hbac" "hbstb" "hbnoise" "hbxf" "sens" "acmatch" "ofa") 
@@ -131,10 +129,8 @@ ocnxlJobSetup( '(
 
 ;====================== Starting Point Info ======================================
 
-;====================== Run command ============================================
-ocnxlRun( ?mode 'sweepsAndCorners ?nominalCornerEnabled t ?allCornersEnabled t ?allSweepsEnabled t)
-ocnxlOutputSummary(?exprSummary t ?specSummary t ?detailed t ?wave t)
-ocnxlOpenResults()
+;====================== Save setup (no run) ====================================
+ocnxlSaveSetupAs( "sar_adc" "tb_sar" "maestro_sine_fft" )
 
 ;====================== End XL Mode command ===================================
 ocnxlEndXLMode("explorer")

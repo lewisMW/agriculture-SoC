@@ -1,7 +1,7 @@
 ;====================Set to Maestro mode explorer =============================
 ocnSetXLMode("explorer")
 ocnxlProjectDir( "~/simulation" )
-ocnxlTargetCellView( "sar_adc" "tb_sar_adc" "maestro" )
+ocnxlTargetCellView( "sar_adc" "tb_sar" "maestro_sine_fft" )
 ocnxlResultsLocation( "" )
 ocnxlSimResultsLocation( "" )
 ocnxlMaxJobFail( 20 )
@@ -11,12 +11,10 @@ ocnxlMaxJobFail( 20 )
 ;---------- Test "sar_adc_sine_fft" ------------- 
 ocnxlBeginTest("sar_adc_sine_fft")
 simulator( 'spectre )
-design( "sar_adc" "tb_sar_adc" "config")
-modelFile( 
-    '("/opt/pdk/cadence_SKY130/sky130_release_0.1.0/libs/sky130_fd_pr_main/../../models/sky130.lib.spice" "tt")
+design( "sar_adc" "tb_sar" "config")
+modelFile(
+    '("/opt/pdk/sky130_release_0.1.0/libs/sky130_fd_pr_main/../../models/sky130.lib.spice" "tt")
 )
-stimulusFile( ?xlate nil
-    "/home/jaime/simulation/sar_adc/tb_sar_adc/maestro/results/maestro/.tmpADEDir_jaime/sar_adc_sine_fft/sar_adc_tb_sar_adc_config_spectre/netlist/_graphical_stimuli.scs")
 analysis('tran ?stop "VAR(\"t_sim\")"  )
 desVar(	  "fs" "fclk/10"	)
 desVar(	  "fclk" 1000000	)
@@ -136,6 +134,9 @@ ocnxlJobSetup( '(
 ;====================== Run Mode Options ======================================
 
 ;====================== Starting Point Info ======================================
+
+;====================== Save setup =============================================
+ocnxlSaveSetupAs( "sar_adc" "tb_sar" "maestro_sine_fft" )
 
 ;====================== Run command ============================================
 ocnxlRun( ?mode 'sweepsAndCorners ?nominalCornerEnabled t ?allCornersEnabled t ?allSweepsEnabled t)

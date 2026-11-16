@@ -1,0 +1,62 @@
+// VerilogA for sar_adc, tb_sar_stimuli, veriloga
+// Verilog-A version of tb_sar_stimuli (functional).
+// clk : starts low, toggles every TCLK/2
+// rstn: low until T_RST, then high
+// en  : high 2*TCLK after rstn
+// cal : constant, high if DO_CAL = 1
+// Times in ns, like the original.
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module tb_sar_stimuli(clk, rstn, en, cal);
+output clk;
+electrical clk;
+output rstn;
+electrical rstn;
+output en;
+electrical en;
+output cal;
+electrical cal;
+
+parameter real TCLK = 1000.0;   // clk period [ns]
+parameter real T_RST = 3000.0;  // rstn low [ns]
+parameter integer DO_CAL = 0;   // 1 -> calibrate
+parameter real vdd = 1.8;       // logic high [V]
+parameter real tr = 1n;         // edge time [s]
+
+integer clk_q, rstn_q, en_q;
+real thalf, trst, ten;
+
+analog begin
+  thalf = TCLK * 0.5e-9;
+  trst = T_RST * 1e-9;
+  ten = (T_RST + 2*TCLK) * 1e-9;
+
+  @(initial_step) begin
+    clk_q = 0;
+    rstn_q = 0;
+    en_q = 0;
+  end
+
+  // always #(TCLK/2) clk = ~clk;
+  @(timer(thalf, thalf))
+    clk_q = !clk_q;
+
+  // #(T_RST) rstn = 1;
+  @(timer(trst))
+    rstn_q = 1;
+
+  // #(2*TCLK) en = 1;
+  @(timer(ten))
+    en_q = 1;
+
+  V(clk) <+ transition(clk_q*vdd, 0, tr);
+  V(rstn) <+ transition(rstn_q*vdd, 0, tr);
+  V(en) <+ transition(en_q*vdd, 0, tr);
+  V(cal) <+ DO_CAL * vdd;
+end
+
+endmodule
+
+
