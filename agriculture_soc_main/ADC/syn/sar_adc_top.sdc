@@ -9,7 +9,7 @@ set SAR_ADC_INST    ""
 set SAR_ADC_MASTER  clk
 set SAR_ADC_SOURCE  clk
 set SAR_ADC_PERIOD  30.0        ;# ASIC_ours/Cadence/inputs/constraints.sdc: EXTCLK_PERIOD (33.3 MHz)
-set SAR_ADC_CLK_DIV 4
+set SAR_ADC_CLK_DIV 1         ;# the fastest setting of the run-time divider
 
 set_units -time ns
 set_units -capacitance pF
