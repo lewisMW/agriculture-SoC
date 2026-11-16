@@ -1,6 +1,6 @@
 # Open suspected RTL bugs - sensing SoC verification
 
-Generated 2026-11-15 21:03 by `verif/signoff.py` (mode full, PL031 stand-in). Each bug below fails the checks listed and is waiting on the owner named under it to confirm and fix it. Source of this list: `agriculture_soc_main/verif/cov/open_bugs.txt`.
+Generated 2026-11-16 21:58 by `verif/signoff.py` (mode full). Each bug below fails the checks listed and is waiting on the owner named under it to confirm and fix it. Source of this list: `agriculture_soc_main/verif/cov/open_bugs.txt`.
 
 ## ADC-CAL - Offset calibration has the wrong polarity and always ends on a trim rail
 

@@ -464,8 +464,9 @@ initial begin
     PRESETn = 1'b1;
     // nRTCRST stays high across an APB reset (tracks nPOR), so the FSM re-arms
     // immediately -- catch it in a busy (non-idle/non-waiting) state so the
-    // external ACCESS below lands while the FSM owns the bus.
-    wait_for_state(`S_ENABLE_ACCESS, 20);
+    // external ACCESS below lands while the FSM owns the bus. (FIX-4: a warm
+    // reset no longer rewrites RTCCR, so catch it in the RTCDR read instead.)
+    wait_for_state(`S_READ_ACCESS, 20);
     // Drive a RAW external read (no auto-wait) so we can observe the stall.
     PSEL    = 1'b1;
     PENABLE = 1'b0;

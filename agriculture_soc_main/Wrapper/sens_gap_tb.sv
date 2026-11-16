@@ -309,10 +309,24 @@ module sens_gap_tb #(
 
     // Register reset values, read in the first accesses after a reset (the
     // first read of each register is what cp_first_read / cp_reset_value use).
-    task automatic check_reset_values(input string ctx);
-        logic [31:0] d;
+    // warm = PRESETn-only reset. The real PL031 keeps RTCMR/RTCIMSC across it
+    // (nPOR domain), so an alarm that was being serviced when the reset hit is
+    // visible again as STATUS[5] until the first arm clears it (FIX-4, ~12 PCLK)
+    // - STATUS[5] is checked after that arm instead.
+    task automatic check_reset_values(input string ctx, input bit warm = 1'b0);
+        logic [31:0] d, t;
         logic [1:0]  f;
-        rd(A_STATUS, d);  check(d == 32'h0, $sformatf("%s: STATUS = 0 (empty, ADC idle, no drop, no RTC intr) (read 0x%0h)", ctx, d));
+        bit ok;
+        rd(A_STATUS, d);
+        check((d & (warm ? 32'hFFFF_FFDF : 32'hFFFF_FFFF)) == 32'h0,
+              $sformatf("%s: STATUS = 0 (empty, ADC idle, no drop%s) (read 0x%0h)", ctx, warm ? "" : ", no RTC intr", d));
+        if (warm && uut.u_rtc.nRTCRST) begin
+            wait_state(S_WAITING, 8 * TICK_PCLK, ok);
+            cycles(2);
+            rd(A_STATUS, d); rd(A_RTCDR, t);
+            check(ok && (!d[5] || t >= uut.u_rtc.alarm_target),
+                  $sformatf("%s: no RTC interrupt left pending once the first arm completes (FIX-4) (STATUS 0x%0h)", ctx, d));
+        end
         rd(A_MEAS_HI, d); check(d == 32'h0, {ctx, ": MEAS_HI = 0"});
         rd(A_MEAS_LO, d); // empty FIFO, never written since reset: value undefined (F18)
         fifo_field(f);    check(f == 2'b00, {ctx, ": MEAS_LO read on empty FIFO leaves it empty"});
@@ -925,7 +939,7 @@ module sens_gap_tb #(
         assert_reset(por);
         cycles(4);
         release_reset(por);
-        check_reset_values(nm);
+        check_reset_values(nm, !por);
         if (por) begin
             wait_rtc_out_of_reset(ok2);
             rd(A_RTCDR, ta);
@@ -979,18 +993,18 @@ module sens_gap_tb #(
         check(ok2, "T13 precondition: controller starts an arm cycle");
         cycles(1);
         assert_reset(1'b0); cycles(3); release_reset(1'b0);
-        check_reset_values("T13 warm while arming");
+        check_reset_values("T13 warm while arming", 1'b1);
         wait_state(S_ICR_SETUP, 8 * TICK_PCLK, ok2);
         cycles(1);
         assert_reset(1'b0); cycles(3); release_reset(1'b0);
-        check_reset_values("T13 warm while servicing");
+        check_reset_values("T13 warm while servicing", 1'b1);
         assert_reset(1'b1); cycles(3); release_reset(1'b1);   // counter in reset -> FSM idle
         cycles(5);
         check(uut.u_rtc.state == S_IDLE, "T13 precondition: controller idle (counter in reset)");
         assert_reset(1'b0); cycles(3);
         PRESETn = 1'b1;
         cycles(5);                     // soon (4-31 cycles) after release
-        check_reset_values("T13 warm while RTC idle");
+        check_reset_values("T13 warm while RTC idle", 1'b1);
         wait_rtc_out_of_reset(ok2);
         expect_fire(8, fired);
         check(fired, "T13 autonomous sampling after the reset sequence");

@@ -206,6 +206,27 @@ reg [4:0]  state;
 reg [31:0] alarm_target;
 reg        rtc_enabled;     // set by the RTCCR write; cleared while nRTCRST is low
 
+// FIX-4 (pending team confirmation): clear a stale PL031 interrupt on the first
+// arm after a warm reset (RTC-WARMINT, found on the real PL031 2026-11-16). A
+// PRESETn-only reset in the few PCLK after an alarm, before the re-arm reached
+// the PL031, left the alarm re-raised: RTCMR/RTCIMSC survive (they are on
+// nPOR) and the match is still true, so after the reset the PL031 raised the
+// interrupt again - a duplicate sample of the same second (regression RTC-13b).
+// need_clr is set by PRESETn; on the next arm the FSM writes RTCICR = 1 after
+// the RTCMR write (so the old match is already replaced) and before
+// RTCIMSC = 1, reusing the S_ICR_* states (arm_clr marks that detour: it goes
+// on to S_IMSC_SETUP, never to S_PULSE_TRIG). After a power-on reset (nPOR,
+// with or without PRESETn) the PL031 was reset too - its counter restarts at 1
+// against a match of 0, nothing can be pending - so no clear (por_fresh). That
+// keeps the power-on arm (which also runs S_ENABLE_*) and the steady-state arm
+// unchanged; the warm-reset arm with the clear is exactly as long as the
+// worst steady-state path, so the passthrough stall bound stays 13 PCLK.
+// Under nanosoc nPOR is derived from HRESETn, so every reset is a power-on and
+// FIX-4 never adds the clear there.
+reg        need_clr;        // warm reset since the last arm-time clear
+reg        por_fresh;       // PL031 reset (nPOR) since the last RTCMR write
+reg        arm_clr;         // S_ICR_* entered from the arm (no trigger)
+
 // -----------------------------------------------------------------------------
 // Missed-alarm watchdog (fixes F8-OFFSET0/1 and RTCLR-FWD)
 // -----------------------------------------------------------------------------
@@ -321,6 +342,13 @@ assign rtc_pwdata  = ext_sel ? PWDATA       : fsm_pwdata;
 
 
 
+// FIX-4: por_fresh - the PL031 has been reset by nPOR and not armed since.
+// Async reset on nPOR, clocked on PCLK.
+always @(posedge PCLK or negedge nPOR) begin
+    if (!nPOR)                        por_fresh <= 1'b1;
+    else if (state == S_MATCH_ACCESS) por_fresh <= 1'b0;
+end
+
 // -----------------------------------------------------------------------------
 // Main FSM
 // -----------------------------------------------------------------------------
@@ -329,6 +357,8 @@ always @(posedge PCLK or negedge PRESETn) begin
         state           <= S_IDLE;
         rtc_trig        <= 1'b0;
         rtc_enabled     <= 1'b0;
+        need_clr        <= 1'b1;
+        arm_clr         <= 1'b0;
         alarm_target    <= 32'h0;
         armed_offset    <= 32'd1;
         wd_ticks        <= 32'd0;
@@ -354,10 +384,18 @@ always @(posedge PCLK or negedge PRESETn) begin
        
             S_IDLE: begin
                 if (nrtcrst_pclk) begin
-                    if (!rtc_enabled)
+                    // FIX-4: after a warm reset (PL031 not reset - por_fresh low)
+                    // RTCCR.start is still 1: it is on nPOR in the PL031, this
+                    // FSM only ever writes 1, and the wrapper forwards firmware
+                    // RTCCR writes with start forced to 1 (FIX-3). Skipping the
+                    // redundant enable keeps the warm-reset arm, which now adds
+                    // the RTCICR write, within the 13-PCLK stall bound.
+                    if (!rtc_enabled && por_fresh)
                         state <= S_ENABLE_SETUP;
-                    else
-                        state <= S_READ_SETUP;
+                    else begin
+                        rtc_enabled <= 1'b1;
+                        state       <= S_READ_SETUP;
+                    end
                 end
             end
 
@@ -432,7 +470,13 @@ always @(posedge PCLK or negedge PRESETn) begin
                 fsm_pwrite  <= 1'b1;          // hold write through ACCESS
                 fsm_paddr   <= RTC_RTCMR;     // hold address
                 fsm_pwdata  <= alarm_target;  // hold data
-                state       <= S_IMSC_SETUP;
+                if (need_clr && !por_fresh) begin  // FIX-4: first arm after a warm reset
+                    arm_clr <= 1'b1;
+                    state   <= S_ICR_SETUP;
+                end else begin
+                    need_clr <= 1'b0;
+                    state    <= S_IMSC_SETUP;
+                end
             end
 
             // ── Enable interrupt — RTCIMSC = 1 ───────────────────────────────
@@ -505,7 +549,12 @@ always @(posedge PCLK or negedge PRESETn) begin
                 fsm_pwrite  <= 1'b1;          // hold write through ACCESS
                 fsm_paddr   <= RTC_RTCICR;    // hold address
                 fsm_pwdata  <= 32'h1;         // hold data
-                state       <= S_PULSE_TRIG;
+                if (arm_clr) begin             // FIX-4: arm-time clear done
+                    arm_clr  <= 1'b0;
+                    need_clr <= 1'b0;
+                    state    <= S_IMSC_SETUP;
+                end else
+                    state    <= S_PULSE_TRIG;
             end
 
             // ── Pulse rtc_trig — kicks wrapper_control_2 FSM ────────────────────

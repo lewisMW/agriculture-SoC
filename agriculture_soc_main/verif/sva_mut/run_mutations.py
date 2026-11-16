@@ -139,6 +139,8 @@ MUTS = [
                                                       "if (clk1hz_tick && (wd_ticks != 32'hFFFF_FFFF))"),
     ("rtc_rearm_trig", "a_rearm_no_trig",  "rtc", R, "                    state <= S_READ_SETUP;\n            end",
                                                       "                    begin state <= S_READ_SETUP; rtc_trig <= 1'b1; end\n            end"),
+    ("rtc_warm_clr",  "a_warm_arm_clears", "rtc", R, "if (need_clr && !por_fresh) begin  // FIX-4: first arm after a warm reset",
+                                                      "if (1'b0) begin  // FIX-4: first arm after a warm reset"),
     ("rtc_offset_armed", "a_offset_armed", "rtc", R, "else if ((eff_offset != armed_offset) && !PSEL)",
                                                      "else if (1'b0)"),
     ("rtc_setup_psel", "a_setup_done_needs_psel", "rtc", R, "else if (ext_done) pt_setup_done <= 1'b0;", "else if (1'b0)     pt_setup_done <= 1'b0;"),

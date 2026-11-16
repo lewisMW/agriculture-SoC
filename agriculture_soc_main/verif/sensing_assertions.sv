@@ -305,6 +305,7 @@ module rtc_sva (
     input logic        pt_setup_done,
     input logic [31:0] eff_offset,
     input logic [31:0] armed_offset,
+    input logic        por_fresh,
     input logic        PSEL,
     // the PL031 (Rtc) port
     input logic        rtc_psel,
@@ -371,13 +372,27 @@ module rtc_sva (
     // a passthrough SETUP is only recorded for a transfer that is in flight
     a_setup_done_needs_psel: assert property (@(posedge PCLK) disable iff (!PRESETn)
         pt_setup_done |-> PSEL);
+
+    // FIX-4: after a warm reset (PL031 not reset by nPOR) the FSM never unmasks
+    // the PL031 interrupt (RTCIMSC = 1) before it has cleared it (RTCICR = 1),
+    // so an alarm re-raised by the reset is never serviced twice.
+    wire fsm_wr = rtc_psel && rtc_penable && rtc_pwrite && !ext_sel;
+    logic warm_unclr;
+    always @(posedge PCLK or negedge PRESETn) begin
+        if (!PRESETn)                                warm_unclr <= 1'b1;
+        else if (por_fresh)                          warm_unclr <= 1'b0;
+        else if (fsm_wr && rtc_paddr == 10'h007)     warm_unclr <= 1'b0;
+    end
+    a_warm_arm_clears: assert property (@(posedge PCLK) disable iff (!PRESETn)
+        (fsm_wr && rtc_paddr == 10'h004) |-> !warm_unclr)
+        else $error("FSM unmasked the PL031 interrupt after a warm reset without clearing it first");
 endmodule
 
 bind rtc_control_2 rtc_sva u_rtc_sva (
     .PCLK(PCLK), .PRESETn(PRESETn), .state(state), .rtc_trig(rtc_trig),
     .ext_sel(ext_sel), .fsm_psel(fsm_psel), .poll_enable(poll_enable),
     .wd_ticks(wd_ticks), .pt_setup_done(pt_setup_done), .PSEL(PSEL),
-    .eff_offset(eff_offset), .armed_offset(armed_offset),
+    .eff_offset(eff_offset), .armed_offset(armed_offset), .por_fresh(por_fresh),
     .rtc_psel(rtc_psel), .rtc_penable(rtc_penable), .rtc_pwrite(rtc_pwrite),
     .rtc_paddr(rtc_paddr), .rtc_pwdata(rtc_pwdata)
 );

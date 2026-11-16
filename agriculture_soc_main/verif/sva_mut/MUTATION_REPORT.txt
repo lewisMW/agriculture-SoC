@@ -1,4 +1,4 @@
-SVA MUTATION REPORT (PL031 stand-in)
+SVA MUTATION REPORT (real PL031)
 Each assertion with one deliberate mutation; PROVEN = the target assertion fired.
 
 fifo_le_depth   a_count_le_depth             fifo    PROVEN       fired: a_count_le_depth, a_full_iff
@@ -32,6 +32,7 @@ wrap_clear      a_fifo_clear_pulse           clo     PROVEN       fired: a_fifo_
 wrap_rd_en      a_fifo_rd_en_pulse           clo     PROVEN       fired: a_fifo_rd_en_pulse, a_no_pop_when_empty
 wrap_pop_empty  a_no_pop_when_empty          soak    PROVEN       fired: a_no_pop_when_empty
 wrap_capture    a_sample_capture             clo     PROVEN       fired: a_sample_capture
+wrap_rtccr      a_rtccr_never_cleared        gap     PROVEN       fired: a_rtccr_never_cleared
 wrap_status     a_status_reserved            clo     PROVEN       fired: a_status_reserved
 rtc_legal       a_legal_state                rtc     PROVEN       fired: a_legal_state
 rtc_trig_1cyc   a_trig_one_cycle             rtc     PROVEN       fired: a_trig_one_cycle, a_trig_source
@@ -41,6 +42,7 @@ rtc_acc_setup   a_pl031_access_after_setup   rtc     PROVEN       fired: a_pl031
 rtc_setup_acc   a_pl031_setup_then_access    rtc     PROVEN       fired: a_pl031_access_after_setup, a_pl031_setup_then_access
 rtc_wd_frozen   a_wd_frozen_paused           rtc     PROVEN       fired: a_wd_frozen_paused
 rtc_rearm_trig  a_rearm_no_trig              rtc     PROVEN       fired: a_rearm_no_trig, a_trig_source
+rtc_warm_clr    a_warm_arm_clears            rtc     PROVEN       fired: a_warm_arm_clears
 rtc_offset_armed a_offset_armed               rtc     PROVEN       fired: a_offset_armed
 rtc_setup_psel  a_setup_done_needs_psel      rtc     PROVEN       fired: a_setup_done_needs_psel
 sar_legal       a_legal_state                adccal  PROVEN       fired: a_legal_state
@@ -48,4 +50,4 @@ sar_result      a_result_only_in_done        adccal  PROVEN       fired: a_resul
 sar_valid       a_valid_falls                adccal  PROVEN       fired: a_valid_falls
 sar_clkc        a_clkc_gated                 adccal  PROVEN       fired: a_clkc_gated
 
-RESULT: 46/46 PROVEN
+RESULT: 48/48 PROVEN

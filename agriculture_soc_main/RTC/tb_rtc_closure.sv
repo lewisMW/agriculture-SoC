@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 // =============================================================================
-// tb_rtc_closure.sv - rtc_control_2 closure tests RTC-1 .. RTC-12.
+// tb_rtc_closure.sv - rtc_control_2 closure tests RTC-1 .. RTC-13.
 //
 // Timing unit: a "tick" is one CLK1HZ rising edge. CLK1HZ is generated here
 // from PCLK (toggled on the PCLK falling edge, half period c1_half PCLK) so a
@@ -900,8 +900,9 @@ module tb_rtc_closure;
         apb_rd(A_DR, t_bef);
         tk0 = tick_count;
         if (s == S_ENABLE_SETUP || s == S_ENABLE_ACCESS) begin
-            // the enable states only run on the first arm after a warm reset
-            PRESETn = 1'b0; clk(2); PRESETn = 1'b1;
+            // the enable states only run on the first arm after a power-on
+            // reset (FIX-4: a warm reset skips the redundant RTCCR write)
+            nPOR = 1'b0; clk(2); nPOR = 1'b1;
         end
         if (stalled) begin
             wait_state(S_ICR_SETUP, 4 * period(), ok);
@@ -914,6 +915,10 @@ module tb_rtc_closure;
             wait_state(s, 4 * period() + 200, ok);
         end
         check(ok, {"RTC-12 precondition: ", nm});
+        if (s == S_ENABLE_SETUP || s == S_ENABLE_ACCESS) begin
+            t_bef = 32'h0;              // the counter has just restarted
+            tk0   = tick_count;
+        end
         apb_abort = 1'b1;
         PRESETn = 1'b0;
         #1;
@@ -948,6 +953,49 @@ module tb_rtc_closure;
         check(n_port_bad == bad0, "RTC-12 PL031 port protocol-correct across every reset");
     endtask
 
+
+    // -------------------------------------------------------------- RTC-13
+    // FIX-4: no sample nobody armed after a reset. (b) is the regression for
+    // RTC-WARMINT (found on the real PL031, 2026-11-16): a warm reset in the
+    // few PCLK after an alarm trigger, before the re-arm reached the PL031,
+    // re-raised that alarm - a duplicate sample of the same second (0-7 PCLK
+    // after rtc_trig failed before FIX-4). (a) guards the power-on path, which
+    // FIX-4 leaves unchanged: the real PL031 counter resets to 1 against a
+    // match of 0, so nothing is pending. (A Verilator bench that starts with
+    // the reset already low at time 0 never sees a reset edge, so the PL031
+    // counter starts at 0 == match - a simulation artifact, not silicon.)
+    task automatic rtc13();
+        bit ok; int took;
+        int unsigned tk0, n0, dup;
+        $display("--- RTC-13 no unarmed sample after a power-on or warm reset (FIX-4) ---");
+        set_offset_and_settle(3);
+        // (a) power-on
+        for (int i = 0; i < 3; i++) begin
+            por_reset();
+            tk0 = tick_count;
+            wait (dut.nrtcrst_pclk);      // the counter reset releases on CLK1HZ edges
+            wait_armed(ok);
+            check(ok && !dut.RTCINTR,
+                  $sformatf("RTC-13a power-on %0d: no PL031 interrupt pending after the first arm", i));
+            wait_trig((3 + 2) * period() + 200, ok, took);
+            check(ok && (tick_count - tk0) >= 2,
+                  $sformatf("RTC-13a power-on %0d: first sample is the armed alarm (after %0d ticks, offset 3)", i, tick_count - tk0));
+        end
+        // (b) warm reset k PCLK after an alarm trigger
+        for (int k = 0; k <= 9; k++) begin
+            wait_trig((3 + 2) * period() + 200, ok, took);
+            clk(k);
+            PRESETn = 1'b0; clk(2); PRESETn = 1'b1;
+            n0 = trig_count;
+            wait_armed(ok);
+            clk(period() / 2);
+            dup = trig_count - n0;
+            check(ok && dup == 0 && !dut.RTCINTR,
+                  $sformatf("RTC-13b warm reset %0d PCLK after rtc_trig: no duplicate sample (%0d extra), nothing pending", k, dup));
+            wait_trig((3 + 2) * period() + 200, ok, took);
+            check(ok, $sformatf("RTC-13b warm reset %0d PCLK after rtc_trig: sampling resumes", k));
+        end
+    endtask
 
     // ------------------------------------------- coverage closure (no spec ID)
     // Stimulus for model bins the RTC-n cases do not reach on their own.
@@ -1052,6 +1100,7 @@ module tb_rtc_closure;
         rtc9();
         rtc11();
         rtc12();
+        rtc13();
         cov_extra();
         rtc10();      // last: the stand-in may stop the counter for good
 

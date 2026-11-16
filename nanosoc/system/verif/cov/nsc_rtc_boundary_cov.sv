@@ -129,11 +129,28 @@ module nsc_rtc_boundary_cov (
     // Classification order: unmask, resync (same event as the previous rise),
     // stale (old match), then the arming credit. Only a rise attributed to the
     // credit uses it up.
+    // Third: after a PRESETn-only reset the PL031 keeps RTCMR/RTCIMSC (nPOR), so
+    // an alarm that was being serviced when the reset hit is visible again on
+    // RTCINTR from the release until the FSM's first arm clears it (FIX-4:
+    // RTCICR before RTCIMSC) - never serviced. Legal in that window only
+    // (bin warm_reraise); after it, an unarmed rise is still viol_unarmed.
+    logic por_recent;                        // nPOR since the FSM's last RTCMR write
+    always @(posedge PCLK or negedge nPOR)
+        if (!nPOR)              por_recent <= 1'b1;
+        else if (match_written) por_recent <= 1'b0;
+    logic warm_win;                          // after a warm reset, before the FSM's first clear / unmask
+    wire  fsm_clr_or_unmask = rtc_access && rtc_pwrite && !ext_sel &&
+                              (rtc_paddr == 10'h007 || rtc_paddr == 10'h004);
+    always @(posedge PCLK or negedge PRESETn)
+        if (!PRESETn)               warm_win <= 1'b1;
+        else if (por_recent)        warm_win <= 1'b0;
+        else if (fsm_clr_or_unmask) warm_win <= 1'b0;
+    wire  warm_rise   = intr_rise && !unmask_rise && warm_win && !por_recent;
     wire  resync_rise = intr_rise && !unmask_rise && (since_rise <= 4);
     wire  stale_rise  = intr_rise && !unmask_rise && !resync_rise && old_pending && (arm_age <= 6);
-    wire  armed_rise  = intr_rise && !unmask_rise && !resync_rise && !stale_rise;
+    wire  armed_rise  = intr_rise && !unmask_rise && !resync_rise && !stale_rise && !warm_rise;
     wire [2:0] rise_src = unmask_rise ? 3'd3 : resync_rise ? 3'd4 : stale_rise ? 3'd5
-                        : {1'b0, armed};
+                        : warm_rise ? 3'd6 : {1'b0, armed};
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) begin intr_q <= 1'b0; intr_high <= 0; armed <= 2'd0; imsc_wr_q <= 1'b0;
                             since_rise <= 32'hFFFF; arm_age <= 32'hFFFF; old_pending <= 1'b0; end
@@ -235,6 +252,7 @@ module nsc_rtc_boundary_cov (
             bins firmware_match = {3'd2};  // firmware wrote RTCMR/RTCLR via passthrough
             bins unmask         = {3'd3};  // RTCIMSC=1 write revealing a raw interrupt already set
             bins resync         = {3'd4};  // PL031 latched interrupt re-raising the same match event <= 4 PCLK after the first rise
+            bins warm_reraise   = {3'd6};  // alarm re-raised by a PRESETn-only reset, before the FSM's first arm clears it (FIX-4)
             bins stale_match    = {3'd5};  // still-armed old match firing <= 6 PCLK after an RTCMR/RTCLR overwrote it, before the PL031 applied the write
             bins viol_unarmed   = {3'd0};  // interrupt with no RTCMR/RTCLR/RTCIMSC write since the previous one
         }
