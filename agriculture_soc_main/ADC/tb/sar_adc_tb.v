@@ -119,7 +119,7 @@ module sar_adc_tb;
         integer d;
         begin
             x = 128.0 + 128.0 * (1.0 + dut.u_afe.cpar)
-                      * (vd + dut.u_afe.vos - (ta - tb) * dut.u_afe.vtrim_lsb) / dut.u_afe.vref;
+                      * (vd + dut.u_afe.vos - (ta - tb) * dut.u_afe.vtrim_lsb) / dut.u_afe.vref_v;
             if (x <= 0.0)       d = 0;
             else if (x > 255.0) d = 255;
             else begin
