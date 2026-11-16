@@ -17,7 +17,9 @@
 # Options:
 #   --blackbox CELL     compare CELL by its pins only (repeatable)
 #   --bb-default        black-box the first-pass set: sar_afe*, the OpenRAM
-#                       SRAM and every IO pad cell in the netlist, minus the
+#                       SRAM, DFFRAM blocks (their pins come from the LEF files
+#                       in LVS_EXTRA_LEF, a colon-separated list) and every IO
+#                       pad cell in the netlist, minus the
 #                       kinds given to --full. This is the default when no
 #                       --blackbox/--no-bb/--full is given.
 #   --no-bb             no default black boxes (use with --full)
@@ -62,6 +64,10 @@
 # Env: SKY130 (Cadence sky130 port, for lvs_deck.sh), PEGASUS_BIN,
 #      PDK_ROOT_SKY130A, SRAM_DIR, SAR_AFE_DIR (library locations, see
 #      chip_lvs_src.py). The licence comes from the caller's environment.
+#      For a block whose supplies are not the chip's (the OpenFrame wrapper):
+#      PGNETS (supply ports whose texts are thinned to one per net),
+#      LVS_SUPPLY0 / LVS_SUPPLY1 (nets for Verilog 1'b0 / 1'b1, default VSS / VDD),
+#      LVS_POWER_NAMES / LVS_GROUND_NAMES (added to lvs_power_name / lvs_ground_name).
 # =====================================================================
 set -euo pipefail
 
@@ -82,7 +88,7 @@ usage(){ awk 'NR>2 && /^# =====/{exit} NR>2' "$0"; exit "${1:-0}"; }
 POS=(); BB=(); FULL=(); DP=8; MEMGB=10; HARD=1; IGNPORTS=0; LTOP=""
 BBDEF=auto; EXTRA=""; PADRING=1; TIEBULK=1; PGDEF=""
 NOBULK=0
-PGNETS="VDD VSS VDDIO VSSIO VDDIO_Q VSSIO_Q VDDA VSSA VCCD VSSD VSWITCH VCCHIB"
+PGNETS="${PGNETS:-VDD VSS VDDIO VSSIO VDDIO_Q VSSIO_Q VDDA VSSA VCCD VSSD VSWITCH VCCHIB}"
 while [ $# -gt 0 ]; do
   case "$1" in
     -h|--help) usage 0;;
@@ -140,7 +146,7 @@ if [ "$BBDEF" = yes ] || { [ "$BBDEF" = auto ] && [ ${#BB[@]} -eq 0 ] && [ ${#FU
     esac
     BB+=("$c")
   done < <(
-    sed -n 's/^ *[0-9]\+  \(sky130_ef_io__[A-Za-z0-9_]*\|sky130_fd_io__[A-Za-z0-9_]*\|sky130_sram_[A-Za-z0-9_]*\|sar_afe[A-Za-z0-9_]*\)$/\1/p' \
+    sed -n 's/^ *[0-9]\+  \(sky130_ef_io__[A-Za-z0-9_]*\|sky130_fd_io__[A-Za-z0-9_]*\|sky130_sram_[A-Za-z0-9_]*\|DFFRAM[0-9]*x[0-9]*\|RAM[0-9][0-9]*\|sar_afe[A-Za-z0-9_]*\)$/\1/p' \
       "$OUT/src/verilog_scan.txt" | sort -u)
 fi
 for b in "${BB[@]+"${BB[@]}"}"; do SRCARGS+=(--blackbox "$b"); done
@@ -157,11 +163,11 @@ BBOPT="-source_layout"; [ "$HARD" = 1 ] && BBOPT="-black -source_layout"
   echo "// ===== chip LVS options (ASIC_ours/Cadence/signoff/run_chip_lvs.sh) ====="
   echo "// Source: the Innovus Verilog read natively, leaf cells from CDL."
   echo "// Verilog constants 1'b0/1'b1 become the core supplies."
-  echo "schematic_path \"$OUT/src/netlist.v\" verilog -supply0 VSS -supply1 VDD"
+  echo "schematic_path \"$OUT/src/netlist.v\" verilog -supply0 ${LVS_SUPPLY0:-VSS} -supply1 ${LVS_SUPPLY1:-VDD}"
   echo "schematic_path \"$OUT/src/source.cdl\" cdl"
   echo "schematic_primary $TOP"
-  echo "lvs_power_name VDD VDDIO VDDIO_Q VDDA VSWITCH VCCHIB VCCD vccd1 tie1"
-  echo "lvs_ground_name VSS VSSIO VSSIO_Q VSSA VSSD vssd1 tie0"
+  echo "lvs_power_name VDD VDDIO VDDIO_Q VDDA VSWITCH VCCHIB VCCD vccd1 tie1 ${LVS_POWER_NAMES:-}"
+  echo "lvs_ground_name VSS VSSIO VSSIO_Q VSSA VSSD vssd1 tie0 ${LVS_GROUND_NAMES:-}"
   echo "// sky130_fd_sc_hd__conb_1 ties HI/LO through poly 'resistors' that the deck"
   echo "// does not extract (no res_generic_po device), so in the layout HI is VPWR"
   echo "// and LO is VGND. Short the two resistors in the source to match."

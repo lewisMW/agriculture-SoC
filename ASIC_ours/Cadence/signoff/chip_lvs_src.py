@@ -640,6 +640,8 @@ def main():
                  MACRO_DIR + "/sar_afe.lef", MACRO_DIR + "/sar_afe_r.lef",
                  MACRO_DIR + "/sar_afe_b.lef"]
     lef_paths += _glob.glob(os.path.join(EFIP_DIR, "*/lef/*.lef"))
+    # LVS_EXTRA_LEF: LEF files of other macros to stub (e.g. DFFRAM blocks)
+    lef_paths += [p for p in os.environ.get("LVS_EXTRA_LEF", "").split(os.pathsep) if p]
     # IO / SRAM / macro cells in the netlist that are not black-boxed and not
     # compared in full still need a definition: stub them too, but say so.
     full_io = "io" in a.full

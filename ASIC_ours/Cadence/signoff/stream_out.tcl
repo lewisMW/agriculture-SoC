@@ -8,6 +8,8 @@
 # Optional variables (set them in -execute before the script runs):
 #   TOP          GDS top-cell name            (default: the design name)
 #   EXTRA_GDS    more GDS files to merge      (default: none)
+#   MACRO_GDS_DIRS  directories searched for <master>.gds, for masters the
+#                list below does not know (default: none)
 #   MERGE_GDS    replace the automatic merge list entirely
 #   LABEL_PORTS  1 = label each supply port (and any unplaced signal port)
 #                on the IO-cell pin it connects to: the *_PAD pin, else the
@@ -16,6 +18,10 @@
 #   SRAM_ROOT    SRAM macro directory   (default /opt/pdk/sram_macros)
 #   MACRO_ROOT   repo hard macros       (default <this dir>/../../macros)
 #   EFIP_ROOT    efabless IP macros     (default <this dir>/../../../efabless)
+#   MAP          layer map              (default <this dir>/sky130_stream.map)
+#   FLAT_NETLIST 1 = also write <TOP>.pg.flat.v, the PG netlist with physical
+#                instances and no module hierarchy (for LVS flows that compare
+#                the netlist's hierarchy with the layout's). Default 0.
 #   CPUS         default 8
 #
 # Writes into OUT:
@@ -35,12 +41,12 @@ proc so_die {msg} { puts "STREAM_OUT_ERROR: $msg"; exit 1 }
 foreach v {DB OUT} { if {![info exists $v]} { so_die "set $v with -execute" } }
 set SD [file dirname [file normalize [info script]]]
 if {![file exists $SD/sky130_stream.map] && [info exists ::env(SIGNOFF_DIR)]} { set SD $::env(SIGNOFF_DIR) }
-set MAP $SD/sky130_stream.map
+if {![info exists MAP]} { set MAP $SD/sky130_stream.map }
 if {![file exists $MAP]} { so_die "layer map not found: $MAP" }
 foreach {v d} [list PDK_ROOT /opt/pdk/sky130A SRAM_ROOT /opt/pdk/sram_macros \
                MACRO_ROOT [file normalize $SD/../../macros] \
                EFIP_ROOT [file normalize $SD/../../../efabless] \
-               CPUS 8 LABEL_PORTS 1 EXTRA_GDS {}] {
+               CPUS 8 LABEL_PORTS 1 EXTRA_GDS {} MACRO_GDS_DIRS {} FLAT_NETLIST 0] {
     if {![info exists $v]} { set $v $d }
 }
 file mkdir $OUT
@@ -94,12 +100,18 @@ foreach m [lsort [array names cnt]] {
         set src [lindex [glob $MACRO_ROOT/*/$m.gds] 0]
     } else {
         foreach g $EXTRA_GDS { if {[string match *$m* [file tail $g]]} { set src $g } }
+        foreach d $MACRO_GDS_DIRS { if {$src eq "" && [file exists $d/$m.gds]} { set src $d/$m.gds } }
     }
     if {$src eq ""} { lappend unknown $m } else { so_add $src }
     puts $fh "$m\t$cnt($m)\t[get_db [get_db base_cells $m] .class]\t$src"
 }
 close $fh
 foreach g $EXTRA_GDS { so_add $g }
+# The standard-cell library first: a macro made of standard cells carries its own
+# copies of them, and the library's definition is the one to keep.
+if {[info exists SC_GDS] && [lsearch -exact $merge $SC_GDS] > 0} {
+    set merge [linsert [lsearch -all -inline -not -exact $merge $SC_GDS] 0 $SC_GDS]
+}
 if {[info exists MERGE_GDS]} { set merge $MERGE_GDS }
 if {[llength $unknown] && ![info exists MERGE_GDS]} {
     so_die "no GDS known for masters: $unknown (pass EXTRA_GDS or MERGE_GDS)"
@@ -213,6 +225,7 @@ puts "STREAM_OUT wrote $gds ([file size $gds] bytes)"
 # ---- netlists and DEF ------------------------------------------------
 if {[catch {write_netlist $OUT/$TOP.pg.v -include_pg -include_phys_insts -exclude_leaf_cells} e]} { so_die "write_netlist pg: $e" }
 if {[catch {write_netlist $OUT/$TOP.pg_nophys.v -include_pg -exclude_leaf_cells} e]} { so_die "write_netlist pg_nophys: $e" }
+if {$FLAT_NETLIST && [catch {write_netlist $OUT/$TOP.pg.flat.v -flat -include_pg -include_phys_insts -exclude_leaf_cells} e]} { so_die "write_netlist flat: $e" }
 if {[catch {write_def $OUT/$TOP.def.gz -floorplan -netlist -routing} e]} { so_die "write_def: $e" }
 
 set fh [open $OUT/STREAM_OUT_OK w]; puts $fh "[clock format [clock seconds]] $DB"; close $fh
