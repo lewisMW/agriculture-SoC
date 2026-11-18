@@ -19,6 +19,7 @@ module accelerator_subsystem #(
 ) (
   input  wire                      HCLK,       // Clock
   input  wire                      HRESETn,    // Reset
+  input  wire                      PORESETn,   // Power-on reset: stays high through a system reset
 
   // AHB connection to Initiator
   input  wire                      HSEL,
@@ -145,22 +146,18 @@ module accelerator_subsystem #(
   /*input  wire*/.PSLVERR(PSLVERR));  // Error state for each APB slave
 
 // ---------------------------------------------------------------------------
-// RTC support signals for the sensing peripheral (mirrors agriculture_soc.v).
-// The nanosoc integration only exposes HCLK/HRESETn here, so the wrapper's
-// CLK1HZ and nPOR must be generated locally — otherwise they float and the RTC
-// never ticks or leaves power-on reset (autonomous polling + passthrough dead).
+// RTC support signals for the sensing peripheral (mirrors agriculture_soc.v):
+// CLK1HZ is generated here; nPOR comes from the system.
 // ---------------------------------------------------------------------------
 
-// Power-on reset for the RTC. Ideally this survives a warm HRESETn pulse (so RTC
-// time persists across a system reset), but nanosoc only exposes HRESETn at this
-// boundary, so we drive nPOR from HRESETn: the RTC comes out of power-on reset at
-// boot and runs. (A POR that truly survives a warm reset needs a dedicated signal
-// from the reset controller — a later refinement; not exercised by the tests.)
-wire nPOR = HRESETn;
+// Power-on reset for the RTC: the system's PORESETn, which the reset pin and
+// power-on assert and a system reset (the processor's or a debugger's
+// SYSRESETREQ, the watchdog, lockup) does not. The RTC, its tick divider and the
+// tick's prescale register are reset by it alone, so the time is kept, and keeps
+// running, through a system reset.
+wire nPOR = PORESETn;
 
-// ~1 Hz tick for the RTC, divided from HCLK. Reset from HRESETn so clk1hz_ctr /
-// clk1hz_reg initialise cleanly (no X-propagation) and CLK1HZ starts toggling
-// immediately after reset deasserts.
+// ~1 Hz tick for the RTC, divided from HCLK.
 // Half period of the tick in clock cycles: the sensing peripheral's rtc_prescale
 // register (0x22C), whose reset value is for the real clock. A value of 0 or 1
 // toggles every cycle. Programs that count RTC seconds in simulation write a
@@ -169,8 +166,8 @@ wire [31:0] rtc_prescale;
 wire        sensing_irq;
 reg  [31:0] clk1hz_ctr;
 reg         clk1hz_reg;
-always @(posedge HCLK or negedge HRESETn) begin
-   if (~HRESETn) begin
+always @(posedge HCLK or negedge nPOR) begin
+   if (~nPOR) begin
       clk1hz_ctr <= 32'd0;
       clk1hz_reg <= 1'b0;
    end else if ({1'b0, clk1hz_ctr} + 33'd1 >= {1'b0, rtc_prescale}) begin

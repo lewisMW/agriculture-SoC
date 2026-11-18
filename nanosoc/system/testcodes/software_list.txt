@@ -4,3 +4,4 @@ rtc_time_test
 adc_autonomous_test
 clock_ctrl_test
 sensing_irq_test
+rtc_warm_reset_test

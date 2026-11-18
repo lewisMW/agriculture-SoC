@@ -299,9 +299,10 @@ module adc_apb_wrapper_rev2 #(
     assign IRQ = irq_reg;
 
     // RTC tick prescaler. The divider is outside (it also has to exist where
-    // this block is used with an external CLK1HZ).
-    always @(posedge PCLK or negedge PRESETn) begin
-        if (!PRESETn) rtc_prescale_reg <= RTC_PRESCALE_RESET;
+    // this block is used with an external CLK1HZ). Reset by nPOR like the RTC
+    // itself, not by PRESETn: a system reset must not change the tick's rate.
+    always @(posedge PCLK or negedge nPOR) begin
+        if (!nPOR) rtc_prescale_reg <= RTC_PRESCALE_RESET;
         else if (write_enable && (PADDR == RTC_PRESCALE_ADDR)) rtc_prescale_reg <= PWDATA;
     end
     assign RTC_PRESCALE = rtc_prescale_reg;
