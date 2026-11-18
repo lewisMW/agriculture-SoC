@@ -56,7 +56,6 @@ int main(void)
         if (s > 0xFFu) ok = 0;
     }
     SC_CHECK(ok, "12 normal samples after calibration (8-bit, zero-extended)");
-    sp_str("(check the log for SENSING_CHECK FAIL lines: expected none)\n");
     sensing_init(5, 0);
     sc_finish("sensing_cal_test");
     return 0;

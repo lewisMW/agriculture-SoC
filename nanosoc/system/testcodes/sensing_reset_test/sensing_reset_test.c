@@ -36,8 +36,26 @@ static void check_reset_state(const char *when)
     SC_CHECK(SENSING_IP_REGS->adc_cal == 0,           "ADC_CAL back at 0");
     SC_CHECK(SENSING_IP_REGS->rtc_alarm_offset == 5,  "RTC_ALARM_OFFSET back at 5");
     SC_CHECK(SENSING_IP_REGS->rtc_ctrl == 1,          "RTC_CTRL back at 1");
-    SC_CHECK(sensing_fifo_empty(),                    "FIFO empty");
-    SC_CHECK((sensing_status() & STATUS_FIFO_DROP_MASK) == 0, "drop flag clear");
+    {
+        /* Polling is on from reset (period 5 s), so samples arrive between the
+         * reset and this check. On hardware (1 Hz) that is ~0 samples, but in
+         * sim CLK1HZ_DIV=50 makes 1 s = 1 us and boot+UART output takes
+         * >100 us, so the FIFO has already refilled (sim run 2026-11-18: status
+         * 0x12 at the first read). Under nanosoc nPOR = HRESETn, so RTCDR is
+         * seconds since THIS reset: bound the FIFO by the samples that could
+         * have been taken since, instead of demanding it be empty. RTCDR is
+         * read after the drain so a sample landing mid-drain is still covered. */
+        int      dropped = (sensing_status() & STATUS_FIFO_DROP_MASK) != 0;
+        uint32_t n       = sensing_fifo_drain(0, 32u);
+        uint32_t secs    = sc_rtc_now();
+        uint32_t max_n   = secs / 5u + 1u;
+        sp_str("  RTC "); sp_dec(secs); sp_str(" s since reset, FIFO held ");
+        sp_dec(n); sp_str(dropped ? ", drop set" : ", drop clear"); sp_nl();
+        if (max_n > 16u)
+            sp_str("  note: RTC tick refilled the FIFO before this check; empty/drop are bounds only\n");
+        SC_CHECK(n <= max_n,                "FIFO holds only samples taken since reset");
+        SC_CHECK(!dropped || max_n > 16u,   "drop flag clear (unless FIFO refilled since reset)");
+    }
     sensing_init(1, 0);
     SC_CHECK(sc_sample_within(6), "sampling restarts");
 }
@@ -54,17 +72,38 @@ int main(void)
 {
     uint32_t phase;
     UartStdOutInit();
-    if (MAGIC != KEY) { MAGIC = KEY; PHASE = 0; FAILS = 0; }
+    /* Cold boot (RSTINFO is cleared only by PORESETn): initialise the retained
+     * words WITHOUT reading them first. DMEM is not preloaded by nanosoc_tb, so
+     * under iverilog an unwritten word reads X; branching on it sends the
+     * Cortex-M0 PC to X and the sim hangs silently before the first print
+     * (sim run 2026-11-17). Only read MAGIC after a reset we caused. */
+    if ((CMSDK_SYSCON->RSTINFO & CMSDK_SYSCON_RSTINFO_SYSRESETREQ_Msk) == 0 || MAGIC != KEY) {
+        MAGIC = KEY; PHASE = 0; FAILS = 0;
+    }
     phase = PHASE;
     sp_str("sensing_reset_test: phase "); sp_dec(phase);
     sp_str(", RSTINFO "); sp_hex(CMSDK_SYSCON->RSTINFO); sp_nl();
     sc_n_fail = FAILS;
 
     if (phase == 0) {
+        uint32_t polls = 200000u;
         dirty();
-        SENSING_IP_REGS->rtc_ctrl = 0;            /* manual conversion, then reset mid-way */
+        /* Manual conversion, then reset mid-way. Autonomous sampling (on from
+         * reset, period 1 s after dirty()) fills the FIFO during boot/UART
+         * output; with the FIFO full the FSM goes CHECK_FIFO -> ERR_FULL and
+         * never enables the ADC, so an unbounded wait for "running" spun
+         * forever (sim run 2026-11-18, 7 h, status stuck at 0x32). Pause
+         * polling, let any in-flight conversion finish, empty the FIFO, then
+         * trigger - and bound the wait so a miss fails loudly. */
+        sensing_quiesce();
+        sensing_clear_fifo();
         sensing_trigger_oneshot();
-        while (GET_ADC_STATUS(sensing_status()) != STATUS_ADC_RUNNING) { }
+        while (polls && GET_ADC_STATUS(sensing_status()) != STATUS_ADC_RUNNING) { polls--; }
+        SC_CHECK(polls != 0, "one-shot conversion started before the reset");
+        if (polls == 0) {
+            sp_str("  status "); sp_hex(sensing_status()); sp_nl();
+        }
+        FAILS = sc_n_fail;
         PHASE = 1;
         CMSDK_SYSCON->RSTINFO = 0x7u;             /* clear (write 1 to clear) */
         NVIC_SystemReset();
