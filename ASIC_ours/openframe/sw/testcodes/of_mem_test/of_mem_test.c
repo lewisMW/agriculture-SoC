@@ -9,9 +9,10 @@
  *   the expansion memory at 0x80000000 (EXPRAM_L), first 512 bytes,
  *   the expansion memory at 0x90000000 (EXPRAM_H), first 512 bytes,
  *   the data memory, 0x30000100 to 0x300001FF: between this program's own data
- *   (at the bottom) and its stack, which the linker script puts at 0x30003C00
- *   and which a 1 kbyte data memory therefore sees at its top, the address
- *   wrapping. Both are checked first; build small (SMALL_SW=1).
+ *   (at the bottom) and its stack at the top of the 1 kbyte data memory
+ *   (../../openframe.ld puts it there; with the SoC Labs linker script it is
+ *   at 0x30003C00, which a 1 kbyte memory also sees at its top, the address
+ *   wrapping). Both are checked first; build small (SMALL_SW=1).
  * 512 bytes is the size of the smallest configuration of the expansion
  * memories; the RTL's default memories are larger and behave the same here.
  *
