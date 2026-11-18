@@ -25,9 +25,9 @@ Outputs go to `runs/` (gitignored).
 |---|---|---|---|---|
 | `inverter` | Hee | 19 Oct + poly fix | MATCH | clean |
 | `mim_cap_adc` | Hee | PR #130 | MATCH | clean |
-| `carray_8b` | Hee | 19 Oct (`vtop` on the right edge, `vssa` plane as the pin) | MATCH, 324 unit caps | clean |
+| `carray_8b` | Hee | 19 Oct (`vtop` on the right edge, `vssa` plane as the pin) + plane slots (19 Nov) | MATCH, 324 unit caps | clean |
 | `cdac_8b` | Hee | 20 Oct (switch inside, `vref` pin) | MATCH | clean |
-| `bootstrap_sw` | Jaime | moved into `sar_adc`; Hee's 20 Oct schematic on `inv_lvt` | MATCH | clean |
+| `bootstrap_sw` | Jaime | moved into `sar_adc`; Hee's 20 Oct schematic on `inv_lvt`; narrower via stack (19 Nov) | MATCH | clean |
 | `trim` | Erick | `Erick_dev` (9 Oct) | MATCH 7/7, `sarcta__C0` black-boxed | clean |
 | `comparator_core` | Erick | `Erick_dev` (9 Oct) + n-well fix | MATCH 17/17, `sarcta__C0` black-boxed | clean |
 | `comparator` (wrapper) | — | generated | MATCH 17/17 | none of its own |
@@ -36,6 +36,8 @@ Outputs go to `runs/` (gitignored).
 The fixes to the team's cells are commits on their branches in the PR stack:
 - **Inverter:** a poly rectangle at (0.345, 1.875)–(0.675, 2.145) encloses the input contact (licon.8/8a). Hee's 19 Oct inverter still needs it; with it, `cdac_8b` is clean too.
 - **Comparator:** an n-well rectangle at (1.75, 11.885)–(16.05, 13.245) merges the six Vdd PMOS wells.
+- **Bootstrapped switch (19 Nov):** the via stack from the boost capacitors' top-plate strap (met4) down to met2 has 2 × 2 cuts instead of 3 × 2. See [below](#the-shuttles-decks-and-the-solid-metal-guideline-19-nov-2026).
+- **Capacitor array (19 Nov):** the met2 `vssa` plane has five more slots, so that no solid met2 square above 30 µm fits. See below as well.
 
 Two earlier fixes are no longer needed: Hee's 19 Oct `carray_8b` makes the
 whole `vssa` plane its pin, and his 20 Oct `bootstrap_sw` schematic points its
@@ -77,7 +79,7 @@ symbol in batch mode.
 **Extraction** (`run_pex.sh sar_adc sar_afe --filter-source "C (CP)"`, rc_coupled):
 
 - Devices: 656 MIM caps and 98 FETs (fingers and multipliers expanded).
-- Parasitics: 12.2k C and 10.3k R.
+- Parasitics: 13.1k C and 10.2k R (12.2k and 10.3k before the 19 Nov slots in the `vssa` plane).
 - MOM caps: the trims' 36 MOM unit caps are extracted from their metal (1.00 fF each between the plates, plus the plates' strays); the netlist has no ideal capacitor. See below.
 
 The netlist (~1.5 MB) is **not committed**; regenerate it. Its ports must match the schematic netlist's exactly, and the script checks this.
@@ -97,6 +99,97 @@ At the chip's ADC clock the macro matches an ideal model per sample: within
 within 10 µs of the previous one carries a +3 % gain error that conversions
 after a longer idle don't have (+0.65 %); the rebuild didn't change it.
 Details are in `agriculture_soc_main/AMS/INTEGRATION.md`.
+
+## The shuttle's decks and the solid-metal guideline (19 Nov 2026)
+
+ChipFoundry's precheck runs its own KLayout deck on the chip (`sky130A_mr.drc`
+of `cf-precheck`, once for FEOL and once for BEOL;
+`ASIC_ours/openframe/signoff/run_precheck_native.sh` has the command lines), and
+its design review asks for no solid metal wider than 30 µm. The PDK's Pegasus
+deck checks neither, so the macro's GDS is also checked on its own. Two layout
+items came out of that, both fixed by SKILL in batch, each with the smallest
+change that clears it:
+
+**`MR_capm.SP.2` in `bootstrap_sw`.** The rule measures from a MIM capacitor's
+bottom plate as the deck draws it (capm grown by 0.14 µm) to any met3 that does
+not touch that plate, and wants 1.2 µm. The via stack that takes the boost
+capacitors' top-plate net (`vbsh`) from its met4 strap down to met2 had its
+met3 pad 0.75 µm from the plate of the nearest capacitor. The stack now has
+2 × 2 cuts instead of 3 × 2:
+
+| In `bootstrap_sw` | Before | After |
+|---|---|---|
+| `M2M3_C` and `M3M4_C` (standard vias, net `vbsh`) | origin (0.66, 19.13), 3 columns, x enclosure 0.1 | origin (0.435, 19.13), 2 columns, x enclosure 0.075 |
+| Their pads on met2, met3 and met4 | x 0.06–1.26, y 18.68–19.59 | x 0.06–0.81, y 18.68–19.59 |
+| The met3 patch under each via | (0.06, 18.675)–(1.26, 19.59) | (0.06, 18.675)–(0.81, 19.59) |
+
+A standard via's parameters can't be changed in place, so the two vias were
+deleted and created again, on the same net, in the same route objects and with
+their patches as children. The stack has 0.6 Ω more, in series with the boost
+switches.
+
+**The met2 `vssa` plane of `carray_8b`.** The plane is the shield under the
+capacitor array: one polygon of 156.31 × 156.825 µm, drawn on met2 drawing and
+again as the `vssa` pin, over the unit cells' own met2 shields. It already had
+seven slots open to its bottom edge, in the gaps between unit-cell columns, for
+the bit lines' met2 risers; a 76.4 µm square of solid metal fitted in it. The
+gap after every third column now has a slot from the bottom edge up to
+y = 129.52 (the top of unit row 14), 1.0 µm wide, on the centre line of the gap:
+
+| In `carray_8b` (both polygons, 36 points before and 56 after) | Slot |
+|---|---|
+| New, columns 2/3, 5/6 and 14/15 | x 24.91–25.91, x 51.31–52.31 and x 130.51–131.51, y 0–129.52 |
+| The riser slot of columns 8/9 (x 76.51–79.91, y 0–94.32) | carries on as x 77.71–78.71 up to y = 129.52 |
+| The riser slot of columns 11/12 (x 102.91–106.31, y 0–32.72) | carries on as x 104.11–105.11 up to y = 129.52 |
+
+- The plane is still one polygon: six strips of at most 25.4 µm, joined by its top 27.305 µm, where `cdac_8b`'s `vssa` wiring meets it.
+- The slots lie where only the cell-to-cell links cross (bottom-plate met3, and the top plate's met4 in five places). Every unit capacitor keeps its own met2 shield, and a slot stays 1.5 µm clear of it.
+- Slots as wide as the gap (3.4 µm, as the riser slots are) were tried first. In the extraction they put 8.4 fF of each top plate onto the substrate; the 1.0 µm slots put 0.5 fF.
+
+| Check | Before | After |
+|---|---|---|
+| ChipFoundry FEOL deck, each variant's GDS | 1 (`MR_capm.SP.2`) | 0 |
+| ChipFoundry BEOL deck, each variant's GDS | 0 | 0 |
+| Largest solid square on met2 | 76.4 µm | 27.3 µm |
+| Largest solid square on li1 / met1 / met3 / met4 / met5 | 0.8 / 1.8 / 6.9 / 4.4 / 1.6 µm | the same |
+| Pegasus DRC, real violations: `bootstrap_sw`, `carray_8b`, `cdac_8b`, `sar_afe` | 0 | 0, and the same density/fill rules |
+| Pegasus LVS: the same cells, `sar_afe` with the black box and with the filter | MATCH | MATCH |
+
+The largest solid square is measured in KLayout: a square of side s fits where
+the merged layer, shrunk by s/2, is not empty.
+
+**The extraction of `sar_afe`, before and after** (parasitic capacitance of a
+net to all other nets, P side / N side):
+
+| Net | Before | After |
+|---|---|---|
+| Top plates `vtopp` / `vtopn` | 860.7 / 859.6 fF | 854.7 / 854.5 fF (−0.7 / −0.6 %) |
+| Bottom plate, bit 7 | 915.7 / 914.6 fF | 910.7 / 910.5 fF (−0.5 %) |
+| Bit 6 | 460.8 / 460.5 fF | 458.9 / 458.7 fF (−0.4 %) |
+| Bit 5 | 236.4 / 236.3 fF | 234.2 / 234.1 fF (−1.0 / −0.9 %) |
+| Bit 4 | 126.5 / 126.6 fF | 125.8 / 125.9 fF (−0.6 %) |
+| Bits 3 to 0 and the dummy | 74.2, 38.4, 24.6, 16.4 and 17.3 fF | within 0.2 % |
+
+The devices are the same 656 MIM caps and 98 FETs, with the same sizes on the
+same nets, and no net's total moves by more than 1 %. What the top plates lose
+is capacitance to the plane (`vtopp` to `vss`: 184.7 to 178.4 fF).
+
+**One mixed-signal run on the new extraction**, the chip's `sar_adc` RTL around
+the extracted macro at the board's clock (100 ns, `adc_clkdiv` 4,
+`adc_samplediv` 8, 52 conversions compared with the ideal model):
+
+| Extraction | Code error | Gain error | Carry-over of the previous sample |
+|---|---|---|---|
+| Before the fixes | −1..+2 LSB | +2.35 % | +0.11 % |
+| After | −1..+2 LSB | +2.10 % | +0.12 % |
+
+Spectre finishes without errors and the firmware test passes in both. The fit
+over 52 samples does not resolve much less than this difference: on the same
+run, two extractions that differ only in the comparator's trim capacitors
+gave +2.18 % and +2.35 %.
+
+The extracted views of `bootstrap_sw` and `carray_8b` kept in the library
+(`av_extracted`, `bsw_extracted`) are their owners' own and predate these fixes.
 
 ## The trim's MOM unit cap: black box for LVS, layout metal for extraction
 

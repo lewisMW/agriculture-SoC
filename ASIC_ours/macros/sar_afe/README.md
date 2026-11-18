@@ -69,7 +69,7 @@ macro's right.
   - Each supply's two straps are joined inside the macro by a met3 bus below and above the CDACs.
 - **Obstructions:** li1 through met4 are obstructed over the whole macro, except at the pins. met5 is obstructed only over x 210.49–234.63, y 204.18–209.78 (the comparator's clock). The chip's met5 stripes may therefore cross the rest of the macro and drop vias onto the met4 supply straps, which is how the SRAMs are powered.
 - **Antenna areas:** gate and diffusion areas are in the LEF, taken from the transistor-level netlist.
-- **Pin capacitances:** in the `.lib`. Each value is the gate capacitance plus the wire capacitance from the Quantus extraction. `ctlp`/`ctln` are 9–10 fF and the trims 10–12 fF. `clk` is 28 fF, and `sample` 58 fF: it runs inside each `cdac_8b` to its switch.
+- **Pin capacitances:** in the `.lib`. Each value is the gate capacitance plus the wire capacitance from the Quantus extraction. `ctlp`/`ctln` are 9–10 fF and the trims 10–12 fF. `clk` is 28 fF, and `sample` 57 fF: it runs inside each `cdac_8b` to its switch.
 - **Sampling load:** `vinp` and `vinn` each sample **8.19 pF** of CDAC through the bootstrapped switch. The input pad and sensor must drive that.
 
 ### `sar_afe_r` and `sar_afe_b`
@@ -207,6 +207,19 @@ are step 6 above.
   - **Two conversions per trigger.** `wrapper_control_2` holds `en` until the synchronised `valid` arrives. Harmless, but it doubles the ADC's power.
   - **`vref` decoupling:** how much, and whether on-chip or through a pad, is still to be decided.
 
+### 19 Nov 2026: two layout fixes for the shuttle's checks
+
+The views were regenerated after two fixes in the leaf cells. The coordinates
+and the before/after tables are in `analog/cadence/pv/README.md`.
+
+- **`MR_capm.SP.2`:** ChipFoundry's FEOL deck had one violation, in `bootstrap_sw`. The via stack on the boost capacitors' top-plate strap is narrowed from 3 × 2 to 2 × 2 cuts, so that its met3 pad is 1.2 µm from the nearest capacitor's bottom plate.
+- **Solid metal:** the met2 `vssa` shield plane of `carray_8b` has five more slots, each 1.0 µm wide, in the gap after every third unit-cell column. The largest solid met2 square is now 27.3 µm (76.4 µm before), under the 30 µm guideline. On the other metal layers the largest is 6.9 µm (met3).
+- **The LEF is unchanged.** All three are identical to the previous files from their second line on (the first holds the date): outline, pins, obstructions and antenna areas. Nothing changes for place and route.
+- **`.lib`:** the `sample` pin goes from 57.60 to 57.43 fF and `clk` from 27.65 to 27.64 fF. The arcs are unchanged.
+- **Checks:** on each variant's GDS the FEOL and BEOL decks give 0 violations. Pegasus DRC has no real violation, with the same density/fill rules as before. LVS matches for `bootstrap_sw`, `carray_8b`, `cdac_8b` and the three macros with the black box, and for `sar_afe` with the trim's ideal capacitor filtered (the extraction's comparison).
+- **Extraction:** 98 FETs and 656 MIM caps as before, 13.1k C and 10.2k R. The top plates' parasitic capacitance falls by 0.7 % on the P side (860.7 to 854.7 fF) and 0.6 % on the N side, each bottom plate's by at most 1.0 %, and no net's total moves by more than 1 %.
+- **Simulation:** one mixed-signal run with the new extraction at the board's clock (100 ns, `adc_clkdiv` 4, `adc_samplediv` 8, 52 conversions against the ideal model) gives a code error of −1..+2 LSB, a gain error of +2.10 % and a carry-over of +0.12 %. The extraction before the fixes gave −1..+2 LSB, +2.35 % and +0.11 % on the same run.
+
 ## Regenerating
 
 On the Cadence box, from `analog/cadence/pv` (`source ~/.bashrc` first):
@@ -215,7 +228,7 @@ On the Cadence box, from `analog/cadence/pv` (`source ~/.bashrc` first):
 for c in sar_afe sar_afe_r sar_afe_b; do
   ./run_lvs.sh sar_adc $c --blackbox sarcta__C0
 done
-./run_pex.sh sar_adc sar_afe --blackbox sarcta__C0
+./run_pex.sh sar_adc sar_afe --filter-source "C (CP)"   # no black box: the trim's unit caps come from the layout
 ./macro/export_macro.sh            # writes this directory, all three cells
 ```
 
