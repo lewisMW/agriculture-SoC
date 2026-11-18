@@ -9,7 +9,7 @@ on the Cadence box; run `source ~/.bashrc` first to get the licence and tool pat
 |---|---|
 | `run_lvs.sh <LIB> <CELL>` | strmout → GDS, `si` → CDL, then Pegasus LVS. Exits 0 only on MATCH. `--rc` also writes the Quantus input. `--cdl-only` only netlists. `--blackbox SUBCELL` compares a subcell by its pins only, and `--exclude-hcell SUBCELL` compares it flattened into its parent (see below). |
 | `run_drc.sh <LIB> <CELL>` | strmout + Pegasus DRC. `violations.txt` separates REAL rules from density/fill rules (CDR/CDRW), which only chip fill can meet. |
-| `run_pex.sh <LIB> <CELL>` | LVS `--rc` → Quantus (`rc_coupled`, ground `vss`) → OA view `av_extracted` → `<CELL>.pex.scs`. Takes `--blackbox` and `--exclude-hcell` too. Run it on our own cells only: Hee's and Jaime's cells already have an `av_extracted` view of their own, which it would overwrite. |
+| `run_pex.sh <LIB> <CELL>` | LVS `--rc` → Quantus (`rc_coupled`, ground `vss`) → OA view `av_extracted` → `<CELL>.pex.scs`. Takes `--blackbox`, `--exclude-hcell` and `--filter-source` too. Run it on our own cells only: Hee's and Jaime's cells already have an `av_extracted` view of their own, which it would overwrite. |
 | `netlist_spectre.sh <LIB> <CELL> <OUT> [views]` | Spectre netlist of a cell as `subckt <CELL> … ends`, with its children. |
 | `lvs_deck.sh` | Prints the PDK LVS deck with our fixes applied (below). The deck itself isn't committed; the script generates it from `$SKY130`. |
 | `rebind_moved.il` | After Erick's cells are copied from `sky130_analog_lib` into `sar_adc`, points their references at the copies and runs Check-and-Save. |
@@ -74,11 +74,11 @@ symbol in batch mode.
 `macro/export_macro.sh` writes the views for the digital flow
 (`ASIC_ours/macros/sar_afe/README.md`).
 
-**Extraction** (`run_pex.sh sar_adc sar_afe --blackbox sarcta__C0`, rc_coupled):
+**Extraction** (`run_pex.sh sar_adc sar_afe --filter-source "C (CP)"`, rc_coupled):
 
 - Devices: 656 MIM caps and 98 FETs (fingers and multipliers expanded).
-- Parasitics: 12.9k C and 10.6k R.
-- MOM caps: the trims' 36 MOM unit caps stay as black boxes, netlisted from their schematic (1.25 fF each).
+- Parasitics: 12.2k C and 10.3k R.
+- MOM caps: the trims' 36 MOM unit caps are extracted from their metal (1.00 fF each between the plates, plus the plates' strays); the netlist has no ideal capacitor. See below.
 
 The netlist (~1.5 MB) is **not committed**; regenerate it. Its ports must match the schematic netlist's exactly, and the script checks this.
 
@@ -98,19 +98,48 @@ within 10 µs of the previous one carries a +3 % gain error that conversions
 after a longer idle don't have (+0.65 %); the rebuild didn't change it.
 Details are in `agriculture_soc_main/AMS/INTEGRATION.md`.
 
-## The trim's MOM unit cap is compared as a black box
+## The trim's MOM unit cap: black box for LVS, layout metal for extraction
 
-Erick's trim builds each bit's capacitance from `sarcta__C0`, a metal-finger
-(MOM) unit cap: 8/4/2/1/1 units per bit plus 2 dummies, all inside
-`sarct__trim_array`. No device rule extracts a capacitor from plain metal. So
-`run_lvs.sh --blackbox sarcta__C0` adds `lvs_black_box sarcta__C0 -source_layout`
-to the deck, which is the same setting as Erick's LVS run.
+The comparator's trim builds each bit's capacitance from `sarcta__C0`, a single-layer
+met2 finger (MOM) unit cap, 1.58 x 4.7 um: 8/4/2/1/1 units per bit plus 2
+dummies, all inside `sarct__trim_array`. Its schematic is an ideal 1.25 fF
+capacitor, and no device rule extracts a capacitor from plain metal. The two
+flows therefore treat it differently, and both LVS runs must MATCH.
 
-With the black box, every unit's two terminals must connect to the right nets on
-both sides. The bit wiring of the array is therefore checked, where an ideal
-`lvsIgnore` cap would skip it. In extraction, the black-box units are netlisted
-from the schematic (1.25 fF nominal; the July in-context extraction measured
-about 1.10 fF), and the wiring around them is extracted.
+**LVS (sign-off):** `run_lvs.sh ... --blackbox sarcta__C0` adds
+`lvs_black_box sarcta__C0 -source_layout` to the deck, the same setting as
+the cell's own LVS run. Every unit's two terminals must connect to the right nets on
+both sides, so the bit wiring of the array is checked, where an ignored ideal
+cap would skip it.
+
+**Extraction:** `run_pex.sh ... --filter-source "C (CP)"`, and no black box.
+`lvs_filter_device C (CP) -open -source` drops the ideal capacitor from the
+schematic side, so the unit's fingers are ordinary metal on its two nets and
+Quantus extracts their capacitance and resistance like any other wire. The
+netlist then has no ideal capacitor to count twice. This comparison does not
+check the array's wiring (an open finger is only a floating piece of metal to
+it); the black-box run above does.
+
+Until 18 Nov 2026 the extraction used the black box as well. The units were
+then netlisted from the schematic as ideal 1.25 fF and their own metal was
+left out. What the layout has instead (Quantus typical, the only corner the
+PDK ships; pattern-based extraction, not a field solver):
+
+| Per array | Ideal, as netlisted before | From the layout |
+|---|---|---|
+| Unit, plate to plate | 1.25 fF | 1.00 fF |
+| Bits 4..0 | 10.0 / 5.0 / 2.5 / 1.25 / 1.25 fF | 8.03 / 4.00 / 2.01 / 1.00 / 1.00 fF |
+| Common plate (`net2`/`net3`) to the supplies, dummies excluded | 2.3 fF | 3.8 fF |
+| Switched plate of bit 4 to the supplies and other nets | 4.1 fF | 5.0 fF |
+
+The comparator's trim step and range follow (extracted comparator alone,
+Spectre, tt, 27 C, 1.8 V, common mode 0.9 V):
+
+| | Ideal units | Layout units |
+|---|---|---|
+| One unit (code 1) | 4.0 mV | 2.8 mV |
+| Full scale (code 31), `trima` / `trimb` | +49 / -48 mV | +36 / -35 mV |
+| Decision delay, 10 mV overdrive, trim 0 / trim 31 both sides | 1.95 / 2.53 ns | 1.97 / 2.37 ns |
 
 ## The PDK LVS deck needs three fixes (`lvs_deck.sh`)
 

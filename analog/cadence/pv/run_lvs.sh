@@ -7,6 +7,7 @@
 # Usage:
 #   ./run_lvs.sh <LIB> <CELL> [--rc] [--dp N] [--sch-view V] [--lay-view V]
 #                             [--blackbox SUBCELL]... [--exclude-hcell SUBCELL]...
+#                             [--filter-source "TYPE (MODEL)"]...
 #
 # Examples:
 #   ./run_lvs.sh sar_adc inverter
@@ -17,6 +18,13 @@
 # as a black box on both sides: only its pins and their connections are
 # checked. Used for the trim's MOM unit cap sarcta__C0, which is plain metal
 # that no device rule extracts (Erick's LVS setup, 9 Oct 2026).
+#
+# --filter-source "TYPE (MODEL)" (repeatable, or LVS_FILTER_SOURCE="C(CP);...")
+# drops that device from the schematic side only, leaving its nets open. Used
+# for extraction: with "C (CP)" the ideal capacitor inside sarcta__C0 is not
+# compared, the unit cap's metal belongs to its two nets, and Quantus extracts
+# its capacitance from the layout. The array's wiring is NOT checked this way;
+# run the --blackbox comparison for that.
 #
 # --exclude-hcell SUBCELL (repeatable, or LVS_EXCLUDE_HCELL="a b") keeps
 # SUBCELL from being a correspondence point: it is compared flattened into
@@ -55,9 +63,10 @@ fi
 LIB=""; CELL=""; DP=4; RC=0; CDLONLY=0; SCHVIEW=schematic; LAYVIEW=layout
 BLACKBOX="${LVS_BLACKBOX:-}"
 EXCLUDE="${LVS_EXCLUDE_HCELL:-}"
+FILTERS="${LVS_FILTER_SOURCE:-}"
 
 die(){ echo "ERROR: $*" >&2; exit 2; }
-usage(){ sed -n '2,30p' "$0"; exit "${1:-0}"; }
+usage(){ sed -n '2,43p' "$0"; exit "${1:-0}"; }
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -69,6 +78,7 @@ while [ $# -gt 0 ]; do
     --lay-view) LAYVIEW="${2:?}"; shift 2;;
     --blackbox) BLACKBOX="$BLACKBOX ${2:?}"; shift 2;;
     --exclude-hcell) EXCLUDE="$EXCLUDE ${2:?}"; shift 2;;
+    --filter-source) FILTERS="$FILTERS;${2:?}"; shift 2;;
     -*) die "unknown option: $1";;
     *) if [ -z "$LIB" ]; then LIB="$1"; elif [ -z "$CELL" ]; then CELL="$1"; else die "unexpected arg: $1"; fi; shift;;
   esac
@@ -89,11 +99,13 @@ echo "INCLUDE $(cd "$(dirname "$CDSLIB")" && pwd)/$(basename "$CDSLIB")" > cds.l
 "$SCRIPT_DIR/lvs_deck.sh" > deck.pvl
 for b in $BLACKBOX; do printf 'lvs_black_box %s -source_layout\n' "$b" >> deck.pvl; done
 for c in $EXCLUDE; do printf 'lvs_exclude_hcell %s\n' "$c" >> deck.pvl; done
+( IFS=';'; for f in $FILTERS; do [ -n "${f// /}" ] && printf 'lvs_filter_device %s -open -source\n' "$f" >> deck.pvl; done; true )
 
 echo "=== LVS $LIB/$CELL  ($LAYVIEW vs $SCHVIEW) ==="
 echo "    run: $RUN"
 [ -n "${BLACKBOX// /}" ] && echo "    black boxes:$BLACKBOX"
 [ -n "${EXCLUDE// /}" ] && echo "    compared flattened:$EXCLUDE"
+[ -n "${FILTERS//[; ]/}" ] && echo "    filtered from the schematic:$FILTERS"
 
 if [ "$CDLONLY" = 1 ]; then echo ">>> [1/3] strmout skipped (--cdl-only)"; else
 echo ">>> [1/3] strmout ..."
