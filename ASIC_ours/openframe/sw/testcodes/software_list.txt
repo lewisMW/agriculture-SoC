@@ -1,1 +1,2 @@
 of_mem_test
+of_boot_test

@@ -1,0 +1,44 @@
+//-----------------------------------------------------------------------------
+// RTL simulation of nanosoc in the OpenFrame wrapper (run_gl_sim.sh with RTL=1).
+// The testbench and the frame model are those of the gate-level simulation
+// (openframe_gl.flist); the design is the RTL that synthesis reads.
+// Each source line must end in the file's extension: the file-list compiler
+// tests the line before it expands the variables.
+//-----------------------------------------------------------------------------
++libext+.v+.vlib
+// gen_defines.v as synthesis has it (run_gl_sim.sh makes it), before the project's own
++incdir+$(OPENFRAME_RTL_DEFINES)
++incdir+$(SOCLABS_PROJECT_DIR)/system/src/defines
++incdir+$(OPENFRAME_GL_RUN)
+
+// SoC Labs gate-level testbench (no references into the design's hierarchy) and its verification IP
+$(OPENFRAME_TB_DIR)/nanosoc_tb_GATE.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_fsm.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_sync.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_axis_rxport.v
+$(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_axis_txport.v
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/nanosoc_vip.flist
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/corstone101_vip.flist
+-f $(SOCLABS_NANOSOC_TECH_DIR)/flist/corstone101_ip.flist
+-f $(SOCLABS_SLCOREM0_TECH_DIR)/flist/cortexm0_ip.flist
+
+// the frame model with the pad-level port list the testbench expects, and the board's flash
+$(OPENFRAME_DIR)/sim/nanosoc_chip_pads_openframe.v
+$(OPENFRAME_DIR)/sim/spiflash_model.v
+
+// the design: what synthesis reads (run_gl_sim.sh writes this list from the
+// flow's Genus file list, without the boot ROM and sl_sram of the pad-ring chip)
+-f $(OPENFRAME_GL_RUN)/openframe_rtl_design.flist
+$(OPENFRAME_BOOTROM_SV)/bootrom.sv
+$(OPENFRAME_DIR)/rtl/sl_sram_dffram.v
+$(OPENFRAME_DIR)/rtl/CF_gpio_config.v
+// the wrapper uses SystemVerilog's macro token pasting: compiled through a .sv file
++incdir+$(OPENFRAME_DIR)/rtl
+$(OPENFRAME_DIR)/sim/openframe_project_wrapper_rtl.sv
+
+// standard cells (the comparator latch instantiates two), memory and ADC models
+$(OPENFRAME_PDK)/libs.ref/sky130_fd_sc_hd/verilog/primitives.v
+$(OPENFRAME_PDK)/libs.ref/sky130_fd_sc_hd/verilog/sky130_fd_sc_hd.v
+$(OPENFRAME_GL_RUN)/openframe_mem_model.v
+$(ACCELERATOR_DIR)/ADC/sim/sar_afe_model.v

@@ -27,8 +27,9 @@ $(SOCLABS_NANOSOC_TECH_DIR)/hostio4/target_rtl/hostio4_target_axis_txport.v
 // a synchroniser cell that one of the verification components uses
 $(SOCLABS_GENERIC_LIB_TECH_DIR)/sync/verilog/SYNCHRONIZER_EDGES.v
 
-// the frame model with the pad-level port list the testbench expects
+// the frame model with the pad-level port list the testbench expects, and the board's flash
 $(OPENFRAME_DIR)/sim/nanosoc_chip_pads_openframe.v
+$(OPENFRAME_DIR)/sim/spiflash_model.v
 
 // the design: flat gate netlist from write_sim_netlist.tcl
 $(OPENFRAME_GL_NETLIST_DIR)/openframe_project_wrapper.sim.v
