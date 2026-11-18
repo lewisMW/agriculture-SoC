@@ -75,6 +75,15 @@ set_false_path -setup -from [get_ports {resetb_l porb_l}]
 set_false_path -hold -from [get_ports {resetb_l porb_l}]
 set_ideal_network [get_ports {resetb_l porb_l}]
 set_false_path -from [get_ports {gpio_loopback_one[*] gpio_loopback_zero[*]}]
+
+# Flash programming (openframe_project_wrapper.v). The strap FLASH_PROG, GPIO 14,
+# is static: it holds the chip in reset and switches four pads to the
+# pass-through. The pass-through itself is combinational, pad to pad (the
+# FTDI's CSB, SCK and SDI to the flash, the flash's IO1 back): 15 ns each way
+# leaves an SPI clock of several MHz, the pads' own delays included.
+set_false_path -from [get_ports {gpio_in[14]}]
+set_max_delay 15 -from [get_ports {gpio_in[2] gpio_in[3] gpio_in[4] gpio_in[42]}] \
+                 -to   [get_ports {gpio_out[1] gpio_out[39] gpio_out[40] gpio_out[41]}]
 set_false_path -setup -through [get_nets soc_scan_mode]
 
 set_input_delay  -clock [get_clocks $EXTCLK] -add_delay 0.1 [remove_from_collection [remove_from_collection [get_ports {gpio_in[*]}] $CLK_PORT] $SWDCK_PORT]

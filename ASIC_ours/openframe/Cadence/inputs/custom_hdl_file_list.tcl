@@ -15,5 +15,12 @@ if {$of_mem eq "prebuilt"} {
 } else {
     read_hdl ../../rtl/sl_ahb_sram_hold.v
 }
+# The boot ROM: the OpenFrame one (../../sw/bootrom; run_flow.sh builds it into
+# ../outputs/bootrom) in place of the SoC Labs boot loader the file list read.
+set _rom [file normalize ../outputs/bootrom/verilog/bootrom.sv]
+if {![file exists $_rom]} {
+    error "custom_hdl_file_list.tcl: no $_rom (run_flow.sh builds it from ASIC_ours/openframe/sw/bootrom)"
+}
+read_hdl -sv $_rom
 # openframe_project_wrapper.v includes of_mem_config.vh, which config.tcl wrote
 set_db init_hdl_search_path [concat [list [file normalize ../outputs]] [get_db init_hdl_search_path]]
