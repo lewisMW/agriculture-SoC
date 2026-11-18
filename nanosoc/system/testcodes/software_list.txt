@@ -3,3 +3,4 @@ fifo_drain_test
 rtc_time_test
 adc_autonomous_test
 clock_ctrl_test
+sensing_irq_test

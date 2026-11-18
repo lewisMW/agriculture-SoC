@@ -420,7 +420,9 @@ adc_apb_wrapper_rev2 #(
    // Unused APB sidebands
    .APBACTIVE(1'b1),
    .PPROT(3'b000),
-   .PSTRB(4'b1111)
+   .PSTRB(4'b1111),
+   // "sample ready" interrupt: not wired to the processor in this standalone top
+   .IRQ()
 );
 
 endmodule

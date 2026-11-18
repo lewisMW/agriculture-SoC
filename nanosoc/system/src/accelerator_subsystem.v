@@ -166,6 +166,7 @@ wire nPOR = HRESETn;
 // toggles every cycle. Programs that count RTC seconds in simulation write a
 // small value first.
 wire [31:0] rtc_prescale;
+wire        sensing_irq;
 reg  [31:0] clk1hz_ctr;
 reg         clk1hz_reg;
 always @(posedge HCLK or negedge HRESETn) begin
@@ -206,6 +207,8 @@ adc_apb_wrapper_rev2 #(
    .PRDATA(PRDATA),
    .PREADY(PREADY),
    .PSLVERR(PSLVERR),
+   // Interrupt: a sample is waiting in the FIFO (or the FIFO is full)
+   .IRQ(sensing_irq),
    // SAR ADC analog inputs
    .ADC_VINP(ADC_VINP),
    .ADC_VINN(ADC_VINN)
@@ -213,8 +216,10 @@ adc_apb_wrapper_rev2 #(
 
 
 
-// Default IRQ and DMA REQ
-assign EXP_IRQ = 2'b00;
+// The sensing peripheral's interrupt is EXP_IRQ[0]: interrupt 11 of the processor
+// (EXP0_Handler). The other lines are unused.
+assign EXP_IRQ = {{(IRQ_NUM-1){1'b0}}, sensing_irq};
+// Default DMA REQ
 assign EXP_DRQ = 2'b00;
 
 // Default DMA350 stream loopback

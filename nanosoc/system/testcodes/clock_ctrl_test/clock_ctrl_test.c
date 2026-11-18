@@ -68,8 +68,8 @@ int main(void)
     sp_str("clock_ctrl_test: start\n");
 
     /* reset values, before anything is written */
-    expect(SENSING_IP_REGS->adc_clkdiv == 4u, "adc_clkdiv resets to 4");
-    expect(SENSING_IP_REGS->adc_samplediv == 0u, "adc_samplediv resets to 0");
+    expect(SENSING_IP_REGS->adc_clkdiv == SENSING_ADC_CLKDIV_RESET, "adc_clkdiv resets to 4");
+    expect(SENSING_IP_REGS->adc_samplediv == SENSING_ADC_SAMPLEDIV_RESET, "adc_samplediv resets to 8");
     sp_str("  rtc_prescale at reset: "); sp_dec(SENSING_IP_REGS->rtc_prescale); sp_nl();
     expect(SENSING_IP_REGS->rtc_prescale == SENSING_RTC_PRESCALE_RESET, "rtc_prescale resets to the value for the real clock");
 
@@ -95,7 +95,7 @@ int main(void)
     SENSING_IP_REGS->adc_clkdiv = 12u;  sensing_delay(600u); p12 = convert_polls();
     SENSING_IP_REGS->adc_clkdiv = 4u;   sensing_delay(600u);
     SENSING_IP_REGS->adc_samplediv = 60u;                    ps  = convert_polls();
-    SENSING_IP_REGS->adc_samplediv = 0u; sensing_delay(600u);
+    SENSING_IP_REGS->adc_samplediv = SENSING_ADC_SAMPLEDIV_RESET; sensing_delay(600u);
     sp_str("  polls until the sample: clkdiv 2: "); sp_dec(p2); sp_str(", 4: "); sp_dec(p4);
     sp_str(", 12: "); sp_dec(p12); sp_str(", 4 with samplediv 60: "); sp_dec(ps); sp_nl();
     expect(p2 && p4 && p12 && ps, "a conversion completes at every setting");
