@@ -16,6 +16,7 @@ module nanosoc_region_exp #(
 )(
     input  wire                  HCLK,       // Clock
     input  wire                  HRESETn,    // Reset
+    input  wire                  PORESETn,   // Power-on reset: not asserted by a system reset
 
     // AHB Subortinate Port
     input  wire                   HSEL,
@@ -96,6 +97,7 @@ module nanosoc_region_exp #(
     ) u_ss_accelerator (
         .HCLK(HCLK),
         .HRESETn(HRESETn),
+        .PORESETn(PORESETn),
         .HSEL(HSEL),
         .HADDR(HADDR),
         .HTRANS(HTRANS),

@@ -935,6 +935,7 @@ wire       EXT_DAT_TXD_TREADY ;
         // System Clocks and Resets
         .SYS_HCLK(SYS_HCLK),
         .SYS_HRESETn(SYS_HRESETn),
+        .SYS_PORESETn(SYS_PORESETn),
         
         // Expansion Region AHB Port
         .EXP_HSEL(EXP_HSEL),

@@ -5,7 +5,8 @@
  * passthrough access; the phase is tracked through sysctrl RSTINFO and three
  * words of SRAM outside the linker's 15 KB RAM region (cmsdk_cm0.ld uses
  * 0x3000_0000-0x3000_3BFF; the C start-up never touches 0x3000_3FF0).
- * After each reboot: all sensing registers at reset values, FIFO empty, and
+ * After each reboot: all sensing registers at reset values (except
+ * rtc_prescale, which only the power-on reset resets), FIFO empty, and
  * sampling restarts. If the simulation cannot reboot into the image the test
  * never reaches its second phase: the runner times out, and FW-5 is then an
  * FPGA-only test (report it as such).
@@ -39,22 +40,23 @@ static void check_reset_state(const char *when)
     SC_CHECK(SENSING_IP_REGS->adc_clkdiv == SENSING_ADC_CLKDIV_RESET,       "ADC_CLKDIV back at its reset value");
     SC_CHECK(SENSING_IP_REGS->adc_samplediv == SENSING_ADC_SAMPLEDIV_RESET, "ADC_SAMPLEDIV back at its reset value");
     SC_CHECK(SENSING_IP_REGS->irq_enable == 0,        "IRQ_ENABLE back at 0");
-    SC_CHECK(SENSING_IP_REGS->rtc_prescale == SENSING_RTC_PRESCALE_RESET,   "RTC_PRESCALE back at its reset value");
+    /* rtc_prescale is reset by the power-on reset, with the RTC: a system
+     * reset leaves it as dirty() set it, and the RTC keeps counting. */
+    SC_CHECK(SENSING_IP_REGS->rtc_prescale == SENSING_RTC_PRESCALE_FAST,    "RTC_PRESCALE kept through the system reset");
     {
         /* Polling is on from reset (period 5 s), so samples can arrive between
-         * the reset and this check. rtc_prescale is back at its reset value
-         * (the real clock's 1 Hz) here, so that is ~0 samples, but bound it
-         * anyway: with a fast tick boot+UART output is long enough for the
-         * FIFO to refill (sim run 2026-11-18: status 0x12 at the first read,
-         * before the tick was a register). Under nanosoc nPOR = HRESETn, so RTCDR is
-         * seconds since THIS reset: bound the FIFO by the samples that could
-         * have been taken since, instead of demanding it be empty. RTCDR is
-         * read after the drain so a sample landing mid-drain is still covered. */
+         * the reset and this check, and the tick is still the fast one: boot
+         * and UART output are long enough for the FIFO to refill (sim run
+         * 2026-11-18: status 0x12 at the first read). The RTC is not reset by
+         * a system reset, so RTCDR is seconds since power-on, not since this
+         * reset: secs / 5 + 1 is then a loose upper bound on the samples taken
+         * since the reset, not a tight one. RTCDR is read after the drain so a
+         * sample landing mid-drain is still covered. */
         int      dropped = (sensing_status() & STATUS_FIFO_DROP_MASK) != 0;
         uint32_t n       = sensing_fifo_drain(0, 32u);
         uint32_t secs    = sc_rtc_now();
         uint32_t max_n   = secs / 5u + 1u;
-        sp_str("  RTC "); sp_dec(secs); sp_str(" s since reset, FIFO held ");
+        sp_str("  RTC "); sp_dec(secs); sp_str(" s since power-on, FIFO held ");
         sp_dec(n); sp_str(dropped ? ", drop set" : ", drop clear"); sp_nl();
         if (max_n > 16u)
             sp_str("  note: RTC tick refilled the FIFO before this check; empty/drop are bounds only\n");

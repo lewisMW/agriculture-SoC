@@ -695,7 +695,7 @@ def _after_pin_reset(t, n):
          desc="pin reset %d: RESETINFO = 0 (the pin is not a recorded cause, F21)" % n)
     t.rd(0x20000400, expect=0xA5A50000 | n, desc="pin reset %d: IMEM contents survive" % n)
     t.rd(RTCDR, check=lambda v, c: v < 5000,
-         desc="pin reset %d: RTC count restarted (nPOR = HRESETn in nanosoc, F9)" % n)
+         desc="pin reset %d: RTC count restarted (the reset pin asserts the power-on reset, F9)" % n)
     t.rd(0x00000000, check=lambda v, c: True, desc="pin reset %d: zero page readable (bootrom)" % n)
 
 
