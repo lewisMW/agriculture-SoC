@@ -27,8 +27,8 @@ Apache-2.0; `chipfoundry/cf-precheck` for the submission checks.
 | `Cadence/scripts/` | `config.tcl`, `floorplan.tcl`, `power_plan.tcl` for the wrapper; the rest copied from `ASIC_ours/Cadence/scripts` |
 | `signoff/` | GDS stream-out, LVS and ChipFoundry's layout checks for the wrapper (see "Sign-off") |
 | `cf/` | inputs for ChipFoundry's own LVS (see "Sign-off") |
-| `sim/` | gate-level simulation of the routed wrapper (see "Gate-level simulation") |
-| `sw/` | `small_puts.c`, for building the test programs small (see "Firmware size") |
+| `sim/` | gate-level simulation of the routed wrapper, and RTL simulation of the wrapper in the same frame model (see "Gate-level simulation") |
+| `sw/` | `small_puts.c` and `openframe.ld`, for building programs for the real memory sizes (see "Firmware size"); `bootrom/`, the boot ROM, and `mkflashimg.py` (see "Booting from the board's flash") |
 
 The generic stage scripts are the usual `nanosoc/asic_flow/Cadence/*.tcl`.
 
@@ -43,44 +43,70 @@ reach header pins only.
 
 | GPIO | Edge | Function | On the board |
 | --- | --- | --- | --- |
-| 38 | bottom | CLK | the clock generator |
+| 38 | bottom | CLK | the clock generator, 10 MHz |
 | 5, 6 | right | P1[4], P1[5]: UART2 RXD, TXD when P1[7] is high (HOSTIO4 data 1, 2 when low) | the FTDI's UART, so program output can arrive over USB |
-| 0, 7, 8, 9, 10 | right | P1[0], P1[1], P1[2], P1[3], P1[6]: the rest of the host link (HOSTIO4 req1, req2, ack, data 0, data 3; FT1248 on the first four) | header pins, for the host adapter |
-| 11 | right | P1[7]: host-link mode strap, 0 HOSTIO4, 1 FT1248 + UART2 | header pin: needs a pull to the wanted level |
-| 12-14 | right | P1[8..10] | header pins |
-| 22, 23 | top | P1[11], P1[12] | header pins |
+| 0 | right | P1[0]: FT1248 MISO, an input that is low when the host has data, or HOSTIO4 req1, an output. The pad has its pull-up while the chip does not drive it | header pin, for the host adapter |
+| 7, 8, 9, 10 | right | P1[1], P1[2], P1[3], P1[6]: the rest of the host link (FT1248 clock, data, select; HOSTIO4 req2, ack, data 0, data 3) | header pins, for the host adapter |
+| 11 | right | P1[7]: host-link mode strap, 0 HOSTIO4, 1 FT1248 + UART2. Input with the pad's pull-up, so 1 unless tied low; P1[7] cannot drive it | header pin |
+| 39, 40, 41, 42 | bottom | P1[8], P1[9], P1[10], P1[11]. The CSB pad has its pull-up while nothing drives it | the flash's CSB, CLK, IO0 (to the flash), IO1 (from it) |
+| 36, 37 | left | P1[13], P1[14] | the flash's IO2, IO3: its write-protect and hold inputs in plain SPI mode |
+| 14 | right | FLASH_PROG: input with the pad's pull-down. High holds the chip in reset and passes the FTDI's SPI lines straight to the flash | header pin: tie high to program the flash |
+| 1-4 | right | P0[12..15]; with FLASH_PROG high, 1 is the flash's IO1 coming back (SDO) and 2, 3, 4 (SDI, CSB, SCK) go on to the flash | the FTDI's SPI lines: leave them inputs while the FTDI drives |
+| 23 | top | P1[12] | header pin |
 | 24-35 | left | P0[0..11] | header pins |
-| 1-4 | right | P0[12..15] | also the FTDI's SPI lines: leave them inputs while the FTDI drives |
-| 36, 37 | left | P1[13], P1[14] | also the flash's IO2, IO3 (pulled up there) |
 | 43 | bottom | P1[15] | the LED |
 | 18, 19 | top | TEST, SE: inputs with the pad's pull-down, low unless driven | header pins |
 | 20, 21 | top | SWDCK (pull-down), SWDIO | header pins, for a debug probe |
 | 15, 16, 17 | top | ADC_VREF, ADC_VINP, ADC_VINN (`analog_io`) | header pins |
-| 39-42 | bottom | unused: analog mode, input buffer off | the flash's CSB, CLK, IO0, IO1, left alone |
+| 12, 13, 22 | right, top | unused: analog mode, input buffer off | header pins |
 
 Why this way:
 
-- **Nothing the chip needs low can float or be pulled high.** TEST and SE used
-  to be plain inputs on the flash's IO1 pad and on the LED pad. They now have the
-  pad's own pull-down and sit on header pins.
+- **Nothing the chip needs at a fixed level can float.** TEST, SE, SWDCK and
+  FLASH_PROG have the pad's pull-down; the mode strap has its pull-up, and so
+  has the host link's "host has data" input whenever the chip is not driving that
+  pin. A board with nothing on the header pins therefore starts in FT1248 +
+  UART2 mode, with a host link that sees no data. The flash's select (GPIO 39)
+  is treated the same way: a Caravel chip always drives that pin, so the board
+  need not pull it up, and here it would float while the chip is in reset or
+  P1[8] is an input. (GPIO 0 and 39 are the two pads not configured by a
+  `CF_gpio_config`: none of its modes is "output, or input with a pull". Their
+  drive-mode bit follows the output enable, which changes with the mode strap
+  for GPIO 0 and when the boot ROM or a program takes or releases the flash for
+  GPIO 39.)
+- **The program can live in the board's flash** ("Booting from the board's
+  flash"). The flash's six pins are port bits, all in the upper byte of port 1, so
+  the boot ROM (and any program) can drive them with single masked writes.
+- **The flash can be written from the board's USB port.** An OpenFrame chip has
+  no housekeeping SPI, which is how a Caravel board's FTDI reaches the flash. With
+  FLASH_PROG high the wrapper connects the FTDI's four SPI pads to the flash's
+  pads directly (four multiplexers at the pads), and holds the chip in reset.
 - **The host link is on header pins**, because it needs an adapter the board does
   not have: HOSTIO4 is seven wires, and in FT1248 mode the chip drives the clock
   and select, as the board's FTDI does on its SPI lines. Only the two UART pins
   line up with something on the board, and they are placed on it.
-- **The flash is left alone** (four pads unused), since nothing in the design can
-  use it. Its two extra data pins carry ordinary port bits.
 - **The pads next to the three analog ones** (14 on one side, 18-21 on the
   other) carry signals that do not toggle in normal operation.
 - The three analog pads are the top-edge pads nearest the frame's `vdda1` (right
   edge) and `vssa1` (top edge) pins; the ADC macro sits in that corner.
 
-Reset is the frame's `resetb_l` ANDed with its power-on reset `porb_l`. `porb_h`,
-`por_l`, `resetb_h`, `gpio_in_h`, `mask_rev` and `analog_noesd_io` are unused.
+**The ADC's supply is the frame's `vdda1`, and the macro's devices are 1.8 V.**
+On the development board `vdda1` comes out on header J11 pin 16, beside the
+3.3 V pins (26, 27); the 1.8 V pins are 22 and 23. Wire pin 16 to 1.8 V. A jumper
+to the neighbouring 3.3 V pin puts 3.3 V on 1.8 V transistors.
+
+Reset is the frame's `resetb_l` ANDed with its power-on reset `porb_l` and with
+FLASH_PROG low. `porb_h`, `por_l`, `resetb_h`, `gpio_in_h`, `mask_rev` and
+`analog_noesd_io` are unused.
 
 To check against the board before relying on it: which of GPIO 5 and 6 the FTDI
 transmits on (taken here as Caravel's convention, the chip receiving on 5), the
-LED's polarity, and that the port pins have pulls where the firmware leaves them
-as inputs: a bidirectional pad has no pull of its own.
+LED's polarity, and that port pins the firmware leaves as inputs have pulls: a
+bidirectional pad has no pull of its own. One of them matters with no host
+adapter fitted: GPIO 8, the host link's data line, which the chip reads as "the
+host cannot take a character" when it is high. Characters a program sends to the
+stream port (the SoC Labs `UartPutc`) then wait for ever. A pull-down on GPIO 8
+lets them drain; a program meant to run alone should print on UART2.
 
 ## Running
 
@@ -291,6 +317,13 @@ MEM_GATES=1 SDF_CORNER=fast SMALL_SW=1 MAKE_ARGS=PROJ_SW_DIR=$PWD/sw/testcodes \
         sim/run_gl_sim.sh $R/simnet $R/sim_mem of_mem_test sdf
 # one memory block on its own, gate netlist + SDF, random traffic
 sim/run_dffram_gl_unit.sh $R/unit 512 slow
+# 4. the board's flash (see "Booting from the board's flash"): the program in the
+#    flash only; written through the chip first; and with no host connected
+FLASH=boot sim/run_gl_sim.sh $R/simnet $R/sim_flash hello
+FLASH=prog sim/run_gl_sim.sh $R/simnet $R/sim_prog hello
+FLASH=boot NOHOST=1 sim/run_gl_sim.sh $R/simnet $R/sim_nohost hello
+# 5. any of these on the wrapper's RTL in place of a netlist (no netlist directory needed)
+RTL=1 FLASH=boot sim/run_gl_sim.sh - $R/sim_rtl hello
 ```
 
 `SDF_CORNER` is `slow` (the default), `typical` or `fast`: the SDF holds the three
@@ -304,6 +337,8 @@ test needs `MAKE_ARGS=TOOL_CHAIN=gcc` and is too large for the instruction memor
 | `write_sim_netlist.tcl` | Flat netlist with power pins on every cell (no fill, tap or decap cells) and an SDF file with the fast, typical and slow corners as each delay's three values. Flat, so that no module name can clash with a testbench model: the hierarchical netlist still has modules named like RTL ones. |
 | `nanosoc_chip_pads_openframe.v` | A module called `nanosoc_chip_pads`, which is what the testbench instantiates: the netlist inside a model of ChipFoundry's frame (44 pads, loopback constants, reset pad, power-on reset). It preloads the instruction memory from `image.hex` as the RTL run's preload does, and checks every pad's static configuration against the pad map once reset is over. |
 | `openframe_gl.flist` | The file list: testbench and verification IP, the frame model, the netlist, the standard-cell, SRAM and ADC models. |
+| `spiflash_model.v` | A model of the board's SPI flash, on GPIO 36, 37 and 39-42 in the frame model: read, program, erase, ID, power-down. |
+| `openframe_rtl.flist`, `genus_flist_to_xrun.py`, `openframe_project_wrapper_rtl.sv` | For `RTL=1`: the same testbench and frame model around the wrapper's RTL, from the file list synthesis reads. |
 | `sdf_flat_names.py` | Rewrites the SDF's instance names for the flat netlist (below). |
 | `run_gl_sim.sh` | Runs it. Exits 0 only if the test passed, the frame model reported no error and, with `sdf`, the whole SDF was applied. |
 | `dffram_gl_preload.py` | For `MEM_GATES=1`: writes the tasks that put a word into, or read it from, the 32 storage latches that hold it in a DFFRAM block's gate netlist. |
@@ -412,10 +447,16 @@ output as the default build; the only difference in the accelerator access log i
 the FIFO status it reads, because it reaches that read sooner.
 
 So an instruction memory of 4 kbytes holds any of these with room to spare, and a
-data memory of 1 kbyte is enough. Two things to settle before sizing the memories
-from this: the linker script places the stack for a 16 kbyte data memory, and
-the size of the application the chip is meant to run, which these tests only
-indicate.
+data memory of 1 kbyte is enough. What is still to settle before sizing the
+memories from this is the size of the application the chip is meant to run, which
+these tests only indicate.
+
+`sw/openframe.ld` (18 Nov) is a linker script for exactly these sizes: 4 kbyte at
+address 0, 1 kbyte at 0x30000000, the stack growing down from the top of the data
+memory, 384 bytes kept free for it. A program that does not fit is a link error.
+`sim/run_gl_sim.sh` uses it for the small build. With the SoC Labs script
+(64 kbyte and 15 kbyte) the programs ran here only because addresses wrap, which
+happened to put the stack at the top of the 1 kbyte memory.
 
 ## Memories (16 Nov 2026)
 
@@ -781,7 +822,7 @@ be needed.
 | --- | --- | --- | --- |
 | `adc_clkdiv` | 0x110 | 4 | system-clock cycles per half period of the ADC clock (8 bits; 0 also means 4). Was the parameter `ADC_CLK_DIV`. |
 | `adc_samplediv` | 0x114 | 0 | the same, but only while the ADC is in its sampling state; 0 means "as `adc_clkdiv`". Lengthens the time the sampling switch is closed without slowing the bit decisions. |
-| `rtc_prescale` | 0x22C | 16,666,667 | system-clock cycles per half period of the RTC's 1 Hz tick: half the clock frequency in Hz. Was `localparam CLK1HZ_DIV = 50`. |
+| `rtc_prescale` | 0x22C | 5,000,000 | system-clock cycles per half period of the RTC's 1 Hz tick: half the clock frequency in Hz. Was `localparam CLK1HZ_DIV = 50`. The reset value is for the development board's 10 MHz clock since 18 Nov (16,666,667, for 33.33 MHz, in the build described here). |
 
 - `sar_adc` has two new ports for the first two; its divider compares with `>=`
   and reads `sample` back from `sarlogic`, which is unchanged. With both ports at
@@ -853,28 +894,180 @@ It is not a timing problem:
   the host link, and `rtc_time_test` on this build prints the same reading at
   RTL and on the netlist with SDF.
 
+## Booting from the board's flash (18 Nov 2026)
+
+The instruction memory is RAM. Until now a host had to upload the program after
+every power-up (the simulations preload it). The chip can now start on its own:
+the boot ROM copies the program from the development board's SPI flash, and the
+flash can be written from the board's USB port.
+
+### What the boot ROM does
+
+`sw/bootrom/of_boot.c` replaces the SoC Labs boot loader in this build only
+(`run_flow.sh` builds it and synthesis reads it last; the project's own
+`system/src/bootrom` is untouched, so the pad-ring flow keeps the SoC Labs ROM).
+It is 832 bytes of the 2 kbyte ROM. At every reset it:
+
+1. sets up the stream port and, with the mode strap high, UART2 at 38,400 baud
+   for a 10 MHz clock (the SoC Labs loader does the same with a divider for
+   240 MHz);
+2. reads the first 16 bytes of the flash, through port pins P1[8..11] (plain SPI,
+   commands 0xAB and 0x03), and if they are a valid header copies the program
+   that follows them to the instruction memory, summing it;
+3. clears REMAP and starts the program in the instruction memory.
+
+| Flash holds | Reset was | The ROM |
+| --- | --- | --- |
+| nothing valid (an erased flash reads all ones) | any | starts what the instruction memory holds, as before |
+| a program | power-on, the reset pin, FLASH_PROG released | copies it, checks the sum, starts it |
+| a program whose sum is wrong | the same | stops with "flash: BAD SUM" (the instruction memory is then half written) |
+| a program | the system's own: SYSRESETREQ from a debugger or the program, watchdog, lockup (`RSTINFO` not 0) | does not copy: starts what the instruction memory holds |
+| a program | any, with 0x50494B53 in the data memory's first word (0x30000000) | does not copy |
+
+The last two rows keep the other ways of loading a program working with a
+programmed flash on the board. A debugger loads the instruction memory and
+resets with SYSRESETREQ. A host on the host link resets the system with ADP's
+reset bit, which the reset-cause register does not record: it writes that one
+word as well as the program before it lets the reset go.
+
+The header is `"NSOC"`, the length in bytes, the 32-bit sum of the program's
+words, and the length inverted. `sw/mkflashimg.py PROGRAM.bin --bin flash.bin`
+makes the flash contents from a program linked for address 0.
+
+A 4 kbyte program takes about 1.2 million clock cycles to load: 0.12 s at
+10 MHz (measured in simulation: 286 clock cycles a byte).
+
+Messages (`nanosoc OpenFrame boot`, `flash: loaded` and so on) go to the stream
+port and, in FT1248 + UART2 mode, to UART2: the board's USB serial port, GPIO 6.
+The stream port stops taking characters when no host is connected, and the SoC
+Labs loader would wait there for ever. This ROM gives a character 20,000 polls
+(about 25 ms at 10 MHz, measured in simulation) and then leaves the stream port
+alone.
+
+### Writing the flash
+
+With FLASH_PROG (GPIO 14) high the chip is in reset and the wrapper passes four
+pads straight through: the FTDI's CSB (GPIO 3), SCK (4) and SDI (2) to the
+flash's CSB (39), CLK (40) and IO0 (41), and the flash's IO1 (42) back to the
+FTDI's SDO (1). The flash is then an ordinary SPI flash on the FTDI's SPI port.
+Letting FLASH_PROG go starts the chip from what was written.
+
+Not tried on hardware: which programming tool the board's FTDI wiring suits
+(anything that drives an FTDI's SPI pins and speaks the standard flash commands
+should do), and the pass-through at speed. Its delay is constrained to 15 ns
+each way inside the chip.
+
+### A program on its own
+
+Two things differ when no host is connected:
+
+- **Where it prints.** `UartPutc` in the SoC Labs retarget code writes to the
+  stream port and waits while it is full. With no host the port drains only if
+  GPIO 8 (the link's data line) is low; fit a pull-down there, or print on UART2.
+- **Pins left as inputs** need a level from the board: a bidirectional pad has
+  no pull.
+
+## Sensing interrupt, reset values, and the rebuild (18 and 19 Nov 2026)
+
+### Sensing interrupt
+
+| Register | Offset | Reset | Does |
+| --- | --- | --- | --- |
+| `irq_enable` | 0x118 | 0 | bit 0: interrupt while the FIFO holds a sample; bit 1: interrupt while the FIFO is full |
+
+The interrupt is level and registered: it falls three clock cycles after the
+read of `measurement_lo` that removes the condition. It is `EXP_IRQ[0]` of the
+accelerator subsystem, the processor's interrupt 11 (`EXP0_Handler`); the other
+three lines stay low. `sensing_irq_test` checks the register, that nothing
+interrupts with both bits clear, that each of three conversions wakes the
+processor from WFI exactly once, and that with bit 1 alone the interrupt waits
+for the sixteenth sample.
+
+The RTC prescaler's reset value is now 5,000,000, for the board's 10 MHz clock,
+and `adc_samplediv` resets to 8: with the extracted ADC in the mixed-signal
+flow a 240 ns sampling phase carries 1.4 % of the previous sample into the next,
+and 480 ns does not. `sensing_driver_test` waits for a conversion under way
+before it clears the FIFO.
+
+### RTL simulation of the wrapper
+
+Until now the wrapper's own RTL (pad configuration, memory sizes, reset) was only
+ever simulated as gates. `sim/run_gl_sim.sh` with `RTL=1` runs the same
+testbench and frame model on the RTL: the file list synthesis reads
+(`sim/genus_flist_to_xrun.py`), the defines synthesis has, the OpenFrame boot
+ROM, and models of the pre-hardened memory blocks. A change to the wrapper or
+the boot ROM can be tried in a minute, and the gate-level logs can be compared
+with RTL logs of the same design.
+
+### What the rebuilds showed
+
+Five place-and-route runs were needed before one ended clean. Each of the first
+four found something the flow now handles:
+
+- **Shorts in the memory blocks' edge strips.** A block's LEF obstructs met1 to
+  met4 only over its cell rows, which leaves 4 to 18 um free inside every edge
+  on every layer. NanoRoute used those strips to reach the pins sideways and as
+  a channel for other nets. One run ended with three met1 shorts at a 512 byte
+  block's top edge, the next with a met3 short at a 2 kbyte block's bottom
+  edge; no repair pass removed them, ripping the nets up whole included.
+  `floorplan.tcl` now keeps signals off met1 over the pre-hardened blocks, off
+  met3 except in the 4.5 um at the right edge, and off met2 except at the edges
+  with met2 pins. (The same file already kept them off met4, and off met3 over
+  the 512 byte block, for the same reason.)
+- **Setup at zero.** Three builds ended at +18, +3 and -11 ps on the half-cycle
+  path into a memory block's address pins (the blocks take the address on the
+  falling edge too). `route_setup.tcl` asks for 0.1 ns of setup margin, and
+  `route_drc.tcl` now reports the worst setup and hold slack after its repairs
+  and optimises once more if either is negative. On the final run that pass was
+  needed (-14 ps before it, +13 ps after).
+- **An antenna on a clock net.** The clock tree's nets are kept to met2 and
+  met3, so NanoRoute cannot move one up a layer, and it does not put diodes on
+  clock nets unless told to. One run ended with a single violation, on a clock
+  buffer's input. `route_setup.tcl` now allows diodes on clock nets.
+- **Two n-well gaps.** The extra optimisation pass made two cells smaller after
+  the fillers were in, which left one free site in one row and two in another:
+  gaps between n-wells that Innovus' `check_drc` does not look at and
+  ChipFoundry's FEOL deck reports (`MR_nwell.SP.1`). `route_drc.tcl` fills the
+  gaps again after the pass and writes `reports/filler_06_signoff.rpt`.
+
+### Result
+
+Final layout of 19 Nov (28,470 logic cells, 95 of them antenna diodes):
+
+| Step | Result |
+| --- | --- |
+| Place and route, 30 ns | setup WNS +0.013 ns, hold WNS +0.034 ns |
+| Post-route DRC (Innovus) | the 6 frame-pin markers only |
+| Process antennas | no violations |
+| Free sites in the rows (`check_filler`) | none |
+| Stream-out | PASS, 0 warnings |
+| Pegasus LVS | MATCH, 218 cells; port ties PASS (88 groups) |
+| RTL, pad-ring design: `hello` and the nine project tests | all pass |
+| RTL of the wrapper (`RTL=1`): those ten, `of_mem_test`, `of_boot_test`, and `hello` with `FLASH=boot`, `prog`, `skip`, `badsum` and with `NOHOST=1` | 17 runs, all as expected |
+| Gate level, unit delay: the same 17 | all as expected; the host-side logs of every run identical to its RTL run |
+| Gate level, SDF, memories as gates, 30 ns | `hello` at slow, typical and fast: pass, no timing violation reported, logs identical to RTL. The flash, interrupt and memory runs were still running when this was written |
+| ChipFoundry FEOL deck | 1 violation: `MR_capm.SP.2` in the ADC macro (known) |
+| ChipFoundry's other decks, and their LVS and OEB in the container | still running when this was written |
+
+"As expected" for `badsum` is the ROM stopping with "flash: BAD SUM" and the
+program not running; for `NOHOST=1` it is the processor fetching the program's
+first word with the stream port stalled.
+
 ## Known gaps
 
-- **RTC prescaler's reset value** is a placeholder: 16,666,667, which is 1 Hz
-  from a 33.33 MHz clock. It should be the value for the board's clock; firmware
-  can write the register, but the RTC runs at the wrong rate until it does.
-- **`sensing_driver_test` clears the FIFO too early** (see "Memories"). It passes
-  again since the clock-register change, for an incidental reason: the RTC does
-  not tick until the test selects the fast tick, so no conversion is under way
-  at that moment. Moving the settle delay before the clear is the fix; not
-  changed in the test here.
-- **Not rerun with the clock registers:** the mixed-signal (AMS) flow. Its shim
-  (`sar_ams_shim.vams`) passes the two new divider ports through, untested.
-- **No process-antenna check existed** before the last rebuild (see "Dev-board
-  pad map and clock registers"); the builds described under "Memories" each have
-  a handful of violations.
-- **The sensing peripheral has no interrupt output**, and the subsystem's four
-  interrupt lines to the processor are tied low: firmware can only poll.
-- **The program has to be uploaded after every power-up**: the instruction
-  memory is RAM and nothing on the chip can read the board's flash.
+`TODO.md` beside this file is the list of open items; the ones below are the
+background for some of them.
+
+- **No process-antenna check existed** before the rebuild of 16 Nov (see
+  "Dev-board pad map and clock registers"); the builds described under "Memories"
+  each have a handful of violations.
 - **The ADC macro's supply is the frame's `vdda1`**, which the development board
   brings to a header beside its 3.3 V pins. The macro's devices are 1.8 V: wire
-  `vdda1` to 1.8 V.
+  `vdda1` to 1.8 V (see "Pad map").
+- **Nothing here has run on hardware.** In particular the flash loader and the
+  programming pass-through ("Booting from the board's flash") are verified in
+  simulation against a model of the flash written for the purpose
+  (`sim/spiflash_model.v`), not against the part on the board.
 
 - **The memories have changed** to DFFRAM (see "Memories"); what follows is why.
   ChipFoundry has told us that they do not waive
