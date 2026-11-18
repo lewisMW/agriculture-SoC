@@ -4,6 +4,10 @@ source ../scripts/dont_use.tcl
 ### the last optimisation pass moved the worst path a few ps either way: four runs
 ### ended at -7, -5, -3 and +4 ps. 50 ps of target slack keeps the result positive.
 set_db opt_hold_target_slack 0.05
+### Setup margin, for the same reason: three builds ended at +18, +3 and -11 ps
+### on the half-cycle path into a memory block's address pins (the blocks take the
+### address on the falling edge too).
+set_db opt_setup_target_slack 0.1
 
 ### check_drc: the frame's pins reach 2 um beyond the die edge by design (template
 ### DEF), which check_drc reports as ~880 "Out Of Die" shorts
@@ -29,3 +33,7 @@ set_db route_design_with_si_driven 1
 set_db route_design_detail_fix_antenna true
 set_db route_design_antenna_diode_insertion true
 set_db route_design_antenna_cell_name {sky130_fd_sc_hd__diode_2}
+### ... on clock nets too. NanoRoute leaves them alone by default, and the clock
+### tree's nets are kept to met2 and met3, so it cannot move one up a layer
+### either: one build ended with a single violation, on a clock buffer's input.
+set_db route_design_diode_insertion_for_clock_nets true
