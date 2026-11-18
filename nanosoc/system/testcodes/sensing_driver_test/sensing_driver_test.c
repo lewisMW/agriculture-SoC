@@ -50,8 +50,8 @@ int main(void)
      * triggers feed the FIFO (deterministic counts, RTC-independent). */
     sensing_init(5u, 0);            /* period 5s, no calibration, polling on */
     sensing_polling_disable();      /* Task A: no autonomous samples during the counts */
-    sensing_clear_fifo();
-    sensing_delay(CONV_SETTLE);
+    sensing_delay(CONV_SETTLE);     /* a conversion already under way delivers its sample first... */
+    sensing_clear_fifo();           /* ...and only then is the FIFO cleared */
 
     if (!sensing_fifo_empty()) { sp_str("FAIL: FIFO not empty after clear\n"); failures++; }
     else                         sp_str("clear_fifo -> empty (ok)\n");
