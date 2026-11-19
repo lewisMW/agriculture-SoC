@@ -2,7 +2,7 @@
 
 Open items found while putting nanosoc in the OpenFrame wrapper and checking it
 (`README.md` has the background for each). Recorded 17 Nov 2026, last worked
-through 19 Nov. Tick an item when it is settled, or delete it with a line in the
+through 20 Nov. Tick an item when it is settled, or delete it with a line in the
 commit message saying why. A ticked item says in one line what settled it.
 
 ## Decisions that change the chip
@@ -35,10 +35,24 @@ These change the layout, so they come before the final sign-off run.
 
 ## The ADC macro
 
+- [x] **The team's current cells in the macro** (20 Nov): the capacitor array
+      of #135 and the resized sampling switch of the `bootstrap-sw` branch. The
+      macro's outline and pins are the same, so the routed layout is kept.
 - [x] `MR_capm.SP.2` in `sar_afe__bootstrap_sw`: a via stack narrowed from 3 x 2
-      to 2 x 2 cuts. ChipFoundry's FEOL deck now has no violation on the chip.
-- [x] The solid met2 plate in `sar_afe__carray_8b` (the `vssa` shield): five more
-      1.0 um slots; the largest solid square is 27.3 um, from 76.4 um.
+      to 2 x 2 cuts, made again on the resized switch. ChipFoundry's FEOL deck
+      has no violation on the chip.
+- [x] The solid met2 plate in `sar_afe__carray_8b`: gone with the new array,
+      whose shield is not one plane. The largest solid met2 square is 4.8 um.
+- [ ] **#135 still has the earlier switch** in `sar_adc/bootstrap_sw`, though
+      its last commit says the resized one was pulled in. The resized switch is
+      in `sar_adc` on this branch (with the via-stack change); #135 should take
+      it from here or from `bootstrap-sw`.
+- [ ] **#135's own top level, `sar`,** is the macro's layout with the comparator
+      on `vdda` and a `vssa` pin of its own. The chip's macro has the comparator
+      on `vdd` and `vssa` tied to `vss` inside. Decide which the chip should
+      have; changing it moves the macro's pins and needs a new place and route.
+- [ ] The switch's extracted views in `sar_adc` (`av_extracted`,
+      `bsw_extracted`) predate the resize.
 - [ ] **The comparator trim's capacitor is 1.00 fF, not 1.25 fF.** The unit
       `sarcta__C0` is plain metal fingers; every netlist so far, the extracted
       one included, had it as an ideal 1.25 fF. Extracted from the layout it is
@@ -51,12 +65,12 @@ These change the layout, so they come before the final sign-off run.
 - [ ] The reference reaches the macro through an `analog_io` pad, which has a
       150 ohm series resistor; `analog_noesd_io` is the direct path. Decide
       which the reference should use.
-- [ ] **+2.2 % gain in the extracted macro**, at every clock and sampling
-      setting. The extraction has 0.21 pF of parasitic on each capacitor
-      array's top plate, which accounts for it. (The "+3 % on back-to-back
-      conversions" open since October was this plus 1.4 % of the previous
-      sample carried over by a 240 ns sampling phase; the sampling phase is
-      now 480 ns or more by default.)
+- [ ] **+1.5 % gain in the extracted macro** (+2.2 % before the new array), at
+      the reset setting. The extraction has 0.14 pF between each capacitor
+      array's top plate and `vss` and `vref` (0.20 pF before), which accounts
+      for it. (The "+3 % on back-to-back conversions" open since October was
+      this plus 1.4 % of the previous sample carried over by a 240 ns sampling
+      phase; the sampling phase is now 480 ns or more by default.)
 
 ## Checks not yet run
 
@@ -144,3 +158,5 @@ These change the layout, so they come before the final sign-off run.
 - [x] `cf precheck` in ChipFoundry's container: passes on the layout of 19 Nov,
       12 of 12 checks, in the local rehearsal directory. Run it again after any
       change to the layout, and from the registered project before submitting.
+- [ ] The same on the layout with the rebuilt ADC macro (20 Nov): its native
+      decks and the container run were under way when this was written.

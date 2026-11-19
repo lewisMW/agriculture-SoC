@@ -220,6 +220,21 @@ and the before/after tables are in `analog/cadence/pv/README.md`.
 - **Extraction:** 98 FETs and 656 MIM caps as before, 13.1k C and 10.2k R. The top plates' parasitic capacitance falls by 0.7 % on the P side (860.7 to 854.7 fF) and 0.6 % on the N side, each bottom plate's by at most 1.0 %, and no net's total moves by more than 1 %.
 - **Simulation:** one mixed-signal run with the new extraction at the board's clock (100 ns, `adc_clkdiv` 4, `adc_samplediv` 8, 52 conversions against the ideal model) gives a code error of −1..+2 LSB, a gain error of +2.10 % and a carry-over of +0.12 %. The extraction before the fixes gave −1..+2 LSB, +2.35 % and +0.11 % on the same run.
 
+### 20 Nov 2026: rebuilt on the team's current cells
+
+The views were regenerated on the capacitor array of #135 and the resized
+sampling switch of the `bootstrap-sw` branch. What came from where, and the
+tables, are in `analog/cadence/pv/README.md`.
+
+- **The array** (`carray_8b`, and `cdac_8b` around it) no longer has a solid met2 `vssa` plane, so the slots of 19 Nov are gone with it. The largest solid square of metal in the macro is 6.9 µm (met3); on met2 it is 4.8 µm.
+- **The switch** has a larger enable inverter (1/0.4 µm devices). Its met2 to met4 are as before, so `MR_capm.SP.2` was still there and the via-stack change of 19 Nov was made on it again.
+- **The LEF** is the same from its second line on, but for one figure: the `sample` pin's `ANTENNAGATEAREA` goes from 0.511 to 1.6 µm² (the two inverters' gates). Outline, pins and obstructions are unchanged, so nothing changes for place and route.
+- **`.lib`:** the `sample` pin goes from 57.43 to 78.67 fF. Every other pin is within 0.01 fF, and the arcs are unchanged.
+- **Checks:** Pegasus DRC has no real violation in `bootstrap_sw`, `carray_8b`, `cdac_8b` and the three macros. LVS matches for the same cells (the macros with the black box, `sar_afe` also with the trim's ideal capacitor filtered). On each variant's GDS ChipFoundry's FEOL and BEOL decks give 0 violations.
+- **Extraction:** 98 FETs and 656 MIM caps as before, 16.3k C and 18.7k R. The top plates' parasitic capacitance falls from 854.7 to 791.3 fF, and the part of it to `vss` and `vref`, which attenuates the signal, from 198 to 139 fF.
+- **Simulation:** at the board's clock and the reset setting (100 ns, `adc_clkdiv` 4, `adc_samplediv` 8) the extracted macro gives a code error of −1..+2 LSB, as before, and a gain error of +1.47 % where the 19 Nov macro had +2.10 %. The schematic macro gives 0..+1 LSB.
+- **The back-to-back item** in the list above is explained (`ASIC_ours/openframe/README.md`, "Mixed-signal runs with the clock registers"): it was a constant gain error from the top plates' parasitic capacitance, now +1.5 %, plus a carry-over of the previous sample when the sampling phase is as short as 240 ns. The sampling phase is 480 ns or more by default since 19 Nov.
+
 ## Regenerating
 
 On the Cadence box, from `analog/cadence/pv` (`source ~/.bashrc` first):
