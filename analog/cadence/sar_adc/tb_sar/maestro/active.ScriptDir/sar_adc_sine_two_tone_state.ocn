@@ -1,0 +1,10 @@
+design( "sar_adc" "tb_sar" "config")
+modelFile( 
+    '("/opt/pdk/sky130_release_0.1.0/libs/sky130_fd_pr_main/../../models/sky130.lib.spice" "tt")
+)
+envOption(
+	'analysisOrder  list("pz" "dcmatch" "stb" "tran" "envlp" "ac" "dc" "lf" "noise" "xf" "sp" "pss" "pac" "pstb" "pnoise" "pxf" "psp" "qpss" "qpac" "qpnoise" "qpxf" "qpsp" "hb" "hbac" "hbstb" "hbnoise" "hbxf" "sens" "acmatch" "ofa") 
+)
+option(	'checklimitdest  "sqldb" 
+)
+temp( 27 ) 

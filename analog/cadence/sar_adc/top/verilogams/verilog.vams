@@ -30,7 +30,7 @@
 `include "constants.vams"
 `include "disciplines.vams"
 
-module sar (vp, vn, clk, en, cal, rstn, valid, result, vdd, vss);
+module top (vp, vn, clk, en, cal, rstn, valid, result, vdd, vss);
 	input vp, vn, clk, en, cal, rstn;
 	output valid;
 	output [7:0] result;
