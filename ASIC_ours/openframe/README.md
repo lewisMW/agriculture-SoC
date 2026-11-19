@@ -1264,6 +1264,68 @@ on its first run, and the corrected ADC macro.
 The precheck ran in the local rehearsal project directory. Nothing has been
 registered with or sent to ChipFoundry.
 
+## The ADC macro on the team's current cells (20 Nov 2026)
+
+The ADC macro was rebuilt on the two cells the team had redesigned since it was
+made: the capacitor array of #135 and the resized sampling switch of the
+`bootstrap-sw` branch. `analog/cadence/pv/README.md` has what came from where
+and the checks on the macro itself.
+
+- **The array** has no solid met2 plane any more, so the slots cut into that
+  plane on 19 Nov are gone with it. The largest solid square of metal in the
+  macro is 6.9 um (met3), and 4.8 um on met2.
+- **The switch** has a larger enable inverter. ChipFoundry's FEOL deck still
+  reported `MR_capm.SP.2` on it, in metal that had not changed, so the via-stack
+  change of 19 Nov was made on it again.
+- **For the chip nothing moves.** The macro's outline, pins and obstructions
+  are the same. In its LEF only the `sample` pin's gate area changes, and in
+  its timing libraries that pin's capacitance (57 to 79 fF). So the routed
+  layout of 19 Nov is kept, and the new macro goes in at stream-out, as the
+  corrected one did then.
+
+### Result
+
+| Step | Result |
+| --- | --- |
+| Timing of the routed layout with the new macro's libraries | setup WNS +0.170 ns, hold WNS +0.049 ns, as before; no transition or capacitance violation. The slew of `sample` at the macro, slow corner, goes from 0.96 to 1.13 ns (the limit is 1.5 ns) |
+| Stream-out with the new macro | PASS, 0 warnings |
+| Pegasus LVS | MATCH, 224 cells; port ties PASS (88 groups) |
+| SDF written with the new libraries | the gate netlist is the same; 12 of 452,491 SDF lines differ from the file simulated on 19 Nov: the date, and the delays of the `sample` net and its driver |
+| Gate level, that SDF, memories as gates: `adc_trigger_test` at slow and fast | pass; logs identical to RTL and to the 19 Nov runs. The fast run has the same 16 setup warnings at the host link's input synchroniser, the slow run none |
+| ChipFoundry's ten decks, run natively | FEOL 0 violations; top cell, cell names, and XOR against the empty frame (0 differences): PASS. BEOL, off-grid, density, pin labels, zero-area and spike were still running when this was written |
+| `cf precheck` in ChipFoundry's container | queued behind the native decks when this was written |
+
+The other simulations of 19 Nov were not run again: the RTL, the gate netlist
+and every delay outside the `sample` net are the same.
+
+### The ADC with the new cells
+
+The mixed-signal runs of "Mixed-signal runs with the clock registers" again,
+on the rebuilt macro (the chip's `sar_adc` RTL around the macro in Spectre, a
+5 kHz sine, typical corner, ideal input source):
+
+| Clock | `adc_clkdiv` | `adc_samplediv` | Sampling | Schematic macro | Extracted macro | Extracted: gain | Extracted: previous sample carried over | Extracted, macro of 19 Nov |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 100 ns | 4 | 8 | 1.6 us | 0..+1 LSB | -1..+2 LSB | +1.5 % | 0.3 % | -1..+2 LSB, +2.1 %, 0.1 % |
+| 30 ns | 4 | 0 | 240 ns | -1..+1 LSB, the same 120 codes as before | running | | | -2..+2 LSB, +3.1 %, 1.4 % |
+| 30 ns | 4 | 8 | 480 ns | queued | queued | | | -1..+2 LSB, +2.3 %, 0.3 % |
+| 100 ns | 4 | 0 | 800 ns | queued | queued | | | -1..+2 LSB, +2.2 %, 0.1 % |
+| 100 ns | 1 | 0 | 200 ns | queued | queued | | | -3..+2 LSB, +4.0 %, 2.8 % |
+
+The first row is the reset setting on the board.
+
+- **At the reset setting the codes are within -1..+2 LSB, as before, and the
+  gain error falls from +2.1 to +1.5 %.** The new array's top plates have less
+  capacitance to `vss` and `vref` (198 to 139 fF in the extraction), and the
+  gain error falls by the same factor. That fits the explanation of 19 Nov; the
+  item stays open at +1.5 %.
+- **The schematic macro is unchanged** by the inverter's new sizes: the same
+  codes.
+- **The rows with a short sampling phase**, where the switch's speed shows as a
+  carry-over of the previous sample, were still running when this was written.
+  The extraction of the new array is larger (18.7k resistors, from 10.2k), and
+  a run takes two to three times as long.
+
 ## Known gaps
 
 `TODO.md` beside this file is the list of open items; the ones below are the
