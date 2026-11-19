@@ -97,6 +97,7 @@ deselect_obj -all
 select_obj [get_db insts $sar_afe_name]
 # (net lists as plain strings: these commands do not strip the braces Tcl puts round a
 # name with brackets in it)
+# TODO the VCCD1 ring can be removed in the future, once the SAR removes the unneeded vdd net.
 add_rings -nets "$vref_net vccd1 vssa1 vdda1" -type block_rings -around selected -layer {top met5 bottom met5 left met4 right met4} -width 2 -spacing 2 -offset 2
 deselect_obj -all
 route_special -connect {block_pin} -inst $sar_afe_name -nets "vccd1 vssa1 vdda1 $vref_net" -block_pin use_lef -block_pin_target nearest_target -layer_change_range {met1 met5} -crossover_via_layer_range {met1 met5} -target_via_layer_range {met1 met5} -allow_jogging 1 -allow_layer_change 1
