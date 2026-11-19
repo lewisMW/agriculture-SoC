@@ -1292,8 +1292,8 @@ and the checks on the macro itself.
 | Pegasus LVS | MATCH, 224 cells; port ties PASS (88 groups) |
 | SDF written with the new libraries | the gate netlist is the same; 12 of 452,491 SDF lines differ from the file simulated on 19 Nov: the date, and the delays of the `sample` net and its driver |
 | Gate level, that SDF, memories as gates: `adc_trigger_test` at slow and fast | pass; logs identical to RTL and to the 19 Nov runs. The fast run has the same 16 setup warnings at the host link's input synchroniser, the slow run none |
-| ChipFoundry's ten decks, run natively | FEOL 0 violations; top cell, cell names, and XOR against the empty frame (0 differences): PASS. BEOL, off-grid, density, pin labels, zero-area and spike were still running when this was written |
-| `cf precheck` in ChipFoundry's container | queued behind the native decks when this was written |
+| ChipFoundry's ten decks, run natively | all PASS: FEOL 0 violations, BEOL 0; off-grid, top cell, cell names, density (clear area li1 58.9 %, m1 79.1 %, m2 94.3 %, m3 96.0 %, m4 72.7 %, m5 67.2 %), pin labels, zero-area, spike; XOR against the empty frame: 0 differences |
+| `cf precheck` in ChipFoundry's container | the first ten of its twelve checks PASS (the decks, in the container); its LVS and OEB were still running when this was written |
 
 The other simulations of 19 Nov were not run again: the RTL, the gate netlist
 and every delay outside the `sample` net are the same.
@@ -1307,24 +1307,35 @@ on the rebuilt macro (the chip's `sar_adc` RTL around the macro in Spectre, a
 | Clock | `adc_clkdiv` | `adc_samplediv` | Sampling | Schematic macro | Extracted macro | Extracted: gain | Extracted: previous sample carried over | Extracted, macro of 19 Nov |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 100 ns | 4 | 8 | 1.6 us | 0..+1 LSB | -1..+2 LSB | +1.5 % | 0.3 % | -1..+2 LSB, +2.1 %, 0.1 % |
-| 30 ns | 4 | 0 | 240 ns | -1..+1 LSB, the same 120 codes as before | running | | | -2..+2 LSB, +3.1 %, 1.4 % |
-| 30 ns | 4 | 8 | 480 ns | queued | queued | | | -1..+2 LSB, +2.3 %, 0.3 % |
-| 100 ns | 4 | 0 | 800 ns | queued | queued | | | -1..+2 LSB, +2.2 %, 0.1 % |
-| 100 ns | 1 | 0 | 200 ns | queued | queued | | | -3..+2 LSB, +4.0 %, 2.8 % |
+| 30 ns | 4 | 0 | 240 ns | -1..+1 LSB | -2..+2 LSB | +2.3 % | 1.4 % | -2..+2 LSB, +3.1 %, 1.4 % |
+| 30 ns | 4 | 8 | 480 ns | 0..+1 LSB | -1..+1 LSB | +1.4 % | 0.5 % | -1..+2 LSB, +2.3 %, 0.3 % |
+| 100 ns | 4 | 0 | 800 ns | 0..+1 LSB | -1..+2 LSB | +1.5 % | 0.2 % | -1..+2 LSB, +2.2 %, 0.1 % |
+| 100 ns | 1 | 0 | 200 ns | -1..+1 LSB | -3..+1 LSB | +3.4 % | 2.5 % | -3..+2 LSB, +4.0 %, 2.8 % |
 
-The first row is the reset setting on the board.
+The first row is the reset setting on the board. The 240 ns row is 120
+conversions, the others 52. All ten runs end with Spectre reporting no error
+and the firmware test passing.
 
 - **At the reset setting the codes are within -1..+2 LSB, as before, and the
   gain error falls from +2.1 to +1.5 %.** The new array's top plates have less
   capacitance to `vss` and `vref` (198 to 139 fF in the extraction), and the
   gain error falls by the same factor. That fits the explanation of 19 Nov; the
   item stays open at +1.5 %.
-- **The schematic macro is unchanged** by the inverter's new sizes: the same
-  codes.
-- **The rows with a short sampling phase**, where the switch's speed shows as a
-  carry-over of the previous sample, were still running when this was written.
-  The extraction of the new array is larger (18.7k resistors, from 10.2k), and
-  a run takes two to three times as long.
+- **The gain error is 0.6 to 0.9 of a percentage point lower at every
+  setting**, for the same reason.
+- **The schematic macro gives the same codes as before**, conversion for
+  conversion, at the four settings that had a schematic run on 19 Nov. The
+  inverter's new sizes change no code.
+- **The carry-over at a short sampling phase is not changed by the resized
+  switch.** With the extracted macro it is 1.4 % at 240 ns, as before, and
+  2.5 % at 200 ns (2.8 %); a difference under about 0.5 % is within the fit's
+  scatter. With the schematic macro 200 ns gives 1.4 % before and after. So a
+  short sampling phase still carries over part of the previous sample, and the
+  reset value of `adc_samplediv` (8, a sampling phase of 480 ns at 30 ns and
+  1.6 us on the board) is still what keeps it out.
+- **The extracted runs take two to three times as long** as on 19 Nov (41 to
+  99 minutes each): the extraction of the new array is larger (18.7k
+  resistors, from 10.2k).
 
 ## Known gaps
 

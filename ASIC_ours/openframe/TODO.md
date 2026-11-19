@@ -70,14 +70,15 @@ These change the layout, so they come before the final sign-off run.
       array's top plate and `vss` and `vref` (0.20 pF before), which accounts
       for it. (The "+3 % on back-to-back conversions" open since October was
       this plus 1.4 % of the previous sample carried over by a 240 ns sampling
-      phase; the sampling phase is now 480 ns or more by default.)
+      phase; the sampling phase is now 480 ns or more by default. The resized
+      switch leaves that carry-over as it was.)
 
 ## Checks not yet run
 
 - [x] **Mixed-signal (AMS) flow with the clock-register RTL**, at 30 ns and at
       the board's 100 ns: the codes are within 1 LSB with the schematic macro
       and 2 LSB with the extracted one at every setting with 400 ns or more of
-      sampling.
+      sampling. The same on the rebuilt macro (20 Nov).
 - [ ] **Mixed-signal flow, the rest:** the team's test suite on the extracted
       macro; corners other than typical; a source with real impedance.
 - [x] **IR drop.** Static, Innovus early rail analysis: 4.4 mV on vccd1 and
@@ -158,5 +159,6 @@ These change the layout, so they come before the final sign-off run.
 - [x] `cf precheck` in ChipFoundry's container: passes on the layout of 19 Nov,
       12 of 12 checks, in the local rehearsal directory. Run it again after any
       change to the layout, and from the registered project before submitting.
-- [ ] The same on the layout with the rebuilt ADC macro (20 Nov): its native
-      decks and the container run were under way when this was written.
+- [ ] The same on the layout with the rebuilt ADC macro (20 Nov): the ten
+      decks pass run natively, and so do the container run's first ten checks;
+      its LVS and OEB were still running when this was written.

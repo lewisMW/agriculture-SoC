@@ -286,8 +286,14 @@ model):
 Spectre finishes without errors and the firmware test passes in each. The gain
 error falls by the factor the top plates' capacitance to `vss` and `vref` fell
 by (198 to 139 fF is 0.70; +2.10 to +1.47 % is 0.70). A carry-over up to about
-0.5 % is noise. At 30 ns with a 240 ns sampling phase the schematic macro gives
-the same 120 codes with the resized inverter as before it.
+0.5 % is noise.
+
+The other four settings of 19 Nov were run again as well
+(`ASIC_ours/openframe/README.md`, "The ADC with the new cells"). The schematic
+macro gives the same codes with the resized inverter as before it, conversion
+for conversion, at each. With the extraction the gain error is 0.6 to 0.9 of a
+percentage point lower at each, and the carry-over at a short sampling phase is
+what it was: 1.4 % at 240 ns, and 2.5 % at 200 ns where it was 2.8 %.
 `ASIC_ours/openframe/README.md` has the other settings.
 
 **Not copied.** The extracted views of `bootstrap_sw` kept in `sar_adc`
