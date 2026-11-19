@@ -4,7 +4,7 @@
 * Library Name:  sar_adc
 * Top Cell Name: sar_afe_r
 * View Name:     schematic
-* Netlisted on:  Nov 19 10:30:07 2026
+* Netlisted on:  Nov 20 00:49:50 2026
 ************************************************************************
 
 *.BIPOLAR
@@ -398,8 +398,8 @@ MPM0 out in vdd vdd pfet_01v8 W=550n L=150n M=1
 
 .SUBCKT sar_afe_r__inv_lvt in out vdd vss
 *.PININFO in:I out:O vdd:B vss:B
-MNM0 out in vss vss nfet_01v8_lvt W=420n L=150n M=1
-MPM0 out in vdd vdd pfet_01v8_lvt W=550n L=350n M=1
+MNM0 out in vss vss nfet_01v8_lvt W=1u L=400n M=1
+MPM0 out in vdd vdd pfet_01v8_lvt W=1u L=400n M=1
 .ENDS
 
 ************************************************************************

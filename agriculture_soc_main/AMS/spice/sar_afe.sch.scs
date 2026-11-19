@@ -293,10 +293,10 @@ subckt inverter in out vdd vss
         ps=1.63u pd=1.63u m=(1)*(1)
 ends inverter
 subckt inv_lvt in out vdd vss
-    NM0 (out in vss vss) nfet_01v8_lvt w=(420n) l=150n as=111.3f ad=111.3f \
-        ps=1.37u pd=1.37u m=(1)*(1)
-    PM0 (out in vdd vdd) pfet_01v8_lvt w=(550n) l=350n as=145.75f \
-        ad=145.75f ps=1.63u pd=1.63u m=(1)*(1)
+    NM0 (out in vss vss) nfet_01v8_lvt w=(1u) l=400n as=265f ad=265f \
+        ps=2.53u pd=2.53u m=(1)*(1)
+    PM0 (out in vdd vdd) pfet_01v8_lvt w=(1u) l=400n as=265f ad=265f \
+        ps=2.53u pd=2.53u m=(1)*(1)
 ends inv_lvt
 subckt bootstrap_sw en in out vdd vss
     Ms2 (vss enb net30 vss) nfet_01v8_lvt w=(1u) l=400n as=265f ad=265f \
