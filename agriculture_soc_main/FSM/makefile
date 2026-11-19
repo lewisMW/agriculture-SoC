@@ -1,24 +1,22 @@
-simulation_defs = -DSIMULATION
+# -----------------------------------------------------------------------------
+# FSM/makefile - wrapper_control_2 (sampling FSM) unit benches (no ARM IP).
+#   make        wrapper_control_2_tb    hand-driven adc_valid handshake
+#   make seq    wrapper_control_seq_tb  sequencing / coverage / random, FSM-1..4
+# Explicit lists (do NOT glob - the dir holds several testbenches and the
+# superseded wrapper_control.v). One core / BUILD_ROOT: ../verif/block_tb.mk.
+# -----------------------------------------------------------------------------
+include ../verif/block_tb.mk
 
-TB_MODULE = wrapper_control_2_tb
-
-# Explicit lists (do NOT glob — the dir now holds two testbenches; globbing
-# would pull both in as competing top-levels).
 ALL_FILES = ./wrapper_control_2_tb.v ./wrapper_control_2.v
+SEQ_FILES = ./wrapper_control_seq_tb.v ./wrapper_control_2.v ../Dummy/dummy_adc.v
+
+.PHONY: all seq clean
 
 all:
-	verilator --Wno-fatal --trace --exe --main --top $(TB_MODULE) $(ALL_FILES) --timing $(simulation_defs);
-	$(MAKE) -C obj_dir -f V$(TB_MODULE).mk;
-	./obj_dir/V$(TB_MODULE);
-
-# Rigorous sequencing/coverage unit test (uses the real dummy_adc handshake)
-SEQ_MODULE = wrapper_control_seq_tb
-SEQ_FILES  = ./wrapper_control_seq_tb.v ./wrapper_control_2.v ../Dummy/dummy_adc.v
+	$(call tb_run,fsm,wrapper_control_2_tb,$(ALL_FILES),--trace,)
 
 seq:
-	verilator --Wno-fatal --trace --exe --main --top $(SEQ_MODULE) $(SEQ_FILES) --timing $(simulation_defs);
-	$(MAKE) -C obj_dir -f V$(SEQ_MODULE).mk;
-	./obj_dir/V$(SEQ_MODULE);
+	$(call tb_run,fsm_seq,wrapper_control_seq_tb,$(SEQ_FILES) $(SVA_FILE),--trace --assert -DSVA_FSM_UNIT,)
 
 clean:
-	rm -rf obj_dir waveform.vcd
+	rm -rf $(OBJ)/obj_fsm* obj_dir build_*.log waveform.vcd

@@ -104,51 +104,98 @@ clean:
 	rm -rf obj_dir code.hex *.vcd
 
 # -----------------------------------------------------------------------------
-# Unit-test regression. Runs every self-checking block testbench and aggregates
-# the per-block "=== NAME: N PASSED, M FAILED ===" summary lines.
-#
-#   make verify        # full suite (RTC + Wrapper need ARM_IP_LIBRARY_PATH set)
-#   make verify-free   # only the blocks that need no ARM IP (FIFO + FSM)
-#
-# Each block builds in its own dir/obj_dir, so there are no cross-block
-# collisions. Failures in one block do not stop the others (leading '-').
+# Full-SoC self-checking tests. `all` above (agriculture_soc_tb) is a pure
+# smoke run with no pass/fail verdict — these two exercise the same fully-wired
+# chip (real Cortex-M0 + CMSDK + AHB->APB bridge, not a directly-poked APB
+# port) and actually check it:
+#   make check       — liveness/integration checks (no LOCKUP, no PSLVERR,
+#                       CLK1HZ alive, autonomous RTC->FSM->FIFO chain samples).
+#   make reset_rand  — same postconditions, but only after a storm of
+#                       randomly-timed async reset pulses (see
+#                       agriculture_soc_reset_rand_tb.v).
+# Both reuse code.hex exactly like `all` (see ROM_FILE fallback below).
 # -----------------------------------------------------------------------------
-VERIF_LOG = verif_run.log
+CHECK_MODULE      = agriculture_soc_checked_tb
+RESET_RAND_MODULE = agriculture_soc_reset_rand_tb
 
-.PHONY: verify verify-free _verify_summary
+CHECK_DESIGN_FILES = $(filter-out ./agriculture_soc_tb.v,$(DESIGN_FILES)) ./agriculture_soc_checked_tb.v
+CHECK_VERILOG_FILES = \
+    $(CHECK_DESIGN_FILES) \
+    $(shell find $(rtc_ip) -type f -name "*.v") \
+    $(CM0_FILES) \
+    $(CMSDK_FILES)
 
-verify: _run_free _run_ip _verify_summary
+RESET_RAND_DESIGN_FILES = $(filter-out ./agriculture_soc_tb.v,$(DESIGN_FILES)) ./agriculture_soc_reset_rand_tb.v
+RESET_RAND_VERILOG_FILES = \
+    $(RESET_RAND_DESIGN_FILES) \
+    $(shell find $(rtc_ip) -type f -name "*.v") \
+    $(CM0_FILES) \
+    $(CMSDK_FILES)
 
-verify-free: _run_free _verify_summary
+.PHONY: check reset_rand
 
-_run_free:
-	@rm -f $(VERIF_LOG)
-	@echo "===== UNIT TEST REGRESSION ====="
-	-@$(MAKE) --no-print-directory -C FIFO rand 2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory -C FSM  all  2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory -C FSM  seq  2>&1 | tee -a $(VERIF_LOG)
+check:
+	verilator --Wno-fatal --trace --exe --main --top $(CHECK_MODULE) $(CHECK_VERILOG_FILES) --timing +libext+.v+.vlib $(ARM_INCDIRS) $(simulation_defs);
+	$(MAKE) -C obj_dir -f V$(CHECK_MODULE).mk;
+	@if [ -f "$(ROM_FILE)" ]; then \
+	    cp "$(ROM_FILE)" code.hex; echo "Loaded $(ROM_FILE) -> code.hex"; \
+	elif [ -f code.hex ]; then \
+	    echo "NOTE: $(ROM_FILE) not found (firmware not built) — running existing code.hex"; \
+	else \
+	    echo "ERROR: no $(ROM_FILE) and no existing code.hex to run"; exit 1; \
+	fi
+	./obj_dir/V$(CHECK_MODULE);
 
-_run_ip:
-	-@$(MAKE) --no-print-directory -C RTC     all  2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory -C Wrapper all  2>&1 | tee -a $(VERIF_LOG)
-	-@$(MAKE) --no-print-directory -C Wrapper rand 2>&1 | tee -a $(VERIF_LOG)
+reset_rand:
+	verilator --Wno-fatal --trace --exe --main --top $(RESET_RAND_MODULE) $(RESET_RAND_VERILOG_FILES) --timing +libext+.v+.vlib $(ARM_INCDIRS) $(simulation_defs);
+	$(MAKE) -C obj_dir -f V$(RESET_RAND_MODULE).mk;
+	@if [ -f "$(ROM_FILE)" ]; then \
+	    cp "$(ROM_FILE)" code.hex; echo "Loaded $(ROM_FILE) -> code.hex"; \
+	elif [ -f code.hex ]; then \
+	    echo "NOTE: $(ROM_FILE) not found (firmware not built) — running existing code.hex"; \
+	else \
+	    echo "ERROR: no $(ROM_FILE) and no existing code.hex to run"; exit 1; \
+	fi
+	./obj_dir/V$(RESET_RAND_MODULE);
 
-_verify_summary:
-	@echo ""
-	@echo "===== REGRESSION SUMMARY ====="
-	@grep -E "===.*PASSED,.*FAILED.*===" $(VERIF_LOG) || echo "(no summary lines — did a build fail? RTC/Wrapper need ARM_IP_LIBRARY_PATH)"
-	@echo "=============================="
-	@if grep -qE "[1-9][0-9]* FAILED" $(VERIF_LOG); then \
-	    echo "RESULT: FAILURES PRESENT"; false; \
-	 else \
-	    echo "RESULT: ALL REPORTED SUITES PASS"; \
-	 fi
+# -----------------------------------------------------------------------------
+# Unit-test regression and sign-off. One step table, in verif/signoff.py:
+#
+#   make verify        every bench (RTC/Wrapper need the PL031 or STUB_RTC=1;
+#                      the full-SoC check/reset_rand need the Cortex-M0 kit and
+#                      are SKIPPED without it)
+#   make verify-free   only the benches that need no ARM IP
+#   make signoff       verify + functional coverage gate + code coverage gate;
+#                      writes verif/cov/SIGNOFF_REPORT.txt and
+#                      verif/cov/OPEN_BUGS_REPORT.md
+#   make signoff ONLY=gap,clo   a subset of steps (python3 verif/signoff.py --list)
+#
+#   STUB_RTC=1       PL031 stand-in (no ARM IP needed; verdict is marked STUB, not sign-off)
+#   BUILD_ROOT=dir   build dirs + step logs on a local disk
+#   OPEN_BUGS_OK=1   exit 0 when the only failures are [SUSPECTED RTL BUG <ID>]
+#                    checks with <ID> in verif/cov/open_bugs.txt. They are still
+#                    counted, still printed, and named in the verdict.
+# A bench that does not print its "=== NAME: N PASSED, M FAILED ===" line
+# (build failure, SVA abort, missing file) fails the run.
+# -----------------------------------------------------------------------------
+SIGNOFF = python3 verif/signoff.py $(if $(ONLY),--only $(ONLY))
+
+.PHONY: verify verify-free signoff
+
+verify:
+	$(SIGNOFF) --benches
+
+verify-free:
+	$(SIGNOFF) --free
+
+signoff:
+	$(SIGNOFF)
 
 # -----------------------------------------------------------------------------
 # Lint (sign-off gate 2). Two scopes:
 #   make lint-free  # peripheral RTL that needs no ARM IP (fast, vendor-noise-free)
 #   make lint       # full sensing DUT incl. rtc_control + PL031 (needs ARM IP)
-# HANDOFF note: expect a few benign WIDTH/UNUSED to fix; the dummy analog stubs
+# Note: expect a few benign WIDTH/UNUSED to fix; the dummy analog stubs
 # warn — waive or exclude those.
 # -----------------------------------------------------------------------------
 LINT_FREE_FILES = \
@@ -172,3 +219,28 @@ lint-free:
 
 lint:
 	verilator --lint-only -Wall --top-module adc_apb_wrapper_rev2 $(LINT_DUT_FILES) $(ARM_INCDIRS)
+
+# -----------------------------------------------------------------------------
+# Functional coverage (Verilator 5.052+ covergroups) and UVM benches.
+# Everything below is single-core / nice'd / memory-capped (verif/verilator_1core.mk).
+# Verilator 5.052 limitations and run notes are in the comments of each file under verif/.
+#
+#   make cov-free     FIFO + FSM coverage, merged report         (no ARM IP)
+#   make cov          FIFO + FSM + RTC + Wrapper coverage         (ARM IP)
+#   make uvm-fifo     FIFO UVM bench                              (no ARM IP)
+#   make uvm-sensing  full peripheral UVM bench over APB          (ARM IP)
+#   make uvm-sensing STUB_RTC=1   same, PL031 stand-in            (no ARM IP, smoke only)
+# -----------------------------------------------------------------------------
+.PHONY: cov-free cov uvm-fifo uvm-sensing
+
+cov-free:
+	$(MAKE) -C verif/cov free
+
+cov:
+	$(MAKE) -C verif/cov all
+
+uvm-fifo:
+	$(MAKE) -C verif/uvm/fifo
+
+uvm-sensing:
+	$(MAKE) -C verif/uvm/wrapper

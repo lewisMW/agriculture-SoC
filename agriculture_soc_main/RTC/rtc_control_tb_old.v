@@ -38,7 +38,7 @@ module rtc_control_tb;
     integer timeout_counter;
 
     // Instantiate DUT
-    rtc_control #(
+    rtc_control_old #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDR_WIDTH)
     ) dut (

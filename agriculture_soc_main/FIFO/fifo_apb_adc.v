@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 module fifo_apb_adc #(
     parameter DATA_WIDTH = 64,
     parameter DEPTH = 16
@@ -70,6 +71,9 @@ module fifo_apb_adc #(
     // Status Signals
     assign fifo_full  = (count == DEPTH);
     assign fifo_empty = (count == 0);
-    assign apb_rd_data = fifo_mem[rd_ptr];
+    // Read while empty returns 0, not fifo_mem[rd_ptr]: that slot holds a stale
+    // sample after a drain/clear, or never-written storage after reset (X in
+    // gate-level sim, random on silicon) — finding F18.
+    assign apb_rd_data = fifo_empty ? {DATA_WIDTH{1'b0}} : fifo_mem[rd_ptr];
 
 endmodule

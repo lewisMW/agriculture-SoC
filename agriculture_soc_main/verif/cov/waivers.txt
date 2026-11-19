@@ -1,0 +1,62 @@
+# -----------------------------------------------------------------------------
+# waivers.txt - every coverage / lint exclusion for the sensing peripheral.
+#
+#   ID | kind | pattern | reason (with the RTL file:line that makes it so) | approved
+#
+# kind:
+#   func    block-level covergroup bin, fnmatch glob on "covergroup.coverpoint.bin"
+#           (read by holes.py; agriculture_soc_main/verif/cov merged.dat)
+#   line    <file>:<line>            uncovered source line   (code_holes.py)
+#   branch  <file>:<line>[:kind]     uncovered branch arm    (code_holes.py)
+#   sys     chip-level covergroup bin (nanosoc/system/verif/cov; holes.py --kind sys)
+#   lint    verilator -Wall warning, "<file>:<CODE>:<signal or text>" (lint_check.py)
+#   viol    documentation only: must-never-happen bins. They are named viol_* in
+#           the models, are never goals, and FAIL the report when hit.
+#
+# Rules: a waiver is never used to raise a number for something a test could
+# reach. A waived item that is nevertheless hit/covered is reported as an ERROR
+# (the reason is wrong), and so is a line/branch waiver that matches nothing.
+# Short file names: adc_apb_wrapper_rev2.v rtc_control_2.v wrapper_control_2.v
+# fifo_apb_adc.v sar_adc.v sarlogic.v (= analog/cadence/sar_adc/sarlogic/functional/verilog.v)
+# -----------------------------------------------------------------------------
+
+# ---- code coverage -----------------------------------------------------------
+# C-2 removed 2026-11-15: Verilator reports one branch point per if, not per
+# sub-condition, so the false side of rtc_control_2.v:444 is covered whenever no tick
+# arrives. The saturation term (wd_ticks != 0xFFFFFFFF) itself is not measured by
+# line/branch coverage; it needs 2^32 ticks and is argued by inspection.
+# C-3 not needed: sarlogic.v:26 is the `reg co_clk;` declaration, which has no
+# coverage point; its only assignments (initial :54, reset :74) are covered. co_clk is still a
+# dead register in analog-owned RTL - reported to its owner in OPEN_BUGS_REPORT.md (note, not a bug).
+
+# ---- block-level functional bins --------------------------------------------
+F-1 | func | cg_sens_reg.cp_clear_race.with_pop  | fifo_rd_en and fifo_clear are each registered one cycle after the ACCESS phase of different APB transfers (adc_apb_wrapper_rev2.v:225-230, :284-287); one APB port cannot complete two transfers in one cycle | approved 2026-11-15
+F-1 | func | cg_sens_reg.cp_clear_race.with_both | same as with_pop | approved 2026-11-15
+
+# ---- must never happen (viol_* bins; fail if hit) ----------------------------
+F-4 | viol | cg_rtc.cp_pslverr.viol_error_seen | rtc_control_2.v:281 ties PSLVERR to 0 (by design) | approved 2026-11-15
+F-4 | viol | cg_rtc.cp_stall_len.viol_excess   | a stall is bounded by one arm cycle (longest 13 PCLK since the 1 Nov PL031-APB fix; bound agreed 2026-11-15) | approved 2026-11-15
+F-4 | viol | *.viol_*                          | every other viol_ bin in the models | approved 2026-11-15
+
+# ---- lint (verilator --lint-only -Wall, top adc_apb_wrapper_rev2; verif/lint_check.py) ----
+# pattern: <file>:<CODE>:<signal or text fragment>  (fnmatch on each part). Only the
+# peripheral RTL files are gated; warnings in vendor IP (the real PL031) are listed as
+# information by lint_check.py, not waived here.
+L-1  | lint | adc_apb_wrapper_rev2.v:UNUSEDSIGNAL:APBACTIVE        | APB4 sideband kept for interface parity with nanosoc (adc_apb_wrapper_rev2.v:57) | 2026-11-15
+L-2  | lint | adc_apb_wrapper_rev2.v:UNUSEDSIGNAL:PPROT            | APB4 sideband kept for interface parity; no protection-dependent behaviour | 2026-11-15
+L-3  | lint | adc_apb_wrapper_rev2.v:UNUSEDSIGNAL:analog_passthrough | dummy_amux output: the AMUX stand-in has no analog path into sar_adc yet (ADC_VINP/VINN are the inputs) | 2026-11-15
+L-4  | lint | adc_apb_wrapper_rev2.v:PINCONNECTEMPTY:ctrl_time_value | intentionally unconnected: firmware reads live time via the RTCDR passthrough (adc_apb_wrapper_rev2.v:470) | 2026-11-15
+L-5  | lint | rtc_control_2.v:UNUSEDPARAM:ADDR_WIDTH               | PADDR is fixed at 12 bits in the port list; parameter kept for the instantiation interface | 2026-11-15
+L-6  | lint | rtc_control_2.v:UNUSEDSIGNAL:PADDR*                  | PADDR[1:0]: word-aligned PL031 registers, PADDR[11:2] is the word address | 2026-11-15
+L-7  | lint | rtc_control_2.v:UNUSEDSIGNAL:SCANOUT*                | PL031 scan outputs, scan tied off outside scan insertion (rtc_control_2.v:18) | 2026-11-15
+L-8  | lint | rtc_control_2.v:SYNCASYNCNET:*nRTCRST_ff2*           | nRTCRST is the PL031's asynchronous reset AND the data input of the nrtcrst_pclk 2-flop synchroniser (bug fix RTC-RSTREL); intended CDC structure | 2026-11-15
+L-9  | lint | sar_adc.v:UNUSEDSIGNAL:comp_n                        | complementary comparator output of the latch model, not needed by sarlogic | 2026-11-15
+L-10 | lint | sar_adc.v:UNOPTFLAT:*comp*                           | cross-coupled NAND comparator latch (sar_comp_latch.v): a combinational loop by design | 2026-11-15
+L-11 | lint | sarlogic.v:MULTIDRIVEN:*                             | analog-owned sarlogic assigns its registers in an initial block and in the clocked block; reported to its owner, not edited | 2026-11-15
+L-12 | lint | sarlogic.v:UNUSEDSIGNAL:co_clk                       | dead register in analog-owned sarlogic (see C-3 note); reported to its owner | 2026-11-15
+L-13 | lint | sarlogic.v:DECLFILENAME:*                            | analog-owned file naming (functional/verilog.v holds module sarlogic) | 2026-11-15
+L-14 | lint | pl031_stub.v:*:*                                     | simulation stand-in for the ARM PL031, not tape-out RTL | 2026-11-15
+L-15 | lint | sar_afe_model.v:*:*                                  | behavioural model of the analog sar_afe macro, simulation only | 2026-11-15
+L-16 | lint | sky130_fd_sc_hd__nand2_1.v:*:*                       | simulation model of a standard cell | 2026-11-15
+L-17 | lint | dummy_amux.v:*:*                                     | behavioural stand-in (Dummy/), replaced by the analog AMUX | 2026-11-15
+L-18 | lint | dummy_pll.v:*:*                                      | behavioural stand-in (Dummy/), replaced by the analog PLL | 2026-11-15

@@ -39,6 +39,12 @@
 // time. If the alarm had not yet fired, it simply keeps waiting for the
 // already-armed target. Either way there is no stale-offset stall (the bug that
 // motivated this control): pausing/resuming never depends on alarm_offset.
+//
+// alarm_offset changes (FIX-1, pending team confirmation): a new value is
+// armed as soon as the FSM is parked in WAITING with no passthrough granted -
+// it re-reads the time and arms now + new offset, without an RTCICR write or
+// a sample (alarm service has priority). Before FIX-1 a new offset applied
+// only from the next arm, so a long armed period could not be shortened.
 // -----------------------------------------------------------------------------
 
 module rtc_control_2 #(
@@ -97,6 +103,17 @@ always @(posedge CLK1HZ or negedge nPOR) begin
 end
 
 wire nRTCRST = nRTCRST_ff2;
+
+// nRTCRST seen from the PCLK domain. nRTCRST is a CLK1HZ-domain flop; the FSM
+// and the bus arbiter below use this 2-flop-synchronised copy, never nRTCRST
+// itself (it used to feed the combinational APB grant directly - an
+// asynchronous signal in the PREADY/PSEL path).
+reg nrtcrst_s1, nrtcrst_s2;
+always @(posedge PCLK or negedge PRESETn) begin
+    if (!PRESETn) {nrtcrst_s1, nrtcrst_s2} <= 2'b00;
+    else          {nrtcrst_s1, nrtcrst_s2} <= {nRTCRST, nrtcrst_s1};
+end
+wire nrtcrst_pclk = nrtcrst_s2;
 
 
 // -----------------------------------------------------------------------------
@@ -187,7 +204,63 @@ localparam [4:0]
 // -----------------------------------------------------------------------------
 reg [4:0]  state;
 reg [31:0] alarm_target;
-reg        rtc_enabled;     // set after first RTCCR write, never cleared
+reg        rtc_enabled;     // set by the RTCCR write; cleared while nRTCRST is low
+
+// FIX-4 (pending team confirmation): clear a stale PL031 interrupt on the first
+// arm after a warm reset (RTC-WARMINT, found on the real PL031 2026-11-16). A
+// PRESETn-only reset in the few PCLK after an alarm, before the re-arm reached
+// the PL031, left the alarm re-raised: RTCMR/RTCIMSC survive (they are on
+// nPOR) and the match is still true, so after the reset the PL031 raised the
+// interrupt again - a duplicate sample of the same second (regression RTC-13b).
+// need_clr is set by PRESETn; on the next arm the FSM writes RTCICR = 1 after
+// the RTCMR write (so the old match is already replaced) and before
+// RTCIMSC = 1, reusing the S_ICR_* states (arm_clr marks that detour: it goes
+// on to S_IMSC_SETUP, never to S_PULSE_TRIG). After a power-on reset (nPOR,
+// with or without PRESETn) the PL031 was reset too - its counter restarts at 1
+// against a match of 0, nothing can be pending - so no clear (por_fresh). That
+// keeps the power-on arm (which also runs S_ENABLE_*) and the steady-state arm
+// unchanged; the warm-reset arm with the clear is exactly as long as the
+// worst steady-state path, so the passthrough stall bound stays 13 PCLK.
+// Under nanosoc nPOR is derived from HRESETn, so every reset is a power-on and
+// FIX-4 never adds the clear there.
+reg        need_clr;        // warm reset since the last arm-time clear
+reg        por_fresh;       // PL031 reset (nPOR) since the last RTCMR write
+reg        arm_clr;         // S_ICR_* entered from the arm (no trigger)
+
+// -----------------------------------------------------------------------------
+// Missed-alarm watchdog (fixes F8-OFFSET0/1 and RTCLR-FWD)
+// -----------------------------------------------------------------------------
+// The PL031 raises a match only when its counter *changes to* RTCMR. If the
+// armed target is ever at or behind the counter, no match ever comes and the
+// FSM would wait in S_WAITING forever — autonomous sampling silently dead:
+//   - alarm_offset = 0            -> target == now               (F8-OFFSET0)
+//   - offset 1 and a CLK1HZ tick between the RTCDR read and the RTCMR write
+//                                 -> target == new now           (F8-OFFSET1)
+//   - firmware sets the RTC forward past the target (RTCLR), or writes RTCMR
+//     in the past                                                (RTCLR-FWD)
+//   - firmware sets the RTC backwards -> target far in the future (long stall)
+// Two guards:
+//   1. eff_offset clamps alarm_offset 0 to 1.
+//   2. While waiting with polling enabled, count CLK1HZ ticks since the arm.
+//      If armed_offset + 1 ticks pass with no RTCINTR the match was missed, so
+//      service it exactly like an alarm (clear, sample, re-arm from now). The
+//      extra tick of margin guarantees a genuine RTCINTR always wins the race.
+//      The count freezes while polling is paused, so a pause/resume does not
+//      shorten the period.
+// Net guarantee: while polling is enabled a sample is taken at most
+// armed_offset + 1 seconds after each arm, whatever happens to the RTC.
+wire [31:0] eff_offset = (alarm_offset == 32'd0) ? 32'd1 : alarm_offset;
+reg  [31:0] armed_offset;   // eff_offset captured at S_CALC
+reg  [31:0] wd_ticks;       // CLK1HZ ticks seen in S_WAITING since the arm
+wire        wd_expired = (wd_ticks > armed_offset);
+
+// CLK1HZ is asynchronous to PCLK: 2-flop synchroniser + rising-edge detect.
+reg  clk1hz_s1, clk1hz_s2, clk1hz_s3;
+always @(posedge PCLK or negedge PRESETn) begin
+    if (!PRESETn) {clk1hz_s1, clk1hz_s2, clk1hz_s3} <= 3'b000;
+    else          {clk1hz_s1, clk1hz_s2, clk1hz_s3} <= {CLK1HZ, clk1hz_s1, clk1hz_s2};
+end
+wire clk1hz_tick = clk1hz_s2 & ~clk1hz_s3;
 
 // -----------------------------------------------------------------------------
 // ctrl_intr_flag — registered mirror of RTCINTR for wrapper to read
@@ -208,7 +281,12 @@ end
 // on the bus one cycle after the FSM leaves the ACCESS state (i.e. during the
 // first WAITING cycle). Gating on !fsm_psel keeps the bus "busy" for that one
 // drain cycle so a passthrough can't clobber the FSM's write.
-wire bus_free   = ((state == S_IDLE) || (state == S_WAITING)) && !fsm_psel;
+// S_IDLE only counts as free while the counter is still in reset (nRTCRST
+// low as seen through nrtcrst_pclk; the FSM then stays in IDLE). Once nRTCRST is high the FSM always leaves
+// IDLE on the next cycle and takes the bus for a whole arm cycle, so granting
+// there let a passthrough SETUP be split from its ACCESS by ~12 cycles of FSM
+// transfers — an APB violation at the PL031 port (bug PL031-APB).
+wire bus_free   = (((state == S_IDLE) && !nrtcrst_pclk) || (state == S_WAITING)) && !fsm_psel;
 
 // An external transfer that collides with an arm cycle is STALLED (PREADY held
 // low) until the FSM parks — it is never failed with PSLVERR. The FSM is
@@ -218,7 +296,15 @@ wire bus_free   = ((state == S_IDLE) || (state == S_WAITING)) && !fsm_psel;
 // always completes. This removes the PSLVERR -> AHB-error -> Cortex-M0 HardFault
 // hang vector: firmware can read/write the RTC region at any time without
 // pausing autonomous polling first.
-wire grant = PSEL & bus_free;           // external owns the RTC bus this cycle
+// A transfer whose SETUP has been granted keeps the bus for its ACCESS even if
+// bus_free drops in between: that happens when the counter reset releases
+// (nrtcrst_pclk rises) right after a SETUP granted in S_IDLE. The FSM only
+// drives the bus two cycles after leaving S_IDLE, so the ACCESS never
+// collides with it (the ~fsm_psel term keeps that true by construction).
+// Before, the grant was lost: the PL031 saw a SETUP with no ACCESS, and ~13
+// cycles later an ACCESS with no SETUP (bug RTC-RSTREL, found by the WRP-6
+// soak, regression RTC/tb_rtc_closure.sv RTC-10b).
+wire grant = PSEL & (bus_free | (pt_setup_done & ~fsm_psel));   // external owns the RTC bus this cycle
 wire ext_sel = grant;
 
 // Track whether the RTC has already been shown a SETUP cycle for the current
@@ -256,6 +342,13 @@ assign rtc_pwdata  = ext_sel ? PWDATA       : fsm_pwdata;
 
 
 
+// FIX-4: por_fresh - the PL031 has been reset by nPOR and not armed since.
+// Async reset on nPOR, clocked on PCLK.
+always @(posedge PCLK or negedge nPOR) begin
+    if (!nPOR)                        por_fresh <= 1'b1;
+    else if (state == S_MATCH_ACCESS) por_fresh <= 1'b0;
+end
+
 // -----------------------------------------------------------------------------
 // Main FSM
 // -----------------------------------------------------------------------------
@@ -264,7 +357,11 @@ always @(posedge PCLK or negedge PRESETn) begin
         state           <= S_IDLE;
         rtc_trig        <= 1'b0;
         rtc_enabled     <= 1'b0;
+        need_clr        <= 1'b1;
+        arm_clr         <= 1'b0;
         alarm_target    <= 32'h0;
+        armed_offset    <= 32'd1;
+        wd_ticks        <= 32'd0;
         ctrl_time_value <= 32'h0;
         fsm_psel        <= 1'b0;
         fsm_penable     <= 1'b0;
@@ -286,11 +383,19 @@ always @(posedge PCLK or negedge PRESETn) begin
             // Subsequent times: skip straight to reading time.
        
             S_IDLE: begin
-                if (nRTCRST) begin
-                    if (!rtc_enabled)
+                if (nrtcrst_pclk) begin
+                    // FIX-4: after a warm reset (PL031 not reset - por_fresh low)
+                    // RTCCR.start is still 1: it is on nPOR in the PL031, this
+                    // FSM only ever writes 1, and the wrapper forwards firmware
+                    // RTCCR writes with start forced to 1 (FIX-3). Skipping the
+                    // redundant enable keeps the warm-reset arm, which now adds
+                    // the RTCICR write, within the 13-PCLK stall bound.
+                    if (!rtc_enabled && por_fresh)
                         state <= S_ENABLE_SETUP;
-                    else
-                        state <= S_READ_SETUP;
+                    else begin
+                        rtc_enabled <= 1'b1;
+                        state       <= S_READ_SETUP;
+                    end
                 end
             end
 
@@ -343,7 +448,9 @@ always @(posedge PCLK or negedge PRESETn) begin
             // ── Calculate alarm target (1 cycle) ──────────────────────────────
             // ctrl_time_value was latched in the previous cycle and is stable.
             S_CALC: begin
-                alarm_target <= ctrl_time_value + alarm_offset;
+                alarm_target <= ctrl_time_value + eff_offset;
+                armed_offset <= eff_offset;
+                wd_ticks     <= 32'd0;
                 state        <= S_MATCH_SETUP;
             end
 
@@ -363,7 +470,13 @@ always @(posedge PCLK or negedge PRESETn) begin
                 fsm_pwrite  <= 1'b1;          // hold write through ACCESS
                 fsm_paddr   <= RTC_RTCMR;     // hold address
                 fsm_pwdata  <= alarm_target;  // hold data
-                state       <= S_IMSC_SETUP;
+                if (need_clr && !por_fresh) begin  // FIX-4: first arm after a warm reset
+                    arm_clr <= 1'b1;
+                    state   <= S_ICR_SETUP;
+                end else begin
+                    need_clr <= 1'b0;
+                    state    <= S_IMSC_SETUP;
+                end
             end
 
             // ── Enable interrupt — RTCIMSC = 1 ───────────────────────────────
@@ -395,8 +508,29 @@ always @(posedge PCLK or negedge PRESETn) begin
                 // poll_enable is low we park here indefinitely (counter still
                 // runs, passthrough still granted); resume the moment it is
                 // raised, servicing any alarm that fired while disabled.
-                if (RTCINTR && !ext_sel && poll_enable)
+                // Watchdog: count ticks only while polling (frozen when
+                // paused); saturate so a huge offset never wraps to "expired".
+                if (poll_enable && clk1hz_tick && (wd_ticks != 32'hFFFF_FFFF))
+                    wd_ticks <= wd_ticks + 32'd1;
+                // !PSEL (FIX-1): an access pending in the drain cycle (not yet
+                // granted) goes first. Only differs from !ext_sel in that one
+                // cycle; it matters because an offset re-arm can now end just
+                // as an alarm becomes due, and the access would otherwise wait
+                // through the re-arm, the service and another arm (22 PCLK).
+                if ((RTCINTR || wd_expired) && !PSEL && poll_enable)
                     state <= S_ICR_SETUP;
+                // FIX-1 (pending team confirmation): a changed alarm_offset
+                // re-arms at once - re-read the time and arm now + new offset.
+                // No RTCICR write and no rtc_trig on this path, so the re-arm
+                // itself never produces a sample; alarm service (above) has
+                // priority and re-arms with the new offset anyway. Also while
+                // paused. Change-detect (not a write strobe): rewriting the
+                // same value never re-arms, so it cannot starve sampling.
+                // !PSEL, not just !ext_sel: an external access stalled through
+                // the previous arm cycle is granted first (in the drain cycle
+                // it is not yet granted), so it never waits two arm cycles.
+                else if ((eff_offset != armed_offset) && !PSEL)
+                    state <= S_READ_SETUP;
             end
 
             // ── Clear interrupt — RTCICR = 1 ─────────────────────────────────
@@ -415,7 +549,12 @@ always @(posedge PCLK or negedge PRESETn) begin
                 fsm_pwrite  <= 1'b1;          // hold write through ACCESS
                 fsm_paddr   <= RTC_RTCICR;    // hold address
                 fsm_pwdata  <= 32'h1;         // hold data
-                state       <= S_PULSE_TRIG;
+                if (arm_clr) begin             // FIX-4: arm-time clear done
+                    arm_clr  <= 1'b0;
+                    need_clr <= 1'b0;
+                    state    <= S_IMSC_SETUP;
+                end else
+                    state    <= S_PULSE_TRIG;
             end
 
             // ── Pulse rtc_trig — kicks wrapper_control_2 FSM ────────────────────
@@ -427,6 +566,17 @@ always @(posedge PCLK or negedge PRESETn) begin
             default: state <= S_IDLE;
 
         endcase
+
+        // A power-on reset of the counter domain (nPOR low -> nRTCRST low)
+        // without an APB reset leaves this FSM running but may stop the PL031
+        // (RTCCR.start is reset with the counter in the PL031 stand-in, and
+        // must be assumed to be in the real IP). Forget that the counter was
+        // enabled, so the next arm cycle goes through S_ENABLE_* and writes
+        // RTCCR = 1 again. Placed after the case so it wins over the set in
+        // S_ENABLE_ACCESS if the reset lands mid-enable. (Bug RTC-NPOR, found
+        // by RTC/tb_rtc_closure.sv RTC-10: the counter stayed at 0 for good.)
+        if (!nrtcrst_pclk)
+            rtc_enabled <= 1'b0;
     end
 end
 

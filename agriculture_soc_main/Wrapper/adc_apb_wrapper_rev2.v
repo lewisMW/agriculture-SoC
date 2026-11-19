@@ -18,6 +18,7 @@
 // Register map (byte offsets from the peripheral base) — keep in sync with
 // software/.../sensing_ip.h:
 //   0x004 status        (RO) [1:0]=FIFO [3:2]=ADC [4]=fifo-drop [5]=rtc-intr
+//                            [6]=ADC conversion timeout (FIX-2), [31:7] = 0
 //   0x008 measurement_hi(RO) upper sample bits (0 for an 8-bit ADC)
 //   0x00C measurement_lo(RO) sample; reading it pops the FIFO
 //   0x100 pll_control   (RW)
@@ -79,13 +80,35 @@ module adc_apb_wrapper_rev2 #(
 
     // RTC region: 0x200-0x21F. Forwarded to rtc_control_2 with the address
     // translated down to PL031 word space (0x200 -> RTCDR, 0x204 -> RTCMR, ...).
-    wire rtc_region = ((PADDR & 12'hFE0) == 12'h200);
+    // Decode on the FULL PADDR width: a 12-bit mask on a wider PADDR aliased the
+    // RTC region at every 0x?200 (0x1200, 0x2200, ...) while every other
+    // register correctly reads as unmapped there (bug F5).
+    localparam [ADDR_WIDTH-1:0] RTC_REGION_BASE = 'h200;
+    wire rtc_region = (PADDR[ADDR_WIDTH-1:5] == RTC_REGION_BASE[ADDR_WIDTH-1:5]);
 
     // --------------------------------------------------------------------------
     // APB control strobes
     // --------------------------------------------------------------------------
     wire read_enable  = PSEL & ~PWRITE & PENABLE;
     wire write_enable = PSEL &  PWRITE & PENABLE;
+
+    // Byte-lane write strobes (bug F6: PSTRB used to be ignored, so a STRB/STRH
+    // rewrote all 32 bits from whatever was on the other lanes). Multi-byte
+    // registers update only the strobed lanes; single-bit controls (cal,
+    // rtc_ctrl, adc_trigger) live in byte 0 and act only when byte lane 0 is
+    // strobed; fifo_clear (write-any-value) acts on any strobed lane.
+    wire strb0 = PSTRB[0];
+    function [DATA_WIDTH-1:0] strb_merge;
+        input [DATA_WIDTH-1:0] cur;
+        input [DATA_WIDTH-1:0] wdata;
+        input [3:0]            strb;
+        integer b;
+        begin
+            strb_merge = cur;
+            for (b = 0; b < DATA_WIDTH/8; b = b + 1)
+                if (strb[b]) strb_merge[8*b +: 8] = wdata[8*b +: 8];
+        end
+    endfunction
 
     // --------------------------------------------------------------------------
     // Wrapper registers
@@ -118,6 +141,7 @@ module adc_apb_wrapper_rev2 #(
     // FSM / trigger
     // --------------------------------------------------------------------------
     wire err_fifo_full;
+    wire err_adc_timeout;                    // FIX-2: sticky, status[6]
     reg  manual_trig;                        // one-shot from an adc_trigger write
     wire rtc_trig;                           // periodic alarm pulse from RTC
     wire sample_trig = rtc_trig | manual_trig;
@@ -127,7 +151,23 @@ module adc_apb_wrapper_rev2 #(
     // --------------------------------------------------------------------------
     wire        ctrl_intr_flag;
     wire [11:0] rtc_paddr   = {4'h0, PADDR[7:0]};   // 0x2xx -> 0x0xx
-    wire        rtc_psel    = PSEL & rtc_region;
+    // The PL031 has no PSTRB, so a sub-word write can't be merged: it is
+    // dropped (the access still completes normally, like an unmapped write —
+    // no PSLVERR, by design) instead of writing the stray lanes.
+    wire        rtc_partial_wr = PWRITE & (PSTRB != 4'hF);
+    wire        rtc_psel    = PSEL & rtc_region & ~rtc_partial_wr;
+    // RTCCR.start is set-only at this interface (FIX-3, 2026-11-16): a firmware
+    // write to 0x20C (RTCCR) is forwarded with bit 0 forced to 1, so writing 0
+    // is a no-op and RTCCR keeps reading 1. The real ARM PL031 clears start on
+    // a write of 0 (measured on the ARM PL031: RTCCR then reads 0) and stops the counter,
+    // while rtc_control_2 still believes the RTC is running (rtc_enabled stays
+    // set until nPOR): the alarm can then never match and sampling silently
+    // falls back to the watchdog against a frozen RTCDR. Firmware sets the time
+    // with RTCLR and pauses sampling with RTC_CTRL; it never needs to stop the
+    // counter. Only nPOR stops/resets the RTC. Deliberate deviation from the
+    // PL031 - documented in sensing_ip.h.
+    wire        rtc_wr_ccr  = PWRITE & (PADDR[4:2] == 3'd3);
+    wire [DATA_WIDTH-1:0] rtc_pwdata = rtc_wr_ccr ? (PWDATA | {{(DATA_WIDTH-1){1'b0}}, 1'b1}) : PWDATA;
     wire [31:0] rtc_prdata;
     wire        rtc_pready;
     wire        rtc_pslverr;
@@ -189,8 +229,9 @@ module adc_apb_wrapper_rev2 #(
     // fault/hang the CPU. Forward rtc_pready for RTC-region accesses; everything
     // else completes immediately. PSLVERR is tied off in rtc_control_2 (never
     // errors) but kept wired for interface parity.
-    assign PREADY  = rtc_region ? rtc_pready : 1'b1;
-    assign PSLVERR = rtc_region ? rtc_pslverr : 1'b0;
+    // A dropped partial RTC write never reaches rtc_control_2: complete it here.
+    assign PREADY  = (rtc_region & ~rtc_partial_wr) ? rtc_pready  : 1'b1;
+    assign PSLVERR = (rtc_region & ~rtc_partial_wr) ? rtc_pslverr : 1'b0;
 
     // --------------------------------------------------------------------------
     // FIFO read-pop pulse: reading MEASUREMENT_LO advances the FIFO one entry.
@@ -213,7 +254,8 @@ module adc_apb_wrapper_rev2 #(
             status_reg[3:2]  <= adc_en ? 2'b01 : 2'b00;   // ADC running vs idle
             status_reg[4]    <= err_fifo_full;            // last sample dropped (FIFO full)
             status_reg[5]    <= ctrl_intr_flag;           // RTC interrupt pending
-            status_reg[DATA_WIDTH-1:6] <= {(DATA_WIDTH-6){1'b0}};
+            status_reg[6]    <= err_adc_timeout;          // last conversion timed out (FIX-2)
+            status_reg[DATA_WIDTH-1:7] <= {(DATA_WIDTH-7){1'b0}};
         end
     end
 
@@ -222,41 +264,41 @@ module adc_apb_wrapper_rev2 #(
     // --------------------------------------------------------------------------
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) pll_reg <= {DATA_WIDTH{1'b0}};
-        else if (write_enable && (PADDR == PLL_CONTROL_ADDR)) pll_reg <= PWDATA;
+        else if (write_enable && (PADDR == PLL_CONTROL_ADDR)) pll_reg <= strb_merge(pll_reg, PWDATA, PSTRB);
     end
 
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) amux_reg <= {DATA_WIDTH{1'b0}};
-        else if (write_enable && (PADDR == AMUX_ADDR)) amux_reg <= PWDATA;
+        else if (write_enable && (PADDR == AMUX_ADDR)) amux_reg <= strb_merge(amux_reg, PWDATA, PSTRB);
     end
 
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) cal_reg <= 1'b0;
-        else if (write_enable && (PADDR == ADC_CAL_ADDR)) cal_reg <= PWDATA[0];
+        else if (write_enable && strb0 && (PADDR == ADC_CAL_ADDR)) cal_reg <= PWDATA[0];
     end
 
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) alarm_offset_reg <= DEFAULT_ALARM_OFFSET;
-        else if (write_enable && (PADDR == ALARM_OFFSET_ADDR)) alarm_offset_reg <= PWDATA;
+        else if (write_enable && (PADDR == ALARM_OFFSET_ADDR)) alarm_offset_reg <= strb_merge(alarm_offset_reg, PWDATA, PSTRB);
     end
 
     // Autonomous-polling enable. Resets to 1 (polling on). Firmware clears bit0
     // to pause autonomous sampling (RTC counter keeps running); sets it to resume.
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) poll_enable_reg <= 1'b1;
-        else if (write_enable && (PADDR == RTC_CTRL_ADDR)) poll_enable_reg <= PWDATA[0];
+        else if (write_enable && strb0 && (PADDR == RTC_CTRL_ADDR)) poll_enable_reg <= PWDATA[0];
     end
 
     // Manual one-shot trigger (1-cycle pulse) on a write to adc_trigger.
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) manual_trig <= 1'b0;
-        else          manual_trig <= (write_enable && (PADDR == ADC_TRIGGER_ADDR) && PWDATA[0]);
+        else          manual_trig <= (write_enable && strb0 && (PADDR == ADC_TRIGGER_ADDR) && PWDATA[0]);
     end
 
     // FIFO clear (1-cycle pulse) on a write to fifo_clear.
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) fifo_clear <= 1'b0;
-        else          fifo_clear <= (write_enable && (PADDR == FIFO_CLEAR_ADDR));
+        else          fifo_clear <= (write_enable && (|PSTRB) && (PADDR == FIFO_CLEAR_ADDR));  // write-any-value: any strobed lane
     end
 
     // --------------------------------------------------------------------------
@@ -419,7 +461,9 @@ module adc_apb_wrapper_rev2 #(
         .reset       (PRESETn)
     );
 
-    wrapper_control_2 u_ctrl (
+    // CONV_TIMEOUT: 4x a calibration (42 sar_clk, the longest legal
+    // conversion) at 2*ADC_CLK_DIV PCLK per sar_clk (1344 PCLK at ADC_CLK_DIV 4)
+    wrapper_control_2 #(.CONV_TIMEOUT(4 * 42 * 2 * ADC_CLK_DIV)) u_ctrl (
         .clk           (PCLK),
         .rstn          (PRESETn),
         .sample_trig   (sample_trig),
@@ -427,7 +471,8 @@ module adc_apb_wrapper_rev2 #(
         .fifo_write_en (fifo_write_en),
         .adc_en        (adc_en),
         .adc_valid     (adc_valid_sync),
-        .err_fifo_full (err_fifo_full)
+        .err_fifo_full (err_fifo_full),
+        .err_adc_timeout(err_adc_timeout)
     );
 
     rtc_control_2 #(
@@ -448,7 +493,7 @@ module adc_apb_wrapper_rev2 #(
         .PENABLE         (PENABLE),
         .PWRITE          (PWRITE),
         .PADDR           (rtc_paddr),
-        .PWDATA          (PWDATA),
+        .PWDATA          (rtc_pwdata),
         .PRDATA          (rtc_prdata),
         .PREADY          (rtc_pready),
         .PSLVERR         (rtc_pslverr)

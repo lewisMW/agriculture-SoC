@@ -21,7 +21,7 @@
  * access collides with an autonomous arm cycle it is now STALLED (APB wait
  * states, PREADY held low) until the RTC FSM parks, then completes normally -
  * it no longer returns PSLVERR. So an unguarded RTC access can no longer fault
- * or hang the CPU (see pslverr_test / TEST_RUNBOOK §3.5). The time helpers below
+ * or hang the CPU (see pslverr_test). The time helpers below
  * still PAUSE autonomous polling first (rtc_ctrl bit0 = 0) before touching the
  * RTC: this is now DEFENSIVE only, and it also avoids the few-cycle wait-state
  * latency by parking the FSM in WAITING (bus always granted) up front. Polling
@@ -51,7 +51,11 @@ static inline void sensing_delay(volatile uint32_t n)
 /* ---- configuration ------------------------------------------------------- */
 
 /* Set the autonomous poll period (RTC seconds) and calibration path, and make
- * sure autonomous polling is enabled. */
+ * sure autonomous polling is enabled. A new period is armed at once (FIX-1):
+ * the next sample comes within period_s + 1 RTC seconds of this call, even if
+ * a much longer period was armed before. (Before FIX-1 it applied only after
+ * the currently armed alarm fired; firmware had to write RTCMR to shorten it.)
+ * Period 0 is treated as 1. */
 static inline void sensing_init(uint32_t period_s, int calibrate)
 {
     SENSING_IP_REGS->rtc_alarm_offset = period_s;
@@ -98,6 +102,38 @@ static inline int sensing_fifo_empty(void)    { return GET_FIFO_STATUS(sensing_s
 static inline int sensing_fifo_full(void)     { return GET_FIFO_STATUS(sensing_status()) == STATUS_FIFO_FULL; }
 static inline int sensing_sample_dropped(void){ return (sensing_status() & STATUS_FIFO_DROP_MASK) != 0; }
 static inline int sensing_rtc_intr(void)      { return (sensing_status() & STATUS_RTC_INTR_MASK) != 0; }
+/* STATUS[6] (FIX-2): the last conversion timed out (dead ADC); no sample was
+ * written. Sticky until the next sample is written. */
+static inline int sensing_adc_timed_out(void) { return (sensing_status() & STATUS_ADC_TIMEOUT_MASK) != 0; }
+
+/* Wait until the ADC is idle (STATUS[3:2] != running). */
+static inline void sensing_wait_adc_idle(void)
+{
+    while (GET_ADC_STATUS(sensing_status()) == STATUS_ADC_RUNNING) { }
+}
+
+/* Manual one-shot conversion, waited to completion. Returns 1 if the ADC
+ * completed, 0 if the conversion timed out (STATUS[6], FIX-2) - no sample was
+ * written then. A sample dropped on a full FIFO is reported separately by
+ * sensing_sample_dropped(). The settle lets the trigger reach the ADC. */
+static inline int sensing_trigger_wait(void)
+{
+    sensing_trigger_oneshot();
+    sensing_delay(SENSING_PARK_SETTLE);
+    sensing_wait_adc_idle();
+    return !sensing_adc_timed_out();
+}
+
+/* Stop autonomous sampling and wait out any conversion already in flight, so
+ * a following clear/count sees no stray sample. Pausing only blocks NEW alarms;
+ * a conversion started just before it still completes and pushes a sample.
+ * The settle lets a trigger already in the FSM pipeline reach the ADC first. */
+static inline void sensing_quiesce(void)
+{
+    sensing_polling_disable();
+    sensing_delay(SENSING_PARK_SETTLE);
+    sensing_wait_adc_idle();
+}
 
 /* ---- draining ------------------------------------------------------------ */
 
@@ -116,7 +152,7 @@ static inline uint32_t sensing_fifo_drain(uint8_t *buf, uint32_t max)
 
 /* Bounded poll until a sample is available. Returns 1 on data, 0 on timeout.
  * (WFI/sleep between samples needs an interrupt routed to the NVIC — not wired
- * yet, HANDOFF gap — so this polls.) */
+ * yet, so this polls.) */
 static inline int sensing_wait_sample(uint32_t timeout_polls)
 {
     while (timeout_polls--) {
