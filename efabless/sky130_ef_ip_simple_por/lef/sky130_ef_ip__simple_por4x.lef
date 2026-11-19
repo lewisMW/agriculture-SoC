@@ -1,0 +1,107 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO sky130_ef_ip__simple_por4x
+  CLASS BLOCK ;
+  FOREIGN sky130_ef_ip__simple_por4x ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 43.575 BY 59.560 ;
+  PIN vdd3v3
+    DIRECTION INOUT ;
+    USE POWER ;
+    PORT
+      LAYER met4 ;
+        RECT 2.005 0.000 3.595 35.700 ;
+    END
+  END vdd3v3
+  PIN vdd1v8
+    DIRECTION INOUT ;
+    USE POWER ;
+    PORT
+      LAYER met4 ;
+        RECT 1.965 39.660 3.610 59.560 ;
+    END
+  END vdd1v8
+  PIN vss3v3
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER met4 ;
+        RECT 5.145 0.000 7.145 34.990 ;
+    END
+  END vss3v3
+  PIN porb_h[0]
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    ANTENNADIFFAREA 5.040000 ;
+    PORT
+      LAYER met2 ;
+        RECT 24.080 57.870 24.585 59.555 ;
+    END
+  END porb_h[0]
+  PIN porb_h[1]
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    ANTENNADIFFAREA 5.040000 ;
+    PORT
+      LAYER met2 ;
+        RECT 30.830 57.870 31.335 59.555 ;
+    END
+  END porb_h[1]
+  PIN por_l
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    ANTENNADIFFAREA 2.520000 ;
+    PORT
+      LAYER met2 ;
+        RECT 5.665 58.615 5.965 59.560 ;
+    END
+  END por_l
+  PIN porb_l
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    ANTENNADIFFAREA 2.520000 ;
+    PORT
+      LAYER met2 ;
+        RECT 3.840 58.610 4.140 59.555 ;
+    END
+  END porb_l
+  PIN vss1v8
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER met4 ;
+        RECT 0.000 0.000 1.230 59.555 ;
+    END
+  END vss1v8
+  OBS
+      LAYER nwell ;
+        RECT 1.730 0.070 43.520 59.500 ;
+      LAYER li1 ;
+        RECT 0.040 0.000 43.240 59.360 ;
+      LAYER met1 ;
+        RECT 0.000 0.000 43.365 59.200 ;
+      LAYER met2 ;
+        RECT 0.000 58.330 3.560 59.200 ;
+        RECT 4.420 58.335 5.385 59.200 ;
+        RECT 6.245 58.335 23.800 59.200 ;
+        RECT 4.420 58.330 23.800 58.335 ;
+        RECT 0.000 57.590 23.800 58.330 ;
+        RECT 24.865 57.590 30.550 59.200 ;
+        RECT 31.615 57.590 43.350 59.200 ;
+        RECT 0.000 0.000 43.350 57.590 ;
+      LAYER met3 ;
+        RECT 0.000 0.000 43.165 59.555 ;
+      LAYER met4 ;
+        RECT 4.010 39.260 43.165 55.960 ;
+        RECT 1.630 36.100 43.165 39.260 ;
+        RECT 3.995 35.390 43.165 36.100 ;
+        RECT 3.995 19.155 4.745 35.390 ;
+        RECT 7.545 19.155 43.165 35.390 ;
+      LAYER met5 ;
+        RECT 4.525 21.635 43.170 55.925 ;
+  END
+END sky130_ef_ip__simple_por4x
+END LIBRARY
+
