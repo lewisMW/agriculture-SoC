@@ -1045,9 +1045,10 @@ Final layout of 19 Nov (28,470 logic cells, 95 of them antenna diodes):
 | RTL, pad-ring design: `hello` and the nine project tests | all pass |
 | RTL of the wrapper (`RTL=1`): those ten, `of_mem_test`, `of_boot_test`, and `hello` with `FLASH=boot`, `prog`, `skip`, `badsum` and with `NOHOST=1` | 17 runs, all as expected |
 | Gate level, unit delay: the same 17 | all as expected; the host-side logs of every run identical to its RTL run |
-| Gate level, SDF, memories as gates, 30 ns | `hello` at slow, typical and fast: pass, no timing violation reported, logs identical to RTL. The flash, interrupt and memory runs were still running when this was written |
+| Gate level, SDF, memories as gates, 30 ns | `hello` at slow, typical and fast; `FLASH=boot`, `FLASH=prog`, `of_mem_test`, `sensing_irq_test` and `adc_trigger_test` at slow and fast; `NOHOST=1`, `rtc_time_test` and `clock_ctrl_test` at slow: all pass, no timing violation reported. Logs identical to RTL, but for one line of `sensing_irq_test`: the value of an ADC sample it prints, taken at a different instant (the host link is asynchronous). `of_boot_test` was not finished |
 | ChipFoundry FEOL deck | 1 violation: `MR_capm.SP.2` in the ADC macro (known) |
-| ChipFoundry's other decks, and their LVS and OEB in the container | still running when this was written |
+| ChipFoundry's other decks | BEOL 0 violations; off-grid, top cell, cell names, density, pin labels, zero-area, spike: PASS; XOR against the empty frame: 0 differences |
+| ChipFoundry's own LVS and OEB, in their container | LVS PASS (77 min), OEB PASS |
 
 "As expected" for `badsum` is the ROM stopping with "flash: BAD SUM" and the
 program not running; for `NOHOST=1` it is the processor fetching the program's
@@ -1195,6 +1196,73 @@ What it means:
   (13 for the clock, 15 for the data coming back). With a flash that answers
   within 7 ns, a programming clock of 8 MHz leaves a wide margin; above about
   14 MHz the read data is late at the slow corner.
+
+## RTC through a system reset, the ADC macro's two layout items, final layout (19 Nov 2026)
+
+### The RTC keeps the time through a system reset
+
+The RTC's power-on reset was tied to the system reset, because only `HRESETn`
+reached `accelerator_subsystem`: every reset, a debugger's or the program's own
+included, put the time back to zero. `PORESETn` now reaches it (one port added
+on `nanosoc_region_exp` and on `nanosoc_ss_expansion`, connected to
+`SYS_PORESETn` in `nanosoc_system`). The reset pin and power-on assert it;
+SYSRESETREQ, the watchdog and lockup do not. The RTC, the divider that makes
+its tick and the `rtc_prescale` register are reset by it alone, so the time goes
+on counting at the same rate through a system reset. `rtc_warm_reset_test`
+loads a time, asks for a system reset, and checks afterwards that the prescale
+register kept its value and that the time has gone on from where it was.
+
+### The ADC macro's two layout items
+
+Both were in ChipFoundry's way and both are fixed in the cells' layouts, with
+the smallest change that does it (`analog/cadence/pv/README.md` has the
+coordinates).
+
+| Item | Was | Is |
+| --- | --- | --- |
+| `MR_capm.SP.2` in `bootstrap_sw`: ChipFoundry's FEOL deck wants 1.2 um between a MIM capacitor's bottom plate and met3 that does not touch it | the met3 pad of a 3 x 2 via stack 0.75 um from a boost capacitor's plate: 1 violation, a hard precheck failure | the stack is 2 x 2 cuts (+0.6 ohm): 0 violations |
+| solid met2 in `carray_8b`: ChipFoundry asks for no solid metal wider than 30 um | the `vssa` shield under the capacitor array: a 76.4 um solid square fits | five more 1.0 um slots in the same polygon: 27.3 um. No other layer of the macro is above 6.9 um |
+
+- Pegasus DRC and LVS of the changed cells and of the macro: as before (no real
+  violation; match, with the trim capacitor as a black box and extracted).
+- Extraction against the previous one: the same 656 MIM capacitors and 98
+  transistors; each top plate 0.6 to 0.7 % less capacitance to everything else,
+  the bottom plates of bits 7 to 4 0.4 to 1.0 % less, nothing beyond 1 %. Slots
+  3.4 um wide, tried first, put 8.4 fF of each top plate onto the substrate and
+  moved the upper bits' bottom plates by up to 2 %; at 1.0 um it is 0.5 fF.
+- Mixed-signal run at the reset setting on the board's clock: codes within
+  -1..+2 LSB, gain +2.1 %, carry-over 0.1 %, as before the fixes.
+- The macro's LEF is unchanged (outline, pins, obstructions), so the fixed
+  macro goes into the routed layout at stream-out, with no new place and route.
+  Its timing libraries change by 0.2 fF on one pin; timing of the routed layout
+  with them is unchanged.
+
+### Antenna repair in the pad-ring flow
+
+`ASIC_ours/Cadence/scripts/route_setup.tcl` has the antenna settings of the
+OpenFrame flow. In a full run of the pad-ring flow with them, routing left 86
+violations after its layer changes and the diodes removed all of them; the run
+ended with no DRC violation and timing met.
+
+### Result
+
+Final layout: the RTC change built with the flow as it now is, which ended clean
+on its first run, and the corrected ADC macro.
+
+| Step | Result |
+| --- | --- |
+| Place and route, 30 ns | setup WNS +0.170 ns, hold WNS +0.049 ns |
+| Post-route DRC (Innovus), process antennas, free sites | the 6 frame-pin markers only; none; none |
+| Stream-out with the corrected macro | PASS, 0 warnings |
+| Pegasus LVS | MATCH, 224 cells; port ties PASS (88 groups) |
+| RTL of the wrapper: the tests of 18 Nov, `rtc_warm_reset_test`, and the five flash scenarios | 18 runs, all as expected |
+| Gate level, unit delay: the same 18 | all as expected; the host-side logs of every run identical to its RTL run |
+| Gate level, SDF, memories as gates, 30 ns | `hello` at slow, typical and fast; `FLASH=boot` and `FLASH=prog` at slow and fast; `NOHOST=1` at slow; `of_mem_test` at fast: all pass, logs identical to RTL. No timing violation reported at slow or typical. Each fast-corner run reports the same 16 setup warnings, all at the first flop of the host link's input synchroniser, where the testbench's asynchronous input changes near the clock edge. The interrupt, ADC, clock-register and RTC tests were still running when this was written |
+| ChipFoundry's ten decks, run natively | all PASS: FEOL 0 violations (the first build with none), BEOL 0; off-grid, top cell, cell names, density (clear area li1 58.9 %, m1 79.1 %, m2 94.1 %, m3 96.0 %, m4 72.7 %, m5 67.2 %), pin labels, zero-area, spike; XOR against the empty frame: 0 differences |
+| `cf precheck` in ChipFoundry's container, every check | **passed**: 12 of 12, their LVS and OEB included (the optional Magic DRC was not run) |
+
+The precheck ran in the local rehearsal project directory. Nothing has been
+registered with or sent to ChipFoundry.
 
 ## Known gaps
 
