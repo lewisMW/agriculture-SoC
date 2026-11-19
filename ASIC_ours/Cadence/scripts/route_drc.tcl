@@ -19,11 +19,13 @@ set_multi_cpu_usage -local_cpu 8
 read_db ${block_name}_route
 source $env(SOCLABS_ASIC_FLOW_DIR)/Cadence/procs.tcl
 
-# check_drc into a report; returns the number of violations in it
+# check_drc into a report; returns the number of violations in it: one per
+# "<TYPE>: ( <rule> ) ..." line. The "Bounds : ( x, y ) ..." line under each has the
+# same shape and must not be counted (it was, so every count printed was doubled).
 proc drc_count {rpt} {
     check_drc -limit 100000 -out_file $rpt
     set fh [open $rpt r]; set txt [read $fh]; close $fh
-    return [regexp -all -line {^[A-Za-z][A-Za-z ]*: \( } $txt]
+    return [regexp -all -line {^(?!Bounds)[A-Za-z][A-Za-z ]*: \( } $txt]
 }
 
 set n [drc_count $REPORT_DIR/drc_06_route_in.rpt]
@@ -45,6 +47,10 @@ for {set pass 1} {$n > 0 && $pass <= 3} {incr pass} {
 set n [drc_count $REPORT_DIR/drc_06_signoff.rpt]
 puts "route_drc.tcl: $n DRC violations in ${block_name}_signoff (reports/drc_06_signoff.rpt)"
 check_connectivity -type regular -error 100000 -warning 100000 -out_file $REPORT_DIR/conn_06_signoff_regular.rpt
+# process antennas: the report ends with the number of violations
+if {[catch {check_process_antenna -out_file $REPORT_DIR/antenna_06_signoff.rpt} _e]} {
+    puts "route_drc.tcl: check_process_antenna failed: $_e"
+}
 report_end_step 06_signoff $REPORT_DIR
 
 write_db ${block_name}_signoff
