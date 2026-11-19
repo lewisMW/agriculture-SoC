@@ -33,17 +33,19 @@ wire resetn = reset;
 // -------------------------------------------------------------------------
 // RTC support signals for the sensing peripheral
 // -------------------------------------------------------------------------
-// ~1 Hz tick for the RTC. CLK1HZ_DIV sets the half-period divide from fclk;
-// this value is sim-friendly. For real hardware set it to (fclk_hz / 2) so
-// CLK1HZ toggles at 1 Hz (e.g. 25_000_000 for a 50 MHz fclk).
-localparam [31:0] CLK1HZ_DIV = 32'd50;
+// ~1 Hz tick for the RTC, divided from fclk.
+// Half period of the tick in clock cycles: the sensing peripheral's rtc_prescale
+// register (0x22C), whose reset value is for the real clock. A value of 0 or 1
+// toggles every cycle. Programs that count RTC seconds in simulation write a
+// small value first.
+wire [31:0] rtc_prescale;
 reg  [31:0] clk1hz_ctr;
 reg         clk1hz_reg;
 always @(posedge fclk or negedge resetn) begin
    if (~resetn) begin
       clk1hz_ctr <= 32'd0;
       clk1hz_reg <= 1'b0;
-   end else if (clk1hz_ctr >= (CLK1HZ_DIV - 32'd1)) begin
+   end else if ({1'b0, clk1hz_ctr} + 33'd1 >= {1'b0, rtc_prescale}) begin
       clk1hz_ctr <= 32'd0;
       clk1hz_reg <= ~clk1hz_reg;
    end else begin
@@ -401,6 +403,7 @@ adc_apb_wrapper_rev2 #(
    // Clock and Reset
    .PCLK(fclk),
    .CLK1HZ(clk1hz),      // ~1 Hz RTC tick
+   .RTC_PRESCALE(rtc_prescale),  // half period of that tick, in clock cycles
    .PRESETn(hresetn),    // APB reset (may be pulsed by sys_reset_req)
    .nPOR(npor),          // power-on reset (survives warm reset; keeps RTC time)
    // Address and Control

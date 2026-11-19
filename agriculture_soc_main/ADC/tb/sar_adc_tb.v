@@ -21,6 +21,8 @@
 //      low, so only an asynchronous reset reaches sarlogic. Its initial block
 //      sets the same registers at time zero, so the reset at the start of the
 //      run proves nothing; these two cases start from states only reset clears.
+//   7. The run-time controls: clk_div sets the sar_clk period, sample_div the
+//      length of the sampling state alone, and the code stays ideal.
 //   Throughout: every conversion's code is checked against the input the
 //   macro held for it, every clkc pulse is exactly half a sar_clk period, and
 //   comp is never x when sarlogic samples it.
@@ -48,11 +50,14 @@ module sar_adc_tb;
 
     always #(TCLK/2.0) clk = ~clk;
 
+    reg [7:0] clk_div_r = 8'd0, sample_div_r = 8'd0;   // 0: the CLK_DIV parameter, no stretch
     sar_adc #(.CLK_DIV(CLK_DIV)) dut (
         .clk    (clk),
         .rstn   (rstn),
         .en     (en),
         .cal    (cal),
+        .clk_div    (clk_div_r),
+        .sample_div (sample_div_r),
         .valid  (valid),
         .result (result),
         .vinp   (1'b0),        // the behavioural macro makes its own input
@@ -172,14 +177,21 @@ module sar_adc_tb;
     // clkc pulses: exactly half a sar_clk period (no runts, no glitches)
     real    t_clkc_rise = 0.0;
     integer n_clkc = 0, n_clkc_bad = 0;
-    always @(posedge dut.clkc) t_clkc_rise = $realtime;
+    // (the half period in force: clk_div, or sample_div for the pulse in the
+    // sampling state; both 0 outside section 7, which leaves CLK_DIV)
+    real    exp_clkc_w = 0.0;
+    always @(posedge dut.clkc) begin
+        t_clkc_rise = $realtime;
+        exp_clkc_w  = TCLK * ((dut.sample && sample_div_r != 0) ? sample_div_r
+                              : (clk_div_r != 0) ? clk_div_r : CLK_DIV);
+    end
     always @(negedge dut.clkc) if (rstn) begin
         n_clkc = n_clkc + 1;
-        if (($realtime - t_clkc_rise) != CLK_DIV * TCLK) begin
+        if (($realtime - t_clkc_rise) != exp_clkc_w) begin
             n_clkc_bad = n_clkc_bad + 1;
             if (n_clkc_bad <= 5)
                 $display("FAIL [%0t] clkc pulse %.3f ns wide, expected %.3f",
-                         $time, $realtime - t_clkc_rise, CLK_DIV * TCLK);
+                         $time, $realtime - t_clkc_rise, exp_clkc_w);
         end
     end
 
@@ -202,9 +214,9 @@ module sar_adc_tb;
         begin
             @(posedge clk); en_tb = 1'b1;
             guard = 0;
-            while (valid !== 1'b0 && guard < 4000) begin @(posedge clk); guard = guard + 1; end
-            while (valid !== 1'b1 && guard < 4000) begin @(posedge clk); guard = guard + 1; end
-            check(guard < 4000, "conversion handshake completes");
+            while (valid !== 1'b0 && guard < 20000) begin @(posedge clk); guard = guard + 1; end
+            while (valid !== 1'b1 && guard < 20000) begin @(posedge clk); guard = guard + 1; end
+            check(guard < 20000, "conversion handshake completes");
             #2 code = result;
             @(posedge clk); en_tb = 1'b0;
         end
@@ -213,6 +225,42 @@ module sar_adc_tb;
     task wait_tail;                 // idle for n sar_clk periods
         input integer n;
         begin repeat (n * 2 * CLK_DIV) @(posedge clk); end
+    endtask
+
+    // One conversion (section 7): also the sar_clk period during the bit
+    // decisions and how long sample was high.
+    real t_bit_a = 0.0, t_bit_b = 0.0, t_s_rise = 0.0, t_s_fall = 0.0;
+    task convert_measure;
+        output [7:0] code;
+        begin
+            fork
+                convert_once(code);
+                begin
+                    @(posedge dut.sample);  t_s_rise = $realtime;
+                    @(negedge dut.sample);  t_s_fall = $realtime;
+                    @(posedge dut.sar_clk); t_bit_a  = $realtime;
+                    @(posedge dut.sar_clk); t_bit_b  = $realtime;
+                end
+            join
+            // the conversion sarlogic starts after it, and idle: 14 sar_clk periods
+            repeat (28 * ((clk_div_r != 0) ? clk_div_r : CLK_DIV) + 4 * sample_div_r + 40) @(posedge clk);
+        end
+    endtask
+    task check_setting;              // one conversion at the present clk_div_r / sample_div_r
+        input integer n_bit;         // expected clk cycles per sar_clk half period in the bit decisions
+        input integer n_samp;        // and in the sampling state
+        reg [7:0] c, e;
+        integer   ta, tb;
+        begin
+            convert_measure(c);
+            ta = dut.trima; tb = dut.trimb;
+            e  = exp_code(dut.u_afe.vdc, ta, tb);
+            $display("    clk_div %0d, sample_div %0d: sar_clk period %.0f ns in the bit decisions, sample high %.0f ns, code 0x%02h",
+                     clk_div_r, sample_div_r, t_bit_b - t_bit_a, t_s_fall - t_s_rise, c);
+            check(t_bit_b - t_bit_a == 2.0 * n_bit * TCLK,  "sar_clk period in the bit decisions follows clk_div");
+            check(t_s_fall - t_s_rise == 2.0 * n_samp * TCLK, "the sampling state lasts 2 x sample_div (or clk_div) cycles");
+            check(c == e, "the code is still the ideal one");
+        end
     endtask
 
     // -------------------------------------------------------------------------
@@ -409,6 +457,19 @@ module sar_adc_tb;
         convert_once(code);
         wait_tail(12);
         check(code == exp_code(0.3, 16, 15), "conversion after that reset");
+        // ---- 7. the run-time controls ----
+        $display("--- 7. clk_div and sample_div set at run time (DC input 0.3 V) ---");
+        dut.u_afe.mode = 2; dut.u_afe.vdc = 0.3;
+        repeat (40) @(posedge clk);
+        clk_div_r = 8'd0;  sample_div_r = 8'd0;   check_setting(CLK_DIV, CLK_DIV);   // as before: the parameter
+        clk_div_r = 8'd2;                         check_setting(2, 2);               // faster
+        clk_div_r = 8'd9;                         check_setting(9, 9);               // slower, odd
+        clk_div_r = 8'd4;  sample_div_r = 8'd20;  check_setting(4, 20);              // long sampling, bit rate unchanged
+        clk_div_r = 8'd9;  sample_div_r = 8'd3;   check_setting(9, 3);               // short sampling
+        clk_div_r = 8'd255; sample_div_r = 8'd0;  check_setting(255, 255);           // the slowest
+        clk_div_r = 8'd0;  sample_div_r = 8'd255; check_setting(CLK_DIV, 255);       // the longest sampling
+        clk_div_r = 8'd0;  sample_div_r = 8'd0;
+        repeat (40) @(posedge clk);
 
         // ---- summary ----
         $display("--- clkc pulses checked: %0d (%0d wrong width); comp samples %0d, x: %0d ---",
@@ -420,7 +481,7 @@ module sar_adc_tb;
     end
 
     initial begin
-        #20_000_000;
+        #40_000_000;
         $display("WATCHDOG TIMEOUT");
         $display("\n=== SAR_ADC_TB: %0d PASSED, %0d FAILED ===", pass_count, fail_count + 1);
         $finish;

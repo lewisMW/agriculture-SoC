@@ -32,8 +32,20 @@
 // u_latch keeps its level because it is dont_touch.
 //
 // Clocking (constraints in sar_adc.sdc)
-//   - sar_clk comes from ONE flop, toggled every CLK_DIV cycles of clk, on the
-//     FALLING edge of clk. sar_clk is a divided clk, so the two domains are
+//   - sar_clk comes from ONE flop, toggled every N cycles of clk, on the
+//     FALLING edge of clk. N is set at run time:
+//       clk_div     N for an ordinary half period. 0 selects the CLK_DIV
+//                   parameter, so an instance that ties the port to 0 behaves
+//                   as before the port existed.
+//       sample_div  N while sarlogic's sample output is high (the sampling
+//                   state, and calibration); 0 means "as clk_div". It lengthens
+//                   the time the sampling switch is closed without slowing the
+//                   bit decisions: the sampling state lasts one sar_clk period,
+//                   so about 2 * sample_div cycles of clk.
+//     Both are static controls from the clk domain (wrapper registers); change
+//     them only while the converter is idle. The fastest setting, N = 1, is
+//     what sar_adc.sdc constrains.
+//   - sar_clk is a divided clk, so the two domains are
 //     related. Running the divider on the falling edge puts every sar_clk edge
 //     half a clk period away from the clk-domain logic: en and cal (clk domain)
 //     reach sarlogic with half a period of setup and hold, and the RTL
@@ -50,7 +62,7 @@
 // Conversion timing (sarlogic, PR #130): sSample + 8 x sConv + sDone = 10
 // sar_clk periods back to back, 11 when started from idle; calibration takes
 // 1 + 40 + 1. With en still high at sDone the next conversion starts at once,
-// so valid is high for one sar_clk period (2*CLK_DIV clk cycles).
+// so valid is high for one sar_clk period (2*N clk cycles).
 //
 // Supplies
 //   vdd/vss/vdda/vref exist with USE_POWER_PINS (powered netlists, as for the
@@ -79,8 +91,9 @@
 `endif
 
 module sar_adc #(
-    parameter CLK_DIV = 4   // clk cycles per sar_clk half period (>= 1);
-                            // sar_adc.sdc's SAR_ADC_CLK_DIV must match
+    parameter CLK_DIV  = 4, // clk cycles per sar_clk half period (>= 1) when the
+                            // clk_div port is 0
+    parameter DIV_BITS = 8  // width of clk_div, sample_div and the divider
 )(
 `ifdef SAR_ADC_PG
     inout  wire       vdd,
@@ -92,6 +105,8 @@ module sar_adc #(
     input  wire       rstn,     // active-low, asynchronous
     input  wire       en,       // start / hold conversions (wrapper_control_2 adc_en)
     input  wire       cal,      // next conversion runs the comparator calibration
+    input  wire [DIV_BITS-1:0] clk_div,     // clk cycles per sar_clk half period; 0 = CLK_DIV
+    input  wire [DIV_BITS-1:0] sample_div,  // the same while sampling; 0 = as clk_div
     output wire       valid,    // conversion complete (sar_clk domain)
     output wire [7:0] result,   // last result, held until the next one (sar_clk domain)
     input  wire       vinp,     // analog input, + side
@@ -99,30 +114,39 @@ module sar_adc #(
 );
 
     // ------------------------------------------------------------------------
-    // Clock divider: sar_clk = clk / (2*CLK_DIV), from one flop (sar_clk_reg)
-    // on the falling edge of clk. div_ph is the divider's phase; sar_clk_reg
-    // retimes it, so the clock flop's D is plain data rather than its own
-    // (clock) output fed back. rstn holds the divider, so sar_clk stands still
-    // (low) for as long as rstn is low: sarlogic sees no clock edge during
-    // reset and has to be reset asynchronously (sar_adc_tb, section 6).
+    // Clock divider: sar_clk = clk / (2*N), from one flop (sar_clk_reg) on the
+    // falling edge of clk. div_ph is the divider's phase; sar_clk_reg retimes
+    // it, so the clock flop's D is plain data rather than its own (clock)
+    // output fed back. rstn holds the divider, so sar_clk stands still (low)
+    // for as long as rstn is low: sarlogic sees no clock edge during reset and
+    // has to be reset asynchronously (sar_adc_tb, section 6).
+    //
+    // N is div_now: clk_div (or CLK_DIV when that is 0), replaced by sample_div
+    // while sample is high and sample_div is not 0. sample comes from sarlogic's
+    // state, which changes just after a rising edge of sar_clk, itself launched
+    // by a falling edge of clk; the divider reads it on the next falling edge,
+    // a full clk period later. The count is compared with >=, so a smaller N
+    // taking effect in mid-count ends the half period at once instead of
+    // letting the counter run on.
     // ------------------------------------------------------------------------
-    localparam             DIV_W    = (CLK_DIV > 1) ? $clog2(CLK_DIV) : 1;
-    localparam integer     DIV_MAX  = CLK_DIV - 1;
-    localparam [DIV_W-1:0] DIV_LAST = DIV_MAX[DIV_W-1:0];
+    wire              sample;                      // from sarlogic, below
+    localparam integer DIV_PARAM = (CLK_DIV < 1) ? 1 : CLK_DIV;
+    wire [DIV_BITS-1:0] div_base = (clk_div == {DIV_BITS{1'b0}}) ? DIV_PARAM[DIV_BITS-1:0] : clk_div;
+    wire [DIV_BITS-1:0] div_now  = (sample && (sample_div != {DIV_BITS{1'b0}})) ? sample_div : div_base;
 
-    reg [DIV_W-1:0] div_cnt;
-    reg             div_ph;
-    reg             sar_clk;
+    reg [DIV_BITS-1:0] div_cnt;
+    reg                div_ph;
+    reg                sar_clk;
 
     always @(negedge clk or negedge rstn) begin
         if (!rstn) begin
-            div_cnt <= {DIV_W{1'b0}};
+            div_cnt <= {DIV_BITS{1'b0}};
             div_ph  <= 1'b0;
             sar_clk <= 1'b0;
         end else begin
             sar_clk <= div_ph;
-            if (div_cnt == DIV_LAST) begin
-                div_cnt <= {DIV_W{1'b0}};
+            if ({1'b0, div_cnt} + 1'b1 >= {1'b0, div_now}) begin
+                div_cnt <= {DIV_BITS{1'b0}};
                 div_ph  <= ~div_ph;
             end else begin
                 div_cnt <= div_cnt + 1'b1;
@@ -135,7 +159,6 @@ module sar_adc #(
     // ------------------------------------------------------------------------
     wire       comp;            // latched comparator decision
     wire       comp_n;
-    wire       sample;
     wire [7:0] ctlp, ctln;
     wire [4:0] trima, trimb;
     wire       clkc;            // comparator clock

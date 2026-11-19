@@ -15,8 +15,11 @@
 #   SAR_ADC_MASTER   name of the clock at sar_adc/clk   (default $EXTCLK, else clk)
 #   SAR_ADC_SOURCE   port that clock is defined on      (default CLK, the chip pin)
 #   SAR_ADC_PERIOD   its period in ns                   (default $EXTCLK_PERIOD, else 30)
-#   SAR_ADC_CLK_DIV  sar_adc's CLK_DIV                  (default 4, as
-#                    adc_apb_wrapper_rev2's ADC_CLK_DIV)
+#   SAR_ADC_CLK_DIV  master cycles per sar_clk half period (default 1). The
+#                    divider is set at run time (sar_adc's clk_div port, the
+#                    peripheral's adc_clkdiv register), so the constraint is for
+#                    the fastest setting, 1; every slower one has the same edge
+#                    relation to the master and longer periods
 #
 # Genus reads this file on the RTL, Innovus on the synthesised netlist, where
 # Genus may have flattened levels above or at the sar_adc instance (it names a
@@ -39,7 +42,7 @@ if {![info exists SAR_ADC_SOURCE]} { set SAR_ADC_SOURCE CLK }
 if {![info exists SAR_ADC_PERIOD]} {
     if {[info exists EXTCLK_PERIOD]} { set SAR_ADC_PERIOD $EXTCLK_PERIOD } else { set SAR_ADC_PERIOD 30.0 }
 }
-if {![info exists SAR_ADC_CLK_DIV]} { set SAR_ADC_CLK_DIV 4 }
+if {![info exists SAR_ADC_CLK_DIV]} { set SAR_ADC_CLK_DIV 1 }
 
 if {[info exists SAR_ADC_INST]} {
     if {$SAR_ADC_INST eq ""} { set sar_adc_p "" } else { set sar_adc_p "${SAR_ADC_INST}/" }
@@ -72,11 +75,13 @@ foreach {sar_adc_what sar_adc_obj} [list u_afe $sar_adc_afe u_latch $sar_adc_lat
 }
 
 # ---- clocks ----------------------------------------------------------------
-# sar_clk: sar_clk_reg toggles every CLK_DIV master cycles on the master's
-# FALLING edge, so it rises on master edge 2 (edge 1 = the first rising edge)
-# and falls 2*CLK_DIV edges later. Being a divided master it is a related
-# clock, and every sar_clk edge sits half a master period from the
-# master-domain logic.
+# sar_clk: sar_clk_reg toggles every N master cycles on the master's FALLING
+# edge, so it rises on master edge 2 (edge 1 = the first rising edge) and falls
+# 2*N edges later; N = SAR_ADC_CLK_DIV here, the fastest the divider can be set.
+# Being a divided master it is a related clock, and every sar_clk edge sits half
+# a master period from the master-domain logic. sarlogic's sample output goes
+# back into the divider (a longer sampling phase): a sar_clk -> master path,
+# covered by the set_max_delay at the end of this file.
 set sar_adc_n [expr {2 * $SAR_ADC_CLK_DIV}]
 create_generated_clock -name sar_clk -source [get_ports $SAR_ADC_SOURCE] \
     -edges [list 2 [expr {2 + $sar_adc_n}] [expr {2 + 2 * $sar_adc_n}]] $sar_adc_q
