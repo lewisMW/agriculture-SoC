@@ -1293,7 +1293,7 @@ and the checks on the macro itself.
 | SDF written with the new libraries | the gate netlist is the same; 12 of 452,491 SDF lines differ from the file simulated on 19 Nov: the date, and the delays of the `sample` net and its driver |
 | Gate level, that SDF, memories as gates: `adc_trigger_test` at slow and fast | pass; logs identical to RTL and to the 19 Nov runs. The fast run has the same 16 setup warnings at the host link's input synchroniser, the slow run none |
 | ChipFoundry's ten decks, run natively | all PASS: FEOL 0 violations, BEOL 0; off-grid, top cell, cell names, density (clear area li1 58.9 %, m1 79.1 %, m2 94.3 %, m3 96.0 %, m4 72.7 %, m5 67.2 %), pin labels, zero-area, spike; XOR against the empty frame: 0 differences |
-| `cf precheck` in ChipFoundry's container | the first ten of its twelve checks PASS (the decks, in the container); its LVS and OEB were still running when this was written |
+| `cf precheck` in ChipFoundry's container, every check | **passed**: 12 of 12, their LVS and OEB included (the optional Magic DRC was not run) |
 
 The other simulations of 19 Nov were not run again: the RTL, the gate netlist
 and every delay outside the `sample` net are the same.

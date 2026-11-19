@@ -159,6 +159,5 @@ These change the layout, so they come before the final sign-off run.
 - [x] `cf precheck` in ChipFoundry's container: passes on the layout of 19 Nov,
       12 of 12 checks, in the local rehearsal directory. Run it again after any
       change to the layout, and from the registered project before submitting.
-- [ ] The same on the layout with the rebuilt ADC macro (20 Nov): the ten
-      decks pass run natively, and so do the container run's first ten checks;
-      its LVS and OEB were still running when this was written.
+- [x] The same on the layout with the rebuilt ADC macro (20 Nov): passes, 12 of
+      12 checks, and the ten decks pass run natively as well.
