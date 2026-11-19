@@ -190,7 +190,7 @@ task ext_apb_write;
         PENABLE = 1'b1;
         // PREADY is sampled AT the edge (not #1 after it, when the slave has
         // already moved on) so a stalled access is neither abandoned nor held
-        // past its completing edge (coverage_plan.md F20).
+        // past its completing edge.
         @(posedge PCLK);
         while (!PREADY) @(posedge PCLK);
         #1;
@@ -215,7 +215,7 @@ task ext_apb_read;
         PENABLE = 1'b1;
         // PREADY is sampled AT the edge (not #1 after it, when the slave has
         // already moved on) so a stalled access is neither abandoned nor held
-        // past its completing edge (coverage_plan.md F20).
+        // past its completing edge.
         @(posedge PCLK);
         while (!PREADY) @(posedge PCLK);
         rdata  = PRDATA;
@@ -479,7 +479,7 @@ initial begin
     // Hold ACCESS until the slave completes (models the AHB->APB bridge).
     // Bounded so a (hypothetical) permanent stall fails loudly instead of
     // hanging the sim -- the FSM always parks within ~10 PCLK, so this exits fast.
-    // Wait for the completing edge, sampling PREADY at the edge (F20).
+    // Wait for the completing edge, sampling PREADY at the edge.
     stall_cycles = 0;
     @(posedge PCLK);
     while (!PREADY && stall_cycles < 200) begin @(posedge PCLK); stall_cycles = stall_cycles + 1; end

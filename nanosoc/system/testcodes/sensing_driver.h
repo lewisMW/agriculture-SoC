@@ -21,7 +21,7 @@
  * access collides with an autonomous arm cycle it is now STALLED (APB wait
  * states, PREADY held low) until the RTC FSM parks, then completes normally -
  * it no longer returns PSLVERR. So an unguarded RTC access can no longer fault
- * or hang the CPU (see pslverr_test / TEST_RUNBOOK §3.5). The time helpers below
+ * or hang the CPU (see pslverr_test). The time helpers below
  * still PAUSE autonomous polling first (rtc_ctrl bit0 = 0) before touching the
  * RTC: this is now DEFENSIVE only, and it also avoids the few-cycle wait-state
  * latency by parking the FSM in WAITING (bus always granted) up front. Polling
@@ -133,7 +133,7 @@ static inline uint32_t sensing_fifo_drain(uint8_t *buf, uint32_t max)
 
 /* Bounded poll until a sample is available. Returns 1 on data, 0 on timeout.
  * (WFI/sleep between samples needs an interrupt routed to the NVIC — not wired
- * yet, HANDOFF gap — so this polls.) */
+ * yet, so this polls.) */
 static inline int sensing_wait_sample(uint32_t timeout_polls)
 {
     while (timeout_polls--) {

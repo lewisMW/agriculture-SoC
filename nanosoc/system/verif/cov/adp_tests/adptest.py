@@ -21,7 +21,7 @@ Writing a test (see tests.py):
 Stream framing (nanosoc_axi_stream_io_8_txd_from_file, FAST_LOAD=1): the file
 is appended after the fixed prologue (ESC, "A 20000000", "C 201" = debugger
 reset), bytes 18-25 are never written (0x00 = ADP exit) and the last 9 bytes of
-the file are never sent (coverage_plan.md F11). So every script starts with ESC
+the file are never sent. So every script starts with ESC
 (re-enter ADP), a marker address, and ends with padding.
 
 Checks marked with bug=<id> are suspected-RTL-bug checks: they are reported as

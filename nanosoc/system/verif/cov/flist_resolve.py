@@ -63,7 +63,7 @@ def resolve(path, out, missing, seen):
                         out.append(f)
                 elif os.path.isdir(f):
                     # Bare directory: filelist_compile.py drops these silently.
-                    # Report rather than guess (see CLAUDE.md "flist gotcha").
+                    # Report rather than guess.
                     missing.append(f"bare-dir {f}")
                 else:
                     missing.append(f)

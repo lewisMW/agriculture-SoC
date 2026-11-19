@@ -21,7 +21,7 @@
 //
 // viol_* bins must stay at 0 (holes.py reports them as ERRORs):
 //   viol_reset_value     first read after reset returned a non-reset value
-//   viol_pslverr         wrapper signalled PSLVERR (HANDOFF decision #2)
+//   viol_pslverr         wrapper signalled PSLVERR (never allowed, by design)
 // -----------------------------------------------------------------------------
 module nsc_sens_apb_cov #(
     parameter int ADDR_WIDTH = 12
@@ -139,7 +139,7 @@ module nsc_sens_apb_cov #(
     // ---------------- APB protocol as seen by the slave ----------------------
     // A master must hold an ACCESS until PREADY, and must not stay in ACCESS
     // after the completing edge (PENABLE low or PSEL low next). Both were
-    // violated by existing benches (finding F20), which makes any wait-state
+    // violated by existing benches, which makes any wait-state
     // result from those benches meaningless - so the stimulus is checked here.
     logic acc_q, done_q;
     always @(posedge PCLK or negedge PRESETn) begin

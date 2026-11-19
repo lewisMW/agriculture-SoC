@@ -19,7 +19,7 @@
 //   S2 - the reset-synchroniser chain releases HRESETn after reset.
 //   S3 - CLK1HZ actually toggles in the fully-wired chip. This is the exact
 //        signal that, when left unconnected under NanoSoC, silently killed
-//        the RTC (see HANDOFF.md Task D) - worth a standing regression here
+//        the RTC - worth a standing regression here
 //        so a future top-level rewiring mistake is caught immediately.
 //   S4 - PSLVERR out of the sensing peripheral is never asserted (guards the
 //        wait-state-not-PSLVERR hang fix at the integration level too).

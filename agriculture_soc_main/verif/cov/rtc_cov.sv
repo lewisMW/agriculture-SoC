@@ -14,7 +14,7 @@
 //   cp_pt_reg      : firmware passthrough access to each PL031 register,
 //   cp_pt_dir        read and write  (x_pt_reg_dir crosses them)
 //   cp_stall_state : FSM state when a passthrough access was STALLED (PREADY
-//                    low) — HANDOFF decision #2: collisions wait, never error
+//                    low) — by design, collisions wait, never error
 //   cp_stall_len   : how many wait states a stalled access saw
 //   cp_poll        : poll_enable paused / resumed; alarm fired while paused;
 //                    resumed with an alarm already pending (service-on-resume)
@@ -152,7 +152,7 @@ module rtc_cov (
             bins excess = {[16:$]};   // > a full re-arm: worth a look if hit
         }
 
-        // Must NEVER be hit (HANDOFF decision #2). Counted, not illegal, so a
+        // Must NEVER be hit (by design). Counted, not illegal, so a
         // violation still leaves a coverage.dat to inspect.
         cp_pslverr : coverpoint PSLVERR iff (pt_complete) {
             bins error_seen = {1'b1};

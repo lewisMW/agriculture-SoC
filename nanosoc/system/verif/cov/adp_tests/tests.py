@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""tests.py - system-level ADP tests closing the coverage_plan.md gaps that the
+"""tests.py - system-level ADP tests closing the coverage gaps that the
 debug controller (a real AHB master) can reach without the Cortex-M0.
 
     python3 tests.py              run every test (single core, one at a time)
@@ -9,7 +9,7 @@ Every test checks responses (data, OKAY/ERROR, poll results); see adptest.py.
 ARM IP stand-ins in the harness (AHB-to-APB bridge, slave muxes, default slave,
 SRAM bridges, CMSDK peripherals, PL031): checks only assert what the AMBA/CMSDK
 specs and the SoCLabs RTL define, so the tests run unchanged against the real
-IP - all results must be re-measured there (coverage_plan.md, "needs re-run").
+IP - all results must be re-measured there.
 """
 import sys
 from adptest import AdpTest, main

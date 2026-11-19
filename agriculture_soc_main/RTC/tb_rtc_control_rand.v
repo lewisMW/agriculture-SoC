@@ -12,7 +12,7 @@
 //
 //   R1 - PSLVERR is never asserted. A firmware access that collides with an
 //        arm cycle must stall, never fault - this is the exact property that
-//        motivated the wait-state fix (see HANDOFF.md "RTC hang hardening")
+//        motivated the wait-state fix
 //        and that pslverr_test checks at the firmware level. This checks it
 //        directly at the RTL block level, under far more collision pressure
 //        (random gaps every 0-31 cycles) than any directed test applies.
@@ -145,7 +145,7 @@ task ext_apb_read_bounded;
         @(posedge PCLK); #1;
         PENABLE = 1'b1;
         // Sample PREADY AT the edge: sampling #1 after it abandoned stalled
-        // accesses and held completed ones an extra cycle (coverage_plan.md F20).
+        // accesses and held completed ones an extra cycle.
         @(posedge PCLK);
         while (!PREADY) begin
             stall_cycles = stall_cycles + 1;
@@ -271,7 +271,7 @@ initial begin
     // R6 - PL031 offsets beyond RTCICR (reserved 0x020-0xFDC and the PrimeCell
     // ID block 0xFE0-0xFFC). Only reachable at this block level: the wrapper
     // decodes 0x200-0x21C only. Reads/writes must complete without error and
-    // writes must not disturb the RTC registers (coverage_plan.md,
+    // writes must not disturb the RTC registers (bin
     // cg_rtc_bus.cp_word.beyond_icr). Needs re-run with the real PL031.
     poll_enable = 1'b0;
     repeat(40) @(posedge PCLK);

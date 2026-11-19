@@ -206,7 +206,7 @@ _verify_summary:
 # Lint (sign-off gate 2). Two scopes:
 #   make lint-free  # peripheral RTL that needs no ARM IP (fast, vendor-noise-free)
 #   make lint       # full sensing DUT incl. rtc_control + PL031 (needs ARM IP)
-# HANDOFF note: expect a few benign WIDTH/UNUSED to fix; the dummy analog stubs
+# Note: expect a few benign WIDTH/UNUSED to fix; the dummy analog stubs
 # warn — waive or exclude those.
 # -----------------------------------------------------------------------------
 LINT_FREE_FILES = \

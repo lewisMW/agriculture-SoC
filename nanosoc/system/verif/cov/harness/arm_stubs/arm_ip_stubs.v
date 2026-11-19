@@ -4,8 +4,8 @@
 // Port-compatible stand-ins for the licensed ARM modules nanosoc instantiates,
 // so the system-level coverage models (../../*.sv) can be compiled, elaborated
 // and smoke-run with Verilator on a machine without ARM_IP_LIBRARY_PATH.
-// Port lists were inferred from the instantiation sites in the nanosoc RTL
-// (see coverage_plan.md "Compile harness"); directions follow the CMSDK /
+// Port lists were inferred from the instantiation sites in the nanosoc RTL;
+// directions follow the CMSDK /
 // Cortex-M0 integration conventions.
 //
 // Fidelity, by group:

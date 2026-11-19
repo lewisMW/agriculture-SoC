@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """cov_table.py - covered/total per coverpoint from one or more coverage.dat
-files, as "group.point covered/total [holes...]" lines (used to fill the
-coverpoint catalogue in coverage_plan.md). viol_* bins are excluded.
+files, as "group.point covered/total [holes...]" lines (used to fill a
+coverpoint catalogue). viol_* bins are excluded.
 Usage: cov_table.py file.dat [file2.dat ...] [--grep cg_sens]"""
 import re, sys
 from collections import OrderedDict

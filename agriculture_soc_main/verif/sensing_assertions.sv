@@ -77,7 +77,7 @@ module apb_sva (
 );
     // Wait states are legal on an RTC-passthrough collision (HANDOFF decision
     // #2) - the old "slave never stalls" property predates that fix and failed
-    // on every legal stall (coverage_plan.md F10). What decision #2 promises
+    // on every legal stall. What decision #2 promises
     // instead: a stalled ACCESS completes within a bounded number of cycles
     // (a full first-arm cycle is ~13 PCLK; 40 leaves margin).
     a_stall_bounded: assert property (@(posedge PCLK) disable iff (!PRESETn)

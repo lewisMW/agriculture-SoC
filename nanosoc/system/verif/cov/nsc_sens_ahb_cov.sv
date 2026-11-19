@@ -15,7 +15,7 @@
 //   cp_b2b               transfer accepted in the cycle the previous completed
 //   cp_hprot             user/privileged, data vs instruction fetch
 //   cp_reset_busy        HRESETn asserted while a transfer is stalled
-//   cp_clk1hz            CLK1HZ generated (divider alive, CLAUDE.md failure point)
+//   cp_clk1hz            CLK1HZ generated (divider alive; a past failure point)
 //   cp_irq               EXP_IRQ lines (all tied 0 today — F3)
 // -----------------------------------------------------------------------------
 module nsc_sens_ahb_cov (

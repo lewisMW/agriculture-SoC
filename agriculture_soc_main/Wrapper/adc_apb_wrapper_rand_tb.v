@@ -2,8 +2,8 @@
 // =============================================================================
 // adc_apb_wrapper_rand_tb.v
 //
-// Constrained-random integration test for the sensing peripheral, closing the
-// HANDOFF Task 1 harness item: "constrained-random APB traffic (reads/writes
+// Constrained-random integration test for the sensing peripheral, from the
+// verification plan: "constrained-random APB traffic (reads/writes
 // across the map, random gaps) running against the autonomous RTC, with
 // functional coverage on states, FIFO occupancy, collision events, and register
 // accesses."
@@ -72,9 +72,9 @@ module adc_apb_wrapper_rand_tb;
     endtask
 
     // APB master: hold ACCESS until PREADY is sampled high AT the clock edge
-    // (the RTC passthrough inserts wait states on a collision — HANDOFF
-    // decision #2). Sampling PREADY #1 after the edge, as this bench used to,
-    // abandoned genuinely stalled accesses (coverage_plan.md finding F20).
+    // (the RTC passthrough inserts wait states on a collision, by
+    // design). Sampling PREADY #1 after the edge, as this bench used to,
+    // abandoned genuinely stalled accesses.
     integer stall_cycles;      // wait states seen by the last transfer
     task apb_write(input [11:0] addr, input [31:0] data);
     begin

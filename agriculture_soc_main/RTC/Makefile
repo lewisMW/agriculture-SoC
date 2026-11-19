@@ -3,7 +3,7 @@ VERILATOR = verilator
 TB_MODULE = tb_rtc_control
 TB_FILE   = $(TB_MODULE).v
 
-# ARM_IP_LIBRARY_PATH ?= /mnt/c/Users/b3nsc/SocDesignComp/nanosoc_arm_ip
+# ARM_IP_LIBRARY_PATH ?= /path/to/nanosoc_arm_ip
 
 rtc_ip = $(ARM_IP_LIBRARY_PATH)/PL031/PL031-r1p3-00rel0/PL031-BU-00000-r1p3-00rel0/PL031_VC/rtc_pl031/verilog/rtl_source
 

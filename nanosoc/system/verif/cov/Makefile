@@ -20,9 +20,9 @@
 #        make report / holes     merged summary / every unhit bin
 #    REAL_ARM=1 uses $(ARM_IP_LIBRARY_PATH) instead of harness/arm_stubs (and the
 #    real PL031 instead of the stub). Coverage hit with the stubs only shows the
-#    SoCLabs logic AROUND the ARM IP was exercised — see coverage_plan.md.
+#    SoCLabs logic AROUND the ARM IP was exercised.
 #
-# Single core, low priority by design (shared machine; see the repo memory note).
+# Single core, low priority by design (shared machine).
 # -----------------------------------------------------------------------------
 COV_DIR      := $(abspath .)
 NANOSOC_DIR  := $(abspath ../../..)
@@ -67,8 +67,8 @@ VL_FLAGS = --binary --timing -j $(JOBS) --output-groups 20 -CFLAGS -O0 \
 .PHONY: build run runs adptests report holes clean
 
 # dut.vc and obj_dir hold absolute paths and a host-linked binary. The checkout
-# is shared between the dev container (/workspaces/...) and the WSL box
-# (/mnt/c/...), so a build/ made on one is broken on the other. Wipe it when
+# may be shared between two hosts that mount it at different paths
+# (e.g. a container and a WSL host), so a build/ made on one is broken on the other. Wipe it when
 # the checkout path it was generated for doesn't match this one.
 ifneq ($(wildcard $(BUILD)/.root),)
   ifneq ($(shell cat $(BUILD)/.root),$(NANOSOC_DIR))

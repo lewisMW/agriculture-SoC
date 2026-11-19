@@ -6,7 +6,7 @@
 // wrapper_control_2_tb.v (which hand-drives adc_valid to test the handshake and
 // the stale-valid case) by wiring the FSM to the REAL dummy_adc so the
 // enable->valid protocol is exercised end-to-end, and by checking the
-// higher-level sequencing properties from VERIFICATION.md:
+// higher-level sequencing properties:
 //   - one sample per trigger (write pulse count == successful triggers)
 //   - back-to-back triggers each produce a sample
 //   - a trigger asserted mid-conversion is ignored (no extra sample)

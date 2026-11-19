@@ -2,8 +2,8 @@
 // =============================================================================
 // agriculture_soc_reset_rand_tb.v
 //
-// Randomized async-reset-timing stress test for the full chip. VERIFICATION.md
-// §3/§6 flags "async-reset removal timing" as a gap that needs a CDC tool +
+// Randomized async-reset-timing stress test for the full chip. The verification
+// plan flags "async-reset removal timing" as a gap that needs a CDC tool +
 // gate-level sim to close properly - this is a behavioural stand-in at RTL:
 // it slams `reset` (= nPOR = the async reset for the whole chip, including the
 // RTC's CLK1HZ-domain nRTCRST synchroniser) low/high at randomized, cycle-level

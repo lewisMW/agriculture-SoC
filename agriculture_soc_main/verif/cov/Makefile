@@ -51,7 +51,7 @@ SENS_DUT   = $(ROOT)/Wrapper/adc_apb_wrapper_rev2.v \
              $(ADC_FILES) $(ROOT)/Dummy/dummy_amux.v $(ROOT)/Dummy/dummy_pll.v \
              $(ROOT)/RTC/rtc_control_2.v $(RTC_FILES)
 ALL_COV    = fifo_cov.sv fsm_cov.sv rtc_cov.sv wrapper_cov.sv
-# Gap-closing bench (coverage_plan.md): self-checking, SVA bound (--assert).
+# Gap-closing bench: self-checking, SVA bound (--assert).
 GAP_FILES  = $(ROOT)/Wrapper/sens_gap_tb.sv $(SENS_DUT) $(ALL_COV) ../sensing_assertions.sv
 # Directed benches, so their coverage counts too.
 RTCDIR_FILES  = $(ROOT)/RTC/tb_rtc_control.v $(ROOT)/RTC/rtc_control_2.v $(RTC_FILES) rtc_cov.sv

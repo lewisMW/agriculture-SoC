@@ -3,7 +3,7 @@
 // sens_gap_tb.sv
 //
 // Self-checking block test that closes the sensing-peripheral coverage gaps
-// listed in coverage_plan.md (Batch 1 + the pre-existing block models). It
+// found in the first coverage review (Batch 1 + the pre-existing block models). It
 // drives adc_apb_wrapper_rev2 exactly as nanosoc instantiates it (16-bit PADDR,
 // APB4 PSTRB/PPROT) with a protocol-correct APB master (holds ACCESS until
 // PREADY is sampled high at the edge, optional back-to-back transfers), and
@@ -20,10 +20,9 @@
 // responses wherever the bus can observe the property.
 //
 // Checks that fail because the design does something the spec (AMBA APB4, the
-// register map, HANDOFF decisions) says it should not are reported as
+// register map, the design decisions) says it should not are reported as
 //   FAIL [SUSPECTED RTL BUG <id>] ...
-// and counted separately in the summary. They are NOT weakened to pass - see
-// coverage_plan.md "Suspected RTL bugs".
+// and counted separately in the summary. They are NOT weakened to pass.
 //
 // Run (no ARM IP needed with the stub; sign-off needs the real PL031):
 //   make -C verif/cov gap STUB_RTC=1      (coverage)

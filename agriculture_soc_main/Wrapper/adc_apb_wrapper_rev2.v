@@ -151,7 +151,7 @@ module adc_apb_wrapper_rev2 #(
     wire [11:0] rtc_paddr   = {4'h0, PADDR[7:0]};   // 0x2xx -> 0x0xx
     // The PL031 has no PSTRB, so a sub-word write can't be merged: it is
     // dropped (the access still completes normally, like an unmapped write —
-    // no PSLVERR, HANDOFF decision #2) instead of writing the stray lanes.
+    // no PSLVERR, by design) instead of writing the stray lanes.
     wire        rtc_partial_wr = PWRITE & (PSTRB != 4'hF);
     wire        rtc_psel    = PSEL & rtc_region & ~rtc_partial_wr;
     wire [31:0] rtc_prdata;

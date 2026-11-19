@@ -6,7 +6,7 @@ declares PWDATA, PWRITE, PRDATA, PADDR, PREADY, PSEL, PENABLE, PSLVERR, PSTRB,
 PPROT and APBACTIVE twice. Verilator and iverilog both reject that
 ("Duplicate declaration"), so the harness compiles a de-duplicated copy written
 to the build directory. The RTL in the repo is NOT modified. Once the RTL is
-fixed this script becomes a no-op. See coverage_plan.md finding F1.
+fixed this script becomes a no-op.
 
 Usage: dedupe_decls.py <in.v> <out.v>
 """

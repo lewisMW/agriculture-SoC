@@ -31,7 +31,7 @@
  * WHY the default is not the real reset in sim: the nanosoc testbench streams
  * the program into SRAM over ADP once, at boot. A SYSRESETREQ soft reset cannot
  * re-stream it, so main() would not re-run in sim -> use FPGA for the full
- * reboot round-trip. See TEST_RUNBOOK 3.7 / VERIFICATION.md.
+ * reboot round-trip.
  *
  * printf-free (image must fit the 16k-word program memory; see sensing_print.h).
  *-----------------------------------------------------------------------------

@@ -6,7 +6,7 @@
 // fifo_apb_adc_tb just $displays data, this one carries a software reference
 // model (a queue) and asserts against it, plus continuous invariant monitors.
 //
-// Covers the FIFO properties from VERIFICATION.md:
+// Covers these FIFO properties:
 //   - reset -> empty, !full
 //   - fill to DEPTH, full flag exactly at DEPTH
 //   - overflow attempt while full: write is dropped, no corruption
@@ -238,7 +238,7 @@ module fifo_apb_adc_rand_tb;
         while (!fifo_empty) fifo_pop;           // final drain checks remaining order
         check_true(model_count == 0, "random: model drained to empty");
 
-        // 10b. Sample corner values (coverage_plan.md: cg_fifo.cp_data.zero).
+        // 10b. Sample corner values (coverage bin cg_fifo.cp_data.zero).
         //     The real SAR ADC can return 0x00 and 0xFF; the dummy ADC's LFSR
         //     never produces 0, so only this unit bench can push an all-zero
         //     sample. Both must round-trip unchanged.

@@ -8,7 +8,6 @@
 // current template output to bootrom.sv instead (lower-case ports). This shim
 // has the template's port list so the system elaborates here; it returns a
 // fixed "b ." (0xE7FE) pattern - there is no bootloader image in it.
-// See coverage_plan.md finding F2.
 // -----------------------------------------------------------------------------
 module bootrom #(
     parameter ADDR_W = 9

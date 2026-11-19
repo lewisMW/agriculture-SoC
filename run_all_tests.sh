@@ -21,7 +21,7 @@
 #
 # Parallelism: each build uses JOBS cores (default: half of nproc, max 4).
 # Steps still run one after another. The limit is RAM, not CPU — an unbounded
-# -j 0 UVM build once ran the WSL box out of memory and crashed it. Never -j 0.
+# -j 0 UVM build once ran an 8 GB machine out of memory and crashed it. Never -j 0.
 #     JOBS=8 ./run_all_tests.sh      # more cores (if you have the RAM)
 #     JOBS=1 ./run_all_tests.sh      # back to single-core
 #
@@ -254,7 +254,7 @@ if [ "$DO_SOCSIM" = 1 ]; then
     for t in "${SOCSIM_TESTS[@]}"; do
       log="$OUT/fw-$t.log"; t0=$SECONDS
       printf '%s>> fw-%s%s\n' "$B" "$t" "$N"
-      # set_env.sh sometimes needs sourcing twice before it settles (see CLAUDE.md).
+      # set_env.sh sometimes needs sourcing twice before it settles.
       # set +u: the soctools setup scripts read unset vars (SOCLABS_DESIGN_ROOT, ...);
       # under this script's `set -u` that silently killed the subshell -> empty log.
       ( set +u; cd "$NSC" && source ./set_env.sh >/dev/null 2>&1; source ./set_env.sh >/dev/null 2>&1

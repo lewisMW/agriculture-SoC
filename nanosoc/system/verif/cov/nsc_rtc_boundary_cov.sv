@@ -8,7 +8,7 @@
 // agriculture_soc_main/verif/stubs/pl031_stub.v.
 //
 // !!! Anything hit with the stub only shows the surrounding logic was exercised.
-// !!! Every bin here is "needs re-run with real RTL" in coverage_plan.md.
+// !!! Every bin here needs a re-run with the real PL031.
 //
 //   cg_rtc_bus   APB accesses at the Rtc port: word (DR..ICR + out-of-range)
 //                x direction x source (autonomous FSM vs firmware passthrough);
