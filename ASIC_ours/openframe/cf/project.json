@@ -1,0 +1,7 @@
+{
+  "project": {
+    "name": "openframe-rehearsal",
+    "type": "openframe"
+  },
+  "pdk": "sky130A"
+}

@@ -53,6 +53,10 @@ int main(void)
 
     UartStdOutInit();
     sp_str("rtc_time_test: start\n");
+    /* The RTC's 1 Hz tick is divided from the system clock by rtc_prescale, whose
+     * reset value is for the real clock. This test's waits assume the fast tick
+     * of simulation, a "second" of 100 clocks. */
+    SENSING_IP_REGS->rtc_prescale = SENSING_RTC_PRESCALE_FAST;
 
     /* Park the RTC: a huge poll period means it arms once then stays in
      * WAITING, so passthrough accesses below are granted. */

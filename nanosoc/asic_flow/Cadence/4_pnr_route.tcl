@@ -13,7 +13,7 @@
 source ../scripts/config.tcl
 
 set_multi_cpu_usage -local_cpu 8
-puts "Starting CTS Flow ..."
+puts "Starting Route Flow ..."
 
 read_db ${block_name}_cts
 source $env(SOCLABS_ASIC_FLOW_DIR)/Cadence/procs.tcl
@@ -56,6 +56,8 @@ source ../scripts/filler.tcl
 report_end_step 05_route_opt $REPORT_DIR
 
 write_db ${block_name}_route
+
+
 
 # reporting
 report_power -out_file ../outputs/nanosoc_chip_pads_power.rpt -clock_network all -hierarchy all -sort { total }
