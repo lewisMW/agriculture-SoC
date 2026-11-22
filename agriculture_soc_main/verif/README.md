@@ -96,20 +96,18 @@ Cortex-M0 and the AHB bus.
 
 ## Current results
 
-Full sign-off with the real ARM PL031, 2026-11-22, before the interrupt and
-clock registers were merged in. CLK-STRB and the checks for the interrupt and
-the clock registers have so far run on the PL031 stand-in only, so these
-numbers need a re-run with the real PL031:
+Full sign-off with the real ARM PL031, 2026-11-22, including the interrupt
+and the clock registers:
 
 | Gate | Result |
 |---|---|
 | All benches | pass, apart from the two open ADC bugs below |
-| Functional coverage | 657 / 657 goal bins, no `viol_*` bin hit |
+| Functional coverage | 730 / 730 goal bins, no `viol_*` bin hit |
 | Code coverage | 100 % line and branch on the peripheral RTL (waivers in `cov/waivers.txt`) |
-| SVA mutation | 52 / 52 assertions shown to fail on a deliberate RTL mutation |
+| SVA mutation | 55 / 55 assertions shown to fail on a deliberate RTL mutation |
 | Lint | clean apart from waived warnings |
-| NanoSoC ADP bus tests | 762 passed, 0 failed |
-| NanoSoC firmware tests | 13 / 13 pass |
+| NanoSoC ADP bus tests | 801 passed, 0 failed |
+| NanoSoC firmware tests | 15 / 15 pass |
 
 ## RTL fixes made during verification
 
