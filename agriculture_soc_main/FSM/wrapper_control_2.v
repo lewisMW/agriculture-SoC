@@ -38,8 +38,14 @@
 // such cycles without a completed conversion the FSM spends one cycle in
 // S_ERR_TIMEOUT (adc_en low, no FIFO write, sticky err_adc_timeout set) and
 // returns to IDLE, so a dead ADC no longer parks sampling until reset. The flag
-// clears when the next sample is written. A conversion that completes on the
-// last allowed cycle is accepted. Before FIX-2 the FSM waited forever.
+// clears when the next sample is written. The budget covers the whole wait,
+// start and completion together: a conversion whose valid rises on the last
+// allowed cycle is accepted (S_WAIT_DONE checks valid first), while one that
+// only starts on that cycle cannot complete within the budget and times out.
+// After a timeout adc_quiet is cleared as after a sample, because the ADC may
+// still be converting (see the stale-conversion guard above). CONV_TIMEOUT
+// must exceed the longest legal wait at the slowest ADC clock the wrapper
+// allows (adc_apb_wrapper_rev2 sizes it). Before FIX-2 the FSM waited forever.
 // -----------------------------------------------------------------------------
 module wrapper_control_2 #(
     parameter CONV_TIMEOUT = 1344   // PCLK; the wrapper passes 4 calibrations' worth
@@ -69,9 +75,11 @@ module wrapper_control_2 #(
         S_ERR_FULL   = 3'd6,   // FIFO full at pre-check: drop the sample
         S_ERR_TIMEOUT= 3'd7;   // FIX-2: the ADC did not complete within CONV_TIMEOUT
 
-    localparam TW = (CONV_TIMEOUT > 1) ? $clog2(CONV_TIMEOUT) : 1;
+    localparam          TW       = (CONV_TIMEOUT > 1) ? $clog2(CONV_TIMEOUT) : 1;
+    localparam integer  TMO_MAX  = CONV_TIMEOUT - 1;
+    localparam [TW-1:0] TMO_LAST = TMO_MAX[TW-1:0];    // last allowed waiting cycle
     reg  [TW-1:0] tmo_cnt;     // cycles spent waiting for the ADC
-    wire          tmo_hit = (tmo_cnt == CONV_TIMEOUT - 1);
+    wire          tmo_hit = (tmo_cnt == TMO_LAST);
 
     reg [2:0] state, next_state;
     reg       adc_quiet;   // no unrequested conversion in flight (see header)
@@ -117,8 +125,17 @@ module wrapper_control_2 #(
         end else begin
             state       <= next_state;
             adc_valid_q <= adc_valid;
-            if (state == S_WRITE)               adc_quiet <= 1'b0;   // ADC saw adc_en at its sDone edge
-            else if (adc_valid && !adc_valid_q) adc_quiet <= 1'b1;   // that conversion has finished
+            // adc_quiet <= 0: a conversion nobody will use may be in flight.
+            // S_WRITE: the ADC saw adc_en at its sDone edge and restarted.
+            // S_ERR_TIMEOUT: a slow (not dead) ADC may still be converting,
+            // or have restarted at an sDone edge the synchroniser had not yet
+            // passed on; without this the next trigger could take that
+            // conversion's valid fall as its own start and store a result
+            // from before the trigger (FSM-STALE again). If the ADC really is
+            // dead nothing changes: adc_quiet then only delays the next
+            // attempt's start, which times out the same way.
+            if (state == S_WRITE || state == S_ERR_TIMEOUT) adc_quiet <= 1'b0;
+            else if (adc_valid && !adc_valid_q)             adc_quiet <= 1'b1;   // that conversion has finished
             if (state == S_WAIT_START || state == S_WAIT_DONE) tmo_cnt <= tmo_cnt + 1'b1;
             else                                               tmo_cnt <= {TW{1'b0}};
             if (state == S_ERR_TIMEOUT)  err_adc_timeout <= 1'b1;

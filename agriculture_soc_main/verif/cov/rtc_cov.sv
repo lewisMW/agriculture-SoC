@@ -8,7 +8,8 @@
 //   cp_state       : every FSM state visited
 //   cp_arm         : first arm (IDLE->ENABLE) vs re-arm (IDLE->READ, counter
 //                    already running), alarm serviced (WAITING->ICR), trigger
-//                    pulse returning to IDLE
+//                    pulse returning to IDLE, re-enable after a power-on reset
+//                    of the PL031 alone (WAITING->IDLE)
 //   cp_offset      : alarm_offset values at the CALC step, incl. the 0 and
 //                    wrap-around (0xFFFF_FFFF) edge cases
 //   cp_pt_reg      : firmware passthrough access to each PL031 register,
@@ -154,6 +155,7 @@ module rtc_cov (
             bins alarm_service = {{S_WAITING,    S_ICR_SETUP}};
             bins trig_to_idle  = {{S_PULSE_TRIG, S_IDLE}};
             bins offset_rearm  = {{S_WAITING,    S_READ_SETUP}};   // FIX-1
+            bins npor_reenable = {{S_WAITING,    S_IDLE}};         // RTC-NPOR: counter re-enabled after nPOR alone
         }
         // FIX-1: context of an offset re-arm (WAITING -> READ_SETUP)
         cp_rearm_ctx : coverpoint rearm_ctx iff (hist_valid && st_q == S_WAITING && state == S_READ_SETUP) {

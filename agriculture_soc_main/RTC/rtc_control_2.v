@@ -22,6 +22,10 @@
 //   ENABLE_INT -> WAITING -> (RTCINTR) -> CLEAR_INT -> PULSE_TRIG -> IDLE
 // On repeat cycles ENABLE is skipped (counter already running).
 //
+// After a power-on reset of the PL031 alone (nPOR without PRESETn) the FSM goes
+// from WAITING back to IDLE as soon as the counter reset releases, and the
+// next arm runs ENABLE again (see rtc_enabled below).
+//
 // Passthrough: while parked in WAITING (and IDLE) the FSM leaves the internal
 // APB bus alone, so the external master can read/write RTC registers directly
 // (e.g. firmware reading the live timestamp). A whole external transfer is
@@ -204,7 +208,27 @@ localparam [4:0]
 // -----------------------------------------------------------------------------
 reg [4:0]  state;
 reg [31:0] alarm_target;
-reg        rtc_enabled;     // set by the RTCCR write; cleared while nRTCRST is low
+
+// rtc_enabled: the FSM's RTCCR = 1 write has reached the PL031 since the last
+// power-on reset. The PL031 keeps RTCCR, RTCMR and RTCIMSC on nPOR: a power-on
+// reset clears RTCCR.start (the counter stops) and an APB reset (PRESETn) does
+// not touch them. So rtc_enabled is reset by nPOR only, never by PRESETn, and
+// is set in the cycle the write's ACCESS phase is on the PL031 bus (the FSM's
+// bus outputs are registered, so that is the cycle after S_ENABLE_ACCESS). A
+// reset that lands before that ACCESS cycle leaves rtc_enabled low and the
+// enable is simply written again; rewriting RTCCR = 1 is harmless.
+//   - S_IDLE writes RTCCR = 1 whenever rtc_enabled is low.
+//   - S_WAITING leaves through S_IDLE to re-enable and re-arm as soon as the
+//     counter reset releases, so a power-on reset of the RTC alone (nPOR
+//     without PRESETn) restarts the counter at once, not one watchdog period
+//     later, and no arm cycle in between can hide the need to re-enable.
+// (Bug RTC-NPOR: an nPOR pulse without PRESETn stopped the counter for good.
+// Its first fix cleared a PRESETn-reset flag while nRTCRST was low, and FIX-4
+// then qualified the enable with a flag that every RTCMR write cleared, so an
+// arm cycle between the nPOR pulse and the next S_IDLE - a FIX-1 offset
+// re-arm, a watchdog service, or an arm already in flight - lost the enable
+// again. Regression RTC-14 in RTC/tb_rtc_closure.sv.)
+reg        rtc_enabled;
 
 // FIX-4 (pending team confirmation): clear a stale PL031 interrupt on the first
 // arm after a warm reset (RTC-WARMINT, found on the real PL031 2026-11-16). A
@@ -212,20 +236,21 @@ reg        rtc_enabled;     // set by the RTCCR write; cleared while nRTCRST is 
 // the PL031, left the alarm re-raised: RTCMR/RTCIMSC survive (they are on
 // nPOR) and the match is still true, so after the reset the PL031 raised the
 // interrupt again - a duplicate sample of the same second (regression RTC-13b).
-// need_clr is set by PRESETn; on the next arm the FSM writes RTCICR = 1 after
-// the RTCMR write (so the old match is already replaced) and before
-// RTCIMSC = 1, reusing the S_ICR_* states (arm_clr marks that detour: it goes
-// on to S_IMSC_SETUP, never to S_PULSE_TRIG). After a power-on reset (nPOR,
-// with or without PRESETn) the PL031 was reset too - its counter restarts at 1
-// against a match of 0, nothing can be pending - so no clear (por_fresh). That
-// keeps the power-on arm (which also runs S_ENABLE_*) and the steady-state arm
-// unchanged; the warm-reset arm with the clear is exactly as long as the
-// worst steady-state path, so the passthrough stall bound stays 13 PCLK.
-// Under nanosoc nPOR is derived from HRESETn, so every reset is a power-on and
-// FIX-4 never adds the clear there.
-reg        need_clr;        // warm reset since the last arm-time clear
-reg        por_fresh;       // PL031 reset (nPOR) since the last RTCMR write
-reg        arm_clr;         // S_ICR_* entered from the arm (no trigger)
+// need_clr is set by PRESETn. The first arm after it always starts in S_IDLE,
+// which decides there whether this arm clears (arm_clr): it does when the
+// counter is enabled (rtc_enabled), because then an earlier alarm can still be
+// matching. The FSM then writes RTCICR = 1 after the RTCMR write (so the old
+// match is already replaced) and before RTCIMSC = 1, reusing the S_ICR_*
+// states (arm_clr routes that detour to S_IMSC_SETUP, never to S_PULSE_TRIG).
+// When rtc_enabled is low the PL031 counter has been stopped since a power-on
+// reset - it restarts at 1 against a match of 0, or stays frozen short of any
+// match the FSM armed - so nothing can be pending: that arm writes RTCCR = 1
+// instead and skips the clear. An arm therefore runs at most one of the two
+// extra writes (the enable or the clear), so the passthrough stall bound stays
+// 13 PCLK. Under nanosoc nPOR is derived from HRESETn, so every reset is a
+// power-on and FIX-4 never adds the clear there.
+reg        need_clr;        // warm reset since the last arm from S_IDLE
+reg        arm_clr;         // this arm writes RTCICR = 1 (S_ICR_* without a trigger)
 
 // -----------------------------------------------------------------------------
 // Missed-alarm watchdog (fixes F8-OFFSET0/1 and RTCLR-FWD)
@@ -342,11 +367,13 @@ assign rtc_pwdata  = ext_sel ? PWDATA       : fsm_pwdata;
 
 
 
-// FIX-4: por_fresh - the PL031 has been reset by nPOR and not armed since.
-// Async reset on nPOR, clocked on PCLK.
+// rtc_enabled (see "Internal state"): reset by nPOR only; set in the cycle the
+// FSM's RTCCR = 1 ACCESS is on the PL031 bus.
 always @(posedge PCLK or negedge nPOR) begin
-    if (!nPOR)                        por_fresh <= 1'b1;
-    else if (state == S_MATCH_ACCESS) por_fresh <= 1'b0;
+    if (!nPOR)
+        rtc_enabled <= 1'b0;
+    else if (fsm_psel && fsm_penable && fsm_pwrite && (fsm_paddr == RTC_RTCCR))
+        rtc_enabled <= 1'b1;
 end
 
 // -----------------------------------------------------------------------------
@@ -356,7 +383,6 @@ always @(posedge PCLK or negedge PRESETn) begin
     if (!PRESETn) begin
         state           <= S_IDLE;
         rtc_trig        <= 1'b0;
-        rtc_enabled     <= 1'b0;
         need_clr        <= 1'b1;
         arm_clr         <= 1'b0;
         alarm_target    <= 32'h0;
@@ -384,18 +410,20 @@ always @(posedge PCLK or negedge PRESETn) begin
        
             S_IDLE: begin
                 if (nrtcrst_pclk) begin
-                    // FIX-4: after a warm reset (PL031 not reset - por_fresh low)
-                    // RTCCR.start is still 1: it is on nPOR in the PL031, this
-                    // FSM only ever writes 1, and the wrapper forwards firmware
-                    // RTCCR writes with start forced to 1 (FIX-3). Skipping the
-                    // redundant enable keeps the warm-reset arm, which now adds
-                    // the RTCICR write, within the 13-PCLK stall bound.
-                    if (!rtc_enabled && por_fresh)
+                    // Enable the counter only if the PL031 has had a power-on
+                    // reset since the last enable (rtc_enabled low). After a
+                    // warm reset RTCCR.start is still 1: it is on nPOR in the
+                    // PL031, this FSM only ever writes 1, and the wrapper
+                    // forwards firmware RTCCR writes with start forced to 1
+                    // (FIX-3). Skipping the redundant enable keeps the
+                    // warm-reset arm, which adds the RTCICR write (FIX-4),
+                    // within the 13-PCLK stall bound.
+                    arm_clr  <= need_clr && rtc_enabled;
+                    need_clr <= 1'b0;
+                    if (!rtc_enabled)
                         state <= S_ENABLE_SETUP;
-                    else begin
-                        rtc_enabled <= 1'b1;
-                        state       <= S_READ_SETUP;
-                    end
+                    else
+                        state <= S_READ_SETUP;
                 end
             end
 
@@ -415,8 +443,7 @@ always @(posedge PCLK or negedge PRESETn) begin
                 fsm_pwrite  <= 1'b1;      // must hold write
                 fsm_paddr   <= RTC_RTCCR; // must hold address
                 fsm_pwdata  <= 32'h1;     // must hold data
-                rtc_enabled <= 1'b1;
-                state       <= S_READ_SETUP;
+                state       <= S_READ_SETUP;   // rtc_enabled sets as this ACCESS reaches the bus
             end
 
             // ── Read current timestamp — RTCDR ────────────────────────────────
@@ -470,13 +497,10 @@ always @(posedge PCLK or negedge PRESETn) begin
                 fsm_pwrite  <= 1'b1;          // hold write through ACCESS
                 fsm_paddr   <= RTC_RTCMR;     // hold address
                 fsm_pwdata  <= alarm_target;  // hold data
-                if (need_clr && !por_fresh) begin  // FIX-4: first arm after a warm reset
-                    arm_clr <= 1'b1;
-                    state   <= S_ICR_SETUP;
-                end else begin
-                    need_clr <= 1'b0;
-                    state    <= S_IMSC_SETUP;
-                end
+                if (arm_clr)                  // FIX-4: first arm after a warm reset
+                    state <= S_ICR_SETUP;
+                else
+                    state <= S_IMSC_SETUP;
             end
 
             // ── Enable interrupt — RTCIMSC = 1 ───────────────────────────────
@@ -517,7 +541,18 @@ always @(posedge PCLK or negedge PRESETn) begin
                 // cycle; it matters because an offset re-arm can now end just
                 // as an alarm becomes due, and the access would otherwise wait
                 // through the re-arm, the service and another arm (22 PCLK).
-                if ((RTCINTR || wd_expired) && !PSEL && poll_enable)
+                // RTC-NPOR: the PL031 had a power-on reset (counter stopped,
+                // RTCMR/RTCIMSC cleared) while this FSM kept running. Once the
+                // counter reset has released, go back through S_IDLE, which
+                // writes RTCCR = 1 and re-arms from the restarted counter,
+                // with no RTCICR write and no sample. This comes before alarm
+                // service: a service followed by the enable arm would hold a
+                // passthrough for longer than the 13-PCLK bound. The re-arm
+                // resets the watchdog, so the next sample is still due within
+                // armed_offset + 1 seconds. Also while paused.
+                if (!rtc_enabled && nrtcrst_pclk && !PSEL)
+                    state <= S_IDLE;
+                else if ((RTCINTR || wd_expired) && !PSEL && poll_enable)
                     state <= S_ICR_SETUP;
                 // FIX-1 (pending team confirmation): a changed alarm_offset
                 // re-arms at once - re-read the time and arm now + new offset.
@@ -551,7 +586,6 @@ always @(posedge PCLK or negedge PRESETn) begin
                 fsm_pwdata  <= 32'h1;         // hold data
                 if (arm_clr) begin             // FIX-4: arm-time clear done
                     arm_clr  <= 1'b0;
-                    need_clr <= 1'b0;
                     state    <= S_IMSC_SETUP;
                 end else
                     state    <= S_PULSE_TRIG;
@@ -567,16 +601,6 @@ always @(posedge PCLK or negedge PRESETn) begin
 
         endcase
 
-        // A power-on reset of the counter domain (nPOR low -> nRTCRST low)
-        // without an APB reset leaves this FSM running but may stop the PL031
-        // (RTCCR.start is reset with the counter in the PL031 stand-in, and
-        // must be assumed to be in the real IP). Forget that the counter was
-        // enabled, so the next arm cycle goes through S_ENABLE_* and writes
-        // RTCCR = 1 again. Placed after the case so it wins over the set in
-        // S_ENABLE_ACCESS if the reset lands mid-enable. (Bug RTC-NPOR, found
-        // by RTC/tb_rtc_closure.sv RTC-10: the counter stayed at 0 for good.)
-        if (!nrtcrst_pclk)
-            rtc_enabled <= 1'b0;
     end
 end
 

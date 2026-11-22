@@ -101,7 +101,8 @@ module fsm_sva #(
     input logic       fifo_write_en,
     input logic       fifo_full,
     input logic       adc_en,
-    input logic       err_fifo_full
+    input logic       err_fifo_full,
+    input logic       adc_quiet
 );
     localparam logic [2:0] S_IDLE = 3'd0, S_CHECK_FIFO = 3'd1, S_ENABLE = 3'd2,
                            S_WAIT_START = 3'd3, S_WAIT_DONE = 3'd4, S_WRITE = 3'd5,
@@ -161,12 +162,18 @@ module fsm_sva #(
     // the drop flag rises only in the cycle after S_ERR_FULL
     a_err_rise: assert property (@(posedge clk) disable iff (!rstn)
         (past_ok && $rose(err_fifo_full)) |-> ($past(state) == S_ERR_FULL));
+
+    // after a timeout the ADC may still be converting: the next trigger must
+    // not take that conversion's valid fall as its own start (FSM-STALE)
+    a_timeout_not_quiet: assert property (@(posedge clk) disable iff (!rstn)
+        (state == S_ERR_TIMEOUT) |=> !adc_quiet)
+        else $error("adc_quiet still set after a conversion timeout");
 endmodule
 
 bind wrapper_control_2 fsm_sva #(.CONV_TIMEOUT(CONV_TIMEOUT)) u_fsm_sva (
     .clk(clk), .rstn(rstn), .state(state),
     .fifo_write_en(fifo_write_en), .fifo_full(fifo_full),
-    .adc_en(adc_en), .err_fifo_full(err_fifo_full)
+    .adc_en(adc_en), .err_fifo_full(err_fifo_full), .adc_quiet(adc_quiet)
 );
 
 // ── APB slave behaviour (adc_apb_wrapper_rev2 external port) ─────────────────
@@ -305,7 +312,9 @@ module rtc_sva (
     input logic        pt_setup_done,
     input logic [31:0] eff_offset,
     input logic [31:0] armed_offset,
-    input logic        por_fresh,
+    input logic        rtc_enabled,
+    input logic        nrtcrst_pclk,
+    input logic        arm_clr,
     input logic        PSEL,
     // the PL031 (Rtc) port
     input logic        rtc_psel,
@@ -314,7 +323,8 @@ module rtc_sva (
     input logic [9:0]  rtc_paddr,
     input logic [31:0] rtc_pwdata
 );
-    localparam logic [4:0] S_READ_SETUP = 5'd3, S_WAITING = 5'd10, S_PULSE_TRIG = 5'd13, S_READ_CAPTURE = 5'd14;
+    localparam logic [4:0] S_IDLE = 5'd0, S_ENABLE_SETUP = 5'd1, S_READ_SETUP = 5'd3, S_WAITING = 5'd10,
+                           S_ICR_SETUP = 5'd11, S_PULSE_TRIG = 5'd13, S_READ_CAPTURE = 5'd14;
 
     // $past / $stable refer to the previous clock edge: only meaningful from
     // the second edge after a reset (the clock may not even run during reset).
@@ -380,19 +390,44 @@ module rtc_sva (
     logic warm_unclr;
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn)                                warm_unclr <= 1'b1;
-        else if (por_fresh)                          warm_unclr <= 1'b0;
+        else if (!rtc_enabled)                       warm_unclr <= 1'b0;   // counter stopped since nPOR: nothing pending
         else if (fsm_wr && rtc_paddr == 10'h007)     warm_unclr <= 1'b0;
     end
     a_warm_arm_clears: assert property (@(posedge PCLK) disable iff (!PRESETn)
         (fsm_wr && rtc_paddr == 10'h004) |-> !warm_unclr)
         else $error("FSM unmasked the PL031 interrupt after a warm reset without clearing it first");
+
+    // RTC-NPOR: once the counter reset has released, a PL031 that has not
+    // been enabled since its power-on reset is enabled by the next arm:
+    // parked in WAITING with the bus free, the FSM goes to IDLE, and IDLE
+    // goes to ENABLE. Never stays parked on a stopped counter.
+    a_npor_rearm: assert property (@(posedge PCLK) disable iff (!PRESETn)
+        (state == S_WAITING && !rtc_enabled && nrtcrst_pclk && !PSEL) |=> (state == S_IDLE))
+        else $error("parked in WAITING with the PL031 counter not enabled");
+    a_npor_enable: assert property (@(posedge PCLK) disable iff (!PRESETn)
+        (state == S_IDLE && !rtc_enabled && nrtcrst_pclk) |=> (state == S_ENABLE_SETUP))
+        else $error("arm from IDLE skipped RTCCR = 1 with the PL031 counter not enabled");
+
+    // An arm runs at most one of its two extra writes, the enable (RTCCR = 1
+    // after a power-on reset) or the arm-time clear (RTCICR = 1 after a warm
+    // reset, FIX-4): with both, a passthrough could stall longer than 13 PCLK.
+    logic en_this_arm;
+    always @(posedge PCLK or negedge PRESETn) begin
+        if (!PRESETn)                    en_this_arm <= 1'b0;
+        else if (state == S_ENABLE_SETUP) en_this_arm <= 1'b1;
+        else if (state == S_WAITING)      en_this_arm <= 1'b0;
+    end
+    a_arm_one_extra_write: assert property (@(posedge PCLK) disable iff (!PRESETn)
+        (arm_clr && en_this_arm) |-> (state != S_ICR_SETUP))
+        else $error("one arm both enabled the counter and cleared the interrupt");
 endmodule
 
 bind rtc_control_2 rtc_sva u_rtc_sva (
     .PCLK(PCLK), .PRESETn(PRESETn), .state(state), .rtc_trig(rtc_trig),
     .ext_sel(ext_sel), .fsm_psel(fsm_psel), .poll_enable(poll_enable),
     .wd_ticks(wd_ticks), .pt_setup_done(pt_setup_done), .PSEL(PSEL),
-    .eff_offset(eff_offset), .armed_offset(armed_offset), .por_fresh(por_fresh),
+    .eff_offset(eff_offset), .armed_offset(armed_offset), .rtc_enabled(rtc_enabled),
+    .nrtcrst_pclk(nrtcrst_pclk), .arm_clr(arm_clr),
     .rtc_psel(rtc_psel), .rtc_penable(rtc_penable), .rtc_pwrite(rtc_pwrite),
     .rtc_paddr(rtc_paddr), .rtc_pwdata(rtc_pwdata)
 );

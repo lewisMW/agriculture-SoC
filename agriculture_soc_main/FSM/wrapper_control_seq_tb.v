@@ -18,6 +18,8 @@
 //     every busy state, a held (level) trigger, adc_valid stuck high / low
 //     (no conversion timeout before FIX-2), and fifo_full rising
 //     after the pre-check (unit-only case; built with -DSVA_FSM_UNIT)
+//   - FSM-5: after a timeout of a slow ADC that is still converting, the next
+//     trigger stores a fresh sample, never the old conversion's result
 //
 // Standalone (uses dummy_adc, no ARM IP).  Run: make -C FSM seq
 // -----------------------------------------------------------------------------
@@ -290,7 +292,83 @@ module wrapper_control_seq_tb;
             v_force = 1'b0;
             run_episode(200);
             check_true(err_adc_timeout === 1'b0, "FSM-3/FIX-2 flag stays clear after a good conversion");
+            // (e) a conversion that only STARTS on the last allowed cycle times
+            //     out: the budget covers start and completion together
+            @(posedge clk); #1;
+            wait_idle(100);
+            v_force = 1'b1; v_val = 1'b1;                  // last conversion done, valid high
+            w0 = wr_count;
+            pulse_trig;
+            wait_state(S_WAIT_START, 10);                  // waiting cycle 1
+            repeat (TMO - 1) @(posedge clk); #1;           // waiting cycle TMO (the last)
+            v_val = 1'b0;                                  // the start shows only now
+            @(posedge clk); #1;
+            check_true(uut.state === S_ERR_TIMEOUT && wr_count == w0,
+                       "FSM-3 start on the last allowed cycle times out");
+            v_force = 1'b0;
             $display("NOTE FSM-3/FIX-2: a dead ADC now times out after CONV_TIMEOUT cycles (status[6] in the wrapper) instead of parking the FSM");
+        end
+
+        // ── FSM-5: no stale sample after a timeout (FSM-STALE + FIX-2) ───────
+        // A slow but alive ADC times out while still converting (valid low).
+        // The next trigger must wait for that conversion to finish and its
+        // own conversion to start, and store a fresh sample. Before the fix
+        // adc_quiet stayed set through S_ERR_TIMEOUT, so the next trigger took
+        // the still-low valid as its own start and stored the old conversion.
+        begin : fsm5
+            integer w0, k;
+            reg seen_done_early;
+            @(posedge clk); #1;
+            wait_idle(100);
+            v_force = 1'b1; v_val = 1'b0;
+            repeat (2) @(posedge clk); #1;
+            v_val = 1'b1; repeat (2) @(posedge clk); #1;   // a conversion completes: ADC quiet
+            v_val = 1'b0;                                  // valid low from here
+            check_true(uut.adc_quiet === 1'b1, "FSM-5 precondition: ADC quiet");
+            w0 = wr_count;
+            pulse_trig;
+            wait_state(S_WAIT_DONE, 10);                   // conversion started (valid low)
+            wait_state(S_ERR_TIMEOUT, TMO + 5);            // slow: still converting at the timeout
+            @(posedge clk); #1;
+            check_true(uut.state === S_IDLE && err_adc_timeout === 1'b1 && uut.adc_quiet === 1'b0,
+                       "FSM-5 timeout mid-conversion: IDLE, flag set, adc_quiet low");
+            // next trigger while the slow conversion is still running
+            pulse_trig;
+            seen_done_early = 1'b0;
+            for (k = 0; k < 8; k = k + 1) begin
+                @(posedge clk); #1;
+                if (uut.state == S_WAIT_DONE) seen_done_early = 1'b1;
+            end
+            check_true(!seen_done_early && uut.state === S_WAIT_START,
+                       "FSM-5 old conversion's low valid not taken as start");
+            v_val = 1'b1; repeat (3) @(posedge clk); #1;   // the old conversion finishes
+            check_true(uut.state === S_WAIT_START && wr_count == w0,
+                       "FSM-5 old conversion's completion not stored");
+            v_val = 1'b0; repeat (2) @(posedge clk); #1;   // this trigger's conversion starts
+            check_true(uut.state === S_WAIT_DONE, "FSM-5 this trigger's own start is seen");
+            v_val = 1'b1;
+            wait_idle(20);
+            check_true(wr_count == w0 + 1 && err_adc_timeout === 1'b0,
+                       "FSM-5 one fresh sample written, flag cleared");
+            v_force = 1'b0;
+            // a genuinely dead ADC after a timeout: every later trigger times
+            // out again (no hang, no write)
+            v_force = 1'b1; v_val = 1'b0;
+            w0 = wr_count;
+            for (k = 0; k < 3; k = k + 1) begin
+                @(posedge clk); #1;
+                wait_idle(2 * TMO);
+                pulse_trig;
+                wait_state(S_ERR_TIMEOUT, TMO + 10);
+            end
+            wait_idle(10);
+            check_true(wr_count == w0 && err_adc_timeout === 1'b1,
+                       "FSM-5 dead ADC: repeated triggers time out, no write");
+            v_val = 1'b1; repeat (3) @(posedge clk); #1;   // the ADC recovers
+            v_force = 1'b0;
+            run_episode(4 * TMO);
+            check_true(wr_count == w0 + 1 && err_adc_timeout === 1'b0,
+                       "FSM-5 recovered ADC: next trigger writes, flag cleared");
         end
 
         // ── FSM-4: fifo_full rising after the pre-check (unit-only case) ─────

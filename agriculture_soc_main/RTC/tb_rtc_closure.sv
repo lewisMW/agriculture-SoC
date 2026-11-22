@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 // =============================================================================
-// tb_rtc_closure.sv - rtc_control_2 closure tests RTC-1 .. RTC-13.
+// tb_rtc_closure.sv - rtc_control_2 closure tests RTC-1 .. RTC-14.
 //
 // Timing unit: a "tick" is one CLK1HZ rising edge. CLK1HZ is generated here
 // from PCLK (toggled on the PCLK falling edge, half period c1_half PCLK) so a
@@ -997,6 +997,117 @@ module tb_rtc_closure;
         end
     endtask
 
+    // -------------------------------------------------------------- RTC-14
+    // Regression for the RTC-NPOR follow-up: after a power-on reset of the
+    // PL031 alone (nPOR without PRESETn) the counter is stopped until the FSM
+    // writes RTCCR = 1 again, and nothing may hide that need. Before the fix
+    // the enable was skipped whenever an RTCMR write happened between the
+    // nPOR pulse and the next S_IDLE - an offset re-arm (FIX-1), an arm already
+    // in flight, or a watchdog service - and the counter stayed stopped for
+    // good; and with a long offset the counter stayed stopped for the whole
+    // armed period, because nothing left S_WAITING until the watchdog.
+    task automatic counter_runs(input string nm);
+        logic [31:0] a, b;
+        apb_rd(A_DR, a);
+        clk(3 * period());
+        apb_rd(A_DR, b);
+        check(b > a, $sformatf("RTC-14 %s: the PL031 counter runs (%0d -> %0d)", nm, a, b));
+    endtask
+
+    task automatic real_match_samples(input string nm, input int unsigned off);
+        bit ok; int took;
+        wait_trig((off + 2) * period() + 200, ok, took);   // the period running at the pulse
+        for (int i = 0; i < 2; i++) begin
+            wait_trig((off + 2) * period() + 200, ok, took);
+            check(ok && last_svc_intr, $sformatf("RTC-14 %s: period %0d sampled by a real PL031 match", nm, i));
+        end
+    endtask
+
+    task automatic rtc14();
+        bit ok; int took;
+        int unsigned n0;
+        logic [4:0] arm_sts [8] = '{S_READ_SETUP, S_READ_ACCESS, S_READ_CAPTURE, S_CALC,
+                                    S_MATCH_SETUP, S_MATCH_ACCESS, S_IMSC_SETUP, S_IMSC_ACCESS};
+        $display("--- RTC-14 nPOR without PRESETn: the counter is always re-enabled ---");
+
+        // (a) nPOR pulse while waiting, then an offset change (FIX-1 re-arm)
+        //     while the counter reset is still low
+        set_offset_and_settle(2);
+        wait_armed(ok); clk(10);
+        nPOR = 1'b0; clk(5); nPOR = 1'b1; clk(2);
+        alarm_offset = 3;
+        wait_rearmed(40, ok, took);
+        check(ok && !dut.nrtcrst_pclk, "RTC-14a precondition: offset re-arm while the counter reset is low");
+        clk(4 * period());
+        check(dut.rtc_enabled, "RTC-14a nPOR then an offset re-arm: RTCCR rewritten");
+        counter_runs("(a) nPOR then an offset re-arm");
+        real_match_samples("(a)", 3);
+
+        // (b) a 1-PCLK nPOR pulse in every state of an arm cycle in flight
+        set_offset_and_settle(2);
+        foreach (arm_sts[i]) begin
+            wait_armed(ok);
+            wait_state(arm_sts[i], 4 * period() + 200, ok);
+            nPOR = 1'b0; clk(1); nPOR = 1'b1;
+            check(ok, $sformatf("RTC-14b precondition: nPOR pulse in arm state %0d", arm_sts[i]));
+            clk(4 * period());
+            check(dut.rtc_enabled, $sformatf("RTC-14b nPOR pulse in arm state %0d: RTCCR rewritten", arm_sts[i]));
+            counter_runs($sformatf("(b) nPOR pulse in arm state %0d", arm_sts[i]));
+        end
+        real_match_samples("(b)", 2);
+
+        // (c) a long armed period: the counter restarts as soon as its reset
+        //     releases, and is re-armed from the restarted time with no sample
+        alarm_offset = 1000;
+        wait_rearmed(40, ok, took);
+        clk(2 * period());
+        n0 = trig_count;
+        nPOR = 1'b0; clk(5); nPOR = 1'b1;
+        clk(4 * period());
+        check(dut.rtc_enabled && dut.state == S_WAITING && dut.ctrl_time_value < 32'd8 &&
+              dut.alarm_target == dut.ctrl_time_value + 32'd1000,
+              $sformatf("RTC-14c offset 1000: re-armed from the restarted counter within 4 ticks (time %0d, target %0d)",
+                        dut.ctrl_time_value, dut.alarm_target));
+        check(trig_count == n0, "RTC-14c the re-enable arm produces no sample");
+        counter_runs("(c) offset 1000, long before the watchdog");
+        alarm_offset = 2;
+        wait_rearmed(40, ok, took);
+        real_match_samples("(c)", 2);
+
+        // (d) nPOR pulse, then a warm reset before the counter reset releases:
+        //     the first arm enables (no RTCICR detour needed) and nothing
+        //     unarmed is sampled
+        wait_armed(ok); clk(10);
+        nPOR = 1'b0; clk(5); nPOR = 1'b1; clk(10);
+        apb_abort = 1'b1; PSEL = 0; PENABLE = 0;
+        PRESETn = 1'b0; clk(2); PRESETn = 1'b1;
+        apb_abort = 1'b0;
+        n0 = trig_count;
+        wait (dut.nrtcrst_pclk);
+        wait_armed(ok);
+        check(ok && dut.rtc_enabled && !dut.RTCINTR && trig_count == n0,
+              "RTC-14d nPOR then PRESETn: first arm enables the counter, nothing pending, no sample");
+        counter_runs("(d) nPOR then PRESETn");
+        real_match_samples("(d)", 2);
+
+        // (e) PRESETn around the enable write after a power-on reset: in the
+        //     enable's SETUP, ACCESS and the cycle after. The counter must end
+        //     up running whether or not that write reached the PL031.
+        for (int k = 0; k < 3; k++) begin
+            por_reset();
+            wait_state(S_ENABLE_SETUP, 6 * period(), ok);
+            clk(k + 1);                         // k=0: bus SETUP, 1: bus ACCESS, 2: after
+            apb_abort = 1'b1; PSEL = 0; PENABLE = 0;
+            PRESETn = 1'b0; clk(2); PRESETn = 1'b1;
+            apb_abort = 1'b0;
+            wait_armed(ok);
+            check(ok && dut.rtc_enabled, $sformatf("RTC-14e PRESETn %0d cycles into the enable: arm completes, counter enabled", k));
+            counter_runs($sformatf("(e) PRESETn %0d cycles into the enable", k));
+        end
+        real_match_samples("(e)", 2);
+        check(max_stall <= 13, $sformatf("RTC-14 longest passthrough stall %0d PCLK <= 13", max_stall));
+    endtask
+
     // ------------------------------------------- coverage closure (no spec ID)
     // Stimulus for model bins the RTC-n cases do not reach on their own.
     // Arm the given offset with or without a CLK1HZ tick in the arm window
@@ -1102,7 +1213,8 @@ module tb_rtc_closure;
         rtc12();
         rtc13();
         cov_extra();
-        rtc10();      // last: the stand-in may stop the counter for good
+        rtc14();
+        rtc10();
 
         check(n_pslverr == 0, "PSLVERR never asserted");
         check(n_port_bad == 0, "PL031 port protocol never violated");

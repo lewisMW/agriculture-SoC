@@ -35,8 +35,10 @@ module adc_apb_wrapper_rev2 #(
     parameter DATA_WIDTH = 32,
     parameter SAMPLE_WIDTH = 8,
     parameter [31:0] DEFAULT_ALARM_OFFSET = 32'd5,  // seconds between polls
-    parameter ADC_CLK_DIV  = 4                      // PCLK cycles per ADC clock half
+    parameter ADC_CLK_DIV  = 4,                     // PCLK cycles per ADC clock half
                                                     // period (sar_adc.sdc must match)
+    parameter ADC_CLK_DIV_MAX = 255                 // slowest ADC clock (same unit) the
+                                                    // conversion timeout must allow for
 )(
     // Clock and reset
     input  wire                  PCLK,
@@ -461,9 +463,19 @@ module adc_apb_wrapper_rev2 #(
         .reset       (PRESETn)
     );
 
-    // CONV_TIMEOUT: 4x a calibration (42 sar_clk, the longest legal
-    // conversion) at 2*ADC_CLK_DIV PCLK per sar_clk (1344 PCLK at ADC_CLK_DIV 4)
-    wrapper_control_2 #(.CONV_TIMEOUT(4 * 42 * 2 * ADC_CLK_DIV)) u_ctrl (
+    // CONV_TIMEOUT (FIX-2): 4x a calibration (42 sar_clk, the longest legal
+    // conversion) at 2*TMO_DIV PCLK per sar_clk. TMO_DIV is the slowest ADC
+    // clock the timeout allows for: ADC_CLK_DIV_MAX (default 255, the largest
+    // value an 8-bit divider register can hold), never less than ADC_CLK_DIV.
+    // Sizing it for the slowest clock rather than for ADC_CLK_DIV keeps the
+    // timeout correct if the ADC clock divider is made firmware-programmable:
+    // a timeout sized for the default divider would fire on every conversion
+    // at a slower ADC clock and drop every sample. The cost is detection
+    // latency for a dead ADC only: 85680 PCLK at the default (2.6 ms at
+    // 33 MHz), against poll periods of seconds.
+    localparam integer TMO_DIV      = (ADC_CLK_DIV_MAX > ADC_CLK_DIV) ? ADC_CLK_DIV_MAX : ADC_CLK_DIV;
+    localparam integer CONV_TIMEOUT = 4 * 42 * 2 * TMO_DIV;
+    wrapper_control_2 #(.CONV_TIMEOUT(CONV_TIMEOUT)) u_ctrl (
         .clk           (PCLK),
         .rstn          (PRESETn),
         .sample_trig   (sample_trig),

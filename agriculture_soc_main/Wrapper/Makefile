@@ -12,7 +12,7 @@
 #                                           autonomous periods, random APB
 #                                           traffic, scoreboard, SVA
 #   make params   WRP-7: directed + gap with ADDR_WIDTH=12, DEFAULT_ALARM_OFFSET=1
-#   make adcdiv   ADC-6: closure bench at ADC_CLK_DIV = 1, 2, 8
+#   make adcdiv   ADC-6: closure bench at ADC_CLK_DIV = 1, 2, 8, 255 (slowest)
 #   make rob      ROB-1: illegal-state recovery (no coverage models bound)
 #   make xsafe    ROB-2: directed bench with randomised initial values, 5 seeds
 #
@@ -31,7 +31,7 @@ ROB_FILES  = ./sens_rob_tb.sv $(SENS_DUT)
 
 SEEDS     ?= 10
 SEED_LIST  = $(shell seq 1 $(SEEDS))
-ADC_DIVS  ?= 1 2 8
+ADC_DIVS  ?= 1 2 8 255
 X_SEEDS   ?= 1 2 3 4 5
 
 .PHONY: all rand sva gap clo soak params adcdiv rob xsafe clean
@@ -65,7 +65,8 @@ params:
 	$(call tb_run,wrap_p16,adc_apb_wrapper_rev2_tb,$(DIR_FILES),$(RTC_INC) -GADDR_WIDTH=16 -GDEFAULT_ALARM_OFFSET=1,)
 	$(call tb_run,wrap_gap_p12,sens_gap_tb,$(GAP_FILES),$(RTC_INC) --assert -GAW=12 -GDEF_OFF=1,)
 
-# ADC-6: every ADC clock divider.
+# ADC-6: every ADC clock divider, up to the slowest one the conversion timeout
+# is sized for (255): no good conversion may time out there either.
 adcdiv:
 	$(foreach d,$(ADC_DIVS),$(call tb_run,wrap_clo_div$(d),sens_closure_tb,$(CLO_FILES),$(RTC_INC) --assert -GADC_CLK_DIV=$(d),+adc_only)$(newline))
 

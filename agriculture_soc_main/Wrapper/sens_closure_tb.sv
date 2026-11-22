@@ -22,7 +22,8 @@
 //     IDLE is accepted; every accepted trigger gives exactly one push or one
 //     drop (FIFO full).
 //
-// +adc_only  run only ADC-6 (the `make adcdiv` builds at ADC_CLK_DIV 1, 2, 8)
+// +adc_only  run only ADC-6 and STALE (the `make adcdiv` builds at ADC_CLK_DIV
+//            1, 2, 8 and 255, the slowest ADC clock the timeout is sized for)
 // Ends with "=== SENS-CLO: ... ===" ("=== SENS-CLO[divN]: ... ===" with +adc_only).
 // =============================================================================
 module sens_closure_tb #(
@@ -104,9 +105,13 @@ module sens_closure_tb #(
         int i = 0; ok = 1'b0;
         while (i < tmo) begin if (uut.u_ctrl.state == s) begin ok = 1'b1; return; end cyc(1); i++; end
     endtask
+    // Longest the sampling FSM can stay busy, in PCLK: an unrequested
+    // conversion still running, then a calibration (42 ADC clocks), at
+    // 2*ADC_CLK_DIV PCLK per ADC clock, with margin. 5000 at small dividers.
+    localparam int BUSY_MAX = (200 * ADC_CLK_DIV > 5000) ? 200 * ADC_CLK_DIV : 5000;
     task automatic wait_fsm_idle();
         int i = 0;
-        while (i < 5000 && !(uut.u_ctrl.state == F_IDLE && !uut.sample_trig)) begin cyc(1); i++; end
+        while (i < BUSY_MAX && !(uut.u_ctrl.state == F_IDLE && !uut.sample_trig)) begin cyc(1); i++; end
         cyc(2);
     endtask
     task automatic wait_rtc_parked();
@@ -558,7 +563,7 @@ module sens_closure_tb #(
             bit want_cal = (d % 2 == 1);
             wr(A_CAL, 32'h0);
             wr(A_TRIG, 32'h1);
-            wait_fsm(F_WRITE, 3000, ok);
+            wait_fsm(F_WRITE, BUSY_MAX, ok);
             cyc(1);
             if (d > 0) cyc(d);
             if (want_cal) wr(A_CAL, 32'h1);
@@ -582,17 +587,22 @@ module sens_closure_tb #(
         logic [31:0] s;
         int unsigned t0, p0;
         $display("--- FIX-2 ADC conversion timeout through the wrapper ---");
+        // the budget is sized for the slowest ADC clock the wrapper allows
+        // (ADC_CLK_DIV_MAX, default 255), not for the divider in use, so a
+        // slower ADC clock can never make good conversions time out
+        check(uut.CONV_TIMEOUT == 4 * 42 * 2 * ((ADC_CLK_DIV > 255) ? ADC_CLK_DIV : 255),
+              $sformatf("FIX-2 CONV_TIMEOUT %0d PCLK = 4 calibrations at the slowest ADC clock (divider 255)", uut.CONV_TIMEOUT));
         wr(A_ALARM, 32'd1); set_poll(1'b1);
         for (int k = 0; k < 2; k++) begin
             wait_fsm_idle();
             tmo_forcing = 1'b1;
             if (k == 0) force uut.adc_valid_s1 = 1'b0; else force uut.adc_valid_s1 = 1'b1;   // dead valid as the wrapper sees it
             t0 = n_rtc_trig;
-            begin int g = 0; while (n_timeout_expected == 0 && g < 20000) begin cyc(1); g++; end end
+            begin int g = 0; while (n_timeout_expected == 0 && g < uut.CONV_TIMEOUT + 2000) begin cyc(1); g++; end end
             cyc(4);
             rd(A_STATUS, s);
             check(s[6] == 1'b1, $sformatf("FIX-2 valid stuck %0d: STATUS[6] reads 1 (0x%08h)", k, s));
-            begin int g = 0; while (uut.u_ctrl.state != F_IDLE && g < 4000) begin cyc(1); g++; end end
+            begin int g = 0; while (uut.u_ctrl.state != F_IDLE && g < BUSY_MAX) begin cyc(1); g++; end end
             cyc(3); rd(A_STATUS, s);
             check(s[3:2] == 2'b00 || uut.u_ctrl.state != F_IDLE, $sformatf("FIX-2 valid stuck %0d: STATUS[3:2] returns to 0 after the timeout", k));
             begin int g = 0; while (n_rtc_trig < t0 + 2 && g < 20 * tick()) begin cyc(1); g++; end end
