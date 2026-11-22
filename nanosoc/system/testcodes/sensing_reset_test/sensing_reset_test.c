@@ -36,12 +36,17 @@ static void check_reset_state(const char *when)
     SC_CHECK(SENSING_IP_REGS->adc_cal == 0,           "ADC_CAL back at 0");
     SC_CHECK(SENSING_IP_REGS->rtc_alarm_offset == 5,  "RTC_ALARM_OFFSET back at 5");
     SC_CHECK(SENSING_IP_REGS->rtc_ctrl == 1,          "RTC_CTRL back at 1");
+    SC_CHECK(SENSING_IP_REGS->adc_clkdiv == SENSING_ADC_CLKDIV_RESET,       "ADC_CLKDIV back at its reset value");
+    SC_CHECK(SENSING_IP_REGS->adc_samplediv == SENSING_ADC_SAMPLEDIV_RESET, "ADC_SAMPLEDIV back at its reset value");
+    SC_CHECK(SENSING_IP_REGS->irq_enable == 0,        "IRQ_ENABLE back at 0");
+    SC_CHECK(SENSING_IP_REGS->rtc_prescale == SENSING_RTC_PRESCALE_RESET,   "RTC_PRESCALE back at its reset value");
     {
-        /* Polling is on from reset (period 5 s), so samples arrive between the
-         * reset and this check. On hardware (1 Hz) that is ~0 samples, but in
-         * sim CLK1HZ_DIV=50 makes 1 s = 1 us and boot+UART output takes
-         * >100 us, so the FIFO has already refilled (sim run 2026-11-18: status
-         * 0x12 at the first read). Under nanosoc nPOR = HRESETn, so RTCDR is
+        /* Polling is on from reset (period 5 s), so samples can arrive between
+         * the reset and this check. rtc_prescale is back at its reset value
+         * (the real clock's 1 Hz) here, so that is ~0 samples, but bound it
+         * anyway: with a fast tick boot+UART output is long enough for the
+         * FIFO to refill (sim run 2026-11-18: status 0x12 at the first read,
+         * before the tick was a register). Under nanosoc nPOR = HRESETn, so RTCDR is
          * seconds since THIS reset: bound the FIFO by the samples that could
          * have been taken since, instead of demanding it be empty. RTCDR is
          * read after the drain so a sample landing mid-drain is still covered. */
@@ -56,6 +61,7 @@ static void check_reset_state(const char *when)
         SC_CHECK(n <= max_n,                "FIFO holds only samples taken since reset");
         SC_CHECK(!dropped || max_n > 16u,   "drop flag clear (unless FIFO refilled since reset)");
     }
+    SENSING_IP_REGS->rtc_prescale = SENSING_RTC_PRESCALE_FAST;   /* simulation tick from here on */
     sensing_init(1, 0);
     SC_CHECK(sc_sample_within(6), "sampling restarts");
 }
@@ -66,6 +72,10 @@ static void dirty(void)
     SENSING_IP_REGS->amux = 3u;
     SENSING_IP_REGS->adc_cal = 1u;
     SENSING_IP_REGS->rtc_alarm_offset = 1u;
+    SENSING_IP_REGS->adc_clkdiv = 2u;
+    SENSING_IP_REGS->adc_samplediv = 3u;
+    SENSING_IP_REGS->irq_enable = SENSING_IRQ_SAMPLE_READY;   /* NVIC line stays disabled */
+    SENSING_IP_REGS->rtc_prescale = SENSING_RTC_PRESCALE_FAST;
 }
 
 int main(void)

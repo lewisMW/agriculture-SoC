@@ -47,6 +47,9 @@ int main(void)
     uint32_t t0, t1, i, mono;
     UartStdOutInit();
     sp_str("sensing_rtc_regs_test: start\n");
+    /* rtc_prescale resets to the value for the real clock; this test counts
+     * RTC seconds, so it selects the simulation tick (a "second" of 100 clocks). */
+    SENSING_IP_REGS->rtc_prescale = SENSING_RTC_PRESCALE_FAST;
 
     sensing_init(2, 0);
     sc_wait_secs(3);

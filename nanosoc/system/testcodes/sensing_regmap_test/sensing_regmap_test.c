@@ -2,8 +2,9 @@
  * sensing_regmap_test.c - FW-1
  *
  * The sensing register map as the Cortex-M0 sees it: reset values, walking 1
- * on PLL_CONTROL / AMUX / RTC_ALARM_OFFSET, byte and halfword stores (STRB /
- * STRH) to every lane, writes to read-only and reads of write-only registers,
+ * on PLL_CONTROL / AMUX / RTC_ALARM_OFFSET / RTC_PRESCALE, byte and halfword
+ * stores (STRB / STRH) to every lane (the byte-0 registers ADC_CLKDIV,
+ * ADC_SAMPLEDIV and IRQ_ENABLE change only when lane 0 is strobed), writes to read-only and reads of write-only registers,
  * unmapped offsets, the 64 KB alias and the 0xA000_0000 EXP mirror, the RTC
  * alias at 0x6000_1200 (must NOT reach the PL031), and back-to-back loads and
  * stores from a tight loop. Expectations are the adopted register policy
@@ -57,6 +58,10 @@ int main(void)
     SC_CHECK(R32(BASE + 0x100) == 0,        "PLL_CONTROL reset 0");
     SC_CHECK(R32(BASE + 0x104) == 0,        "AMUX reset 0");
     SC_CHECK(R32(BASE + 0x10C) == 0,        "ADC_CAL reset 0");
+    SC_CHECK(R32(BASE + 0x110) == SENSING_ADC_CLKDIV_RESET,    "ADC_CLKDIV reset value");
+    SC_CHECK(R32(BASE + 0x114) == SENSING_ADC_SAMPLEDIV_RESET, "ADC_SAMPLEDIV reset value");
+    SC_CHECK(R32(BASE + 0x118) == 0,        "IRQ_ENABLE reset 0");
+    SC_CHECK(R32(BASE + 0x22C) == SENSING_RTC_PRESCALE_RESET,  "RTC_PRESCALE reset value");
     SC_CHECK(R32(BASE + 0x224) == 5,        "RTC_ALARM_OFFSET reset 5");
     SC_CHECK(R32(BASE + 0x228) == 1,        "RTC_CTRL reset 1 (polling on)");
     SC_CHECK(R32(BASE + 0x108) == 0,        "ADC_TRIGGER (WO) reads 0");
@@ -67,8 +72,8 @@ int main(void)
 
     /* ---- walking 1 / walking 0 ---- */
     {
-        static const uint32_t regs[3] = {0x100, 0x104, 0x224};
-        for (k = 0; k < 3; k++) {
+        static const uint32_t regs[4] = {0x100, 0x104, 0x224, 0x22C};
+        for (k = 0; k < 4; k++) {
             ok = 1;
             for (i = 0; i < 32; i++) {
                 R32(BASE + regs[k]) = 1u << i;
@@ -76,15 +81,16 @@ int main(void)
                 R32(BASE + regs[k]) = ~(1u << i);
                 if (R32(BASE + regs[k]) != ~(1u << i)) ok = 0;
             }
-            SC_CHECK(ok, k == 0 ? "walking 1/0 PLL_CONTROL" : k == 1 ? "walking 1/0 AMUX" : "walking 1/0 RTC_ALARM_OFFSET");
-            R32(BASE + regs[k]) = (k == 2) ? 5u : 0u;
+            SC_CHECK(ok, k == 0 ? "walking 1/0 PLL_CONTROL" : k == 1 ? "walking 1/0 AMUX"
+                        : k == 2 ? "walking 1/0 RTC_ALARM_OFFSET" : "walking 1/0 RTC_PRESCALE");
+            R32(BASE + regs[k]) = (k == 2) ? 5u : (k == 3) ? SENSING_RTC_PRESCALE_RESET : 0u;
         }
     }
 
     /* ---- STRB / STRH to every lane of the multi-byte registers ---- */
     {
-        static const uint32_t regs[3] = {0x100, 0x104, 0x224};
-        for (k = 0; k < 3; k++) {
+        static const uint32_t regs[4] = {0x100, 0x104, 0x224, 0x22C};
+        for (k = 0; k < 4; k++) {
             ok = 1;
             for (i = 0; i < 7; i++) {
                 uint32_t base = (k == 2) ? 0x7u : 0x0F0F0F0Fu;
@@ -94,8 +100,27 @@ int main(void)
             }
             SC_CHECK(ok, k == 0 ? "PLL_CONTROL: byte/half stores change only their lanes"
                         : k == 1 ? "AMUX: byte/half stores change only their lanes"
-                                 : "RTC_ALARM_OFFSET: byte/half stores change only their lanes");
-            R32(BASE + regs[k]) = (k == 2) ? 5u : 0u;
+                        : k == 2 ? "RTC_ALARM_OFFSET: byte/half stores change only their lanes"
+                                 : "RTC_PRESCALE: byte/half stores change only their lanes");
+            R32(BASE + regs[k]) = (k == 2) ? 5u : (k == 3) ? SENSING_RTC_PRESCALE_RESET : 0u;
+        }
+    }
+    /* byte-0 registers: change only when lane 0 is strobed, then take byte 0 */
+    {
+        static const uint32_t regs[3]  = {0x110, 0x114, 0x118};
+        static const uint32_t mask[3]  = {0xFFu, 0xFFu, 0x3u};
+        static const uint32_t reset[3] = {SENSING_ADC_CLKDIV_RESET, SENSING_ADC_SAMPLEDIV_RESET, 0u};
+        for (k = 0; k < 3; k++) {
+            ok = 1;
+            for (i = 0; i < 7; i++) {
+                R32(BASE + regs[k]) = 0x1u;
+                store(BASE + regs[k], ACC_OFF[i], ACC_SIZE[i], 0xA5C35A3Fu);
+                if (R32(BASE + regs[k]) != (ACC_OFF[i] == 0 ? (0x3Fu & mask[k]) : 0x1u)) ok = 0;
+            }
+            R32(BASE + regs[k]) = reset[k];
+            SC_CHECK(ok, k == 0 ? "ADC_CLKDIV: changes only on a store that includes lane 0"
+                        : k == 1 ? "ADC_SAMPLEDIV: changes only on a store that includes lane 0"
+                                 : "IRQ_ENABLE: changes only on a store that includes lane 0");
         }
     }
     /* single-bit controls: bit0 only with lane 0 strobed */
@@ -148,14 +173,14 @@ int main(void)
     /* ---- unmapped offsets: read 0, writes ignored, no fault ---- */
     R32(BASE + 0x100) = 0xCAFEF00Du;
     {
-        static const uint32_t un[5] = {0x000, 0x010, 0x110, 0x22C, 0xFFC};
+        static const uint32_t un[5] = {0x000, 0x010, 0x11C, 0x230, 0xFFC};
         ok = 1;
         for (i = 0; i < 5; i++) {
             if (R32(BASE + un[i]) != 0) ok = 0;
             R32(BASE + un[i]) = 0xFFFFFFFFu;
             if (R32(BASE + un[i]) != 0) ok = 0;
         }
-        SC_CHECK(ok, "unmapped 0x000/0x010/0x110/0x22C/0xFFC read 0 after writes");
+        SC_CHECK(ok, "unmapped 0x000/0x010/0x11C/0x230/0xFFC read 0 after writes");
     }
     SC_CHECK(R32(BASE + 0x100) == 0xCAFEF00Du, "unmapped writes left PLL_CONTROL alone");
 

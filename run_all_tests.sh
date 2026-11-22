@@ -43,7 +43,8 @@ SOCSIM_TIMEOUT="${SOCSIM_TIMEOUT:-3600}"  # seconds per firmware test
 SOCSIM_TESTS=(adc_trigger_test fifo_drain_test sensing_driver_test rtc_time_test
               adc_autonomous_test pslverr_test fault_recovery_test
               sensing_regmap_test sensing_rtc_regs_test sensing_stress_test
-              sensing_sleep_poll_test sensing_reset_test sensing_cal_test)
+              sensing_sleep_poll_test sensing_reset_test sensing_cal_test
+              clock_ctrl_test sensing_irq_test)
 
 # ---------------------------------------------------------------- arguments --
 DO_LINT=1 DO_UNIT=1 DO_COV=1 DO_UVM=1 DO_NSCCOV=1 DO_SOCSIM=1
