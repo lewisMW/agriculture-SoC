@@ -10,6 +10,7 @@
 #     ./run_all_tests.sh --no-uvm --no-socsim
 #     ./run_all_tests.sh --only unit     # one group: lint|unit|cov|uvm|nsccov|socsim
 #     ./run_all_tests.sh --list          # show the steps, run nothing
+#     SOCSIM_ONLY="rtc_time_test" ./run_all_tests.sh --only socsim   # chosen fw tests
 #
 # Groups (in run order):
 #   lint    verilator --lint-only (informational; -Wall warnings don't fail the run)
@@ -45,6 +46,8 @@ SOCSIM_TESTS=(adc_trigger_test fifo_drain_test sensing_driver_test rtc_time_test
               sensing_regmap_test sensing_rtc_regs_test sensing_stress_test
               sensing_sleep_poll_test sensing_reset_test sensing_cal_test
               clock_ctrl_test sensing_irq_test)
+# SOCSIM_ONLY="a_test b_test" runs just those firmware tests (e.g. a rerun).
+if [ -n "${SOCSIM_ONLY:-}" ]; then read -ra SOCSIM_TESTS <<< "$SOCSIM_ONLY"; fi
 
 # ---------------------------------------------------------------- arguments --
 DO_LINT=1 DO_UNIT=1 DO_COV=1 DO_UVM=1 DO_NSCCOV=1 DO_SOCSIM=1
