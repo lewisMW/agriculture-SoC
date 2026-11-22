@@ -13,6 +13,10 @@ Run from agriculture_soc_main/ (the makefile targets do). Environment:
     STUB_RTC=1      PL031 stand-in (no ARM IP needed). The verdict is then
                     marked STUB: every number must be re-run with the real PL031.
     BUILD_ROOT=dir  build directories (and the step logs) on a local disk.
+    CLEAN_BUILDS=1  with BUILD_ROOT: delete each step's build directories as
+                    soon as the step has finished (the step logs are kept), so
+                    the disk only ever holds one step's build (~1.2 GB at most
+                    instead of ~5 GB). Later steps rebuild what they need.
     OPEN_BUGS_OK=1  exit 0 when the only failures are checks tagged
                     [SUSPECTED RTL BUG <ID>] with <ID> in verif/cov/open_bugs.txt.
                     The verdict still says OPEN BUGS and lists them.
@@ -38,6 +42,7 @@ import subprocess
 import sys
 import time
 import functools
+import shutil
 print = functools.partial(print, flush=True)  # noqa: A001 - progress through a pipe
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -168,6 +173,24 @@ def analyse(name, group, rc, text, expected):
     return res
 
 
+def clean_build_root(build_root, keep):
+    """Delete everything directly inside build_root except the log directory."""
+    root = os.path.realpath(build_root)
+    if root in ("/", os.path.realpath(os.path.expanduser("~"))) or not os.path.isdir(root):
+        return
+    for e in os.listdir(root):
+        p = os.path.join(root, e)
+        if os.path.realpath(p) == os.path.realpath(keep):
+            continue
+        if os.path.isdir(p) and not os.path.islink(p):
+            shutil.rmtree(p, ignore_errors=True)
+        else:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--benches", action="store_true", help="benches only (no coverage gates)")
@@ -192,6 +215,10 @@ def main():
     open_ok = os.environ.get("OPEN_BUGS_OK") == "1"
     build_root = os.environ.get("BUILD_ROOT", "")
     logdir = os.path.join(build_root, "signoff_logs") if build_root else os.path.join(COV, "signoff_logs")
+    clean_builds = os.environ.get("CLEAN_BUILDS") == "1"
+    if clean_builds and not build_root:
+        print("CLEAN_BUILDS=1 needs BUILD_ROOT=<dir> (it only ever deletes inside BUILD_ROOT)")
+        return 2
     os.makedirs(logdir, exist_ok=True)
     known = load_open_bugs()
 
@@ -217,6 +244,8 @@ def main():
             continue
         print("  %-12s ..." % name, end="", flush=True)
         rc, text, log, dt = run_step(name, cmd, logdir, a.timeout)
+        if clean_builds:
+            clean_build_root(build_root, logdir)
         res = analyse(name, group, rc, text, expected)
         if res["problems"] or res["untagged"]:
             st = "FAIL"
