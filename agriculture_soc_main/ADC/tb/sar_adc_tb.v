@@ -444,19 +444,26 @@ module sar_adc_tb;
         convert_once(code);
         wait_tail(12);
         check(code == exp_code(0.3, 16, 15), "conversion after a mid-conversion reset");
-        // (b) state 7 is not a state of the machine: nothing but reset leaves it
-        dut.u_logic.state = 3'd7;
-        wait_tail(2);
-        @(posedge dut.sar_clk);
-        #7 rstn = 1'b0;
-        #1;
-        check(dut.u_logic.state === 3'd0, "rstn low clears a state the machine cannot leave");
-        repeat (5) @(posedge clk);
-        rstn = 1'b1;
-        wait_tail(3);
-        convert_once(code);
-        wait_tail(12);
-        check(code == exp_code(0.3, 16, 15), "conversion after that reset");
+        // (b) state 7 is not a state of the machine: nothing but reset leaves it.
+        // Deliberate fault injection: bound assertions (a_legal_state) are off
+        // until the reset has cleared it. +no_fault_inject skips it (functional
+        // coverage, whose must-never bins would count it).
+        if (!$test$plusargs("no_fault_inject")) begin
+            $assertoff;
+            dut.u_logic.state = 3'd7;
+            wait_tail(2);
+            @(posedge dut.sar_clk);
+            #7 rstn = 1'b0;
+            #1;
+            check(dut.u_logic.state === 3'd0, "rstn low clears a state the machine cannot leave");
+            $asserton;
+            repeat (5) @(posedge clk);
+            rstn = 1'b1;
+            wait_tail(3);
+            convert_once(code);
+            wait_tail(12);
+            check(code == exp_code(0.3, 16, 15), "conversion after that reset");
+        end
         // ---- 7. the run-time controls ----
         $display("--- 7. clk_div and sample_div set at run time (DC input 0.3 V) ---");
         dut.u_afe.mode = 2; dut.u_afe.vdc = 0.3;

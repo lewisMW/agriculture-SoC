@@ -4,8 +4,9 @@
 //
 // One seed (+seed=N) runs until at least PERIODS (+periods=, default 2000)
 // autonomous RTC triggers have fired, with alarm_offset 1..3 and constrained-
-// random APB traffic on top: every register read and written, random byte
-// strobes, back-to-back bursts, polling pauses, FIFO clears, manual triggers,
+// random APB traffic on top: every register read and written (the ADC clock
+// registers, IRQ_ENABLE and RTC_PRESCALE too, against a shadow model that
+// applies the byte-strobe rules), random byte strobes, back-to-back bursts, polling pauses, FIFO clears, manual triggers,
 // calibration, RTC passthrough reads and disturbing writes (RTCMR, RTCLR,
 // RTCIMSC, RTCICR, RTCCR).
 //
@@ -30,7 +31,8 @@ module sens_soak_tb #(
         A_PLL    = 16'h100, A_AMUX    = 16'h104, A_TRIG    = 16'h108, A_CAL = 16'h10C,
         A_RTCDR  = 16'h200, A_RTCMR   = 16'h204, A_RTCLR   = 16'h208, A_RTCCR = 16'h20C,
         A_RTCIMSC= 16'h210, A_RTCRIS  = 16'h214, A_RTCMIS  = 16'h218, A_RTCICR = 16'h21C,
-        A_FCLR   = 16'h220, A_ALARM   = 16'h224, A_RTCCTRL = 16'h228;
+        A_FCLR   = 16'h220, A_ALARM   = 16'h224, A_RTCCTRL = 16'h228,
+        A_CLKDIV = 16'h110, A_SDIV    = 16'h114, A_IRQEN   = 16'h118, A_PRESC = 16'h22C;
     localparam logic [2:0] F_IDLE = 3'd0, F_ERR = 3'd6;
     localparam logic [4:0] R_MATCH_SETUP = 5'd6;
     localparam int TICK_HALF = 80;                 // CLK1HZ period 160 PCLK
@@ -41,13 +43,14 @@ module sens_soak_tb #(
     logic [31:0]   PWDATA = '0;
     logic [3:0]    PSTRB = 4'h0;
     wire  [31:0]   PRDATA;
-    wire           PREADY, PSLVERR;
+    wire           PREADY, PSLVERR, IRQ;
+    wire  [31:0]   RTC_PRESCALE;
 
     adc_apb_wrapper_rev2 #(.ADDR_WIDTH(AW), .DEFAULT_ALARM_OFFSET(32'd2)) uut (
-        .PCLK(PCLK), .CLK1HZ(CLK1HZ), .PRESETn(PRESETn), .nPOR(nPOR),
+        .PCLK(PCLK), .CLK1HZ(CLK1HZ), .RTC_PRESCALE(RTC_PRESCALE), .PRESETn(PRESETn), .nPOR(nPOR),
         .PSEL(PSEL), .PADDR(PADDR), .PENABLE(PENABLE), .PWRITE(PWRITE),
         .PWDATA(PWDATA), .PRDATA(PRDATA), .PREADY(PREADY), .PSLVERR(PSLVERR),
-        .APBACTIVE(1'b1), .PPROT(3'b001), .PSTRB(PSTRB),
+        .APBACTIVE(1'b1), .PPROT(3'b001), .PSTRB(PSTRB), .IRQ(IRQ),
         .ADC_VINP(1'b0), .ADC_VINN(1'b0));
 
     always #5 PCLK = ~PCLK;
@@ -219,11 +222,56 @@ module sens_soak_tb #(
         endcase
     endfunction
 
+    // Shadow of the clock registers and IRQ_ENABLE (reset values; byte-0
+    // registers change only with lane 0 strobed, RTC_PRESCALE per lane).
+    logic [7:0]  sh_cdiv = 8'd4, sh_sdiv = 8'd8;
+    logic [1:0]  sh_irqen = 2'b00;
+    logic [31:0] sh_presc = 32'd5_000_000;
+    int unsigned n_reg_bad = 0, n_reg_rd = 0, n_irq_hi = 0;
+    always @(posedge PCLK) if (PRESETn && IRQ) n_irq_hi++;
+    task automatic clock_reg_op();
+        logic [31:0] r, wd;
+        logic [3:0]  st;
+        int unsigned w = $urandom_range(0, 3);
+        st = rand_strb();
+        if ($urandom_range(0, 1)) begin
+            case (w)
+                // dividers kept small (0 = the default) so the soak stays fast;
+                // the slowest setting is covered by the gap bench (T14)
+                0: begin wd = ($urandom & 32'hFFFF_FF00) | $urandom_range(0, 6);
+                         xfer(1'b1, A_CLKDIV, wd, st, r); if (st[0]) sh_cdiv = wd[7:0]; end
+                1: begin wd = ($urandom & 32'hFFFF_FF00) | $urandom_range(0, 12);
+                         xfer(1'b1, A_SDIV, wd, st, r);   if (st[0]) sh_sdiv = wd[7:0]; end
+                2: begin wd = $urandom;
+                         xfer(1'b1, A_IRQEN, wd, st, r);  if (st[0]) sh_irqen = wd[1:0]; end
+                default: begin
+                    wd = $urandom;
+                    xfer(1'b1, A_PRESC, wd, st, r);
+                    for (int b = 0; b < 4; b++) if (st[b]) sh_presc[8*b +: 8] = wd[8*b +: 8];
+                end
+            endcase
+        end else begin
+            logic [31:0] e;
+            case (w)
+                0: begin xfer(1'b0, A_CLKDIV, 0, 0, r); e = {24'h0, sh_cdiv}; end
+                1: begin xfer(1'b0, A_SDIV, 0, 0, r);   e = {24'h0, sh_sdiv}; end
+                2: begin xfer(1'b0, A_IRQEN, 0, 0, r);  e = {30'h0, sh_irqen}; end
+                default: begin xfer(1'b0, A_PRESC, 0, 0, r); e = sh_presc; end
+            endcase
+            n_reg_rd++;
+            if (r !== e || RTC_PRESCALE !== sh_presc) begin
+                n_reg_bad++;
+                if (n_reg_bad <= 3) $display("FAIL [%0t] clock register %0d read 0x%08h, model 0x%08h (RTC_PRESCALE out 0x%08h)",
+                                             $time, w, r, e, RTC_PRESCALE);
+            end
+        end
+    endtask
+
     // One random operation (possibly a back-to-back burst).
-    int unsigned n_op [16];
+    int unsigned n_op [17];
     task automatic random_op();
         logic [31:0] r, now;
-        int unsigned k = $urandom_range(0, 99);
+        int unsigned k = $urandom_range(0, 109);
         int unsigned burst = ($urandom_range(0, 9) == 0) ? $urandom_range(2, 4) : 1;
         for (int b = 0; b < burst; b++) begin
             keep_sel = (b + 1 < burst);
@@ -240,7 +288,7 @@ module sens_soak_tb #(
             else if (k < 76) begin n_op[10]++; xfer(1'b0, 16'h200 + 4 * $urandom_range(0, 7), 0, 0, r); end
             else if (k < 80) begin n_op[11]++; xfer(1'b0, {$urandom_range(0, 3), 2'b00} | 16'h100, 0, 0, r); end
             else if (k < 83) begin                                     // unmapped
-                logic [15:0] un [5] = '{16'h000, 16'h010, 16'h110, 16'h22C, 16'hFFC};
+                logic [15:0] un [5] = '{16'h000, 16'h010, 16'h11C, 16'h230, 16'hFFC};
                 n_op[12]++;
                 xfer($urandom_range(0, 1), un[$urandom_range(0, 4)], $urandom, 4'hF, r);
             end
@@ -258,6 +306,7 @@ module sens_soak_tb #(
                 xfer(1'b1, A_RTCLR, now + $urandom_range(0, 10) - 5, 4'hF, r);
             end
             else if (k < 95) xfer(1'b1, A_RTCCR, 32'h1, 4'hF, r);
+            else if (k < 105) begin n_op[16]++; clock_reg_op(); end
             else begin
                 // idle: a transfer left open for back-to-back must not turn into a
                 // SETUP with no ACCESS (APB master rule) - close the bus first
@@ -302,6 +351,8 @@ module sens_soak_tb #(
         check(max_stall <= 13, $sformatf("soak: longest stall %0d PCLK <= 13", max_stall));
         check(g_bad == 0, $sformatf("soak: guarantee held on %0d clean intervals (longest %0d ticks; %0d excluded)", g_gaps, g_max, g_excl));
         check(uut.u_fifo.count == 0 && fq.size() == 0, "soak: FIFO drained, model agrees");
+        check(n_reg_bad == 0 && n_reg_rd > 0, $sformatf("soak: clock registers / IRQ_ENABLE / RTC_PRESCALE read back as the strobe rules say (%0d reads, %0d wrong)", n_reg_rd, n_reg_bad));
+        check(n_irq_hi > 0, $sformatf("soak: IRQ exercised (%0d PCLK high; bound SVA a_irq_def checks every cycle)", n_irq_hi));
         $display("--- seed %0d: %0d ops, %0d transfers (%0d back-to-back), %0d RTC triggers, %0d accepted / %0d ignored, %0d pushes, %0d drops, longest stall %0d ---",
                  seed, iter, n_xfer, n_b2b, n_rtc_trig, n_acc, n_ign, n_push, n_drop, max_stall);
         $display("\n=== SENS-SOAK[seed%0d]: %0d PASSED, %0d FAILED ===", seed, pass_count, fail_count);

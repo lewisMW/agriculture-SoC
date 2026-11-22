@@ -126,9 +126,10 @@ module adc_apb_wrapper_rev2 #(
 
     // Byte-lane write strobes (bug F6: PSTRB used to be ignored, so a STRB/STRH
     // rewrote all 32 bits from whatever was on the other lanes). Multi-byte
-    // registers update only the strobed lanes; single-bit controls (cal,
-    // rtc_ctrl, adc_trigger) live in byte 0 and act only when byte lane 0 is
-    // strobed; fifo_clear (write-any-value) acts on any strobed lane.
+    // registers (pll, amux, alarm_offset, rtc_prescale) update only the strobed
+    // lanes; the byte-0 registers (cal, rtc_ctrl, adc_trigger, adc_clkdiv,
+    // adc_samplediv, irq_enable) act only when byte lane 0 is strobed;
+    // fifo_clear (write-any-value) acts on any strobed lane.
     wire strb0 = PSTRB[0];
     function [DATA_WIDTH-1:0] strb_merge;
         input [DATA_WIDTH-1:0] cur;
@@ -321,19 +322,19 @@ module adc_apb_wrapper_rev2 #(
     // the ADC samples. sar_adc reads both on the falling edge of PCLK.
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) adc_clkdiv_reg <= ADC_CLK_DIV;
-        else if (write_enable && (PADDR == ADC_CLKDIV_ADDR)) adc_clkdiv_reg <= PWDATA[7:0];
+        else if (write_enable && strb0 && (PADDR == ADC_CLKDIV_ADDR)) adc_clkdiv_reg <= PWDATA[7:0];
     end
 
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) adc_samplediv_reg <= ADC_SAMPLE_DIV;
-        else if (write_enable && (PADDR == ADC_SAMPLEDIV_ADDR)) adc_samplediv_reg <= PWDATA[7:0];
+        else if (write_enable && strb0 && (PADDR == ADC_SAMPLEDIV_ADDR)) adc_samplediv_reg <= PWDATA[7:0];
     end
 
     // Interrupt enables, and the interrupt itself: registered, so it falls
     // three PCLK cycles after the read of measurement_lo that empties the FIFO.
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) irq_enable_reg <= 2'b00;
-        else if (write_enable && (PADDR == IRQ_ENABLE_ADDR)) irq_enable_reg <= PWDATA[1:0];
+        else if (write_enable && strb0 && (PADDR == IRQ_ENABLE_ADDR)) irq_enable_reg <= PWDATA[1:0];
     end
 
     reg irq_reg;
@@ -347,7 +348,7 @@ module adc_apb_wrapper_rev2 #(
     // this block is used with an external CLK1HZ).
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) rtc_prescale_reg <= RTC_PRESCALE_RESET;
-        else if (write_enable && (PADDR == RTC_PRESCALE_ADDR)) rtc_prescale_reg <= PWDATA;
+        else if (write_enable && (PADDR == RTC_PRESCALE_ADDR)) rtc_prescale_reg <= strb_merge(rtc_prescale_reg, PWDATA, PSTRB);
     end
     assign RTC_PRESCALE = rtc_prescale_reg;
 
