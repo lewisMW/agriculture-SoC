@@ -34,6 +34,9 @@ wrap_rd_en      a_fifo_rd_en_pulse           clo     PROVEN       fired: a_fifo_
 wrap_pop_empty  a_no_pop_when_empty          soak    PROVEN       fired: a_no_pop_when_empty
 wrap_capture    a_sample_capture             clo     PROVEN       fired: a_sample_capture
 wrap_rtccr      a_rtccr_never_cleared        gap     PROVEN       fired: a_rtccr_never_cleared
+wrap_irq        a_irq_def                    gap     PROVEN       fired: a_irq_def
+wrap_byte0      a_byte0_need_lane0           gap     PROVEN       fired: a_byte0_need_lane0
+wrap_presc      a_prescale_lanes             gap     PROVEN       fired: a_prescale_lanes
 wrap_status     a_status_reserved            clo     PROVEN       fired: a_status_reserved
 rtc_legal       a_legal_state                rtc     PROVEN       fired: a_legal_state
 rtc_trig_1cyc   a_trig_one_cycle             rtc     PROVEN       fired: a_trig_one_cycle, a_trig_source
@@ -54,4 +57,4 @@ sar_result      a_result_only_in_done        adccal  PROVEN       fired: a_resul
 sar_valid       a_valid_falls                adccal  PROVEN       fired: a_valid_falls
 sar_clkc        a_clkc_gated                 adccal  PROVEN       fired: a_clkc_gated
 
-RESULT: 52/52 PROVEN
+RESULT: 55/55 PROVEN
