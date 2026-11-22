@@ -69,13 +69,13 @@ tagged `[SUSPECTED RTL BUG <ID>]`. They still count as failures. With
 | Step | Bench | Covers |
 |---|---|---|
 | `fifo_rand` | `FIFO/fifo_apb_adc_rand_tb.v` | FIFO against a reference model, invariants, random traffic |
-| `fsm`, `fsm_seq` | `FSM/wrapper_control_2_tb.v`, `FSM/wrapper_control_seq_tb.v` | FSM states and sequencing, FSM-1..4 (trigger in every busy state, stuck ADC, FIFO full) |
+| `fsm`, `fsm_seq` | `FSM/wrapper_control_2_tb.v`, `FSM/wrapper_control_seq_tb.v` | FSM states and sequencing, FSM-1..5 (trigger in every busy state, stuck ADC, FIFO full, no stale sample after a timeout) |
 | `adc`, `adc_cal`, `adc_div` | `ADC/tb/` | SAR ADC digital with a behavioural analog model, ADC-1..5, clock dividers 1/2/4/8 |
 | `uvm_fifo`, `uvm_sensing` | `verif/uvm/` | UVM benches for the FIFO and the whole peripheral |
-| `rtc`, `rtc_rand`, `rtc_clo` | `RTC/` | RTC controller: directed, random, and closure tests RTC-1..13 |
+| `rtc`, `rtc_rand`, `rtc_clo` | `RTC/` | RTC controller: directed, random, and closure tests RTC-1..14 |
 | `wrap`, `wrap_rand`, `wrap_sva` | `Wrapper/` | wrapper directed and constrained-random traffic, with bound SVA |
 | `gap`, `params` | `Wrapper/sens_gap_tb.sv` | APB4 protocol, byte strobes, register map, reset behaviour; `params` reruns it at other parameter values |
-| `clo`, `adcdiv` | `Wrapper/sens_closure_tb.sv` | WRP-1..5 and ADC-6 at wrapper level |
+| `clo`, `adcdiv` | `Wrapper/sens_closure_tb.sv` | WRP-1..5 and ADC-6 at wrapper level; `adcdiv` repeats ADC-6 at ADC clock dividers 1, 2, 8 and 255 (the slowest clock the conversion timeout is sized for) |
 | `soak` | `Wrapper/sens_soak_tb.sv` | WRP-6: 2000+ sample periods per seed under random firmware traffic |
 | `rob` | `Wrapper/sens_rob_tb.sv` | ROB-1: recovery from illegal FSM states |
 | `xsafe` | `Wrapper/` (directed bench, random initial values) | ROB-2: no X propagation from uninitialised registers, 5 seeds |
@@ -90,7 +90,9 @@ Cortex-M0 and the AHB bus.
 ## Current results
 
 Full sign-off with the real ARM PL031, 2026-11-16, on the tree that includes
-FIX-1 to FIX-4:
+FIX-1 to FIX-4. RTC-NPOR-2, FSM-STALE-2 and TMO-DIV came later and are signed
+off on the PL031 stand-in only, so these numbers need a re-run with the real
+PL031:
 
 | Gate | Result |
 |---|---|
@@ -115,8 +117,12 @@ Each fix has a regression test that failed before the fix.
 | FIX-2 | `wrapper_control_2.v` | the FSM waited forever for a dead ADC; it now times out and sets `status[6]` |
 | FIX-3 | `adc_apb_wrapper_rev2.v` | firmware could stop the RTC counter by writing 0 to RTCCR, silently stopping sampling |
 | FIX-4 | `rtc_control_2.v` | a warm reset just after an alarm could produce a duplicate sample |
+| RTC-NPOR-2 | `rtc_control_2.v` | after a power-on reset of the RTC alone (`nPOR` without `PRESETn`), any alarm-register write before the next idle (a FIX-1 offset re-arm, an arm already in progress, a watchdog service) left the counter stopped for good; with a long offset it stayed stopped for the whole period. The enable flag is now reset by `nPOR` only, and the controller re-enables as soon as the counter reset releases (RTC-14) |
+| FSM-STALE-2 | `wrapper_control_2.v` | after a FIX-2 timeout of a slow (not dead) ADC, the next trigger could store the result of the conversion that was still running (FSM-5) |
+| TMO-DIV | `adc_apb_wrapper_rev2.v` | the FIX-2 timeout was sized for the default ADC clock, so a slower ADC clock (a programmable divider) would time out every conversion; it is now sized for the slowest divider, `ADC_CLK_DIV_MAX` = 255 (85680 PCLK) |
 
-FIX-1 to FIX-4 are pending confirmation by the rest of the team.
+FIX-1 to FIX-4 are pending confirmation by the rest of the team. RTC-NPOR-2
+and FSM-STALE-2 correct FIX-4 and FIX-2.
 
 ## Open issues
 
