@@ -24,8 +24,9 @@
  * or hang the CPU (see pslverr_test). The time helpers below
  * still PAUSE autonomous polling first (rtc_ctrl bit0 = 0) before touching the
  * RTC: this is now DEFENSIVE only, and it also avoids the few-cycle wait-state
- * latency by parking the FSM in WAITING (bus always granted) up front. Polling
- * is resumed afterwards. Wrapper-local registers
+ * latency by parking the FSM in WAITING (bus always granted) up front. The
+ * caller's polling state is restored afterwards: if polling was paused (e.g.
+ * by sensing_quiesce) it stays paused. Wrapper-local registers
  * (status/measurement/trigger/fifo_clear/alarm_offset/adc_cal/rtc_ctrl) never
  * stall and are accessed directly.
  *
@@ -70,24 +71,35 @@ static inline void sensing_polling_enable(void)  { SENSING_IP_REGS->rtc_ctrl = R
 
 /* ---- RTC time (fault-safe via pause/resume) ------------------------------ */
 
-/* Read the live RTC timestamp without risking a PSLVERR bus fault. */
-static inline uint32_t sensing_read_time(void)
+/* Pause polling and let the RTC FSM park; returns the previous rtc_ctrl value
+ * for sensing_rtc_unpark(). */
+static inline uint32_t sensing_rtc_park(void)
 {
-    uint32_t t;
+    uint32_t prev = SENSING_IP_REGS->rtc_ctrl & RTC_CTRL_POLL_ENABLE;
     sensing_polling_disable();
     sensing_delay(SENSING_PARK_SETTLE);
+    return prev;
+}
+
+/* Restore the polling state saved by sensing_rtc_park(). */
+static inline void sensing_rtc_unpark(uint32_t prev) { SENSING_IP_REGS->rtc_ctrl = prev; }
+
+/* Read the live RTC timestamp. Leaves autonomous polling as it found it. */
+static inline uint32_t sensing_read_time(void)
+{
+    uint32_t t, prev = sensing_rtc_park();
     t = SENSING_IP_REGS->rtc_dr;
-    sensing_polling_enable();
+    sensing_rtc_unpark(prev);
     return t;
 }
 
-/* Load a known RTC time (RTCLR). Also resets the counter's reference. */
+/* Load a known RTC time (RTCLR). Also resets the counter's reference. Leaves
+ * autonomous polling as it found it. */
 static inline void sensing_set_time(uint32_t v)
 {
-    sensing_polling_disable();
-    sensing_delay(SENSING_PARK_SETTLE);
+    uint32_t prev = sensing_rtc_park();
     SENSING_IP_REGS->rtc_lr = v;
-    sensing_polling_enable();
+    sensing_rtc_unpark(prev);
 }
 
 /* ---- sampling ------------------------------------------------------------ */
@@ -106,22 +118,35 @@ static inline int sensing_rtc_intr(void)      { return (sensing_status() & STATU
  * written. Sticky until the next sample is written. */
 static inline int sensing_adc_timed_out(void) { return (sensing_status() & STATUS_ADC_TIMEOUT_MASK) != 0; }
 
-/* Wait until the ADC is idle (STATUS[3:2] != running). */
+/* Wait until the ADC is idle (STATUS[3:2] != running). Bounded by the
+ * hardware: the sampling FSM gives up on a conversion after its timeout
+ * (FIX-2, 85680 PCLK at the default parameters) and drops adc_en. */
 static inline void sensing_wait_adc_idle(void)
 {
     while (GET_ADC_STATUS(sensing_status()) == STATUS_ADC_RUNNING) { }
 }
 
-/* Manual one-shot conversion, waited to completion. Returns 1 if the ADC
- * completed, 0 if the conversion timed out (STATUS[6], FIX-2) - no sample was
- * written then. A sample dropped on a full FIFO is reported separately by
- * sensing_sample_dropped(). The settle lets the trigger reach the ADC. */
+/* Results of sensing_trigger_wait(). */
+#define SENSING_SAMPLE_OK       1   /* a sample was written to the FIFO */
+#define SENSING_SAMPLE_TIMEOUT  0   /* the conversion timed out (STATUS[6]); no sample */
+#define SENSING_SAMPLE_DROPPED (-1) /* the FIFO was full; no conversion was started */
+
+/* Manual one-shot conversion, waited to completion. Returns SENSING_SAMPLE_OK,
+ * SENSING_SAMPLE_TIMEOUT or SENSING_SAMPLE_DROPPED. A trigger that finds the
+ * FIFO full starts no conversion and writes no sample; the FIFO-drop flag
+ * (STATUS[4]) then reads 1 (it is set when a trigger finds the FIFO full and
+ * cleared when one finds room, so it always describes the latest trigger), and
+ * is checked first. Otherwise STATUS[6] tells a timed-out conversion from a
+ * written sample (a written sample clears it). Pause autonomous polling first
+ * (sensing_quiesce) if an autonomous trigger must not land in between. The
+ * settle lets the trigger reach the ADC. */
 static inline int sensing_trigger_wait(void)
 {
     sensing_trigger_oneshot();
     sensing_delay(SENSING_PARK_SETTLE);
     sensing_wait_adc_idle();
-    return !sensing_adc_timed_out();
+    if (sensing_sample_dropped()) return SENSING_SAMPLE_DROPPED;
+    return sensing_adc_timed_out() ? SENSING_SAMPLE_TIMEOUT : SENSING_SAMPLE_OK;
 }
 
 /* Stop autonomous sampling and wait out any conversion already in flight, so
