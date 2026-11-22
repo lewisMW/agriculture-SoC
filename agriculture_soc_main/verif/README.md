@@ -89,17 +89,15 @@ Cortex-M0 and the AHB bus.
 
 ## Current results
 
-Full sign-off with the real ARM PL031, 2026-11-16, on the tree that includes
-FIX-1 to FIX-4. RTC-NPOR-2, FSM-STALE-2 and TMO-DIV came later and are signed
-off on the PL031 stand-in only, so these numbers need a re-run with the real
-PL031:
+Full sign-off with the real ARM PL031, 2026-11-22, on the tree with every fix
+in the table below:
 
 | Gate | Result |
 |---|---|
 | All benches | pass, apart from the two open ADC bugs below |
-| Functional coverage | 656 / 656 goal bins, no `viol_*` bin hit |
+| Functional coverage | 657 / 657 goal bins, no `viol_*` bin hit |
 | Code coverage | 100 % line and branch on the peripheral RTL (waivers in `cov/waivers.txt`) |
-| SVA mutation | 48 / 48 assertions shown to fail on a deliberate RTL mutation |
+| SVA mutation | 52 / 52 assertions shown to fail on a deliberate RTL mutation |
 | Lint | clean apart from waived warnings |
 | NanoSoC ADP bus tests | 762 passed, 0 failed |
 | NanoSoC firmware tests | 13 / 13 pass |

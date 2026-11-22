@@ -20,6 +20,7 @@ fsm_arc_wstart  a_arc_wstart                 fsm     PROVEN       fired: a_arc_w
 fsm_arc_wdone   a_arc_wdone                  fsm     PROVEN       fired: a_arc_wdone
 fsm_arc_write   a_arc_write                  fsm     PROVEN       fired: a_arc_write
 fsm_arc_err     a_arc_err                    fsm     PROVEN       fired: a_arc_err
+fsm_tmo_quiet   a_timeout_not_quiet          fsm     PROVEN       fired: a_timeout_not_quiet
 fsm_err_rise    a_err_rise                   fsm     PROVEN       fired: a_err_rise
 apb_stall       a_stall_bounded              clo     PROVEN       fired: a_stall_bounded
 apb_en_sel      a_enable_needs_sel           clo     PROVEN       fired: a_enable_needs_sel
@@ -43,6 +44,9 @@ rtc_setup_acc   a_pl031_setup_then_access    rtc     PROVEN       fired: a_pl031
 rtc_wd_frozen   a_wd_frozen_paused           rtc     PROVEN       fired: a_wd_frozen_paused
 rtc_rearm_trig  a_rearm_no_trig              rtc     PROVEN       fired: a_rearm_no_trig, a_trig_source
 rtc_warm_clr    a_warm_arm_clears            rtc     PROVEN       fired: a_warm_arm_clears
+rtc_one_extra   a_arm_one_extra_write        rtc     PROVEN       fired: a_arm_one_extra_write
+rtc_npor_rearm  a_npor_rearm                 rtc     PROVEN       fired: a_npor_rearm
+rtc_npor_enable a_npor_enable                rtc     PROVEN       fired: a_npor_enable
 rtc_offset_armed a_offset_armed               rtc     PROVEN       fired: a_offset_armed
 rtc_setup_psel  a_setup_done_needs_psel      rtc     PROVEN       fired: a_setup_done_needs_psel
 sar_legal       a_legal_state                adccal  PROVEN       fired: a_legal_state
@@ -50,4 +54,4 @@ sar_result      a_result_only_in_done        adccal  PROVEN       fired: a_resul
 sar_valid       a_valid_falls                adccal  PROVEN       fired: a_valid_falls
 sar_clkc        a_clkc_gated                 adccal  PROVEN       fired: a_clkc_gated
 
-RESULT: 48/48 PROVEN
+RESULT: 52/52 PROVEN
