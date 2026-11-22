@@ -37,7 +37,8 @@ module agriculture_soc_reset_rand_tb;
     reg        reset;
     wire [3:0] LED;
 
-    agriculture_soc DUT (.clk(clk), .reset(reset), .LED(LED));
+    // RTC tick: half period of 50 clocks (an RTC "second" = 100 clocks)
+    agriculture_soc #(.RTC_PRESCALE_RESET(32'd50)) DUT (.clk(clk), .reset(reset), .LED(LED));
 
     always #(T/2) clk = ~clk;
 
@@ -97,7 +98,7 @@ module agriculture_soc_reset_rand_tb;
         $dumpvars();
 
         // ── Storm phase — no checks, just misaligned reset pulses ──────────────
-        // clk1hz_ctr free-runs 0..49 against CLK1HZ_DIV=50, so pulses of
+        // clk1hz_ctr free-runs 0..49 against rtc_prescale = 50, so pulses of
         // randomized length in *ns* (not whole clk periods) land at arbitrary
         // phases relative to both clk and the divider count.
         N_RESETS = 12;

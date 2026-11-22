@@ -7,7 +7,11 @@
 
 module agriculture_soc #(
    parameter W = 32,
-   parameter W_APB_ADDR = 16
+   parameter W_APB_ADDR = 16,
+   // rtc_prescale (0x22C) reset value: half the fclk frequency in Hz gives the
+   // 1 Hz RTC tick. Simulation benches pass a small value instead (no firmware
+   // in this top writes the register).
+   parameter [31:0] RTC_PRESCALE_RESET = 32'd5_000_000
    )
    (
    // Global Clock and Reset 
@@ -35,9 +39,8 @@ wire resetn = reset;
 // -------------------------------------------------------------------------
 // ~1 Hz tick for the RTC, divided from fclk.
 // Half period of the tick in clock cycles: the sensing peripheral's rtc_prescale
-// register (0x22C), whose reset value is for the real clock. A value of 0 or 1
-// toggles every cycle. Programs that count RTC seconds in simulation write a
-// small value first.
+// register (0x22C), which resets to RTC_PRESCALE_RESET. A value of 0 or 1
+// toggles every cycle.
 wire [31:0] rtc_prescale;
 reg  [31:0] clk1hz_ctr;
 reg         clk1hz_reg;
@@ -400,7 +403,8 @@ wire apb_wrapper_en;
 
 adc_apb_wrapper_rev2 #(
    .ADDR_WIDTH(W_APB_ADDR),
-   .DATA_WIDTH(W)
+   .DATA_WIDTH(W),
+   .RTC_PRESCALE_RESET(RTC_PRESCALE_RESET)
 ) sensor_wrapper (
    // Clock and Reset
    .PCLK(fclk),
