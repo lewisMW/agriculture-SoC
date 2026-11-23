@@ -116,12 +116,10 @@ set _die_y2 [lindex [lindex [get_db current_design .bbox] 0] 3]
 # ~9 rows it lies on and leave their rails floating; met5 at y 3882.03-3898.43 lies
 # between the grid's horizontal stripes (vssd1 to 3876.43, vccd1 from 3900.43).
 
-## TODO - we should probably connect the ring to both instances of VDDA/VSSA.
-
 lassign [blockring_seg vdda1 right] _rx1 _ry1 _rx2 _ry2
 create_shape -net vdda1 -layer met3 -rect [list 3112.5 3882.03 $_die_x2 3905.93] -shape stripe -status fixed
 #create_shape -net vdda1 -layer met5 -rect [list $_rx1 3882.03 3121.5 3898.43] -shape stripe -status fixed
-create_shape -net vdda1 -layer met5 -rect [list $_rx1 3882.03 3121.5 3905.93] -shape stripe -status fixed
+create_shape -net vdda1 -layer met5 -rect [list $_rx1 3882.03 3121.5 3898.43] -shape stripe -status fixed
 # (both shapes run horizontally here, which ViaGen only accepts with -orthogonal_only 0)
 update_power_vias -add_vias 1 -orthogonal_only 0 -nets vdda1 -area [list [list 3112.5 3882.03 3121.5 3898.43]] -bottom_layer met3 -top_layer met5
 if {[llength [get_db [get_db nets vdda1] .special_vias -if {.via_def.name == M3M4*}]] == 0} { error "power_plan.tcl: no met3-met4 via on the vdda1 entry" }
@@ -166,21 +164,21 @@ foreach _m [of_mem_insts] {
 ### stripe blockage, 20 um from the macro. Those level with the macro are extended
 ### over the outer rings' met4 sides (vdda1, vssa1: other layer, no via) onto the
 ### vccd1 ring's left and right sides. No met5 ring segment is in their way there.
-lassign [blockring_seg vccd1 left]  _lx1 _ly1 _lx2 _ly2
-lassign [blockring_seg vccd1 right] _rx1 _ry1 _rx2 _ry2
-set _n 0
-foreach _w [get_db [get_db nets vccd1] .special_wires -if {.layer.name == met5 && .shape == stripe}] {
-    lassign [lindex [get_db $_w .rect] 0] _wx1 _wy1 _wx2 _wy2
-    if {$_wy1 < $_ay1 || $_wy2 > $_ay2} continue
-    if {abs($_wx2 - ($_ax1 - 20)) < 1.0} {
-        create_shape -net vccd1 -layer met5 -rect [list [expr {$_wx2 - 0.5}] $_wy1 $_lx2 $_wy2] -shape stripe -status fixed; incr _n
-    } elseif {abs($_wx1 - ($_ax2 + 20)) < 1.0} {
-        create_shape -net vccd1 -layer met5 -rect [list $_rx1 $_wy1 [expr {$_wx1 + 0.5}] $_wy2] -shape stripe -status fixed; incr _n
-    }
-}
-if {$_n < 4} { error "power_plan.tcl: only $_n vccd1 stripes reach the ADC's vccd1 ring" }
-update_power_vias -add_vias 1 -nets vccd1 -area [list [list $_lx1 $_ay1 $_lx2 $_ay2] [list $_rx1 $_ay1 $_rx2 $_ay2]] -bottom_layer met4 -top_layer met5
-puts "power_plan.tcl: $_n vccd1 met5 stripes extended onto the ADC's vccd1 ring (x $_lx1-$_lx2 and $_rx1-$_rx2)"
+#lassign [blockring_seg vccd1 left]  _lx1 _ly1 _lx2 _ly2
+#lassign [blockring_seg vccd1 right] _rx1 _ry1 _rx2 _ry2
+#set _n 0
+#foreach _w [get_db [get_db nets vccd1] .special_wires -if {.layer.name == met5 && .shape == stripe}] {
+#    lassign [lindex [get_db $_w .rect] 0] _wx1 _wy1 _wx2 _wy2
+#    if {$_wy1 < $_ay1 || $_wy2 > $_ay2} continue
+#    if {abs($_wx2 - ($_ax1 - 20)) < 1.0} {
+#        create_shape -net vccd1 -layer met5 -rect [list [expr {$_wx2 - 0.5}] $_wy1 $_lx2 $_wy2] -shape stripe -status fixed; incr _n
+#    } elseif {abs($_wx1 - ($_ax2 + 20)) < 1.0} {
+#        create_shape -net vccd1 -layer met5 -rect [list $_rx1 $_wy1 [expr {$_wx1 + 0.5}] $_wy2] -shape stripe -status fixed; incr _n
+#    }
+#}
+#if {$_n < 4} { error "power_plan.tcl: only $_n vccd1 stripes reach the ADC's vccd1 ring" }
+#update_power_vias -add_vias 1 -nets vccd1 -area [list [list $_lx1 $_ay1 $_lx2 $_ay2] [list $_rx1 $_ay1 $_rx2 $_ay2]] -bottom_layer met4 -top_layer met5
+#puts "power_plan.tcl: $_n vccd1 met5 stripes extended onto the ADC's vccd1 ring (x $_lx1-$_lx2 and $_rx1-$_rx2)"
 
 ### Stripe/ring vias and the standard-cell rails
 update_power_vias -add_vias 1 -nets {vccd1 vssd1} -bottom_layer met4 -top_layer met5
