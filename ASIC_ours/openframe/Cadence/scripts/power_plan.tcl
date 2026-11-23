@@ -12,14 +12,14 @@
 ### port's own net.
 
 ### Global connections
-connect_global_net vccd1 -type pg_pin -pin_base_name VPWR -inst_base_name *
-connect_global_net vccd1 -type pg_pin -pin_base_name VPB  -inst_base_name *
-connect_global_net vssd1 -type pg_pin -pin_base_name VGND -inst_base_name *
-connect_global_net vssd1 -type pg_pin -pin_base_name VNB  -inst_base_name *
+connect_global_net vccd -type pg_pin -pin_base_name VPWR -inst_base_name *
+connect_global_net vccd -type pg_pin -pin_base_name VPB  -inst_base_name *
+connect_global_net vssd -type pg_pin -pin_base_name VGND -inst_base_name *
+connect_global_net vssd -type pg_pin -pin_base_name VNB  -inst_base_name *
 # the macro, by its full name (-inst_base_name only matches leaf names). vdd, vss and
 # vdda repeat what the powered netlist and the UPF already say; vref moves from the
 # UPF's ADC_VREF net onto the pad's net, which needs both override options.
-connect_global_net vccd1 -type pg_pin -pin_base_name vdd  -single_inst $sar_afe_name
+connect_global_net vccd -type pg_pin -pin_base_name vdd  -single_inst $sar_afe_name
 connect_global_net vssa1 -type pg_pin -pin_base_name vss  -single_inst $sar_afe_name
 connect_global_net vdda1 -type pg_pin -pin_base_name vdda -single_inst $sar_afe_name
 connect_global_net $vref_net -type pg_pin -pin_base_name vref -single_inst $sar_afe_name -override -netlist_override
@@ -77,30 +77,18 @@ puts "power_plan.tcl: met5 stripe blockage: $_adc_blockage"
 set power_stripes_blockage_str [join [list $power_stripes_blockage]]
 set power_stripes_blockage_m5_str [join [list [list $_adc_blockage]]]
 
-# Like the template: first vccd1 stripe centred 58.45 (x) / 63.63 (y), vssd1 9.6 on,
-# and every stripe runs from outer ring edge to outer ring edge (x 1.62-3165.02,
-# y 2.4-4763.04), not to the die edge. The offsets are from that area's edge to
-# the first stripe's near edge.
-set _pdn_area {1.62 2.4 3165.02 4763.04}
-add_stripes -nets {vccd1 vssd1} -layer met4 -direction vertical   -width 6.4 -spacing 3.2 -set_to_set_distance 40 -start_from left   -start_offset 53.63 -stop_offset 0 -area $_pdn_area -switch_layer_over_obs false -max_same_layer_jog_length 2 -pad_core_ring_top_layer_limit 6 -pad_core_ring_bottom_layer_limit 2 -block_ring_top_layer_limit 6 -block_ring_bottom_layer_limit 2 -use_wire_group 0 -snap_wire_center_to_grid none -area_blockage $power_stripes_blockage_str
-add_stripes -nets {vccd1 vssd1} -layer met5 -direction horizontal -width 6.4 -spacing 3.2 -set_to_set_distance 40 -start_from bottom -start_offset 58.03 -stop_offset 0 -area $_pdn_area -switch_layer_over_obs false -max_same_layer_jog_length 2 -pad_core_ring_top_layer_limit 6 -pad_core_ring_bottom_layer_limit 2 -block_ring_top_layer_limit 6 -block_ring_bottom_layer_limit 2 -use_wire_group 0 -snap_wire_center_to_grid none -area_blockage $power_stripes_blockage_m5_str
-
-### DFFRAM supplies: a via4 wherever a met5 stripe crosses one of a block's met4
-### straps of the same net (add_stripes leaves block pins alone here)
-foreach _m [of_mem_insts] {
-    update_power_vias -add_vias 1 -nets {vccd1 vssd1} -area [get_db $_m .bbox] -bottom_layer met4 -top_layer met5 \
-        -skip_via_on_pin {pad cover standardcell} -skip_via_on_wire_shape {noshape}
-}
-
+# DO the ADC first.
 ### The ADC macro: block ring (innermost first), then its pins to the ring
 deselect_obj -all
 select_obj [get_db insts $sar_afe_name]
 # (net lists as plain strings: these commands do not strip the braces Tcl puts round a
 # name with brackets in it)
 # TODO the VCCD1 ring can be removed in the future, once the SAR removes the unneeded vdd net.
-add_rings -nets "$vref_net vccd1 vssa1 vdda1" -type block_rings -around selected -layer {top met5 bottom met5 left met4 right met4} -width 2 -spacing 2 -offset 2
+add_rings -nets "$vref_net vssa1 vdda1" -type block_rings -around selected -layer {top met5 bottom met5 left met4 right met4} -width 20 -spacing 4.8 -offset 2
 deselect_obj -all
-route_special -connect {block_pin} -inst $sar_afe_name -nets "vccd1 vssa1 vdda1 $vref_net" -block_pin use_lef -block_pin_target nearest_target -layer_change_range {met1 met5} -crossover_via_layer_range {met1 met5} -target_via_layer_range {met1 met5} -allow_jogging 1 -allow_layer_change 1
+# TODO I think it's just the -block_pin all taking effect here.ddd
+# I want to match the wire width with -block_pin_width_range {min max} --- but it seems like I don't need that anymore!
+route_special -connect {block_pin} -inst $sar_afe_name -nets "vssa1 vdda1 $vref_net" -block_pin all -block_pin_target nearest_target -layer_change_range {met1 met5} -crossover_via_layer_range {met1 met5} -target_via_layer_range {met1 met5} -allow_jogging 1 -allow_layer_change 1 
 
 # a block-ring segment of a net: side left/right -> the vertical met4 segment with
 # the smallest/largest x; side top -> the horizontal met5 segment with the largest y
@@ -119,6 +107,60 @@ proc blockring_seg {net side} {
 }
 set _die_x2 [lindex [lindex [get_db current_design .bbox] 0] 2]
 set _die_y2 [lindex [lindex [get_db current_design .bbox] 0] 3]
+
+
+### The frame's analog pins to the ADC ring. Pin geometry from the template DEF.
+# vdda1: right-edge pin, met3, y 3882.03-3905.93. On met3 only across the core ring
+# to just inside the core (x 3112.5), then up to met5 and on met5 to the ring's right
+# side. A met3 strap all the way would block the rail via stacks (met1-met4) of the
+# ~9 rows it lies on and leave their rails floating; met5 at y 3882.03-3898.43 lies
+# between the grid's horizontal stripes (vssd1 to 3876.43, vccd1 from 3900.43).
+
+## TODO - we should probably connect the ring to both instances of VDDA/VSSA.
+
+lassign [blockring_seg vdda1 right] _rx1 _ry1 _rx2 _ry2
+create_shape -net vdda1 -layer met3 -rect [list 3112.5 3882.03 $_die_x2 3905.93] -shape stripe -status fixed
+#create_shape -net vdda1 -layer met5 -rect [list $_rx1 3882.03 3121.5 3898.43] -shape stripe -status fixed
+create_shape -net vdda1 -layer met5 -rect [list $_rx1 3882.03 3121.5 3905.93] -shape stripe -status fixed
+# (both shapes run horizontally here, which ViaGen only accepts with -orthogonal_only 0)
+update_power_vias -add_vias 1 -orthogonal_only 0 -nets vdda1 -area [list [list 3112.5 3882.03 3121.5 3898.43]] -bottom_layer met3 -top_layer met5
+if {[llength [get_db [get_db nets vdda1] .special_vias -if {.via_def.name == M3M4*}]] == 0} { error "power_plan.tcl: no met3-met4 via on the vdda1 entry" }
+update_power_vias -add_vias 1 -nets vdda1 -area [list [list $_rx1 3882.03 $_rx2 3898.43]] -bottom_layer met4 -top_layer met5
+puts "power_plan.tcl: vdda1: met3 from the pin to x 3112.5, met5 to the ring's right side x $_rx1-$_rx2"
+# vssa1: top-edge pin, met3, x 2717.71-2741.61, straight down to the ring's top side
+lassign [blockring_seg vssa1 top] _rx1 _ry1 _rx2 _ry2
+if {$_rx1 > 2731.0 || $_rx2 < 2741.61} { error "power_plan.tcl: the vssa1 pin (x 2717.71-2741.61) is not above the ADC's vssa1 ring (x $_rx1-$_rx2)" }
+create_shape -net vssa1 -layer met3 -rect [list 2717.71 $_ry1 2741.61 $_die_y2] -shape stripe -status fixed
+update_power_vias -add_vias 1 -nets vssa1 -area [list [list 2717.71 $_ry1 2741.61 $_ry2]] -bottom_layer met3 -top_layer met5
+puts "power_plan.tcl: vssa1: met3 from the pin down to the ring's top side y $_ry1-$_ry2"
+# The reference (net analog_io[15], see config.tcl): the pad's pin is met2,
+# x 2981.80-2982.44, at the top edge, exactly above the macro's right-hand vref pin.
+# A 2.4 um met2 strap (the widest that keeps clear of the neighbouring pad-control
+# pins) runs from it down to the ring's top side.
+lassign [blockring_seg $vref_net top] _rx1 _ry1 _rx2 _ry2
+create_shape -net $vref_net -layer met2 -rect [list 2980.92 4705.02 2983.32 $_die_y2] -shape stripe -status fixed
+create_shape -net $vref_net -layer met3 -rect [list 2970.92 $_ry1 2993.32 4765.02] -shape stripe -status fixed
+update_power_vias -add_vias 1 -orthogonal_only 0 -nets $vref_net -area [list [list 2980.92 4705.02 2983.32 4765.02]] -bottom_layer met2 -top_layer met3
+
+update_power_vias -add_vias 1 -nets $vref_net -area [list [list 2980.92 $_ry1 2983.32 $_ry2]] -bottom_layer met3 -top_layer met5
+if {[llength [get_db [get_db nets $vref_net] .special_vias -if {.via_def.name == M2M3*}]] == 0} { error "power_plan.tcl: no met2-met3 via from the reference strap to the ring" }
+puts "power_plan.tcl: reference $vref_net: met2 from the pin down to the ring's top side y $_ry1-$_ry2"
+
+
+# Like the template: first vccd1 stripe centred 58.45 (x) / 63.63 (y), vssd1 9.6 on,
+# and every stripe runs from outer ring edge to outer ring edge (x 1.62-3165.02,
+# y 2.4-4763.04), not to the die edge. The offsets are from that area's edge to
+# the first stripe's near edge.
+set _pdn_area {1.62 2.4 3165.02 4763.04}
+add_stripes -nets {vccd1 vssd1} -layer met4 -direction vertical   -width 6.4 -spacing 3.2 -set_to_set_distance 40 -start_from left   -start_offset 53.63 -stop_offset 0 -area $_pdn_area -switch_layer_over_obs false -max_same_layer_jog_length 2 -pad_core_ring_top_layer_limit 6 -pad_core_ring_bottom_layer_limit 2 -block_ring_top_layer_limit 6 -block_ring_bottom_layer_limit 2 -use_wire_group 0 -snap_wire_center_to_grid none -area_blockage $power_stripes_blockage_str
+add_stripes -nets {vccd1 vssd1} -layer met5 -direction horizontal -width 6.4 -spacing 3.2 -set_to_set_distance 40 -start_from bottom -start_offset 58.03 -stop_offset 0 -area $_pdn_area -switch_layer_over_obs false -max_same_layer_jog_length 2 -pad_core_ring_top_layer_limit 6 -pad_core_ring_bottom_layer_limit 2 -block_ring_top_layer_limit 6 -block_ring_bottom_layer_limit 2 -use_wire_group 0 -snap_wire_center_to_grid none -area_blockage $power_stripes_blockage_m5_str
+
+### DFFRAM supplies: a via4 wherever a met5 stripe crosses one of a block's met4
+### straps of the same net (add_stripes leaves block pins alone here)
+foreach _m [of_mem_insts] {
+    update_power_vias -add_vias 1 -nets {vccd1 vssd1} -area [get_db $_m .bbox] -bottom_layer met4 -top_layer met5 \
+        -skip_via_on_pin {pad cover standardcell} -skip_via_on_wire_shape {noshape}
+}
 
 ### vccd1 (the macro's vdd) from the grid: the grid's vccd1 met5 stripes stop at the
 ### stripe blockage, 20 um from the macro. Those level with the macro are extended
@@ -139,36 +181,6 @@ foreach _w [get_db [get_db nets vccd1] .special_wires -if {.layer.name == met5 &
 if {$_n < 4} { error "power_plan.tcl: only $_n vccd1 stripes reach the ADC's vccd1 ring" }
 update_power_vias -add_vias 1 -nets vccd1 -area [list [list $_lx1 $_ay1 $_lx2 $_ay2] [list $_rx1 $_ay1 $_rx2 $_ay2]] -bottom_layer met4 -top_layer met5
 puts "power_plan.tcl: $_n vccd1 met5 stripes extended onto the ADC's vccd1 ring (x $_lx1-$_lx2 and $_rx1-$_rx2)"
-
-### The frame's analog pins to the ADC ring. Pin geometry from the template DEF.
-# vdda1: right-edge pin, met3, y 3882.03-3905.93. On met3 only across the core ring
-# to just inside the core (x 3112.5), then up to met5 and on met5 to the ring's right
-# side. A met3 strap all the way would block the rail via stacks (met1-met4) of the
-# ~9 rows it lies on and leave their rails floating; met5 at y 3882.03-3898.43 lies
-# between the grid's horizontal stripes (vssd1 to 3876.43, vccd1 from 3900.43).
-lassign [blockring_seg vdda1 right] _rx1 _ry1 _rx2 _ry2
-create_shape -net vdda1 -layer met3 -rect [list 3112.5 3882.03 $_die_x2 3905.93] -shape stripe -status fixed
-create_shape -net vdda1 -layer met5 -rect [list $_rx1 3882.03 3121.5 3898.43] -shape stripe -status fixed
-# (both shapes run horizontally here, which ViaGen only accepts with -orthogonal_only 0)
-update_power_vias -add_vias 1 -orthogonal_only 0 -nets vdda1 -area [list [list 3112.5 3882.03 3121.5 3898.43]] -bottom_layer met3 -top_layer met5
-if {[llength [get_db [get_db nets vdda1] .special_vias -if {.via_def.name == M3M4*}]] == 0} { error "power_plan.tcl: no met3-met4 via on the vdda1 entry" }
-update_power_vias -add_vias 1 -nets vdda1 -area [list [list $_rx1 3882.03 $_rx2 3898.43]] -bottom_layer met4 -top_layer met5
-puts "power_plan.tcl: vdda1: met3 from the pin to x 3112.5, met5 to the ring's right side x $_rx1-$_rx2"
-# vssa1: top-edge pin, met3, x 2717.71-2741.61, straight down to the ring's top side
-lassign [blockring_seg vssa1 top] _rx1 _ry1 _rx2 _ry2
-if {$_rx1 > 2731.0 || $_rx2 < 2741.61} { error "power_plan.tcl: the vssa1 pin (x 2717.71-2741.61) is not above the ADC's vssa1 ring (x $_rx1-$_rx2)" }
-create_shape -net vssa1 -layer met3 -rect [list 2717.71 $_ry1 2741.61 $_die_y2] -shape stripe -status fixed
-update_power_vias -add_vias 1 -nets vssa1 -area [list [list 2717.71 $_ry1 2741.61 $_ry2]] -bottom_layer met3 -top_layer met5
-puts "power_plan.tcl: vssa1: met3 from the pin down to the ring's top side y $_ry1-$_ry2"
-# The reference (net analog_io[15], see config.tcl): the pad's pin is met2,
-# x 2981.80-2982.44, at the top edge, exactly above the macro's right-hand vref pin.
-# A 2.4 um met2 strap (the widest that keeps clear of the neighbouring pad-control
-# pins) runs from it down to the ring's top side.
-lassign [blockring_seg $vref_net top] _rx1 _ry1 _rx2 _ry2
-create_shape -net $vref_net -layer met2 -rect [list 2980.92 $_ry1 2983.32 $_die_y2] -shape stripe -status fixed
-update_power_vias -add_vias 1 -nets $vref_net -area [list [list 2980.92 $_ry1 2983.32 $_ry2]] -bottom_layer met2 -top_layer met5
-if {[llength [get_db [get_db nets $vref_net] .special_vias -if {.via_def.name == M2M3*}]] == 0} { error "power_plan.tcl: no met2-met3 via from the reference strap to the ring" }
-puts "power_plan.tcl: reference $vref_net: met2 from the pin down to the ring's top side y $_ry1-$_ry2"
 
 ### Stripe/ring vias and the standard-cell rails
 update_power_vias -add_vias 1 -nets {vccd1 vssd1} -bottom_layer met4 -top_layer met5
