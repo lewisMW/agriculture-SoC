@@ -89,7 +89,7 @@ module sar_afe #(
 
     // ---- configuration (see the header) -------------------------------------
     integer mode;
-    real    vref, vcm, vamp, fin_hz, vdc, ramp_lo, ramp_hi, ramp_t, ramp_t0;
+    real    vref_v, vcm, vamp, fin_hz, vdc, ramp_lo, ramp_hi, ramp_t, ramp_t0;
     real    vos, vtrim_lsb, cpar, tdec, trst;
     reg     verbose;
     real    vext_p, vext_n;      // mode 3: driven by the testbench
@@ -103,7 +103,7 @@ module sar_afe #(
     reg     sample_q;
 
     initial begin
-        mode = MODE;   vref = VREF;    vcm = VCM;         vamp = VAMP;
+        mode = MODE;   vref_v = VREF;    vcm = VCM;         vamp = VAMP;
         fin_hz = FIN_HZ; vdc = VDC;    ramp_lo = RAMP_LO; ramp_hi = RAMP_HI;
         ramp_t = RAMP_T; ramp_t0 = 0.0; vos = VOS; vtrim_lsb = VTRIM_LSB; cpar = CPAR;
         tdec = TDEC;   trst = TRST;
@@ -124,7 +124,7 @@ module sar_afe #(
         if ($value$plusargs("sar_afe_cpar=%f",    cpar))    ;
         outp = 1'b1;   outn = 1'b1;
         $display("sar_afe_model: behavioural sar_afe (%m): mode=%0d vcm=%.3f vamp=%.3f fin=%.1f Hz vdc=%.4f vos=%.4f vref=%.3f cpar=%.3f",
-                 mode, vcm, vamp, fin_hz, vdc, vos, vref, cpar);
+                 mode, vcm, vamp, fin_hz, vdc, vos, vref_v, cpar);
     end
 
     // ---- input source --------------------------------------------------------
@@ -165,7 +165,7 @@ module sar_afe #(
         begin
             ics = {24'd0, cs};             // integers: (cs - c) must not wrap at 8 bits
             ic  = {24'd0, c};
-            vtop = vs + vref * (ics - ic) / (256.0 * (1.0 + cpar));
+            vtop = vs + vref_v * (ics - ic) / (256.0 * (1.0 + cpar));
         end
     endfunction
 

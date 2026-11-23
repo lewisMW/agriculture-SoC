@@ -102,7 +102,9 @@ module sar_adc #(
     // Clock divider: sar_clk = clk / (2*CLK_DIV), from one flop (sar_clk_reg)
     // on the falling edge of clk. div_ph is the divider's phase; sar_clk_reg
     // retimes it, so the clock flop's D is plain data rather than its own
-    // (clock) output fed back.
+    // (clock) output fed back. rstn holds the divider, so sar_clk stands still
+    // (low) for as long as rstn is low: sarlogic sees no clock edge during
+    // reset and has to be reset asynchronously (sar_adc_tb, section 6).
     // ------------------------------------------------------------------------
     localparam             DIV_W    = (CLK_DIV > 1) ? $clog2(CLK_DIV) : 1;
     localparam integer     DIV_MAX  = CLK_DIV - 1;

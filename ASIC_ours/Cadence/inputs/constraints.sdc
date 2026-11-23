@@ -30,6 +30,36 @@ set_clock_uncertainty $CLK_ERROR [get_clocks $SWDCLK]
 set_clock_uncertainty -setup $INTER_CLOCK_UNCERTAINTY -rise_from [get_clocks $SWDCLK] -rise_to [get_clocks $EXTCLK]
 set_clock_uncertainty -setup $INTER_CLOCK_UNCERTAINTY -rise_from [get_clocks $EXTCLK] -rise_to [get_clocks $SWDCLK]
 
+### SAR ADC (agriculture_soc_main/ADC/sar_adc.sdc): the ADC's generated clocks
+### (sar_clk, sar_clkc), the comparator latch's loop break and dont_touch, and the
+### sar_clk -> clk crossing. It derives them from $EXTCLK, so it has to come after
+### the create_clock lines above. ACCELERATOR_DIR comes from env/dependency_env.sh
+### (setup_env.sh sources it), so any session that reads this SDC, read_db of a
+### saved database included, needs that environment.
+source $::env(ACCELERATOR_DIR)/ADC/sar_adc.sdc
+# set_dont_touch u_por
+
+### The RTC's tick. clk1hz_reg in nanosoc/system/src/accelerator_subsystem.v is a
+### flop that divides the system clock and clocks the RTC's counter and its reset
+### synchroniser (about 60 flops). Without a clock on it they are not timed and
+### get no clock tree. The constraint is for the fastest the divider can run, a
+### toggle every cycle, which also covers a fixed slower divide. The RTC meets
+### the bus side through its own synchronisers, so the clocks are asynchronous.
+set clk1hz_c [get_cells -quiet -hierarchical *clk1hz_reg_reg]
+if {[sizeof_collection $clk1hz_c] != 1} {
+    error "constraints.sdc: expected one clk1hz_reg_reg flop, found [sizeof_collection $clk1hz_c]"
+}
+set clk1hz_q [get_pins -quiet [get_object_name $clk1hz_c]/Q]
+if {[sizeof_collection $clk1hz_q] == 0} {
+    set clk1hz_q [get_pins -quiet [get_object_name $clk1hz_c]/q]    ;# Genus, before mapping
+}
+if {[sizeof_collection $clk1hz_q] != 1} {
+    error "constraints.sdc: no Q pin on [get_object_name $clk1hz_c]"
+}
+create_generated_clock -name clk1hz -source [get_ports CLK] -divide_by 2 $clk1hz_q
+set_clock_groups -asynchronous -name clk1hz_async -group [get_clocks clk1hz] \
+    -group [get_clocks [list $EXTCLK sar_clk sar_clkc]]
+
 ### Multicycle path through asynchronous clock domains
 set_multicycle_path 2 -setup -end -from SWDCK -to CLK
 set_multicycle_path 1 -hold -end -from SWDCK -to CLK
@@ -82,6 +112,13 @@ foreach uPAD_cell [get_db [get_cells -regexp "uPAD_P[01]_.*" -hierarchical] .nam
     set_multicycle_path 2 -setup -through [get_pins -regexp "${uPAD_cell}/(OE_N)|(IN)"]
     set_multicycle_path 1 -hold -through [get_pins -regexp "${uPAD_cell}/(OE_N)|(IN)"]
 }
+
+# async reset. Although most in the design uses a derived sync reset, so it's okay
+set_false_path -setup -from [get_ports NRST]
+set_ideal_network [get_ports NRST]
+
+# scan pin feeds through clocks, ignore
+set_false_path -setup -through [get_nets soc_scan_mode]
 
 #### DELAY DEFINITION
 

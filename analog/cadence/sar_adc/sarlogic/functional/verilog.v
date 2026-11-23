@@ -64,6 +64,9 @@ module sarlogic (
 		clkc <= (~clk & en_co_clk);
 	end
 
+	// The reset must be asynchronous. In sar_adc, clk is sar_clk, which comes
+	// from a divider that rstn holds still, so no clock edge arrives while
+	// rstn is low and a synchronous reset would never take effect.
 	always @(posedge clk or negedge rstn) begin
 		if (!rstn) begin
 			state <= sInit;
