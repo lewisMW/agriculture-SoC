@@ -27,9 +27,10 @@ macro swapped on 20 Nov. main has since taken work that is not in that layout
       calibration runs the trim to a rail (ADC-CAL), and `clkc` has an
       incomplete sensitivity list, which matters in RTL simulation only
       (ADC-CLKC).
-- [ ] **The switch on the `bootstrap-sw` branch changed again on 24 Nov**
-      (commit 086c4aa). The macro has the switch of 15 Nov (7c1cf85). Compare
-      the two layouts and rebuild the macro if the geometry differs.
+- [x] The switch on the `bootstrap-sw` branch after its commit of 24 Nov
+      (086c4aa): the same geometry as the switch of 15 Nov that the macro has
+      (flat XOR 0 um2 on every layer). That commit moved the cell into
+      `sar_adc` and added extracted views.
 
 ## Decisions that change the chip
 
