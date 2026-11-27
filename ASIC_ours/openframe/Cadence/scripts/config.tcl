@@ -100,7 +100,7 @@ set hdl_file_list $::env(SOCLABS_PROJECT_DIR)/imp/ASIC/nanosoc/flist/genus_flist
 set custom_hdl_file_list ../inputs/custom_hdl_file_list.tcl
 set top_level_hdl ../../rtl/openframe_project_wrapper.v
 set constraints_file ../inputs/constraints.sdc
-set DFT 1
+set DFT 0
 
 # the frame's supplies as named in the wrapper template. The ADC reference comes in
 # on pad 15: that port's own net, analog_io[15], is made a power net here and the
