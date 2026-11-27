@@ -2,7 +2,7 @@
 
 Open items found while putting nanosoc in the OpenFrame wrapper and checking it
 (`README.md` has the background for each). Recorded 17 Nov 2026, last worked
-through 18 Nov. Tick an item when it is settled, or delete it with a line in the
+through 19 Nov. Tick an item when it is settled, or delete it with a line in the
 commit message saying why. A ticked item says in one line what settled it.
 
 ## Decisions that change the chip
@@ -25,10 +25,9 @@ These change the layout, so they come before the final sign-off run.
       registers"): a sampling phase of 480 ns at 33 MHz and 1.6 us at 10 MHz.
       The sensor's source impedance is still to come; firmware can lengthen
       the sampling phase to 51 us at 10 MHz.
-- [ ] **RTC power-on reset** is tied to the system reset, so the time is lost on
-      every reset, a debugger's or the program's included. A reset that only
-      power-on and the reset pad assert would need a port through three levels
-      of the SoC Labs hierarchy. Not taken up on 18 Nov.
+- [x] **RTC power-on reset.** `PORESETn` reaches the sensing subsystem; the RTC,
+      its tick divider and `rtc_prescale` are reset by it alone, so the time is
+      kept through a system reset. `rtc_warm_reset_test`.
 - [ ] **A 32.768 kHz input for the RTC tick** (optional; GPIO 12, 13 and 22 are
       spare). Only worth it if the system clock will change at run time. It can
       be sampled by the system clock and used as the prescaler's count enable,
@@ -36,11 +35,10 @@ These change the layout, so they come before the final sign-off run.
 
 ## The ADC macro
 
-- [ ] `MR_capm.SP.2` (capacitor spacing) in `sar_afe__bootstrap_sw`: the one
-      violation ChipFoundry's FEOL deck still reports, and a hard precheck
-      failure.
-- [ ] `sar_afe__carray_8b` has a solid met2 plate 76 um across; ChipFoundry's
-      guideline for solid metal is 30 um.
+- [x] `MR_capm.SP.2` in `sar_afe__bootstrap_sw`: a via stack narrowed from 3 x 2
+      to 2 x 2 cuts. ChipFoundry's FEOL deck now has no violation on the chip.
+- [x] The solid met2 plate in `sar_afe__carray_8b` (the `vssa` shield): five more
+      1.0 um slots; the largest solid square is 27.3 um, from 76.4 um.
 - [ ] **The comparator trim's capacitor is 1.00 fF, not 1.25 fF.** The unit
       `sarcta__C0` is plain metal fingers; every netlist so far, the extracted
       one included, had it as an ideal 1.25 fF. Extracted from the layout it is
@@ -77,8 +75,9 @@ These change the layout, so they come before the final sign-off run.
       memory, whose latch arrays clock a gate per byte every cycle. The memory
       blocks' libraries carry no power data, so the tools report 18 mW. Not
       measured at 10 MHz or with the clock gated.
-- [ ] **Process antennas in the pad-ring flow.** The OpenFrame flow inserts
-      diodes and is clean; the pad-ring flow only writes the report.
+- [x] **Process antennas in the pad-ring flow.** It has the OpenFrame flow's
+      antenna settings; a full run went from 86 violations after routing to
+      none with the diodes.
 - [ ] **Timing to the outside.** The input and output delays in the constraints
       are nominal. README, "Timing at the pins", has what the layout does.
 - [x] **Instruction memory's write path.** The boot ROM writes the whole program
@@ -142,4 +141,6 @@ These change the layout, so they come before the final sign-off run.
 - [ ] ChipFoundry account, `cf init`, and a slot on a shuttle. The submission
       repository has to be private: the GDS and the gate netlist contain the
       synthesised processor.
-- [ ] `cf precheck` in ChipFoundry's container on the final layout.
+- [x] `cf precheck` in ChipFoundry's container: passes on the layout of 19 Nov,
+      12 of 12 checks, in the local rehearsal directory. Run it again after any
+      change to the layout, and from the registered project before submitting.
