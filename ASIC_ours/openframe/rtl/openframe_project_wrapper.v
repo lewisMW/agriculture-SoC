@@ -14,29 +14,51 @@
 // chip's SPI lines, 5 and 6 to its UART through switches, 36 and 37 to the SPI
 // flash's IO2/IO3, 38 to the clock generator, 39-42 to the flash's CSB, CLK, IO0
 // and IO1, and 43 to the LED; the rest reach header pins only.
-//   38      bottom  CLK                   the board's clock generator
+//   38      bottom  CLK                   the board's clock generator (10 MHz)
 //   5, 6    right   P1[4], P1[5]          UART2 RXD / TXD (with P1[7] high): the
 //                                         board's USB UART; HOSTIO4 data 1, 2 otherwise
-//   0, 7-11 right   P1[0], P1[1], P1[2],  the rest of the host link, on header pins:
-//                   P1[3], P1[6], P1[7]   HOSTIO4 req1, req2, ack, data 0, data 3, and the
-//                                         mode strap (0 HOSTIO4, 1 FT1248 + UART2)
-//   12-14   right   P1[8..10]             header pins
-//   22, 23  top     P1[11], P1[12]        header pins
+//   0       right   P1[0]                 the host link's FT1248 MISO, an input (low:
+//                                         the host has data), or HOSTIO4 req1, an
+//                                         output. While the chip does not drive it
+//                                         the pad has its pull-up, so that a board
+//                                         with no host connected sends the chip
+//                                         nothing.
+//   7-10    right   P1[1], P1[2], P1[3],  the rest of the host link, on header pins:
+//                   P1[6]                 FT1248 clock, data, select; HOSTIO4 req2,
+//                                         ack, data 0, data 3
+//   11      right   P1[7]                 the host-link mode strap, an input with the
+//                                         pad's pull-up: FT1248 + UART2 unless the pin
+//                                         is tied low (HOSTIO4). P1[7] cannot drive it.
+//   39-42   bottom  P1[8..11]             the board's SPI flash: CSB, CLK, IO0 (to the
+//                                         flash), IO1 (from the flash). The boot ROM
+//                                         reads a program from it (sw/bootrom). While
+//                                         nothing drives CSB (the chip in reset, or
+//                                         P1[8] an input) the pad has its pull-up, so
+//                                         the flash is not selected.
+//   36, 37  left    P1[13], P1[14]        the flash's IO2/IO3 (its write-protect and
+//                                         hold inputs in plain SPI mode)
+//   14      right   FLASH_PROG            input with the pad's pull-down. High: the
+//                                         chip is held in reset and the FTDI's SPI
+//                                         lines are passed straight through to the
+//                                         flash, so the board's USB port can program
+//                                         it: GPIO 3 (CSB) -> 39, 4 (SCK) -> 40,
+//                                         2 (SDI) -> 41, and 42 (IO1) -> 1 (SDO)
+//   23      top     P1[12]                header pin
 //   24-35   left    P0[0..11]             header pins
 //   1-4     right   P0[12..15]            also the FTDI's SPI lines: leave as inputs
 //                                         while the FTDI is in use
-//   36, 37  left    P1[13], P1[14]        also the flash's IO2/IO3 (pulled up there)
 //   43      bottom  P1[15]                the board's LED
 //   18, 19  top     TEST, SE              inputs with the pad's pull-down: low unless driven
 //   20, 21  top     SWDCK (pull-down), SWDIO     header pins
 //   15-17   top     ADC_VREF, ADC_VINP, ADC_VINN (analog_io): the three top pads
 //                   nearest the frame's vdda1/vssa1 pins (top right); their
 //                   neighbours 14 and 18-21 are pins that stay still in normal use
-//   39-42   bottom  unused: analog mode, input buffer off (ChipFoundry's setting
-//                   for an unused OpenFrame pad), which leaves the board's flash alone
-// Reset: nrst = resetb_l AND porb_l, the frame's 1.8 V master reset and its
-// power-on reset (both active low). porb_h, por_l, resetb_h, gpio_in_h, mask_rev
-// and analog_noesd_io are left unconnected.
+//   12, 13, 22      unused: analog mode, input buffer off (ChipFoundry's setting
+//                   for an unused OpenFrame pad)
+// Reset: nrst = resetb_l AND porb_l AND NOT FLASH_PROG: the frame's 1.8 V master
+// reset and its power-on reset (both active low), and the programming strap.
+// porb_h, por_l, resetb_h, gpio_in_h, mask_rev and analog_noesd_io are left
+// unconnected.
 // Supplies: vccd1/vssd1 are the core 1.8 V rails (VDD/VSS of the chip flow);
 // vdda1/vssa1 feed the sar_afe macro's vdda/vss; ADC_VREF is a supply net to the
 // macro's vref pin (see ../Cadence/inputs/openframe_project_wrapper.upf) and
@@ -327,22 +349,63 @@ defparam u_nanosoc_chip.u_system.EXPRAM_H_RAM_ADDR_W = `OF_EXPRAM_H_AW;
 `define OF_P0(IDX, B) `OF_GPIO(IDX, 3'd5, pad_gpio_port0_o[B], pad_gpio_port0_i[B], pad_gpio_port0_z[B])
 `define OF_P1(IDX, B) `OF_GPIO(IDX, 3'd5, pad_gpio_port1_o[B], pad_gpio_port1_i[B], pad_gpio_port1_z[B])
 
+// Flash programming. With FLASH_PROG high the chip is in reset (below) and four
+// pads carry the FTDI's SPI lines to the board's flash and back, so that the flash
+// can be written from the board's USB port; the other flash and FTDI pads are
+// inputs. With it low (the pad's pull-down) every pad is an ordinary port pin.
+// The paths are combinational, pad to pad.
+wire flash_prog;
+wire ftdi_sdi = pad_gpio_port0_i[13];   // GPIO 2, FTDI -> chip
+wire ftdi_csb = pad_gpio_port0_i[14];   // GPIO 3
+wire ftdi_sck = pad_gpio_port0_i[15];   // GPIO 4
+wire flash_do = pad_gpio_port1_i[11];   // GPIO 42, the flash's IO1
+// a port pad that carries a passed-through signal while FLASH_PROG is high
+`define OF_PT_OUT(IDX, PO, PI, PZ, SRC) `OF_GPIO(IDX, 3'd5, (flash_prog ? SRC : PO), PI, (~flash_prog & PZ))
+// a port pad that is an input while FLASH_PROG is high
+`define OF_PT_IN(IDX, PO, PI, PZ)       `OF_GPIO(IDX, 3'd5, PO, PI, (flash_prog | PZ))
+
 // right edge
-`OF_P1(0, 0)
-`OF_P0(1, 12)
-`OF_P0(2, 13)
-`OF_P0(3, 14)
-`OF_P0(4, 15)
+// GPIO 0, P1[0]. In HOSTIO4 mode the chip drives it (request 1); in FT1248 mode it
+// is MISO, an input that is low when the host has data, and with no host connected
+// nothing else gives the pin a level. So this one pad is not a CF_gpio_config: it
+// has that block's bidirectional setting while the chip drives and its
+// input-with-pull-up setting while it does not (drive mode 110 or 111, the
+// output driver always enabled, the output value 1 in the weak mode). P1[0]'s
+// output enable follows the mode strap, so the drive mode is static in use.
+wire p1_0_hiz = pad_gpio_port1_z[0];
+assign pad_gpio_port1_i[0] = gpio_in[0];
+assign gpio_dm2[0]         = gpio_loopback_one[0];
+assign gpio_dm1[0]         = gpio_loopback_one[0];
+assign gpio_dm0[0]         = p1_0_hiz;
+assign gpio_out[0]         = p1_0_hiz | pad_gpio_port1_o[0];
+assign gpio_oeb[0]         = gpio_loopback_zero[0];
+assign gpio_inp_dis[0]     = gpio_loopback_zero[0];
+assign gpio_analog_en[0]   = gpio_loopback_zero[0];
+assign gpio_analog_sel[0]  = gpio_loopback_zero[0];
+assign gpio_analog_pol[0]  = gpio_loopback_zero[0];
+assign gpio_ib_mode_sel[0] = gpio_loopback_zero[0];
+assign gpio_vtrip_sel[0]   = gpio_loopback_zero[0];
+assign gpio_slow_sel[0]    = gpio_loopback_zero[0];
+assign gpio_holdover[0]    = gpio_loopback_zero[0];
+`OF_PT_OUT(1, pad_gpio_port0_o[12], pad_gpio_port0_i[12], pad_gpio_port0_z[12], flash_do)
+`OF_PT_IN(2, pad_gpio_port0_o[13], pad_gpio_port0_i[13], pad_gpio_port0_z[13])
+`OF_PT_IN(3, pad_gpio_port0_o[14], pad_gpio_port0_i[14], pad_gpio_port0_z[14])
+`OF_PT_IN(4, pad_gpio_port0_o[15], pad_gpio_port0_i[15], pad_gpio_port0_z[15])
 `OF_P1(5, 4)
 `OF_P1(6, 5)
 `OF_P1(7, 1)
 `OF_P1(8, 2)
 `OF_P1(9, 3)
 `OF_P1(10, 6)
-`OF_P1(11, 7)
-`OF_P1(12, 8)
-`OF_P1(13, 9)
-`OF_P1(14, 10)
+// the host-link mode strap: an input with the pad's pull-up, so that it reads 1
+// (FT1248 + UART2, the mode the board's USB UART needs) with nothing connected
+`OF_GPIO(11, 3'd3, 1'b1, pad_gpio_port1_i[7], 1'b1)
+// unused pads: analog mode (DM 000, input buffer off, output off), the setting
+// ChipFoundry's knowledge base asks for on every unused OpenFrame pad
+`OF_GPIO(12, 3'd0, 1'b0, , 1'b1)
+`OF_GPIO(13, 3'd0, 1'b0, , 1'b1)
+// the programming strap: low unless driven
+`OF_GPIO(14, 3'd2, 1'b0, flash_prog, 1'b1)
 
 // top edge. Analog pads: digital buffers off, the pad reaches the core on analog_io
 `OF_GPIO(15, 3'd0, 1'b0, , 1'b1)
@@ -360,7 +423,7 @@ assign pad_adc_vinn = analog_io[17];
 `OF_GPIO(19, 3'd2, 1'b0, pad_se_i,     1'b1)
 `OF_GPIO(20, 3'd2, 1'b0, pad_swdclk_i, 1'b1)
 `OF_GPIO(21, 3'd5, pad_swdio_o, pad_swdio_i, pad_swdio_z)
-`OF_P1(22, 11)
+`OF_GPIO(22, 3'd0, 1'b0, , 1'b1)
 `OF_P1(23, 12)
 
 // left edge
@@ -376,22 +439,41 @@ assign pad_adc_vinn = analog_io[17];
 `OF_P0(33, 9)
 `OF_P0(34, 10)
 `OF_P0(35, 11)
-`OF_P1(36, 13)
-`OF_P1(37, 14)
+`OF_PT_IN(36, pad_gpio_port1_o[13], pad_gpio_port1_i[13], pad_gpio_port1_z[13])
+`OF_PT_IN(37, pad_gpio_port1_o[14], pad_gpio_port1_i[14], pad_gpio_port1_z[14])
 
-// bottom edge: the clock, the board's flash pads left alone, the LED
+// bottom edge: the clock, the board's flash, the LED
 `OF_GPIO(38, 3'd1, 1'b0, pad_clk_i, 1'b1)
-// unused pads: analog mode (DM 000, input buffer off, output off), the setting
-// ChipFoundry's knowledge base asks for on every unused OpenFrame pad
-`OF_GPIO(39, 3'd0, 1'b0, , 1'b1)
-`OF_GPIO(40, 3'd0, 1'b0, , 1'b1)
-`OF_GPIO(41, 3'd0, 1'b0, , 1'b1)
-`OF_GPIO(42, 3'd0, 1'b0, , 1'b1)
+// GPIO 39, the flash's CSB (P1[8], or the FTDI's CSB while FLASH_PROG is high).
+// On a Caravel chip this pin is always driven. Here nothing would hold it while
+// the chip is in reset or the program leaves P1[8] an input, and a flash whose
+// select floats may be selected. So, like GPIO 0, this pad is not a
+// CF_gpio_config: the bidirectional setting while something drives it, the
+// input-with-pull-up setting while nothing does.
+wire fl_csb_hiz = ~flash_prog & pad_gpio_port1_z[8];
+assign pad_gpio_port1_i[8]  = gpio_in[39];
+assign gpio_dm2[39]         = gpio_loopback_one[39];
+assign gpio_dm1[39]         = gpio_loopback_one[39];
+assign gpio_dm0[39]         = fl_csb_hiz;
+assign gpio_out[39]         = fl_csb_hiz | (flash_prog ? ftdi_csb : pad_gpio_port1_o[8]);
+assign gpio_oeb[39]         = gpio_loopback_zero[39];
+assign gpio_inp_dis[39]     = gpio_loopback_zero[39];
+assign gpio_analog_en[39]   = gpio_loopback_zero[39];
+assign gpio_analog_sel[39]  = gpio_loopback_zero[39];
+assign gpio_analog_pol[39]  = gpio_loopback_zero[39];
+assign gpio_ib_mode_sel[39] = gpio_loopback_zero[39];
+assign gpio_vtrip_sel[39]   = gpio_loopback_zero[39];
+assign gpio_slow_sel[39]    = gpio_loopback_zero[39];
+assign gpio_holdover[39]    = gpio_loopback_zero[39];
+`OF_PT_OUT(40, pad_gpio_port1_o[9],  pad_gpio_port1_i[9],  pad_gpio_port1_z[9],  ftdi_sck)
+`OF_PT_OUT(41, pad_gpio_port1_o[10], pad_gpio_port1_i[10], pad_gpio_port1_z[10], ftdi_sdi)
+`OF_PT_IN(42, pad_gpio_port1_o[11], pad_gpio_port1_i[11], pad_gpio_port1_z[11])
 `OF_P1(43, 15)
 
 // reset from the frame (1.8 V domain, active low like NRST): the reset pad, and
 // the frame's power-on reset so that the chip is in reset from power-up without
-// anything driving the reset pad
-assign pad_nrst_i = resetb_l & porb_l;
+// anything driving the reset pad. The programming strap holds the chip in reset
+// as well: its release starts the chip from the flash it has just had written.
+assign pad_nrst_i = resetb_l & porb_l & ~flash_prog;
 
 endmodule

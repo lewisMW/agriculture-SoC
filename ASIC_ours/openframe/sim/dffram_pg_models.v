@@ -19,7 +19,11 @@ module dffram_pg_model #(parameter AW = 9) (
 );
     reg [31:0] RAM [0:(1<<AW)-1];
     reg [31:0] do_q;
+`ifdef OF_RTL_SIM
+    wire       powered = 1'b1;      // RTL has no supply pins: the ports are left open
+`else
     wire       powered = (VPWR === 1'b1) && (VGND === 1'b0);
+`endif
     always @(posedge CLK)
         if (EN0 === 1'b1) begin
             do_q <= RAM[A0];

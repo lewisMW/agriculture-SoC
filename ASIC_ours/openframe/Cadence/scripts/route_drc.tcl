@@ -52,6 +52,33 @@ for {set pass 1} {$n > 0 && $pass <= 3} {incr pass} {
     set n $m
 }
 
+# Timing after the rerouting. The last optimisation pass of 4_pnr_route.tcl ends
+# within a few ps of its target and rerouting moves the worst paths; if either
+# check is not met here, optimise once more and repair what that disturbs.
+proc worst_slack {side} {
+    set p [report_timing -collection -$side -max_paths 1]
+    if {[sizeof_collection $p] == 0} { return 0.0 }
+    return [get_property $p slack]
+}
+set ws [worst_slack late]; set wh [worst_slack early]
+puts "route_drc.tcl: worst setup slack $ws ns, worst hold slack $wh ns"
+if {$ws < 0 || $wh < 0} {
+    opt_design -post_route -setup -hold
+    set n [drc_count $REPORT_DIR/drc_06_post_opt.rpt]
+    if {$n > 0} {
+        delete_routes -regular_wire_with_drc
+        route_design -global_detail
+    }
+    puts "route_drc.tcl: after one more optimisation pass: setup [worst_slack late] ns, hold [worst_slack early] ns"
+    # The fillers are already in, and the pass leaves the sites free where it
+    # made a cell smaller: a gap of one or two sites between n-wells, which
+    # check_drc does not look at and ChipFoundry's deck does (MR_nwell.SP.1).
+    add_fillers -base_cells {sky130_fd_sc_hd__fill_8 sky130_fd_sc_hd__fill_4 sky130_fd_sc_hd__fill_2 sky130_fd_sc_hd__fill_1} \
+        -prefix FILLOPT -fill_gap -power_domain PD_TOP
+}
+# free sites left in the rows (the report lists them; none is expected between cells)
+check_filler -out_file $REPORT_DIR/filler_06_signoff.rpt
+
 # the final report, and timing after any rerouting
 set n [drc_count $REPORT_DIR/drc_06_signoff.rpt]
 puts "route_drc.tcl: $n DRC violations in ${block_name}_signoff (reports/drc_06_signoff.rpt)"

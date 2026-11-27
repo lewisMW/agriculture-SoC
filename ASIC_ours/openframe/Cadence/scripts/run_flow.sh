@@ -33,6 +33,14 @@ if [ "${1:-}" = pnr ]; then echo "=== skipping inputs and synthesis (arg: pnr) =
 echo "=== inputs starting $(date +%H:%M:%S) ==="
 make -C "$SOCLABS_PROJECT_DIR/nanosoc_tech" ASIC=yes NODE=SKY130 TOOL_CHAIN=GCC \
      BOOTROM_ADDRW=9 bootrom          > "$LOGS/00_bootrom.log" 2>&1 || fail inputs "$LOGS/00_bootrom.log"
+# The OpenFrame boot ROM (../../sw/bootrom: it can load the program from the
+# board's flash), built beside the flow's outputs and read by
+# custom_hdl_file_list.tcl in place of the SoC Labs boot loader made above. The
+# project's own system/src/bootrom is left as the other flows expect it.
+{ make -C "$SD/../../sw/bootrom" OUT="$SD/../outputs/bootrom" &&
+  make -C "$SOCLABS_PROJECT_DIR/nanosoc_tech" ASIC=yes NODE=SKY130 BOOTROM_ADDRW=9 \
+       BOOTROM_HEX="$SD/../outputs/bootrom/of_bootrom.hex" BOOTROM_BUILD_DIR="$SD/../outputs/bootrom" bootrom
+}                                     > "$LOGS/00_bootrom_openframe.log" 2>&1 || fail inputs "$LOGS/00_bootrom_openframe.log"
 make -C "$SOCLABS_PROJECT_DIR/nanosoc_tech" ASIC=yes NODE=SKY130 \
      flist_genus_nanosoc              > "$LOGS/00_flist.log"   2>&1 || fail inputs "$LOGS/00_flist.log"
 echo "=== inputs done $(date +%H:%M:%S) ==="

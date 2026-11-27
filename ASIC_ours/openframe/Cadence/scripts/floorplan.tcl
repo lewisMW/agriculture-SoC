@@ -124,19 +124,25 @@ foreach {cell pat x y} $of_mem_place {
     }
     create_place_halo -halo_deltas {9.6 9.6 9.6 9.6} -insts $n
     create_route_halo -bottom_layer $bottom_routing_layer -space 4.8 -top_layer $top_routing_layer -insts $n
-    # Signals stay off met4 over the block. Its LEF leaves met4 free between the
-    # supply straps, NanoRoute used that to reach the data pins from above, and one
-    # such wire shorted to its neighbour in a way the repair passes could not undo.
-    # The pins are met2/met3 on the block's edges and are reached from outside.
-    create_route_blockage -layers met4 -rects [get_db [get_db insts $n] .bbox] -except_pg_nets
-    # The 512 byte block has 39 met2 pins on its top edge, and its LEF leaves a
-    # 12 um strip of met3 free just inside that edge. NanoRoute ran met3 along
-    # the strip to reach the pins sideways, and in one build two such wires
-    # stayed shorted through every repair pass. Keep signals off met3 over the
-    # block, apart from the 4.5 um at the right edge where its met3 pins are:
-    # the top pins are then reached from above, on met2.
-    if {$cell eq "DFFRAM128x32"} {
+    # Signals stay off the block. Its LEF obstructs met1 to met4 only over the
+    # cell rows: a strip of 4 to 18 um inside each edge is free on every layer,
+    # and met4 is free between the supply straps. NanoRoute uses those to reach
+    # the pins sideways or as a channel for other nets, and in four builds wires
+    # there stayed shorted through every repair pass: met4 over a block; met3
+    # along the top of a 512 byte block; met1 along the same strip; met3 along
+    # the bottom of a 2 kbyte block.
+    create_route_blockage -layers met4 -rects [list [list $_bx $_by $_bx2 $_by2]] -except_pg_nets
+    if {[string match "DFFRAM*x32" $cell]} {
+        # The pre-hardened blocks' pins are 4 um stubs on the edges: met2 on the
+        # bottom (and on the top of the 512 byte block), met3 on the right. So
+        # no signal on met1 anywhere over the block; met3 only in the 4.5 um at
+        # the right edge; met2 only in the 4.5 um at the bottom edge (and at the
+        # top of the 512 byte block). The pins are then reached from outside.
+        create_route_blockage -layers met1 -rects [list [list $_bx $_by $_bx2 $_by2]] -except_pg_nets
         create_route_blockage -layers met3 -rects [list [list $_bx $_by [expr {$_bx2 - 4.5}] $_by2]] -except_pg_nets
+        set _m2top $_by2
+        if {$cell eq "DFFRAM128x32"} { set _m2top [expr {$_by2 - 4.5}] }
+        create_route_blockage -layers met2 -rects [list [list $_bx [expr {$_by + 4.5}] $_bx2 $_m2top]] -except_pg_nets
     }
     puts "floorplan.tcl: $cell $n at [get_db [get_db insts $n] .bbox]"
 }
