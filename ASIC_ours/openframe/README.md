@@ -1264,6 +1264,110 @@ on its first run, and the corrected ADC macro.
 The precheck ran in the local rehearsal project directory. Nothing has been
 registered with or sent to ChipFoundry.
 
+## The ADC macro on the team's current cells (20 Nov 2026)
+
+The ADC macro was rebuilt on the two cells the team had redesigned since it was
+made: the capacitor array of #135 and the resized sampling switch of the
+`bootstrap-sw` branch. `analog/cadence/pv/README.md` has what came from where
+and the checks on the macro itself.
+
+- **The array** has no solid met2 plane any more, so the slots cut into that
+  plane on 19 Nov are gone with it. The largest solid square of metal in the
+  macro is 6.9 um (met3), and 4.8 um on met2.
+- **The switch** has a larger enable inverter. ChipFoundry's FEOL deck still
+  reported `MR_capm.SP.2` on it, in metal that had not changed, so the via-stack
+  change of 19 Nov was made on it again.
+- **For the chip nothing moves.** The macro's outline, pins and obstructions
+  are the same. In its LEF only the `sample` pin's gate area changes, and in
+  its timing libraries that pin's capacitance (57 to 79 fF). So the routed
+  layout of 19 Nov is kept, and the new macro goes in at stream-out, as the
+  corrected one did then.
+
+### Result
+
+| Step | Result |
+| --- | --- |
+| Timing of the routed layout with the new macro's libraries | setup WNS +0.170 ns, hold WNS +0.049 ns, as before; no transition or capacitance violation. The slew of `sample` at the macro, slow corner, goes from 0.96 to 1.13 ns (the limit is 1.5 ns) |
+| Stream-out with the new macro | PASS, 0 warnings |
+| Pegasus LVS | MATCH, 224 cells; port ties PASS (88 groups) |
+| SDF written with the new libraries | the gate netlist is the same; 12 of 452,491 SDF lines differ from the file simulated on 19 Nov: the date, and the delays of the `sample` net and its driver |
+| Gate level, that SDF, memories as gates: `adc_trigger_test` at slow and fast | pass; logs identical to RTL and to the 19 Nov runs. The fast run has the same 16 setup warnings at the host link's input synchroniser, the slow run none |
+| ChipFoundry's ten decks, run natively | all PASS: FEOL 0 violations, BEOL 0; off-grid, top cell, cell names, density (clear area li1 58.9 %, m1 79.1 %, m2 94.3 %, m3 96.0 %, m4 72.7 %, m5 67.2 %), pin labels, zero-area, spike; XOR against the empty frame: 0 differences |
+| `cf precheck` in ChipFoundry's container, every check | **passed**: 12 of 12, their LVS and OEB included (the optional Magic DRC was not run) |
+
+The other simulations of 19 Nov were not run again: the RTL, the gate netlist
+and every delay outside the `sample` net are the same.
+
+### The ADC with the new cells
+
+The mixed-signal runs of "Mixed-signal runs with the clock registers" again,
+on the rebuilt macro (the chip's `sar_adc` RTL around the macro in Spectre, a
+5 kHz sine, typical corner, ideal input source):
+
+| Clock | `adc_clkdiv` | `adc_samplediv` | Sampling | Schematic macro | Extracted macro | Extracted: gain | Extracted: previous sample carried over | Extracted, macro of 19 Nov |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 100 ns | 4 | 8 | 1.6 us | 0..+1 LSB | -1..+2 LSB | +1.5 % | 0.3 % | -1..+2 LSB, +2.1 %, 0.1 % |
+| 30 ns | 4 | 0 | 240 ns | -1..+1 LSB | -2..+2 LSB | +2.3 % | 1.4 % | -2..+2 LSB, +3.1 %, 1.4 % |
+| 30 ns | 4 | 8 | 480 ns | 0..+1 LSB | -1..+1 LSB | +1.4 % | 0.5 % | -1..+2 LSB, +2.3 %, 0.3 % |
+| 100 ns | 4 | 0 | 800 ns | 0..+1 LSB | -1..+2 LSB | +1.5 % | 0.2 % | -1..+2 LSB, +2.2 %, 0.1 % |
+| 100 ns | 1 | 0 | 200 ns | -1..+1 LSB | -3..+1 LSB | +3.4 % | 2.5 % | -3..+2 LSB, +4.0 %, 2.8 % |
+
+The first row is the reset setting on the board. The 240 ns row is 120
+conversions, the others 52. All ten runs end with Spectre reporting no error
+and the firmware test passing.
+
+- **At the reset setting the codes are within -1..+2 LSB, as before, and the
+  gain error falls from +2.1 to +1.5 %.** The new array's top plates have less
+  capacitance to `vss` and `vref` (198 to 139 fF in the extraction), and the
+  gain error falls by the same factor. That fits the explanation of 19 Nov; the
+  item stays open at +1.5 %.
+- **The gain error is 0.6 to 0.9 of a percentage point lower at every
+  setting**, for the same reason.
+- **The schematic macro gives the same codes as before**, conversion for
+  conversion, at the four settings that had a schematic run on 19 Nov. The
+  inverter's new sizes change no code.
+- **The carry-over at a short sampling phase is not changed by the resized
+  switch.** With the extracted macro it is 1.4 % at 240 ns, as before, and
+  2.5 % at 200 ns (2.8 %); a difference under about 0.5 % is within the fit's
+  scatter. With the schematic macro 200 ns gives 1.4 % before and after. So a
+  short sampling phase still carries over part of the previous sample, and the
+  reset value of `adc_samplediv` (8, a sampling phase of 480 ns at 30 ns and
+  1.6 us on the board) is still what keeps it out.
+- **The extracted runs take two to three times as long** as on 19 Nov (41 to
+  99 minutes each): the extraction of the new array is larger (18.7k
+  resistors, from 10.2k).
+
+## After the merge into main (28 Nov 2026)
+
+Every result above is for the layout built on 19 Nov with the ADC macro of
+20 Nov. This work was then rebased onto main, which had taken other work in the
+meantime:
+
+| Now on main | In the signed-off layout |
+| --- | --- |
+| Ten fixes to the sensing peripheral's RTL, a conversion timeout (`status[6]`), byte strobes on the clock registers and `irq_enable` (#145, #146) | no |
+| A new power plan for the ADC macro's supplies: 20 um rings for `vdda1`, `vssa1` and the reference, none for `vccd1`, and the macro's `vdd` pin no longer wired (#142) | no |
+| A scan-chain script, `Cadence/scripts/dft_setup.tcl`, off by default (`DFT 0`) | no |
+| The new capacitor array (#135) | yes, since 20 Nov |
+
+- **Checked on the rebased RTL:** the 16 firmware tests pass in RTL simulation
+  (Xcelium), `rtc_warm_reset_test` and `sensing_reset_test` among them. The
+  peripheral's block and wrapper benches (`make verify` in
+  `agriculture_soc_main`) pass apart from its two open ADC items; its two UVM
+  benches were not run.
+- **Not run again:** synthesis, place and route, the sign-off, gate-level
+  simulation, the mixed-signal runs, ChipFoundry's checks. main's flow does not
+  reproduce the layout above: its power plan expects an ADC macro without a
+  `vdd` pin.
+- **Where the two lines of work met:** `rtc_prescale` keeps its reset by the
+  power-on reset alone and takes the byte strobes; `sensing_reset_test` now
+  expects it to keep its value through a system reset.
+- `rtc_control_2.v` read `pt_setup_done` above its declaration, which Xcelium
+  and Genus reject (Verilator and Icarus do not). The declaration moved up in
+  #145.
+
+`TODO.md` has the rebuild and what has to be settled before it.
+
 ## Known gaps
 
 `TODO.md` beside this file is the list of open items; the ones below are the

@@ -19,25 +19,28 @@ on the Cadence box; run `source ~/.bashrc` first to get the licence and tool pat
 
 Outputs go to `runs/` (gitignored).
 
-## Results (20 Oct 2026, Pegasus 23.2, patched deck)
+## Results (Pegasus 23.2, patched deck)
 
 | Cell | Owner | Version | LVS | Real DRC (density/fill excluded) |
 |---|---|---|---|---|
 | `inverter` | Hee | 19 Oct + poly fix | MATCH | clean |
 | `mim_cap_adc` | Hee | PR #130 | MATCH | clean |
-| `carray_8b` | Hee | 19 Oct (`vtop` on the right edge, `vssa` plane as the pin) + plane slots (19 Nov) | MATCH, 324 unit caps | clean |
-| `cdac_8b` | Hee | 20 Oct (switch inside, `vref` pin) | MATCH | clean |
-| `bootstrap_sw` | Jaime | moved into `sar_adc`; Hee's 20 Oct schematic on `inv_lvt`; narrower via stack (19 Nov) | MATCH | clean |
+| `carray_8b` | Hee | 16 Nov, from #135: the `vssa` shield is no longer one solid plane | MATCH, 324 unit caps | clean |
+| `cdac_8b` | Hee | 16 Nov, from #135: on the new array | MATCH | clean |
+| `bootstrap_sw` | Jaime | 15 Nov layout from the `bootstrap-sw` branch (enable inverter resized); schematic on `sar_adc/inv_lvt`; narrower via stack | MATCH | clean |
 | `trim` | Erick | `Erick_dev` (9 Oct) | MATCH 7/7, `sarcta__C0` black-boxed | clean |
 | `comparator_core` | Erick | `Erick_dev` (9 Oct) + n-well fix | MATCH 17/17, `sarcta__C0` black-boxed | clean |
 | `comparator` (wrapper) | — | generated | MATCH 17/17 | none of its own |
 | **`sar_afe`**, `sar_afe_r`, `sar_afe_b` (ADC macro) | — | generated | **MATCH, all three** | clean |
 
+Every row but `trim` was run again on 20 Nov 2026, on the tree with #135 merged
+(see [the rebuild](#the-macro-on-the-teams-current-cells-20-nov-2026)).
+
 The fixes to the team's cells are commits on their branches in the PR stack:
 - **Inverter:** a poly rectangle at (0.345, 1.875)–(0.675, 2.145) encloses the input contact (licon.8/8a). Hee's 19 Oct inverter still needs it; with it, `cdac_8b` is clean too.
 - **Comparator:** an n-well rectangle at (1.75, 11.885)–(16.05, 13.245) merges the six Vdd PMOS wells.
-- **Bootstrapped switch (19 Nov):** the via stack from the boost capacitors' top-plate strap (met4) down to met2 has 2 × 2 cuts instead of 3 × 2. See [below](#the-shuttles-decks-and-the-solid-metal-guideline-19-nov-2026).
-- **Capacitor array (19 Nov):** the met2 `vssa` plane has five more slots, so that no solid met2 square above 30 µm fits. See below as well.
+- **Bootstrapped switch (19 Nov, and again on the resized switch on 20 Nov):** the via stack from the boost capacitors' top-plate strap (met4) down to met2 has 2 × 2 cuts instead of 3 × 2. See [below](#the-shuttles-decks-and-the-solid-metal-guideline-19-nov-2026).
+- **Capacitor array:** none now. The slots added to the met2 `vssa` plane on 19 Nov went with that plane: the array from #135 has no solid plane.
 
 Two earlier fixes are no longer needed: Hee's 19 Oct `carray_8b` makes the
 whole `vssa` plane its pin, and his 20 Oct `bootstrap_sw` schematic points its
@@ -79,7 +82,7 @@ symbol in batch mode.
 **Extraction** (`run_pex.sh sar_adc sar_afe --filter-source "C (CP)"`, rc_coupled):
 
 - Devices: 656 MIM caps and 98 FETs (fingers and multipliers expanded).
-- Parasitics: 13.1k C and 10.2k R (12.2k and 10.3k before the 19 Nov slots in the `vssa` plane).
+- Parasitics: 16.3k C and 18.7k R (13.1k and 10.2k with the earlier array and its solid `vssa` plane).
 - MOM caps: the trims' 36 MOM unit caps are extracted from their metal (1.00 fF each between the plates, plus the plates' strays); the netlist has no ideal capacitor. See below.
 
 The netlist (~1.5 MB) is **not committed**; regenerate it. Its ports must match the schematic netlist's exactly, and the script checks this.
@@ -108,7 +111,11 @@ of `cf-precheck`, once for FEOL and once for BEOL;
 its design review asks for no solid metal wider than 30 µm. The PDK's Pegasus
 deck checks neither, so the macro's GDS is also checked on its own. Two layout
 items came out of that, both fixed by SKILL in batch, each with the smallest
-change that clears it:
+change that clears it.
+
+Since 20 Nov the capacitor array's half of this section is history: the array
+from #135 replaced the slotted plane ([next section](#the-macro-on-the-teams-current-cells-20-nov-2026)).
+The switch's half stands, and was made again on the resized switch.
 
 **`MR_capm.SP.2` in `bootstrap_sw`.** The rule measures from a MIM capacitor's
 bottom plate as the deck draws it (capm grown by 0.14 µm) to any met3 that does
@@ -190,6 +197,109 @@ gave +2.18 % and +2.35 %.
 
 The extracted views of `bootstrap_sw` and `carray_8b` kept in the library
 (`av_extracted`, `bsw_extracted`) are their owners' own and predate these fixes.
+
+## The macro on the team's current cells (20 Nov 2026)
+
+The macro was rebuilt on the cells as the team now has them. Two had been
+redesigned since it was made, and they were in two different places on the
+repository:
+
+| Cell | Taken from | What is new in it |
+|---|---|---|
+| `carray_8b`, and `cdac_8b` around it | #135, merged as it is | The met2 `vssa` shield under the array is no longer one plane: met2 in the array falls from 23,246 to 8,827 µm², and the largest solid square from 76.4 to 4.8 µm. The outline and the pins of `cdac_8b` are where they were, and both cells' netlists are the same |
+| `bootstrap_sw` (layout) and `inv_lvt` (schematic) | the `bootstrap-sw` branch, commit 7c1cf85, byte for byte | The enable inverter's devices go from 0.42/0.15 (n) and 0.55/0.35 (p) to 1/0.4 each, with the met1 around them. The switch's own devices, the boost capacitors, met2 to met4 and the outline are as before. `in` and `out` are where they were; `en`, `vdd` and `vss` differ by at most 1.05 µm at one end |
+
+Nothing else changes. In #135 and in #138 the layouts of `inverter`,
+`mim_cap_adc`, `comparator`, `comparator_core` and `sarct__trim_array` give
+0 µm² in a flat XOR of the streamed GDS against main's.
+
+Two things to know about those branches:
+
+- **#135's own `sar_adc/bootstrap_sw` is still the earlier switch:** 0 µm² in
+  a flat XOR against main's and the same netlist, although its last commit says
+  the resized one was pulled in. The resized switch was only in
+  `sky130_analog_lib/bootstrap_switch_lib` on `bootstrap-sw`, a library that
+  main's `cds.lib` does not define. Here it is in `sar_adc`. Its schematic and
+  symbol are the ones already there: the schematic's netlist is the same, and
+  it points at `sar_adc/inv_lvt`, the cell that carries the new sizes.
+- **#135's `sar` is this macro's layout as its author's own top level**, on the
+  new array: pins `vp` and `vn`, the comparator on `vdda`, a `vssa` pin of its
+  own on two of the met4 straps, and the pins moved out past the outline
+  (x from −6.7 to 265.5 µm). It matches its schematic. `sar_afe` keeps the pins
+  and supplies it had, which the chip's floorplan, power plan and RTL are built
+  on. Whether the comparator moves to `vdda`, and whether `vssa` gets a pin of
+  its own, is a question for the team that this rebuild does not answer.
+
+**What still needed changing.** Only the switch. Its met2 to met4 are as
+before, so ChipFoundry's FEOL deck still reported `MR_capm.SP.2` on the resized
+layout, and the via-stack change of 19 Nov (previous section) was made on it by
+the same script. The array needed nothing: the slots of 19 Nov went with the
+plane they were cut in.
+
+`macro/afe_lay.il` then generated the three layouts again, reading the new
+cells' pins.
+
+| Check | Macro of 19 Nov | Rebuilt |
+|---|---|---|
+| Pegasus DRC, real violations: `bootstrap_sw`, `carray_8b`, `cdac_8b`, `sar_afe`, `sar_afe_r`, `sar_afe_b` | 0 | 0, and the same density/fill rules |
+| Pegasus LVS: `bootstrap_sw`, `carray_8b`, `cdac_8b`; the three macros with the black box; `sar_afe` with the filter | MATCH | MATCH |
+| ChipFoundry FEOL / BEOL deck, each variant's GDS | 0 / 0 | 0 / 0 |
+| Largest solid square on met2 | 27.3 µm | 4.8 µm |
+| On li1 / met1 / met3 / met4 / met5 | 0.8 / 1.8 / 6.9 / 4.4 / 1.6 µm | 0.8 / 1.9 / 6.9 / 4.4 / 1.6 µm |
+| Outline, and the 40 pin labels | | the same |
+| LEF | | the same from its second line on, but for the `sample` pin's `ANTENNAGATEAREA`: 0.511 to 1.6 µm², the two inverters' gates |
+| `.lib`, the `sample` pin | 57.43 fF | 78.67 fF; every other pin within 0.01 fF |
+
+**The extraction of `sar_afe`, before and after** (parasitic capacitance of a
+net to all other nets, P side; the N side is within 0.3 fF of it):
+
+| Net | 19 Nov | Rebuilt | Of which to `vss` | Of which to `vref` |
+|---|---|---|---|---|
+| Top plate `vtopp` | 854.7 fF | 791.3 fF (−7.4 %) | 178.4 → 93.1 fF | 19.6 → 46.3 fF |
+| Bottom plate, bit 7 | 910.7 fF | 830.8 fF (−8.8 %) | 572.5 → 403.6 fF | 5.9 → 96.4 fF |
+| Bit 6 | 458.9 fF | 419.0 fF (−8.7 %) | 281.7 → 199.4 fF | 6.3 → 50.2 fF |
+| Bit 5 | 234.2 fF | 215.9 fF (−7.8 %) | 140.6 → 101.3 fF | 5.1 → 26.6 fF |
+| Bit 4 | 125.8 fF | 116.4 fF (−7.5 %) | 72.4 → 52.0 fF | 5.6 → 16.6 fF |
+| Bits 3 to 0 | 74.2, 38.3, 24.6 and 16.4 fF | 70.0, 37.0, 24.0 and 16.1 fF (−5.7 to −1.9 %) | | |
+| `sample` | 52.2 fF | 63.4 fF | | |
+
+- **Devices:** the same 656 MIM caps and 98 FETs on the same nets; the four
+  inverter devices have their new sizes.
+- **Parasitics:** 16,305 C and 18,738 R (13,073 and 10,206). The shield is now
+  many pieces of `vss` where it was one plane: 10,968 resistors on `vss`, from
+  2,436.
+- **Where the capacitance goes:** with the plane gone every plate sees less of
+  `vss` and more of `vref`. For a top plate the two together are what
+  attenuates the signal: 198 fF before, 139 fF now.
+
+**One mixed-signal run on the rebuilt macro**, the same as on 19 Nov: the
+chip's `sar_adc` RTL around the macro at the board's clock (100 ns,
+`adc_clkdiv` 4, `adc_samplediv` 8, 52 conversions compared with the ideal
+model):
+
+| Macro | As | Code error | Gain error | Carry-over of the previous sample |
+|---|---|---|---|---|
+| 19 Nov | extraction | −1..+2 LSB | +2.10 % | +0.12 % |
+| Rebuilt | extraction | −1..+2 LSB | +1.47 % | +0.26 % |
+| Rebuilt | schematic | 0..+1 LSB | −0.01 % | −0.01 % |
+
+Spectre finishes without errors and the firmware test passes in each. The gain
+error falls by the factor the top plates' capacitance to `vss` and `vref` fell
+by (198 to 139 fF is 0.70; +2.10 to +1.47 % is 0.70). A carry-over up to about
+0.5 % is noise.
+
+The other four settings of 19 Nov were run again as well
+(`ASIC_ours/openframe/README.md`, "The ADC with the new cells"). The schematic
+macro gives the same codes with the resized inverter as before it, conversion
+for conversion, at each. With the extraction the gain error is 0.6 to 0.9 of a
+percentage point lower at each, and the carry-over at a short sampling phase is
+what it was: 1.4 % at 240 ns, and 2.5 % at 200 ns where it was 2.8 %.
+`ASIC_ours/openframe/README.md` has the other settings.
+
+**Not copied.** The extracted views of `bootstrap_sw` kept in `sar_adc`
+(`av_extracted`, `bsw_extracted`) predate the resize; the resized switch's own
+are in `bootstrap_switch_lib` on `bootstrap-sw`. Those of `carray_8b` and
+`cdac_8b` came with #135 and are of the new array.
 
 ## The trim's MOM unit cap: black box for LVS, layout metal for extraction
 

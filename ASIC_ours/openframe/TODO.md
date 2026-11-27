@@ -2,8 +2,35 @@
 
 Open items found while putting nanosoc in the OpenFrame wrapper and checking it
 (`README.md` has the background for each). Recorded 17 Nov 2026, last worked
-through 19 Nov. Tick an item when it is settled, or delete it with a line in the
+through 20 Nov; the first section was added on 28 Nov. Tick an item when it is settled, or delete it with a line in the
 commit message saying why. A ticked item says in one line what settled it.
+
+## Since the last results (28 Nov)
+
+The results in `README.md` are for the layout built on 19 Nov, with the ADC
+macro swapped on 20 Nov. main has since taken work that is not in that layout
+(README, "After the merge into main").
+
+- [ ] **Rebuild on main as it is now, and run the whole sign-off again.** Not
+      in the signed-off layout: the fixes to the sensing peripheral's RTL, its
+      conversion timeout and the byte strobes on its clock registers (#145,
+      #146), and the new power plan for the ADC macro's supplies (#142).
+- [ ] **The ADC macro's `vdd` pin.** main's power plan no longer wires it,
+      expecting a macro without it (comparator on `vdda`, as in #135's `sar`).
+      Until the macro changes, main's flow leaves that pin open. Settle it
+      with the `sar` item under "The ADC macro".
+- [ ] **Scan chain.** `Cadence/scripts/dft_setup.tcl` stops in Genus (DFT-320
+      at `define_scan_chain`), so `DFT` is 0 in `config.tcl`. A scan chain
+      changes the netlist and puts test functions on some pads.
+- [ ] **The two open items in the ADC's control logic** from the peripheral's
+      verification (`agriculture_soc_main/verif/cov/OPEN_BUGS_REPORT.md`):
+      calibration runs the trim to a rail (ADC-CAL), and `clkc` has an
+      incomplete sensitivity list, which matters in RTL simulation only
+      (ADC-CLKC).
+- [x] The switch on the `bootstrap-sw` branch after its commit of 24 Nov
+      (086c4aa): the same geometry as the switch of 15 Nov that the macro has
+      (flat XOR 0 um2 on every layer). That commit moved the cell into
+      `sar_adc` and added extracted views.
 
 ## Decisions that change the chip
 
@@ -35,10 +62,24 @@ These change the layout, so they come before the final sign-off run.
 
 ## The ADC macro
 
+- [x] **The team's current cells in the macro** (20 Nov): the capacitor array
+      of #135 and the resized sampling switch of the `bootstrap-sw` branch. The
+      macro's outline and pins are the same, so the routed layout is kept.
 - [x] `MR_capm.SP.2` in `sar_afe__bootstrap_sw`: a via stack narrowed from 3 x 2
-      to 2 x 2 cuts. ChipFoundry's FEOL deck now has no violation on the chip.
-- [x] The solid met2 plate in `sar_afe__carray_8b` (the `vssa` shield): five more
-      1.0 um slots; the largest solid square is 27.3 um, from 76.4 um.
+      to 2 x 2 cuts, made again on the resized switch. ChipFoundry's FEOL deck
+      has no violation on the chip.
+- [x] The solid met2 plate in `sar_afe__carray_8b`: gone with the new array,
+      whose shield is not one plane. The largest solid met2 square is 4.8 um.
+- [ ] **#135 still has the earlier switch** in `sar_adc/bootstrap_sw`, though
+      its last commit says the resized one was pulled in. The resized switch is
+      in `sar_adc` on this branch (with the via-stack change); #135 should take
+      it from here or from `bootstrap-sw`.
+- [ ] **#135's own top level, `sar`,** is the macro's layout with the comparator
+      on `vdda` and a `vssa` pin of its own. The chip's macro has the comparator
+      on `vdd` and `vssa` tied to `vss` inside. Decide which the chip should
+      have; changing it moves the macro's pins and needs a new place and route.
+- [ ] The switch's extracted views in `sar_adc` (`av_extracted`,
+      `bsw_extracted`) predate the resize.
 - [ ] **The comparator trim's capacitor is 1.00 fF, not 1.25 fF.** The unit
       `sarcta__C0` is plain metal fingers; every netlist so far, the extracted
       one included, had it as an ideal 1.25 fF. Extracted from the layout it is
@@ -51,19 +92,20 @@ These change the layout, so they come before the final sign-off run.
 - [ ] The reference reaches the macro through an `analog_io` pad, which has a
       150 ohm series resistor; `analog_noesd_io` is the direct path. Decide
       which the reference should use.
-- [ ] **+2.2 % gain in the extracted macro**, at every clock and sampling
-      setting. The extraction has 0.21 pF of parasitic on each capacitor
-      array's top plate, which accounts for it. (The "+3 % on back-to-back
-      conversions" open since October was this plus 1.4 % of the previous
-      sample carried over by a 240 ns sampling phase; the sampling phase is
-      now 480 ns or more by default.)
+- [ ] **+1.5 % gain in the extracted macro** (+2.2 % before the new array), at
+      the reset setting. The extraction has 0.14 pF between each capacitor
+      array's top plate and `vss` and `vref` (0.20 pF before), which accounts
+      for it. (The "+3 % on back-to-back conversions" open since October was
+      this plus 1.4 % of the previous sample carried over by a 240 ns sampling
+      phase; the sampling phase is now 480 ns or more by default. The resized
+      switch leaves that carry-over as it was.)
 
 ## Checks not yet run
 
 - [x] **Mixed-signal (AMS) flow with the clock-register RTL**, at 30 ns and at
       the board's 100 ns: the codes are within 1 LSB with the schematic macro
       and 2 LSB with the extracted one at every setting with 400 ns or more of
-      sampling.
+      sampling. The same on the rebuilt macro (20 Nov).
 - [ ] **Mixed-signal flow, the rest:** the team's test suite on the extracted
       macro; corners other than typical; a source with real impedance.
 - [x] **IR drop.** Static, Innovus early rail analysis: 4.4 mV on vccd1 and
@@ -144,3 +186,5 @@ These change the layout, so they come before the final sign-off run.
 - [x] `cf precheck` in ChipFoundry's container: passes on the layout of 19 Nov,
       12 of 12 checks, in the local rehearsal directory. Run it again after any
       change to the layout, and from the registered project before submitting.
+- [x] The same on the layout with the rebuilt ADC macro (20 Nov): passes, 12 of
+      12 checks, and the ten decks pass run natively as well.
