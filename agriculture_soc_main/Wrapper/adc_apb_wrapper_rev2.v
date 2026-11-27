@@ -25,10 +25,19 @@
 //   0x104 amux          (RW) [1:0] input select
 //   0x108 adc_trigger   (WO) bit0=1 -> manual one-shot sample
 //   0x10C adc_cal       (RW) bit0=1 -> next conversion runs the calibration path
+//   0x110 adc_clkdiv    (RW) [7:0] PCLK cycles per half period of the ADC clock
+//                            (reset ADC_CLK_DIV; 0 selects ADC_CLK_DIV as well)
+//   0x114 adc_samplediv (RW) [7:0] the same while the ADC is sampling: lengthens
+//                            the sampling phase only (reset 0 = no difference)
 //   0x200-0x21C RTC     (RW) PL031 regs via passthrough (address-translated)
 //   0x220 fifo_clear    (WO) any write flushes the FIFO
 //   0x224 rtc_alarm_off (RW) polling period in RTC seconds (default below)
 //   0x228 rtc_ctrl      (RW) bit0 = autonomous-polling enable (reset = 1)
+//   0x22C rtc_prescale  (RW) PCLK cycles per half period of the RTC's 1 Hz tick,
+//                            i.e. half the PCLK frequency in Hz (reset
+//                            RTC_PRESCALE_RESET). The tick itself is divided
+//                            from PCLK outside this block, from RTC_PRESCALE.
+// Change adc_clkdiv and adc_samplediv only while the ADC is idle.
 // -----------------------------------------------------------------------------
 module adc_apb_wrapper_rev2 #(
     parameter ADDR_WIDTH = 12,
@@ -36,13 +45,18 @@ module adc_apb_wrapper_rev2 #(
     parameter SAMPLE_WIDTH = 8,
     parameter [31:0] DEFAULT_ALARM_OFFSET = 32'd5,  // seconds between polls
     parameter ADC_CLK_DIV  = 4,                     // PCLK cycles per ADC clock half
-                                                    // period (sar_adc.sdc must match)
-    parameter ADC_CLK_DIV_MAX = 255                 // slowest ADC clock (same unit) the
-                                                    // conversion timeout must allow for
+                                                    // period at reset (adc_clkdiv)
+    parameter [31:0] RTC_PRESCALE_RESET = 32'd16_666_667,  // rtc_prescale at reset:
+                                                    // 1 Hz from a 33.33 MHz PCLK
+    parameter ADC_CLK_DIV_MAX = 255                 // slowest ADC clock (same unit as
+                                                    // ADC_CLK_DIV) the conversion
+                                                    // timeout must allow for
 )(
     // Clock and reset
     input  wire                  PCLK,
     input  wire                  CLK1HZ,     // ~1 Hz RTC tick
+    output wire [31:0]           RTC_PRESCALE, // for the divider that makes CLK1HZ:
+                                             // PCLK cycles per half period
     input  wire                  PRESETn,    // active-low APB reset
     input  wire                  nPOR,       // power-on reset (survives APB reset) for RTC
 
@@ -76,9 +90,12 @@ module adc_apb_wrapper_rev2 #(
     localparam AMUX_ADDR         = 12'h104;
     localparam ADC_TRIGGER_ADDR  = 12'h108;
     localparam ADC_CAL_ADDR      = 12'h10C;
+    localparam ADC_CLKDIV_ADDR   = 12'h110;
+    localparam ADC_SAMPLEDIV_ADDR = 12'h114;
     localparam FIFO_CLEAR_ADDR   = 12'h220;
     localparam ALARM_OFFSET_ADDR = 12'h224;
     localparam RTC_CTRL_ADDR     = 12'h228;
+    localparam RTC_PRESCALE_ADDR = 12'h22C;
 
     // RTC region: 0x200-0x21F. Forwarded to rtc_control_2 with the address
     // translated down to PL031 word space (0x200 -> RTCDR, 0x204 -> RTCMR, ...).
@@ -118,6 +135,9 @@ module adc_apb_wrapper_rev2 #(
     reg [DATA_WIDTH-1:0] pll_reg;
     reg [DATA_WIDTH-1:0] amux_reg;
     reg                  cal_reg;           // ADC calibration enable (bit0)
+    reg [7:0]            adc_clkdiv_reg;    // ADC clock divider
+    reg [7:0]            adc_samplediv_reg; // ADC clock divider while sampling
+    reg [DATA_WIDTH-1:0] rtc_prescale_reg;  // RTC tick prescaler
     reg [DATA_WIDTH-1:0] alarm_offset_reg;  // polling period (RTC seconds)
     reg                  poll_enable_reg;   // autonomous-polling enable (bit0, reset 1)
     reg [DATA_WIDTH-1:0] status_reg;
@@ -175,7 +195,7 @@ module adc_apb_wrapper_rev2 #(
     wire        rtc_pslverr;
 
     // --------------------------------------------------------------------------
-    // ADC valid CDC: sar_adc runs on PCLK / (2*ADC_CLK_DIV), so synchronise its
+    // ADC valid CDC: sar_adc runs on PCLK / (2*adc_clkdiv), so synchronise its
     // valid into PCLK and capture the result on the synchronised rising edge.
     // sar_adc holds result until its next conversion completes, >= 10 ADC
     // clocks later (constraints: agriculture_soc_main/ADC/sar_adc.sdc).
@@ -217,8 +237,11 @@ module adc_apb_wrapper_rev2 #(
                     PLL_CONTROL_ADDR:  PRDATA = pll_reg;
                     AMUX_ADDR:         PRDATA = amux_reg;
                     ADC_CAL_ADDR:      PRDATA = {{(DATA_WIDTH-1){1'b0}}, cal_reg};
+                    ADC_CLKDIV_ADDR:   PRDATA = {{(DATA_WIDTH-8){1'b0}}, adc_clkdiv_reg};
+                    ADC_SAMPLEDIV_ADDR: PRDATA = {{(DATA_WIDTH-8){1'b0}}, adc_samplediv_reg};
                     ALARM_OFFSET_ADDR: PRDATA = alarm_offset_reg;
                     RTC_CTRL_ADDR:     PRDATA = {{(DATA_WIDTH-1){1'b0}}, poll_enable_reg};
+                    RTC_PRESCALE_ADDR: PRDATA = rtc_prescale_reg;
                     default:           PRDATA = {DATA_WIDTH{1'b0}};
                 endcase
             end
@@ -278,6 +301,26 @@ module adc_apb_wrapper_rev2 #(
         if (!PRESETn) cal_reg <= 1'b0;
         else if (write_enable && strb0 && (PADDR == ADC_CAL_ADDR)) cal_reg <= PWDATA[0];
     end
+
+    // ADC clock: PCLK cycles per half period of sar_clk, in general and while
+    // the ADC samples. sar_adc reads both on the falling edge of PCLK.
+    always @(posedge PCLK or negedge PRESETn) begin
+        if (!PRESETn) adc_clkdiv_reg <= ADC_CLK_DIV;
+        else if (write_enable && (PADDR == ADC_CLKDIV_ADDR)) adc_clkdiv_reg <= PWDATA[7:0];
+    end
+
+    always @(posedge PCLK or negedge PRESETn) begin
+        if (!PRESETn) adc_samplediv_reg <= 8'd0;
+        else if (write_enable && (PADDR == ADC_SAMPLEDIV_ADDR)) adc_samplediv_reg <= PWDATA[7:0];
+    end
+
+    // RTC tick prescaler. The divider is outside (it also has to exist where
+    // this block is used with an external CLK1HZ).
+    always @(posedge PCLK or negedge PRESETn) begin
+        if (!PRESETn) rtc_prescale_reg <= RTC_PRESCALE_RESET;
+        else if (write_enable && (PADDR == RTC_PRESCALE_ADDR)) rtc_prescale_reg <= PWDATA;
+    end
+    assign RTC_PRESCALE = rtc_prescale_reg;
 
     always @(posedge PCLK or negedge PRESETn) begin
         if (!PRESETn) alarm_offset_reg <= DEFAULT_ALARM_OFFSET;
@@ -431,6 +474,8 @@ module adc_apb_wrapper_rev2 #(
         .rstn      (PRESETn),
         .en        (adc_en),
         .cal       (cal_reg),
+        .clk_div    (adc_clkdiv_reg),
+        .sample_div (adc_samplediv_reg),
         .ANALOG_IN (analog_passthrough),
         .valid     (adc_raw_valid),
         .result    (adc_result)
@@ -443,6 +488,8 @@ module adc_apb_wrapper_rev2 #(
         .rstn   (PRESETn),
         .en     (adc_en),
         .cal    (cal_reg),
+        .clk_div    (adc_clkdiv_reg),
+        .sample_div (adc_samplediv_reg),
         .valid  (adc_raw_valid),
         .result (adc_result),
         .vinp   (ADC_VINP),

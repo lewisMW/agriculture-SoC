@@ -13,9 +13,9 @@ nanosoc/env/dependency_env.sh
 # ARM reference (downloaded, not source)
 AT510-MN-80001-r2p0-00rel0
 
-# ==============================================
+# =======================================
 # Cadence Virtuoso / Spectre / XCelium / Maestro
-# ==============================================
+# =======================================
 
 # Tool state and caches
 .cadence/
@@ -122,3 +122,21 @@ nanosoc/system/verif/cov/HOLES_*.txt
 # Transfer bundles and a local Verilator source tree
 *.zip
 verilator/
+
+# OpenFrame experiment flow outputs (ASIC_ours/openframe): rebuild, do not commit
+ASIC_ours/openframe/ip
+ASIC_ours/openframe/Cadence/logs
+ASIC_ours/openframe/Cadence/outputs
+ASIC_ours/openframe/Cadence/reports
+ASIC_ours/openframe/Cadence/scripts/openframe_project_wrapper_*
+ASIC_ours/openframe/Cadence/scripts/*.cmd*
+ASIC_ours/openframe/Cadence/scripts/*.rpt
+ASIC_ours/openframe/Cadence/scripts/.*
+ASIC_ours/openframe/Cadence/scripts/innovus_temp_*
+ASIC_ours/openframe/Cadence/scripts/fv
+ASIC_ours/openframe/Cadence/scripts/lec.dofile
+ASIC_ours/openframe/Cadence/scripts/design_clk.spec
+ASIC_ours/openframe/Cadence/scripts/check_filler.log
+ASIC_ours/openframe/Cadence/scripts/timingReports
+ASIC_ours/openframe/Cadence/scripts/*.old
+ASIC_ours/openframe/Cadence/scripts/pm.ob

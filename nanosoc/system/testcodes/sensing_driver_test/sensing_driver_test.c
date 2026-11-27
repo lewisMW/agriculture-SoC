@@ -41,6 +41,10 @@ int main(void)
 
     UartStdOutInit();
     sp_str("sensing_driver_test: start\n");
+    /* The RTC's 1 Hz tick is divided from the system clock by rtc_prescale, whose
+     * reset value is for the real clock. This test's waits assume the fast tick
+     * of simulation, a "second" of 100 clocks. */
+    SENSING_IP_REGS->rtc_prescale = SENSING_RTC_PRESCALE_FAST;
 
     /* Exercise sensing_init, then pause autonomous polling so ONLY manual
      * triggers feed the FIFO (deterministic counts, RTC-independent). */

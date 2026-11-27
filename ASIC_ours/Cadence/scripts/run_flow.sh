@@ -16,7 +16,8 @@ SD="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SD/setup_env.sh" || { echo "environment setup failed"; exit 1; }
 
 LOGS="${LOG_DIR:-$SD/../logs}"
-mkdir -p "$LOGS"
+# The stages also write ../reports and ../outputs (config.tcl), which are not in git.
+mkdir -p "$LOGS" "$SD/../reports" "$SD/../outputs"
 F="$SOCLABS_ASIC_FLOW_DIR/Cadence"
 cd "$SD" || exit 1
 
@@ -46,19 +47,23 @@ echo "=== 1_synth done $(date +%H:%M:%S) ==="
 # ---- place and route ----------------------------------------------------
 # -stylus is required: the P&R scripts use common-UI commands and native mode
 # fails immediately with `invalid command name "set_multi_cpu_usage"`.
-for stage in "2_place:2_pnr_setup" "3_cts:3_pnr_clock" "4_route:4_pnr_route"; do
-    name="${stage%%:*}"; tcl="${stage##*:}"
+# 5_drc (ours, route_drc.tcl): check_drc on the routed and filled design, ECO reroute of
+# any violations, and the database handed on to sign-off, nanosoc_chip_pads_signoff.
+for stage in "2_place:$F/2_pnr_setup.tcl" "3_cts:$F/3_pnr_clock.tcl" \
+             "4_route:$F/4_pnr_route.tcl" "5_drc:$SD/route_drc.tcl"; do
+    name="${stage%%:*}"; tcl="${stage#*:}"
     echo "=== $name starting $(date +%H:%M:%S) ==="
-    innovus -stylus -no_gui -files "$F/$tcl.tcl" > "$LOGS/$name.log" 2>&1 \
+    innovus -stylus -no_gui -files "$tcl" > "$LOGS/$name.log" 2>&1 \
         || fail "$name" "$LOGS/$name.log"
     grep -q "Fail to find any .* license" "$LOGS/$name.log" && fail "$name" "$LOGS/$name.log"
+    # A Tcl error stops the script (IMPSYT-6692) but Innovus still exits 0, and the next
+    # stage would then read a database this one never wrote.
+    grep -q "IMPSYT-6692" "$LOGS/$name.log" && fail "$name" "$LOGS/$name.log"
     echo "=== $name done $(date +%H:%M:%S) ==="
-    # Each stage ends `write_db $block_name`, overwriting the previous one.
-    # Snapshot CTS so route can be re-run without redoing placement.
-    [ "$name" = "3_cts" ] && { rm -rf nanosoc_chip_pads_ctsdb; \
-        cp -a nanosoc_chip_pads nanosoc_chip_pads_ctsdb && echo "CTS database snapshotted"; }
+    # Each stage writes its own database in this directory: nanosoc_chip_pads_place,
+    # _cts, _route (routed and filled) and _signoff. Route can be re-run from _cts.
 done
 
 echo "=== FLOW COMPLETE $(date +%H:%M:%S) ==="
-echo "Reports in $SD/../reports ; compare timing_summary_05_route_opt.rep against"
-echo "the reference above. check_drc must be run separately for the DRC count."
+echo "Reports in $SD/../reports ; compare timing_summary_06_signoff.rep against"
+echo "the reference above. Post-route DRC: drc_06_signoff.rpt (5_drc.log has the count)."
