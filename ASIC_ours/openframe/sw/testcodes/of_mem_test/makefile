@@ -1,0 +1,1 @@
+../../../../../nanosoc/system/testcodes/fifo_drain_test/makefile
