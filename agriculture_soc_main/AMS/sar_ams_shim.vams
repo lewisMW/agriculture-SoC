@@ -60,6 +60,8 @@ module sar_ams_shim #(
     input  wire                    rstn,      // active-low
     input  wire                    en,        // held high through the conversion
     input  wire                    cal,       // calibration mode
+    input  wire [7:0]              clk_div,   // sar_adc's divider controls (0 = CLK_DIV,
+    input  wire [7:0]              sample_div, // 0 = no longer sampling phase)
     input  wire                    ANALOG_IN, // digital placeholder, unused
     output wire                    valid,
     output wire [RESULT_WIDTH-1:0] result
@@ -114,6 +116,8 @@ module sar_ams_shim #(
         .rstn   (rstn),
         .en     (en),
         .cal    (cal),
+        .clk_div    (clk_div),
+        .sample_div (sample_div),
         .valid  (valid),
         .result (result),
         .vinp   (vp),

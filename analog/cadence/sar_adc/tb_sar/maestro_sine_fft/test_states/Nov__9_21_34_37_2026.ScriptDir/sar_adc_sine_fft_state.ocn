@@ -1,0 +1,44 @@
+solver( 'Spectre )
+design( "sar_adc" "tb_sar" "config")
+ocnAmsSetUnlNetlister()
+envOption(
+	'enableAMSDflex  list(t) 
+)
+modelFile( 
+    '("/opt/pdk/sky130_release_0.1.0/libs/sky130_fd_pr_main/../../models/sky130.lib.spice" "tt")
+)
+analysis('tran ?stop "VAR(\"t_stop_calc\")"  )
+desVar(	  "fin_2" 0	)
+desVar(	  "v_cm" 0.9	)
+desVar(	  "vdda" 1.8	)
+desVar(	  "vssa" 0	)
+desVar(	  "t_start" 0.0001005	)
+desVar(	  "N_drop" 2	)
+desVar(	  "M_cycles" "31, 509"	)
+desVar(	  "Nfft" 1024	)
+desVar(	  "fclk" 1000000	)
+desVar(	  "v_ref" "vdda"	)
+desVar(	  "fs" "fclk/10"	)
+desVar(	  "t_drop" "N_drop/fs"	)
+desVar(	  "fin_1" "fs*M_cycles/Nfft"	)
+desVar(	  "t0" "t_start + t_drop"	)
+desVar(	  "t1" "t0 + M_cycles/fin_1"	)
+desVar(	  "t_stop_calc" "t_start + t_drop + (t1-t0) + 1/fs"	)
+envOption(
+	'analysisOrder  list("pz" "dcmatch" "stb" "tran" "envlp" "ac" "dc" "lf" "noise" "xf" "sp" "pss" "pac" "pstb" "pnoise" "pxf" "psp" "qpss" "qpac" "qpnoise" "qpxf" "qpsp" "hb" "hbac" "hbstb" "hbnoise" "hbxf" "sens" "acmatch" "ofa") 
+)
+option(	'pzSeverity  "None" 
+	'noiseSeverity  "None" 
+	'spSeverity  "None" 
+	'acSeverity  "None" 
+	'dcOpSeverity  "None" 
+	'dcSeverity  "None" 
+	'tranSeverity  "None" 
+	'checklimitdest  "sqldb" 
+)
+saveOption( ?designParamValInfo t )
+saveOption( ?subcktsInfo t )
+saveOption( ?primitivesInfo t )
+saveOption( ?infoOptions list(list("modelParameter" "models" "rawfile" "" "" "" t) list("element" "inst" "rawfile" "" "" "" t) list("outputParameter" "output" "rawfile" "" "" "" t) list("designParamVals" "parameters" "rawfile" "" "" "" t) list("primitives" "primitives" "rawfile" "" "" "" t) list("subckts" "subckts" "rawfile" "" "" "" t) list("asserts" "assert" "rawfile" "" "" "" nil) list("extremeinfo" "all" "logfile" "" "yes" "" nil) list("allcap" "allcap" "file" "" "" "" nil) list("simStatistics" "simstat" "rawfile" "" "" "" nil) list("<Click_To_Add>" "none" "rawfile" "" "" "" nil) ) )
+save( 'v "/cal" "/rstn" "/en" "/clk" "/valid" "/result<7:0>" "/vn" "/vp" )
+temp( 27 ) 

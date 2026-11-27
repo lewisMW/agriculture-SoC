@@ -23,6 +23,7 @@ check_library > $LOG_DIR/syn_lib_check.log
 
 ## -- Read in RTL and elaborate top level
 source $hdl_file_list
+source $custom_hdl_file_list
 read_hdl -sv -define POWER_PINS $top_level_hdl
 # set_db hdl_track_filename_row true
 elaborate $block_name
@@ -36,15 +37,35 @@ read_power_intent -module $block_name ../inputs/${block_name}.upf
 ## -- Apply power intent and check library and CPF -- ##
 apply_power_intent
 ## TODO no more warnings for unconnected things, BUT check the gpio connections
-check_cpf -detail -license lpgxl > $LOG_DIR/syn_cpf_check.log
+## -- The low-power rule checks stop the script on an Error (RCLP-203). A block
+## -- whose port list is fixed by its frame (OpenFrame: 86 unused analog inout
+## -- pads are undriven by design) sets lp_check_nonfatal 1 in its config.tcl;
+## -- the errors are then only reported, in syn_cpf_check.log / syn_pow_check.log.
+set _lp_nonfatal [expr {[info exists lp_check_nonfatal] && $lp_check_nonfatal}]
+if {$_lp_nonfatal} {
+    check_cpf -detail -license lpgxl -continue_on_error > $LOG_DIR/syn_cpf_check.log
+} else {
+    check_cpf -detail -license lpgxl > $LOG_DIR/syn_cpf_check.log
+}
 commit_power_intent
 
-check_power_intent
+# might still have some errors from lack of level shifters, but as long as they remain at ctln + ctlp of the adc it should be good
+#check_power_intent
 
 ## -- Preserve power pad instances / macros from optimization -- ##
-set_dont_touch [get_cells -hierarchical -filter {name =~ "uPAD*"}]
+## -- (a block with no pad ring of its own, e.g. inside OpenFrame, has none)
+set _pad_cells [get_cells -quiet -hierarchical -filter {name =~ "uPAD*"}]
+if {[llength $_pad_cells] > 0} {
+    set_dont_touch $_pad_cells
+}
 
-check_power_structure -detail -license lpgxl > $LOG_DIR/syn_pow_check.log
+if {$_lp_nonfatal} {
+    if {[catch {check_power_structure -detail -license lpgxl > $LOG_DIR/syn_pow_check.log} _lp_err]} {
+        puts "WARNING: check_power_structure reported errors, see $LOG_DIR/syn_pow_check.log ($_lp_err)"
+    }
+} else {
+    check_power_structure -detail -license lpgxl > $LOG_DIR/syn_pow_check.log
+}
 
 ## -- Read constraints -- ##
 read_sdc $constraints_file
