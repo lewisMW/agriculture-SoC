@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<setupdb version="7">history
+	<active>Active Setup</active>
+	<history>History
+		<historyentry assemblerOrExplorer="assembler" roOrView="view" runningOrFinished="finished">Interactive.0
+			<timestamp>Nov 9 21:12:09 2026</timestamp>
+			<uuid>{7d0a388c-3075-4cd2-acd2-9e62e121f7dc}</uuid>
+			<locked>0</locked>
+			<mode>Single Run, Sweeps and Corners</mode>
+			<resultsname>/root/agriculture-SoC/analog/cadence/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME.rdb</resultsname>
+			<simresults>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.rdb</simresults>
+			<runlog>/root/agriculture-SoC/analog/cadence/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME.log</runlog>
+			<runlogfile>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.log</runlogfile>
+			<psfdir>/root/simulation/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME</psfdir>
+			<simdir>$AXL_PROJECT_DIR/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME</simdir>
+			<historyPsfSize>Not Computed</historyPsfSize>
+		</historyentry>
+		<historyentry assemblerOrExplorer="assembler" roOrView="view" runningOrFinished="finished">Interactive.1
+			<timestamp>Nov 9 21:23:58 2026</timestamp>
+			<uuid>{5d2842c7-c041-4e45-8e0c-cd857d29e7a1}</uuid>
+			<locked>0</locked>
+			<mode>Single Run, Sweeps and Corners</mode>
+			<resultsname>/root/agriculture-SoC/analog/cadence/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME.rdb</resultsname>
+			<simresults>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.rdb</simresults>
+			<runlog>/root/agriculture-SoC/analog/cadence/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME.log</runlog>
+			<runlogfile>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.log</runlogfile>
+			<psfdir>/root/simulation/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME</psfdir>
+			<simdir>$AXL_PROJECT_DIR/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME</simdir>
+			<historyPsfSize>Not Computed</historyPsfSize>
+		</historyentry>
+		<historyentry assemblerOrExplorer="assembler" roOrView="view" runningOrFinished="finished">Interactive.2
+			<timestamp>Nov 9 21:28:21 2026</timestamp>
+			<uuid>{c754971d-7a69-44e6-ae08-99bded99fe9b}</uuid>
+			<locked>0</locked>
+			<mode>Single Run, Sweeps and Corners</mode>
+			<resultsname>/root/agriculture-SoC/analog/cadence/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME.rdb</resultsname>
+			<simresults>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.rdb</simresults>
+			<runlog>/root/agriculture-SoC/analog/cadence/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME.log</runlog>
+			<runlogfile>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.log</runlogfile>
+			<psfdir>/root/simulation/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME</psfdir>
+			<simdir>$AXL_PROJECT_DIR/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME</simdir>
+			<historyPsfSize>Not Computed</historyPsfSize>
+		</historyentry>
+		<historyentry assemblerOrExplorer="assembler" roOrView="view" runningOrFinished="finished">Interactive.3
+			<timestamp>Nov 9 21:35:07 2026</timestamp>
+			<uuid>{0909ccc5-1a47-47a0-971f-6c52a7ce9b77}</uuid>
+			<locked>0</locked>
+			<mode>Single Run, Sweeps and Corners</mode>
+			<resultsname>/root/agriculture-SoC/analog/cadence/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME.rdb</resultsname>
+			<simresults>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.rdb</simresults>
+			<runlog>/root/agriculture-SoC/analog/cadence/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME.log</runlog>
+			<runlogfile>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.log</runlogfile>
+			<psfdir>/root/simulation/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME</psfdir>
+			<simdir>$AXL_PROJECT_DIR/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME</simdir>
+			<historyPsfSize>Not Computed</historyPsfSize>
+		</historyentry>
+		<historyentry assemblerOrExplorer="assembler" roOrView="view" runningOrFinished="finished">Interactive.4
+			<timestamp>Nov 9 21:39:00 2026</timestamp>
+			<uuid>{ef6a5a0a-1218-444b-8d88-db0a0b8596f8}</uuid>
+			<locked>0</locked>
+			<mode>Single Run, Sweeps and Corners</mode>
+			<resultsname>/root/agriculture-SoC/analog/cadence/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME.rdb</resultsname>
+			<simresults>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.rdb</simresults>
+			<runlog>/root/agriculture-SoC/analog/cadence/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME.log</runlog>
+			<runlogfile>$AXL_SETUPDB_DIR/results/maestro/$AXL_HISTORY_NAME.log</runlogfile>
+			<psfdir>/root/simulation/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME</psfdir>
+			<simdir>$AXL_PROJECT_DIR/sar_adc/tb_sar/maestro_sine_fft/results/maestro/$AXL_HISTORY_NAME</simdir>
+			<historyPsfSize>Not Computed</historyPsfSize>
+		</historyentry>
+	</history>
+</setupdb>

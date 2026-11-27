@@ -424,6 +424,8 @@ sky130_ef_io__vssa_hvc_clamped_pad uPAD_VSSA_1(
 
 // Clock, Reset and Serial Wire Debug ports
 
+// TODO OE_N isn't configured properly. It's connected to VCCHIB directly now. Need to just tie it off
+
 sky130_ef_io__gpiov2_pad_wrapped uPAD_SE_I (
     `POWER_PINS_VIO_STD
     .INP_DIS(~tiehi),
@@ -529,7 +531,6 @@ sky130_fd_io__top_pwrdetv2 uPAD_PWRDET (
    .in2_vddio_hv(),
    .in3_vddio_hv(),
    // The rst_por_hv_n pin should be hooked up to the rst_por_hv_n coming from the SRSS IP for proper functionality.
-   // TODO this part is not ready yet.
    .rst_por_hv_n(rst_por_hv_n),
    .in1_vddd_hv(),
    .in2_vddd_hv(),
@@ -629,10 +630,7 @@ sky130_ef_io__gpiov2_pad_wrapped uPAD_P``PORT``_``IDX ( \
    .ENABLE_VDDA_H(por_h_i),// for analog domains \
    // technically resets??? \
    .ENABLE_VSWITCH_H(gpio_``PORT``_``IDX``_tie_hi_esd), // in design VSWITCH is there but connected to VDDIO. TODO check this \
-   // TODO like for the reset cell - I have no idea if this is correct. \
-   // What does "in VCCHIB domain" mean here? \
-   // I think it's saying the signal should be given in VCCHIB (VCCD) domain \
-   .ENABLE_VDDIO(por_h_i), // TODO see the reset cell connection, should there be the slew thing? \
+   .ENABLE_VDDIO(por_h_i), \
    .HLD_H_N(gpio_``PORT``_``IDX``_tie_hi_esd), // hold state control, 1 to use as default \
    .HLD_OVR(1'b0), // actually freeze value, ignored with hld_h_n is 1 \
    .SLOW(1'b0) // default slew rate \

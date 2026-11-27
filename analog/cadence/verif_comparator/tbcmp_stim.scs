@@ -1,0 +1,24 @@
+// Stimulus and loads for tb_comparator_parasitic. Added to each Maestro test as a
+// Definition File. Requires schematic instance I11 to be excluded from the netlist.
+// All names below are Maestro design variables.
+//
+// Net naming note: the schematic crosses the trim buses. Net trimb<i> drives the
+// comparator TRIMA pin and net trima<i> drives TRIMB, so trim_a goes on trimb<i>.
+simulator lang=spectre
+ahdl_include "/home/admin/Documents/Erick_dev_git_copy/agriculture-SoC/analog/cadence/verif_comparator/tbcmp_stim.va"
+
+XSTIM (clk inp_src inn_src \
+       trimb\<4\> trimb\<3\> trimb\<2\> trimb\<1\> trimb\<0\> \
+       trima\<4\> trima\<3\> trima\<2\> trima\<1\> trima\<0\>) tbcmp_stim \
+       vcc=vcc vcm=vcm fclk=fclk duty=duty tr=tr tf=tf mode=mode vd=vd \
+       vstart=vstart vstep=vstep nrep=nrep vagg=vagg trim_a=trim_a trim_b=trim_b
+
+Rsrcp (inp_src inp) resistor r=rs
+Rsrcn (inn_src inn) resistor r=rs
+Ccdacp (inp 0) capacitor c=ccdac
+Ccdacn (inn 0) capacitor c=ccdac
+Cloadp (outp 0) capacitor c=cload
+Cloadn (outn 0) capacitor c=cload
+
+// Supply current, for IT("/V0/PLUS") in the power and energy outputs
+save V0:p

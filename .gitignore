@@ -13,9 +13,9 @@ nanosoc/env/dependency_env.sh
 # ARM reference (downloaded, not source)
 AT510-MN-80001-r2p0-00rel0
 
-# ==============================================
+# =======================================
 # Cadence Virtuoso / Spectre / XCelium / Maestro
-# ==============================================
+# =======================================
 
 # Tool state and caches
 .cadence/

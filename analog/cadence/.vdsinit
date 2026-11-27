@@ -1,0 +1,3 @@
+;; Loaded by the Maestro expression evaluator (vds), which does not read .cdsinit.
+;; Defines tbcmpDec/tbcmp_vos/... used by the tb_comparator_parasitic outputs.
+load("/home/admin/Documents/Erick_dev_git_copy/agriculture-SoC/analog/cadence/verif_comparator/tbcmp_lib.il")
