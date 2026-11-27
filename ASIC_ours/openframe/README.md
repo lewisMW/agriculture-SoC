@@ -1053,6 +1053,149 @@ Final layout of 19 Nov (28,470 logic cells, 95 of them antenna diodes):
 program not running; for `NOHOST=1` it is the processor fetching the program's
 first word with the stream port stalled.
 
+## Checks (19 Nov 2026)
+
+### IR drop and power
+
+`signoff/run_ir_drop.sh` runs Innovus' early rail analysis on the routed
+database: static drop on vccd1/vssd1, with six ideal sources on the met4 ring
+where the frame's connection blocks strap its pins, wire resistance from the
+PDK's extraction file (typical only), and a technology-only grid library.
+
+The memory blocks' libraries have no power data, so the tools count the five
+blocks as 0.3 mW. Their latch arrays clock an inverter and a clock gate per
+byte every cycle. Genus on each block's gate netlist (33.33 MHz, typical, no
+wire capacitance) gives 7.4, 3.9 and 2.5 mW for the 512-, 256- and 128-word
+blocks: 23.7 mW for the five, against 18.1 mW for all the logic. The chip is
+therefore about 41.5 mW at 33.33 MHz (23 mA), not the 14 mW estimated before.
+
+| Case | Power | vccd1 drop | vssd1 rise | Largest wire current against the LEF's DC limit |
+| --- | --- | --- | --- | --- |
+| build of 16 Nov, libraries as they are | 18.1 mW | 1.85 mV | 1.83 mV | not run |
+| build of 16 Nov, with the memories' power | 41.5 mW | 4.39 mV | 4.20 mV | 5.8 % |
+| this build, with the memories' power | 41.8 mW | 4.54 mV | 4.35 mV | 5.8 % |
+| this build, every current doubled | 83.6 mW | 9.07 mV | 8.70 mV | 11.5 % |
+
+The worst point is the lower instruction-memory block, farthest from the
+right-edge feeds. No node is near the 90 mV limit (5 % of 1.8 V). Not covered:
+the grids inside the macros, the ADC's analog supply, pads and package, dynamic
+drop, RMS and peak current limits. The extraction file ignores temperature:
+allow a third more for hot wires.
+
+### The comparator trim's capacitor
+
+The comparator's offset trim is two arrays of `sarcta__C0`, a unit capacitor
+made of met2 fingers, 8, 4, 2, 1 and 1 units on the five trim bits. No device
+rule recognises it, and its schematic is an ideal 1.25 fF capacitor. LVS treats
+it as a black box, which checks the array's wiring. Extraction did the same,
+and a black box is netlisted from its schematic: so the extracted macro, like
+the schematic, had ideal 1.25 fF units, and the metal of the units themselves
+was never extracted.
+
+Extracted from the layout (`analog/cadence/pv/run_pex.sh` with
+`--filter-source "C (CP)"` and no black box; see `analog/cadence/pv/README.md`):
+
+| Per array | As netlisted before | From the layout |
+| --- | --- | --- |
+| unit, plate to plate | 1.25 fF | 1.00 fF |
+| bits 4 to 0 | 10 / 5 / 2.5 / 1.25 / 1.25 fF | 8.03 / 4.00 / 2.01 / 1.00 / 1.00 fF |
+| common plate to the supplies | 2.3 fF | 3.8 fF |
+
+| Comparator (extracted, Spectre, 27 C, 1.8 V) | Ideal units | Layout units |
+| --- | --- | --- |
+| one unit of trim, ss / tt / ff | 3.4 / 4.0 / 4.7 mV | 2.4 / 2.8 / 3.4 mV |
+| full trim on one side, ss / tt / ff | 43 / 49 / 57 mV | 31 / 36 / 42 mV |
+| decision delay at 10 mV, trim 0 / both sides at 31 | 1.95 / 2.53 ns | 1.97 / 2.37 ns |
+
+The ratios are right (8.02 : 3.99 : 2.00 : 1 : 1); the absolute value is 20 %
+low, and the trim's step and range are about 28 % smaller than every simulation
+so far has shown. Whether that range still covers the comparator's offset is
+for the analog team to judge. Two more things the extraction showed: bits 0 and
+1 are one unit each, so the 32 codes give 17 levels; and only Quantus' typical
+corner exists in the PDK, so there is no process spread on these numbers.
+
+### Mixed-signal runs with the clock registers
+
+The mixed-signal flow (the chip's own `sar_adc` RTL around the `sar_afe` macro
+in Spectre) was rerun with the clock-register RTL, at the 30 ns clock the
+constraints are for and at the board's 100 ns. The shim that stands in for
+`sar_adc` there passes the two divider ports through, and the sample time
+stamps match the digital runs at every setting.
+
+Error of the code against an ideal 8-bit conversion of the same input, a 5 kHz
+sine, typical corner, ideal input source:
+
+| Clock | `adc_clkdiv` | `adc_samplediv` | Sampling | Schematic macro | Extracted macro | Extracted: gain | Extracted: previous sample carried over |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 30 ns | 4 | 0 | 240 ns | -1..+1 LSB | -2..+2 LSB | +3.1 % | 1.4 % |
+| 30 ns | 4 | 8 | 480 ns | 0..+1 | -1..+2 | +2.3 % | 0.3 % |
+| 30 ns | 4 | 16 | 960 ns | 0..+1 | -1..+2 | +2.2 % | 0.4 % |
+| 30 ns | 8 | 0 | 480 ns | 0..+1 | -1..+2 | +2.6 % | 0.5 % |
+| 100 ns | 4 | 0 | 800 ns | 0..+1 | -1..+2 | +2.2 % | 0.1 % |
+| 100 ns | 2 | 0 | 400 ns | 0..+1 | -1..+2 | +2.5 % | 0.1 % |
+| 100 ns | 1 | 0 | 200 ns | -1..+1 | -3..+2 | +4.0 % | 2.8 % |
+| 100 ns | 4 | 40 | 8 us | 0..+1 | -1..+2 | +2.2 % | 0.1 % |
+| 100 ns | 4 | 8 | 1.6 us | not run | -1..+2 | +2.2 % | 0.2 % |
+
+The last row is the reset setting on the board. With the comparator's trim
+capacitors taken from the layout (see "The comparator trim's capacitor") the
+same run gives -1..+2 LSB, +2.4 % and 0.1 %: at trim code 0 the capacitors'
+value does not show in the codes.
+
+Carry-over up to about 0.5 % is noise: the schematic macro shows as much.
+
+This explains the defect open since October ("+3 % gain on conversions that
+follow each other within 10 us, in the extracted macro only"). It is two things:
+
+- **A constant gain error of about +2.2 %** in the extracted macro. No clock or
+  sampling setting removes it, and it is there after a 126 us idle as well. The
+  extraction has 0.21 pF of parasitic on each capacitor array's top plate, which
+  gives an error of this size.
+- **1.4 % of the previous sample carried over** when the sampling phase is
+  240 ns, which is too short for the sampling switch. From 400 ns up it is gone.
+  The October analysis fitted a gain only, so the carry-over showed up as extra
+  gain on back-to-back conversions.
+
+Hence the reset value of `adc_samplediv`: 8, which makes the sampling phase
+480 ns at a 30 ns clock and 1.6 us at the board's 100 ns, whatever the firmware
+does. `adc_clkdiv` stays 4. At 10 MHz a divider of 1 needs `adc_samplediv` of 3
+or more. Not run: process corners other than typical, and a source with real
+impedance, which lengthens the sampling time needed.
+
+### Timing at the pins
+
+The constraints give every pin 0.1 ns of input or output delay and two clock
+cycles, so the flow's reports only say that no pin is critical.
+`signoff/run_io_timing.sh` reads the routed database with propagated clocks and
+reports what the layout does at the wrapper's pins, the worse of the slow and
+the fast corner, relative to the clock edge at the wrapper's clock pin:
+
+| At the wrapper's pins (final layout) | |
+| --- | --- |
+| outputs (61 that a flop on the system clock drives) | valid 13.0 ns after the edge at the latest; none changes before 2.3 ns |
+| inputs to flops on the system clock, the mode strap aside | setup at most 3.7 ns (GPIO 6); hold at most 3.9 ns |
+| the mode strap (GPIO 11) | 12.7 ns of setup: it is combinational to several pads' enables, and static in use |
+| debug port, against SWDCK (GPIO 20) | SWDIO valid 7.1 ns after the edge and not before 2.2 ns; SWDIO needs 0.4 ns of setup. The constraints give SWDIO no hold check against SWDCK |
+| flash pass-through, pin to pin | 2.2 to 5.5 ns at the slow corner, 0.8 to 1.2 ns at the fast one |
+
+The frame's pads come on top. From the PDK's library for the pad (fast, typical,
+slow): the input buffer adds 0.7, 1.3 and 2.2 ns; the output driver in the
+strong, fast-slew mode adds 3.3, 5.5 and 8.4 ns into 15 pF. The clock goes
+through an input buffer too, so for an input the two largely cancel, and an
+output is valid about 24 ns after the clock edge at the package pin in the worst
+case (2.2 + 13.0 + 8.4).
+
+What it means:
+
+- Every input the processor reads goes through a two-flop synchroniser or is a
+  strap, and the host link and the UARTs are asynchronous to anything outside,
+  so the hold figure constrains nothing on the board. A device that wanted to
+  share the chip's clock would have to respect it.
+- The pass-through is 13 to 16 ns each way with the pads at the slow corner
+  (13 for the clock, 15 for the data coming back). With a flash that answers
+  within 7 ns, a programming clock of 8 MHz leaves a wide margin; above about
+  14 MHz the read data is late at the slow corner.
+
 ## Known gaps
 
 `TODO.md` beside this file is the list of open items; the ones below are the

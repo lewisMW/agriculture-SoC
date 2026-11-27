@@ -14,10 +14,13 @@
 #   ./run_pex.sh <LIB> <CELL> [--type rc_coupled|rc_decoupled|c_only_coupled]
 #                             [--gnd NET] [--view NAME] [--skip-lvs]
 #                             [--blackbox SUBCELL]... [--exclude-hcell SUBCELL]...
+#                             [--filter-source "TYPE (MODEL)"]...
 # Defaults: --type rc_coupled  --gnd vss  --view av_extracted
-# --blackbox and --exclude-hcell are passed to run_lvs.sh (e.g. sarcta__C0,
-# the trim's MOM unit cap, for any cell containing Erick's trim; cdac_8b for
-# the macro).
+# --blackbox, --exclude-hcell and --filter-source are passed to run_lvs.sh.
+# For any cell containing the comparator's trim, extract with --filter-source "C (CP)"
+# and WITHOUT --blackbox sarcta__C0: the MOM unit cap's metal is then extracted
+# like any wire and the schematic's ideal 1.25 fF is not netlisted. A black-boxed
+# unit is netlisted from its schematic instead and its own metal is left out.
 #
 # Env overrides: SKY130, CDSLIB (default ../cds.lib), RUNROOT.
 # =====================================================================
@@ -32,7 +35,7 @@ QRCTECH="$SKY130/quantus/extraction/typical/qrcTechFile"
 
 LIB=""; CELL=""; TYPE=rc_coupled; GND=vss; SKIPLVS=0; VIEW=av_extracted
 die(){ echo "ERROR: $*" >&2; exit 2; }
-usage(){ sed -n '2,20p' "$0"; exit "${1:-0}"; }
+usage(){ sed -n '2,24p' "$0"; exit "${1:-0}"; }
 while [ $# -gt 0 ]; do
   case "$1" in
     -h|--help) usage 0;;
@@ -42,6 +45,7 @@ while [ $# -gt 0 ]; do
     --skip-lvs) SKIPLVS=1; shift;;
     --blackbox) export LVS_BLACKBOX="${LVS_BLACKBOX:-} ${2:?}"; shift 2;;
     --exclude-hcell) export LVS_EXCLUDE_HCELL="${LVS_EXCLUDE_HCELL:-} ${2:?}"; shift 2;;
+    --filter-source) export LVS_FILTER_SOURCE="${LVS_FILTER_SOURCE:-};${2:?}"; shift 2;;
     -*) die "unknown option: $1";;
     *) if [ -z "$LIB" ]; then LIB="$1"; elif [ -z "$CELL" ]; then CELL="$1"; else die "unexpected arg: $1"; fi; shift;;
   esac
