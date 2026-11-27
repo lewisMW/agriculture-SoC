@@ -33,6 +33,9 @@ package sensing_uvm_pkg;
     localparam bit [11:0] REG_AMUX      = 12'h104;
     localparam bit [11:0] REG_ADC_TRIG  = 12'h108;
     localparam bit [11:0] REG_ADC_CAL   = 12'h10C;
+    localparam bit [11:0] REG_CLKDIV    = 12'h110;
+    localparam bit [11:0] REG_SAMPLEDIV = 12'h114;
+    localparam bit [11:0] REG_IRQ_EN    = 12'h118;
     localparam bit [11:0] REG_RTCDR     = 12'h200;
     localparam bit [11:0] REG_RTCMR     = 12'h204;
     localparam bit [11:0] REG_RTCLR     = 12'h208;
@@ -44,6 +47,7 @@ package sensing_uvm_pkg;
     localparam bit [11:0] REG_FIFO_CLR  = 12'h220;
     localparam bit [11:0] REG_ALARM_OFF = 12'h224;
     localparam bit [11:0] REG_RTC_CTRL  = 12'h228;
+    localparam bit [11:0] REG_PRESCALE  = 12'h22C;
     localparam int        FIFO_DEPTH    = 16;
 
     // ── FIFO-push snoop (FSM -> FIFO), for end-to-end data checks ───────────
@@ -137,6 +141,10 @@ package sensing_uvm_pkg;
             mirror[REG_ADC_CAL]   = 32'h0;
             mirror[REG_ALARM_OFF] = 32'd5;     // DEFAULT_ALARM_OFFSET
             mirror[REG_RTC_CTRL]  = 32'h1;     // polling on
+            mirror[REG_CLKDIV]    = 32'd4;     // ADC_CLK_DIV
+            mirror[REG_SAMPLEDIV] = 32'd8;     // ADC_SAMPLE_DIV
+            mirror[REG_IRQ_EN]    = 32'h0;
+            mirror[REG_PRESCALE]  = 32'd5_000_000;   // RTC_PRESCALE_RESET
             fifo_model.delete();
         endfunction
 
@@ -150,7 +158,8 @@ package sensing_uvm_pkg;
         function bit is_mapped(bit [11:0] a);
             return a inside {REG_STATUS, REG_MEAS_HI, REG_MEAS_LO, REG_PLL, REG_AMUX,
                              REG_ADC_TRIG, REG_ADC_CAL, REG_FIFO_CLR, REG_ALARM_OFF,
-                             REG_RTC_CTRL} || (a >= 12'h200 && a <= 12'h21C);
+                             REG_RTC_CTRL, REG_CLKDIV, REG_SAMPLEDIV, REG_IRQ_EN,
+                             REG_PRESCALE} || (a >= 12'h200 && a <= 12'h21C);
         endfunction
 
         // FSM -> FIFO pushes
@@ -169,8 +178,11 @@ package sensing_uvm_pkg;
 
             if (t.write) begin
                 case (t.addr)
-                    REG_PLL, REG_AMUX, REG_ALARM_OFF: mirror[t.addr] = t.wdata;
+                    REG_PLL, REG_AMUX, REG_ALARM_OFF,
+                    REG_PRESCALE:                     mirror[t.addr] = t.wdata;
                     REG_ADC_CAL, REG_RTC_CTRL:        mirror[t.addr] = {31'h0, t.wdata[0]};
+                    REG_CLKDIV, REG_SAMPLEDIV:        mirror[t.addr] = {24'h0, t.wdata[7:0]};
+                    REG_IRQ_EN:                       mirror[t.addr] = {30'h0, t.wdata[1:0]};
                     default: ;
                 endcase
                 return;
@@ -216,6 +228,8 @@ package sensing_uvm_pkg;
                 bins rtclr = {REG_RTCLR}; bins rtccr = {REG_RTCCR}; bins rtcimsc = {REG_RTCIMSC};
                 bins rtcris = {REG_RTCRIS}; bins rtcmis = {REG_RTCMIS}; bins rtcicr = {REG_RTCICR};
                 bins fifo_clr = {REG_FIFO_CLR}; bins alarm_off = {REG_ALARM_OFF}; bins rtc_ctrl = {REG_RTC_CTRL};
+                bins clkdiv = {REG_CLKDIV}; bins sampdiv = {REG_SAMPLEDIV}; bins irq_en = {REG_IRQ_EN};
+                bins prescale = {REG_PRESCALE};
                 bins unmapped = default;
             }
             cp_dir : coverpoint t.write { bins rd = {0}; bins wr = {1}; }
@@ -328,12 +342,18 @@ package sensing_uvm_pkg;
                 wr(REG_PLL,  $urandom);       rd(REG_PLL,  d);
                 wr(REG_AMUX, $urandom);       rd(REG_AMUX, d);
                 wr(REG_ADC_CAL, $urandom);    rd(REG_ADC_CAL, d);
+                wr(REG_CLKDIV, $urandom);     rd(REG_CLKDIV, d);
+                wr(REG_SAMPLEDIV, $urandom);  rd(REG_SAMPLEDIV, d);
+                wr(REG_IRQ_EN, $urandom);     rd(REG_IRQ_EN, d);
+                wr(REG_PRESCALE, $urandom);   rd(REG_PRESCALE, d);
             end
+            // back to the reset values (a random divider would slow every later conversion)
+            wr(REG_CLKDIV, 4); wr(REG_SAMPLEDIV, 8); wr(REG_IRQ_EN, 0); wr(REG_PRESCALE, 5_000_000);
             // read-only / write-only / unmapped behaviour
             rd(REG_MEAS_HI, d);
             rd(REG_ADC_TRIG, d);
             rd(REG_FIFO_CLR, d);
-            rd(12'h010, d); rd(12'h0FC, d); rd(12'h300, d); rd(12'hFFC, d);
+            rd(12'h010, d); rd(12'h0FC, d); rd(12'h11C, d); rd(12'h230, d); rd(12'h300, d); rd(12'hFFC, d);
             wr(12'h300, 32'hDEAD_BEEF);       rd(12'h300, d);
             wr(REG_ADC_CAL, 0);
             wr(REG_AMUX, 0);

@@ -7,7 +7,8 @@ module agriculture_soc_tb;
     reg        reset;
     wire [3:0] LED;
 
-    agriculture_soc DUT (.clk(clk), .reset(reset), .LED(LED));
+    // RTC tick: half period of 50 clocks (an RTC "second" = 100 clocks)
+    agriculture_soc #(.RTC_PRESCALE_RESET(32'd50)) DUT (.clk(clk), .reset(reset), .LED(LED));
 
     always #(T/2) clk = ~clk;
 

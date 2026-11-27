@@ -35,6 +35,9 @@ int main(void)
     uint32_t cyc, n, empty_batches = 0, total = 0;
     UartStdOutInit();
     sp_str("sensing_sleep_poll_test: start\n");
+    /* rtc_prescale resets to the value for the real clock; this test counts
+     * RTC seconds, so it selects the simulation tick (a "second" of 100 clocks). */
+    SENSING_IP_REGS->rtc_prescale = SENSING_RTC_PRESCALE_FAST;
     sensing_init(2, 0);
     sensing_clear_fifo();
 

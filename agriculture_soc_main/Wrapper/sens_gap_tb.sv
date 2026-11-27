@@ -37,7 +37,10 @@ module sens_gap_tb #(
         A_PLL    = 16'h100, A_AMUX    = 16'h104, A_TRIG    = 16'h108, A_CAL = 16'h10C,
         A_RTCDR  = 16'h200, A_RTCMR   = 16'h204, A_RTCLR   = 16'h208, A_RTCCR = 16'h20C,
         A_RTCIMSC= 16'h210, A_RTCRIS  = 16'h214, A_RTCMIS  = 16'h218, A_RTCICR = 16'h21C,
-        A_FCLR   = 16'h220, A_ALARM   = 16'h224, A_RTCCTRL = 16'h228;
+        A_FCLR   = 16'h220, A_ALARM   = 16'h224, A_RTCCTRL = 16'h228,
+        A_CLKDIV = 16'h110, A_SDIV    = 16'h114, A_IRQEN   = 16'h118, A_PRESC = 16'h22C;
+    // reset values of the clock registers (wrapper defaults)
+    localparam logic [31:0] CLKDIV_RST = 32'd4, SDIV_RST = 32'd8, PRESC_RST = 32'd5_000_000;
 
     // rtc_control_2 state encoding (used only to TIME stimulus)
     localparam logic [4:0] S_IDLE = 5'd0, S_ENABLE_SETUP = 5'd1, S_READ_SETUP = 5'd3,
@@ -57,13 +60,15 @@ module sens_gap_tb #(
     logic [3:0]    PSTRB = 4'h0;
     logic [2:0]    PPROT = PROT_PRIV;
     wire  [31:0]   PRDATA;
-    wire           PREADY, PSLVERR;
+    wire           PREADY, PSLVERR, IRQ;
+    wire  [31:0]   RTC_PRESCALE;
 
     adc_apb_wrapper_rev2 #(.ADDR_WIDTH(AW), .DEFAULT_ALARM_OFFSET(DEF_OFF)) uut (
-        .PCLK(PCLK), .CLK1HZ(CLK1HZ), .PRESETn(PRESETn), .nPOR(nPOR),
+        .PCLK(PCLK), .CLK1HZ(CLK1HZ), .RTC_PRESCALE(RTC_PRESCALE), .PRESETn(PRESETn), .nPOR(nPOR),
         .PSEL(PSEL), .PADDR(PADDR), .PENABLE(PENABLE), .PWRITE(PWRITE),
         .PWDATA(PWDATA), .PRDATA(PRDATA), .PREADY(PREADY), .PSLVERR(PSLVERR),
-        .APBACTIVE(1'b1), .PPROT(PPROT), .PSTRB(PSTRB)
+        .APBACTIVE(1'b1), .PPROT(PPROT), .PSTRB(PSTRB), .IRQ(IRQ),
+        .ADC_VINP(1'b0), .ADC_VINN(1'b0)
     );
 
     always #5 PCLK = ~PCLK;
@@ -275,14 +280,16 @@ module sens_gap_tb #(
         f = d[1:0];
     endtask
 
-    typedef struct { logic [31:0] pll, amux, cal, alarm, rtcctrl; } snap_t;
+    typedef struct { logic [31:0] pll, amux, cal, alarm, rtcctrl, clkdiv, sdiv, irqen, presc; } snap_t;
     task automatic snapshot(output snap_t s);
         rd(A_PLL, s.pll); rd(A_AMUX, s.amux); rd(A_CAL, s.cal);
         rd(A_ALARM, s.alarm); rd(A_RTCCTRL, s.rtcctrl);
+        rd(A_CLKDIV, s.clkdiv); rd(A_SDIV, s.sdiv); rd(A_IRQEN, s.irqen); rd(A_PRESC, s.presc);
     endtask
     function automatic bit snap_eq(input snap_t a, input snap_t b);
         return a.pll == b.pll && a.amux == b.amux && a.cal == b.cal &&
-               a.alarm == b.alarm && a.rtcctrl == b.rtcctrl;
+               a.alarm == b.alarm && a.rtcctrl == b.rtcctrl && a.clkdiv == b.clkdiv &&
+               a.sdiv == b.sdiv && a.irqen == b.irqen && a.presc == b.presc;
     endfunction
 
     // ------------------------------------------------------------ resets
@@ -314,7 +321,7 @@ module sens_gap_tb #(
     // visible again as STATUS[5] until the first arm clears it (FIX-4, ~12 PCLK)
     // - STATUS[5] is checked after that arm instead.
     task automatic check_reset_values(input string ctx, input bit warm = 1'b0);
-        logic [31:0] d, t;
+        logic [31:0] d, t, tg;
         logic [1:0]  f;
         bit ok;
         rd(A_STATUS, d);
@@ -323,8 +330,12 @@ module sens_gap_tb #(
         if (warm && uut.u_rtc.nRTCRST) begin
             wait_state(S_WAITING, 8 * TICK_PCLK, ok);
             cycles(2);
-            rd(A_STATUS, d); rd(A_RTCDR, t);
-            check(ok && (!d[5] || t >= uut.u_rtc.alarm_target),
+            // An interrupt pending here is legitimate if the RTC has reached the
+            // alarm armed at the time of the STATUS read (a tick can land during
+            // the arm itself); that alarm is serviced and re-armed straight
+            // after, so compare against the target captured with the read.
+            rd(A_STATUS, d); tg = uut.u_rtc.alarm_target; rd(A_RTCDR, t);
+            check(ok && (!d[5] || t >= tg),
                   $sformatf("%s: no RTC interrupt left pending once the first arm completes (FIX-4) (STATUS 0x%0h)", ctx, d));
         end
         rd(A_MEAS_HI, d); check(d == 32'h0, {ctx, ": MEAS_HI = 0"});
@@ -337,6 +348,11 @@ module sens_gap_tb #(
         rd(A_FCLR, d);    check(d == 32'h0, {ctx, ": FIFO_CLEAR (WO) reads 0"});
         rd(A_ALARM, d);   check(d == DEF_OFF, {ctx, ": RTC_ALARM_OFFSET = DEFAULT_ALARM_OFFSET"});
         rd(A_RTCCTRL, d); check(d == 32'h1, {ctx, ": RTC_CTRL = 1 (polling on)"});
+        rd(A_CLKDIV, d);  check(d == CLKDIV_RST, {ctx, ": ADC_CLKDIV = ADC_CLK_DIV"});
+        rd(A_SDIV, d);    check(d == SDIV_RST, {ctx, ": ADC_SAMPLEDIV = ADC_SAMPLE_DIV"});
+        rd(A_IRQEN, d);   check(d == 32'h0 && !IRQ, {ctx, ": IRQ_ENABLE = 0, IRQ low"});
+        rd(A_PRESC, d);   check(d == PRESC_RST && RTC_PRESCALE == PRESC_RST,
+                                {ctx, ": RTC_PRESCALE = RTC_PRESCALE_RESET, on the output too"});
         rd(16'h0F0, d);   check(d == 32'h0, {ctx, ": reserved offset 0x0F0 reads 0"});
     endtask
 
@@ -434,7 +450,13 @@ module sens_gap_tb #(
         wr(A_ALARM, 32'd7);         rd(A_ALARM, d); check(d == 32'd7, "T2 RTC_ALARM_OFFSET read-back");
         wr(A_RTCCTRL, 32'h0);       rd(A_RTCCTRL, d); check(d == 32'h0, "T2 RTC_CTRL read-back (paused)");
         wr(A_RTCCTRL, 32'h1);       rd(A_RTCCTRL, d); check(d == 32'h1, "T2 RTC_CTRL read-back (on)");
+        wr(A_CLKDIV, 32'hFFFF_FF07); rd(A_CLKDIV, d); check(d == 32'h07, "T2 ADC_CLKDIV read-back ([7:0] only)");
+        wr(A_SDIV, 32'hFFFF_FF0B);   rd(A_SDIV, d);   check(d == 32'h0B, "T2 ADC_SAMPLEDIV read-back ([7:0] only)");
+        wr(A_IRQEN, 32'hFFFF_FFFE);  rd(A_IRQEN, d);  check(d == 32'h2, "T2 IRQ_ENABLE read-back ([1:0] only)");
+        wr(A_PRESC, 32'hDEAD_BEEF);  rd(A_PRESC, d);
+        check(d == 32'hDEAD_BEEF && RTC_PRESCALE == 32'hDEAD_BEEF, "T2 RTC_PRESCALE read-back, on the output too");
         wr(A_PLL, 32'h0); wr(A_AMUX, 32'h0); wr(A_CAL, 32'h0); wr(A_ALARM, 32'd5);
+        wr(A_CLKDIV, CLKDIV_RST); wr(A_SDIV, SDIV_RST); wr(A_IRQEN, 32'h0); wr(A_PRESC, PRESC_RST);
     endtask
 
     // ---- T3: reserved offsets, misaligned, aliases above 4 KB (F5) --------
@@ -449,7 +471,7 @@ module sens_gap_tb #(
         manual_sample(ok2);
         snapshot(s0);
         n0 = sb.size();
-        resv = '{16'h000, 16'h010, 16'h0FC, 16'h110, 16'h1FC, 16'h22C, 16'hFFC};
+        resv = '{16'h000, 16'h010, 16'h0FC, 16'h11C, 16'h1FC, 16'h230, 16'hFFC};
         foreach (resv[j]) begin
             rd(resv[j], d);
             check(d == 32'h0, $sformatf("T3 reserved 0x%03h reads 0", resv[j]));
@@ -464,6 +486,7 @@ module sens_gap_tb #(
             rd(16'h1004, d);      check(d == 32'h0, "T3 alias 0x1004 reads 0 (unmapped)");
             rd(16'h800C, d);      check(d == 32'h0, "T3 alias 0x800C reads 0 and does not pop");
             wr(16'h1104, 32'h3);  wr(16'h1220, 32'h1); wr(16'hF228, 32'h0); wr(16'h1108, 32'h1);
+            wr(16'h1110, 32'h1);  wr(16'h2114, 32'h1); wr(16'h1118, 32'h3); wr(16'h122C, 32'h1);
         end
         cycles(40);
         snapshot(s1);
@@ -604,6 +627,12 @@ module sens_gap_tb #(
         pstrb_rw(A_AMUX,  32'hFFFF_FFFF, "AMUX");
         pstrb_rw(A_CAL,   32'h0000_0001, "ADC_CAL");
         pstrb_rw(A_ALARM, 32'hFFFF_FFFF, "RTC_ALARM_OFFSET");
+        pstrb_rw(A_PRESC, 32'hFFFF_FFFF, "RTC_PRESCALE");
+        // byte-0 registers: only a write that strobes lane 0 changes them
+        pstrb_rw(A_CLKDIV, 32'h0000_00FF, "ADC_CLKDIV");
+        pstrb_rw(A_SDIV,   32'h0000_00FF, "ADC_SAMPLEDIV");
+        pstrb_rw(A_IRQEN,  32'h0000_0003, "IRQ_ENABLE");
+        wr(A_CLKDIV, CLKDIV_RST); wr(A_SDIV, SDIV_RST); wr(A_IRQEN, 32'h0); wr(A_PRESC, PRESC_RST);
         // RTC passthrough: polling is paused here, so nothing else
         // rewrites these registers during the check.
         wait_parked(ok2);
@@ -913,6 +942,116 @@ module sens_gap_tb #(
         check(sb_err == 0, "T12 FIFO scoreboard consistent");
     endtask
 
+    // ---- T14: interrupt and clock registers ---------------------------------
+    // IRQ: a registered level, high while an enabled condition holds
+    // (irq_enable [0] FIFO not empty, [1] FIFO full); it falls within three
+    // PCLK of the read (or clear) that removes the condition.
+    task automatic irq_falls_within(input int max_cyc, input string nm);
+        int j;
+        for (j = 0; j <= max_cyc && IRQ; j++) cycles(1);
+        check(!IRQ, $sformatf("%s (fell after %0d PCLK, bound %0d)", nm, j, max_cyc));
+    endtask
+    // One manual conversion with the ADC clock at clkdiv / samplediv; returns
+    // the PCLK cycles from the trigger write to the FIFO push (-1: no push).
+    task automatic timed_sample(input logic [31:0] cdiv, input logic [31:0] sdiv, output int n);
+        int j, p0;
+        wr(A_CLKDIV, cdiv); wr(A_SDIV, sdiv);
+        p0 = n_push;
+        wr(A_TRIG, 32'h1);
+        n = -1;
+        for (j = 0; j < 200_000; j++) begin
+            @(posedge PCLK); #1;
+            if (n_push != p0) begin n = j; break; end
+            if (uut.u_ctrl.state == 3'd7) break;          // timed out
+        end
+        for (j = 0; j < 100 && uut.u_ctrl.state != 3'd0; j++) cycles(1);
+        cycles(2);
+    endtask
+    task automatic t14_irq_clock_regs();
+        bit ok2;
+        int j, n_a, n_b, n_c, n_d, n_e;
+        $display("\n--- T14 interrupt and clock registers ---");
+        set_poll(1'b0);
+        wait_fsm_idle();
+        wr(A_FCLR, 32'h1);
+        // enables off: samples never raise IRQ
+        wr(A_IRQEN, 32'h0);
+        manual_sample(ok2); manual_sample(ok2);
+        cycles(3);
+        check(ok2 && !IRQ, "T14 IRQ_ENABLE = 0: IRQ stays low with samples in the FIFO");
+        // [0] sample ready: rises once enabled, stays while samples remain,
+        // falls after the read that empties the FIFO
+        wr(A_IRQEN, 32'h1);
+        cycles(2);
+        check(IRQ, "T14 IRQ_ENABLE[0]: enabling with samples waiting raises IRQ");
+        read_meas_check("T14 first of two");
+        cycles(3);
+        check(IRQ, "T14 IRQ_ENABLE[0]: IRQ stays high while a sample remains");
+        read_meas_check("T14 last sample");
+        irq_falls_within(3, "T14 IRQ_ENABLE[0]: IRQ falls after the read that empties the FIFO");
+        manual_sample(ok2);
+        cycles(1);
+        check(ok2 && IRQ, "T14 IRQ_ENABLE[0]: a new sample raises IRQ");
+        wr(A_IRQEN, 32'h0);
+        irq_falls_within(2, "T14 clearing the enable drops IRQ");
+        wr(A_IRQEN, 32'h1);
+        cycles(2);
+        wr(A_FCLR, 32'h1);
+        irq_falls_within(3, "T14 FIFO_CLEAR drops IRQ");
+        // [1] FIFO full only
+        wr(A_IRQEN, 32'h2);
+        for (j = 0; j < 15; j++) manual_sample(ok2);
+        cycles(3);
+        check(sb.size() == 15 && !IRQ, "T14 IRQ_ENABLE[1]: 15 samples (not full): IRQ low");
+        manual_sample(ok2);
+        cycles(1);
+        check(sb.size() == 16 && IRQ, "T14 IRQ_ENABLE[1]: the 16th sample (FIFO full) raises IRQ");
+        n0 = n_push;
+        wr(A_TRIG, 32'h1); wait_fsm_idle();
+        rd(A_STATUS, d);
+        check(n_push == n0 && d[4] && IRQ, "T14 IRQ_ENABLE[1]: a dropped sample keeps IRQ high (STATUS drop set)");
+        read_meas_check("T14 pop from full");
+        irq_falls_within(3, "T14 IRQ_ENABLE[1]: IRQ falls after the read that ends FIFO full");
+        // both: a non-empty FIFO keeps IRQ high through the end of FIFO full
+        wr(A_IRQEN, 32'h3);
+        cycles(2);
+        check(IRQ, "T14 IRQ_ENABLE = 3: IRQ high with samples waiting");
+        while (sb.size() > 1) read_meas_check("T14 drain");
+        cycles(3);
+        check(IRQ, "T14 IRQ_ENABLE = 3: IRQ high while one sample remains");
+        read_meas_check("T14 drain last");
+        irq_falls_within(3, "T14 IRQ_ENABLE = 3: IRQ falls once the FIFO is empty");
+        // RTC_PRESCALE drives the output for the tick divider
+        wr(A_PRESC, 32'd50);
+        check(RTC_PRESCALE == 32'd50, "T14 RTC_PRESCALE output follows the register");
+        wr(A_PRESC, PRESC_RST);
+        // ADC clock registers: a slower clock or a longer sampling phase
+        // lengthens the conversion; 0 selects the default; divider 255 (the
+        // slowest) converts within the FIX-2 timeout (TMO-DIV)
+        wr(A_FCLR, 32'h1);
+        timed_sample(32'd2, 32'd0, n_a);
+        timed_sample(32'd8, 32'd0, n_b);
+        timed_sample(32'd8, 32'd40, n_c);
+        timed_sample(32'd0, 32'd0, n_d);
+        $display("      conversion PCLK: clkdiv 2 -> %0d, 8 -> %0d, 8 + samplediv 40 -> %0d, 0 (default %0d) -> %0d",
+                 n_a, n_b, n_c, CLKDIV_RST, n_d);
+        check(n_a > 0 && n_b > n_a, "T14 ADC_CLKDIV: a slower ADC clock takes longer");
+        check(n_c > n_b, "T14 ADC_SAMPLEDIV: a longer sampling phase takes longer");
+        check(n_d > n_a && n_d < n_b, "T14 ADC_CLKDIV = 0 selects ADC_CLK_DIV");
+        timed_sample(32'd255, 32'd255, n_e);
+        rd(A_STATUS, d);
+        check(n_e > 0 && !d[6], $sformatf("T14 slowest ADC clock (255/255) converts within the timeout (%0d of %0d PCLK)",
+                                          n_e, uut.CONV_TIMEOUT));
+        wr(A_CLKDIV, CLKDIV_RST); wr(A_SDIV, SDIV_RST);
+        while (sb.size() > 0) read_meas_check("T14 drain timed");
+        // leave IRQ high with a sample waiting: T13's resets must clear it
+        manual_sample(ok2);
+        wr(A_IRQEN, 32'h1);
+        cycles(2);
+        check(IRQ, "T14 IRQ high before the T13 resets");
+        set_poll(1'b1);
+    endtask
+
     // ---- T13: reset in the middle of activity --------------------------------
     // Assert a reset of `kind` with the bus in `phase` (0 idle, 1 SETUP,
     // 2 ACCESS of a stalled RTC passthrough), then check recovery.
@@ -1028,6 +1167,7 @@ module sens_gap_tb #(
         t10_stalls();
         t11_b2b_burst();
         t12_clear_race();
+        t14_irq_clock_regs();
         t13_resets();
 
         $display("\n--- global checks ---");

@@ -23,6 +23,13 @@
 //   cp_status_adc / cp_status_rtcintr / cp_status_drop_clear / cp_status_resv
 //                   : the ADC, RTC-interrupt, drop and reserved fields of STATUS
 //                     as read by firmware (closure spec WRP-1)
+//   cp_irq_rise_en  : the interrupt raised with each irq_enable setting
+//   cp_irq_fall_ctx : the interrupt falling because the FIFO drained, because
+//                     the enable was cleared, and because the FIFO stopped
+//                     being full with only [1] enabled
+//   cp_byte0_strb / cp_presc_strb
+//                   : clock-register / IRQ_ENABLE writes with and without lane
+//                     0, RTC_PRESCALE writes full-word and partial
 // -----------------------------------------------------------------------------
 module wrapper_cov #(
     parameter ADDR_WIDTH = 12
@@ -43,7 +50,10 @@ module wrapper_cov #(
     input logic                  fifo_clear,
     input logic                  adc_en,
     input logic                  cal_reg,
-    input logic [1:0]            amux_sel
+    input logic [1:0]            amux_sel,
+    input logic [3:0]            PSTRB,
+    input logic                  IRQ,
+    input logic [1:0]            irq_enable_reg
 );
     wire xfer      = PSEL && PENABLE && PREADY;   // APB transfer completes
     wire stalled   = PSEL && PENABLE && !PREADY;
@@ -54,6 +64,16 @@ module wrapper_cov #(
         else          begin adc_en_q <= adc_en; xfer_q <= xfer; end
     end
     wire conv_start = adc_en && !adc_en_q;
+
+    logic irq_q;
+    always @(posedge PCLK or negedge PRESETn) begin
+        if (!PRESETn) irq_q <= 1'b0;
+        else          irq_q <= IRQ;
+    end
+    wire irq_rise = IRQ && !irq_q;
+    wire irq_fall = !IRQ && irq_q;
+    wire wr_xfer  = xfer && PWRITE;
+    wire byte0_wr = wr_xfer && (PADDR == 12'h110 || PADDR == 12'h114 || PADDR == 12'h118);
 
     // STATUS read completing this cycle, and the drop bit the previous STATUS
     // read returned.
@@ -79,6 +99,10 @@ module wrapper_cov #(
             bins fifo_clear   = {12'h220};
             bins alarm_offset = {12'h224};
             bins rtc_ctrl     = {12'h228};
+            bins adc_clkdiv   = {12'h110};
+            bins adc_sampdiv  = {12'h114};
+            bins irq_enable   = {12'h118};
+            bins rtc_prescale = {12'h22C};
             bins unmapped     = default;
         }
         cp_dir : coverpoint PWRITE iff (xfer) {
@@ -161,6 +185,26 @@ module wrapper_cov #(
         cp_b2b : coverpoint (xfer_q && PSEL && !PENABLE) {
             bins back_to_back = {1'b1};
         }
+
+        cp_irq_rise_en : coverpoint irq_enable_reg iff (irq_rise) {
+            bins sample_ready = {2'b01};
+            bins fifo_full    = {2'b10};
+            bins both         = {2'b11};
+        }
+        // {FIFO empty, any enable set} when IRQ falls
+        cp_irq_fall_ctx : coverpoint {fifo_empty, irq_enable_reg != 2'b00} iff (irq_fall) {
+            bins drained       = {2'b11};
+            bins disabled      = {2'b00, 2'b10};
+            bins full_ended    = {2'b01};
+        }
+        cp_byte0_strb : coverpoint PSTRB[0] iff (byte0_wr) {
+            bins lane0    = {1'b1};
+            bins no_lane0 = {1'b0};
+        }
+        cp_presc_strb : coverpoint (PSTRB == 4'hF) iff (wr_xfer && PADDR == 12'h22C) {
+            bins full_word = {1'b1};
+            bins partial   = {1'b0};
+        }
     endgroup
 
     cg_wrap cg = new;
@@ -188,5 +232,8 @@ bind adc_apb_wrapper_rev2 wrapper_cov #(.ADDR_WIDTH(ADDR_WIDTH)) u_wrapper_cov (
     .fifo_clear     (fifo_clear),
     .adc_en         (adc_en),
     .cal_reg        (cal_reg),
+    .PSTRB          (PSTRB),
+    .IRQ            (IRQ),
+    .irq_enable_reg (irq_enable_reg),
     .amux_sel       (amux_reg[1:0])
 );

@@ -122,7 +122,6 @@ nanosoc/system/verif/cov/HOLES_*.txt
 # Transfer bundles and a local Verilator source tree
 *.zip
 verilator/
-
 # OpenFrame experiment flow outputs (ASIC_ours/openframe): rebuild, do not commit
 ASIC_ours/openframe/ip
 ASIC_ours/openframe/Cadence/logs
@@ -140,3 +139,8 @@ ASIC_ours/openframe/Cadence/scripts/check_filler.log
 ASIC_ours/openframe/Cadence/scripts/timingReports
 ASIC_ours/openframe/Cadence/scripts/*.old
 ASIC_ours/openframe/Cadence/scripts/pm.ob
+
+# Claude Code files: never commit
+CLAUDE.md
+CLAUDE.local.md
+.claude/

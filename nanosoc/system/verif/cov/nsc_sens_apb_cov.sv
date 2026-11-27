@@ -25,7 +25,10 @@
 // -----------------------------------------------------------------------------
 module nsc_sens_apb_cov #(
     parameter int          ADDR_WIDTH         = 12,
-    parameter logic [31:0] DEFAULT_ALARM_OFFSET = 32'd5   // the wrapper's reset value
+    parameter logic [31:0] DEFAULT_ALARM_OFFSET = 32'd5,  // the wrapper's reset values
+    parameter int          ADC_CLK_DIV          = 4,
+    parameter int          ADC_SAMPLE_DIV       = 8,
+    parameter logic [31:0] RTC_PRESCALE_RESET   = 32'd5_000_000
 )(
     input logic                  PCLK,
     input logic                  PRESETn,
@@ -52,7 +55,8 @@ module nsc_sens_apb_cov #(
     // ---------------- register decode (mirrors adc_apb_wrapper_rev2) --------
     typedef enum logic [3:0] {
         R_STATUS, R_MEAS_HI, R_MEAS_LO, R_PLL, R_AMUX, R_TRIG, R_CAL,
-        R_RTC, R_FCLR, R_ALARM, R_RTCCTRL, R_UNMAPPED
+        R_RTC, R_FCLR, R_ALARM, R_RTCCTRL, R_CLKDIV, R_SDIV, R_IRQEN, R_PRESC,
+        R_UNMAPPED
     } reg_e;
 
     wire [11:0] off    = PADDR[11:0];
@@ -72,9 +76,13 @@ module nsc_sens_apb_cov #(
             12'h104: return R_AMUX;
             12'h108: return R_TRIG;
             12'h10C: return R_CAL;
+            12'h110: return R_CLKDIV;
+            12'h114: return R_SDIV;
+            12'h118: return R_IRQEN;
             12'h220: return R_FCLR;
             12'h224: return R_ALARM;
             12'h228: return R_RTCCTRL;
+            12'h22C: return R_PRESC;
             default: return R_UNMAPPED;
         endcase
     endfunction
@@ -93,12 +101,15 @@ module nsc_sens_apb_cov #(
             R_CAL:     resv_bits = |PWDATA[31:1];
             R_TRIG:    resv_bits = |PWDATA[31:1];
             R_RTCCTRL: resv_bits = |PWDATA[31:1];
+            R_CLKDIV:  resv_bits = |PWDATA[31:8];
+            R_SDIV:    resv_bits = |PWDATA[31:8];
+            R_IRQEN:   resv_bits = |PWDATA[31:2];
             default:   resv_bits = 1'b0;
         endcase
     end
 
     // ---------------- first access after reset (reset values) --------------
-    logic [11:0] touched;          // one bit per reg_e: accessed since reset
+    logic [15:0] touched;          // one bit per reg_e: accessed since reset
     logic [31:0] cyc_since_rst;
     logic        any_access;
     always @(posedge PCLK or negedge PRESETn) begin
@@ -120,6 +131,10 @@ module nsc_sens_apb_cov #(
             R_CAL:     return d == 32'h0;
             R_ALARM:   return d == DEFAULT_ALARM_OFFSET;
             R_RTCCTRL: return d == 32'h1;                // polling enabled
+            R_CLKDIV:  return d == ADC_CLK_DIV[31:0];
+            R_SDIV:    return d == ADC_SAMPLE_DIV[31:0];
+            R_IRQEN:   return d == 32'h0;
+            R_PRESC:   return d == RTC_PRESCALE_RESET;
             R_TRIG, R_FCLR, R_UNMAPPED: return d == 32'h0; // WO / unmapped read 0
             default:   return 1'b1;                      // MEAS_LO / RTC: data-dependent
         endcase
@@ -164,6 +179,8 @@ module nsc_sens_apb_cov #(
             bins pll = {R_PLL}; bins amux = {R_AMUX}; bins adc_trigger = {R_TRIG};
             bins adc_cal = {R_CAL}; bins rtc_region = {R_RTC}; bins fifo_clear = {R_FCLR};
             bins alarm_offset = {R_ALARM}; bins rtc_ctrl = {R_RTCCTRL};
+            bins adc_clkdiv = {R_CLKDIV}; bins adc_sampdiv = {R_SDIV}; bins irq_enable = {R_IRQEN};
+            bins rtc_prescale = {R_PRESC};
             bins unmapped = {R_UNMAPPED};
         }
         cp_wr_strb : coverpoint PSTRB iff (wr) {
@@ -179,8 +196,8 @@ module nsc_sens_apb_cov #(
         cp_reserved_off : coverpoint off iff (xfer && r == R_UNMAPPED && !hi_set) {
             bins off_000          = {12'h000};
             bins below_100        = {[12'h010:12'h0FC]};
-            bins between_110_1fc  = {[12'h110:12'h1FC]};
-            bins above_22c        = {[12'h22C:12'hFFF]};
+            bins between_11c_1fc  = {[12'h11C:12'h1FC]};
+            bins above_230        = {[12'h230:12'hFFF]};
         }
         cp_misaligned : coverpoint off[1:0] iff (xfer) {
             bins aligned = {2'b00};
@@ -207,6 +224,7 @@ module nsc_sens_apb_cov #(
         cp_resv_bits : coverpoint r iff (wr && resv_bits) {
             bins amux = {R_AMUX}; bins adc_cal = {R_CAL};
             bins adc_trigger = {R_TRIG}; bins rtc_ctrl = {R_RTCCTRL};
+            bins adc_clkdiv = {R_CLKDIV}; bins adc_sampdiv = {R_SDIV}; bins irq_enable = {R_IRQEN};
         }
         cp_trig_noop : coverpoint PWDATA[0] iff (wr && r == R_TRIG) {
             bins write_zero = {1'b0};          // write without the trigger bit
@@ -224,6 +242,8 @@ module nsc_sens_apb_cov #(
             bins pll = {R_PLL}; bins amux = {R_AMUX}; bins adc_trigger = {R_TRIG};
             bins adc_cal = {R_CAL}; bins rtc_region = {R_RTC}; bins fifo_clear = {R_FCLR};
             bins alarm_offset = {R_ALARM}; bins rtc_ctrl = {R_RTCCTRL};
+            bins adc_clkdiv = {R_CLKDIV}; bins adc_sampdiv = {R_SDIV}; bins irq_enable = {R_IRQEN};
+            bins rtc_prescale = {R_PRESC};
         }
         cp_reset_value : coverpoint reset_value_ok(r, PRDATA) iff (first_rd) {
             bins ok = {1'b1};

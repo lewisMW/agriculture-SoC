@@ -20,6 +20,9 @@ PLL, AMUX, TRIG, CAL = S + 0x100, S + 0x104, S + 0x108, S + 0x10C
 RTCDR, RTCMR, RTCLR, RTCCR = S + 0x200, S + 0x204, S + 0x208, S + 0x20C
 RTCIMSC, RTCRIS, RTCMIS, RTCICR = S + 0x210, S + 0x214, S + 0x218, S + 0x21C
 FCLR, ALARM, RTCCTRL = S + 0x220, S + 0x224, S + 0x228
+CLKDIV, SAMPLEDIV, IRQEN, PRESCALE = S + 0x110, S + 0x114, S + 0x118, S + 0x22C
+PRESCALE_RESET = 5000000            # rtc_prescale reset: 1 Hz from the board's 10 MHz
+PRESCALE_FAST = 50                  # simulation tick: an RTC second of 100 HCLK
 SYSCTRL = 0x4001F000
 
 
@@ -40,7 +43,8 @@ def sens_ahb():
     t.rd(MEAS_LO, mask=0xFFFFFF00, expect=0, desc="MEAS_LO is an 8-bit sample, zero-extended")
     for a, v, n in [(PLL, 0, "PLL_CONTROL"), (AMUX, 0, "AMUX"), (TRIG, 0, "ADC_TRIGGER (WO)"),
                     (CAL, 0, "ADC_CAL"), (FCLR, 0, "FIFO_CLEAR (WO)"), (ALARM, 5, "RTC_ALARM_OFFSET"),
-                    (RTCCTRL, 1, "RTC_CTRL")]:
+                    (RTCCTRL, 1, "RTC_CTRL"), (CLKDIV, 4, "ADC_CLKDIV"), (SAMPLEDIV, 8, "ADC_SAMPLEDIV"),
+                    (IRQEN, 0, "IRQ_ENABLE"), (PRESCALE, PRESCALE_RESET, "RTC_PRESCALE")]:
         t.rd(a, expect=v, desc="%s reset value %d" % (n, v))
     t.rd(RTCDR, desc="RTCDR readable (OKAY) after reset")
     # deterministic from here: autonomous polling off, FIFO empty
@@ -98,16 +102,19 @@ def sens_ahb():
     t.wr(FCLR, 1)
     # reserved offsets inside the 4 KB decode: read 0, write ignored, never ERROR
     t.wr(PLL, 0xCAFEF00D); t.wr(AMUX, 0x1); t.wr(CAL, 0x1); t.wr(ALARM, 7)
-    for off in (0x000, 0x010, 0x0FC, 0x110, 0x1FC, 0x22C, 0x800, 0xFFC):
+    for off in (0x000, 0x010, 0x0FC, 0x11C, 0x1FC, 0x230, 0x800, 0xFFC):
         t.rd(S + off, expect=0, desc="reserved offset 0x%03x reads 0 (OKAY)" % off)
         t.wr(S + off, 0xFFFFFFFF, desc="reserved offset 0x%03x write OKAY" % off)
     t.wr(S + 0x011, 0xFF, size=1)
-    t.wr(S + 0x112, 0xFFFF, size=2)
+    t.wr(S + 0x11E, 0xFFFF, size=2)
     t.rd(PLL, expect=0xCAFEF00D, desc="reserved writes left PLL_CONTROL unchanged")
     t.rd(AMUX, expect=0x1, desc="reserved writes left AMUX unchanged")
     t.rd(CAL, expect=0x1, desc="reserved writes left ADC_CAL unchanged")
     t.rd(ALARM, expect=7, desc="reserved writes left RTC_ALARM_OFFSET unchanged")
     t.rd(RTCCTRL, expect=0, desc="reserved writes left RTC_CTRL unchanged")
+    t.rd(CLKDIV, expect=4, desc="reserved writes left ADC_CLKDIV unchanged")
+    t.rd(IRQEN, expect=0, desc="reserved writes left IRQ_ENABLE unchanged")
+    t.rd(PRESCALE, expect=PRESCALE_RESET, desc="reserved writes left RTC_PRESCALE unchanged")
     fifo_empty(t, "reserved writes neither triggered nor pushed")
     # wrong-direction accesses
     t.wr(STATUS, 0xFFFFFFFF, desc="write to RO STATUS is OKAY")
@@ -187,7 +194,8 @@ def merge(old, new, off, size):
 def sys1_matrix(t):
     PAT = 0xA5C3_5A3C
     # multi-byte registers: only the strobed lanes change
-    for reg, name in ((PLL, "PLL_CONTROL"), (AMUX, "AMUX"), (ALARM, "RTC_ALARM_OFFSET")):
+    for reg, name in ((PLL, "PLL_CONTROL"), (AMUX, "AMUX"), (ALARM, "RTC_ALARM_OFFSET"),
+                      (PRESCALE, "RTC_PRESCALE")):
         for off, size, kind in ACCESSES:
             base = 0x0F0F_0F0F if reg != ALARM else 0x0000_0007
             t.wr(reg, base)
@@ -195,7 +203,17 @@ def sys1_matrix(t):
             t.wr(reg + off, data, size=size)
             t.rd(reg, expect=merge(base, PAT, off, size),
                  desc="SYS-1 %s %s write changes only the strobed lanes" % (name, kind))
-        t.wr(reg, 0 if reg != ALARM else 5)
+        t.wr(reg, {ALARM: 5, PRESCALE: PRESCALE_RESET}.get(reg, 0))
+    # byte-0 registers: change only with lane 0 strobed, and then take byte 0
+    for reg, name, mask, rst in ((CLKDIV, "ADC_CLKDIV", 0xFF, 4), (SAMPLEDIV, "ADC_SAMPLEDIV", 0xFF, 8),
+                                 (IRQEN, "IRQ_ENABLE", 0x3, 0)):
+        for off, size, kind in ACCESSES:
+            t.wr(reg, 1)
+            data = (0xA5C3_5A3F >> (8 * off)) & ((1 << (8 * size)) - 1)
+            t.wr(reg + off, data, size=size)
+            t.rd(reg, expect=(0x3F & mask) if off == 0 else 1,
+                 desc="SYS-1 %s %s write: %s" % (name, kind, "takes byte 0" if off == 0 else "unchanged (lane 0 not strobed)"))
+        t.wr(reg, rst)
     # single-bit controls: act only with lane 0 strobed
     for reg, name, rst in ((CAL, "ADC_CAL", 0), (RTCCTRL, "RTC_CTRL", 0)):
         for off, size, kind in ACCESSES:
@@ -275,6 +293,9 @@ def sens_rtc():
     # access while the counter is still in reset: straight after a debugger reset
     t.debug_reset()
     t.rd(RTCDR, desc="RTCDR read straight after a reset completes OKAY")
+    # rtc_prescale is back at the board's 1 Hz: the waits below assume the
+    # simulation tick
+    t.wr(PRESCALE, PRESCALE_FAST)
     t.wr(RTCCTRL, 0)
     t.spin(0x40)
     t.rd(RTCCR, mask=1, expect=1, desc="RTCCR.start = 1 (counter enabled by the controller)")
@@ -666,6 +687,8 @@ def _after_pin_reset(t, n):
     t.rd(PLL, expect=0, desc="pin reset %d: sensing PLL_CONTROL back to reset value" % n)
     t.rd(ALARM, expect=5, desc="pin reset %d: RTC_ALARM_OFFSET back to 5" % n)
     t.rd(RTCCTRL, expect=1, desc="pin reset %d: RTC_CTRL back to 1 (polling on)" % n)
+    t.rd(PRESCALE, expect=PRESCALE_RESET, desc="pin reset %d: RTC_PRESCALE back to its reset value" % n)
+    t.rd(IRQEN, expect=0, desc="pin reset %d: IRQ_ENABLE back to 0" % n)
     t.rd(SYSCTRL + 0x000, expect=1, desc="pin reset %d: sysctrl REMAP back to 1" % n)
     t.rd(SYSCTRL + 0x008, expect=0, desc="pin reset %d: sysctrl LOCKUPRESET back to 0" % n)
     t.rd(SYSCTRL + 0x010, mask=0x7, expect=0,
@@ -685,6 +708,8 @@ def reset_pin():
     for n in (1, 2):
         t.wr(PLL, 0x12345678)
         t.wr(ALARM, 9)
+        t.wr(PRESCALE, PRESCALE_FAST)
+        t.wr(IRQEN, 1)
         t.wr(SYSCTRL + 0x008, 1)
         t.wr(SYSCTRL + 0x000, 0)
         t.wr(0x20000400, 0xA5A50000 | n)

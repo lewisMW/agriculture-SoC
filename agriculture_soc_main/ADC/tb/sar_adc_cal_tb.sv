@@ -72,7 +72,7 @@ module sar_adc_cal_tb;
         real x;
         int  d;
         x = 128.0 + 128.0 * (1.0 + dut.u_afe.cpar)
-                  * (vd + dut.u_afe.vos - (ta - tb) * dut.u_afe.vtrim_lsb) / dut.u_afe.vref;
+                  * (vd + dut.u_afe.vos - (ta - tb) * dut.u_afe.vtrim_lsb) / dut.u_afe.vref_v;
         if (x <= 0.0)       d = 0;
         else if (x > 255.0) d = 255;
         else begin
@@ -86,7 +86,7 @@ module sar_adc_cal_tb;
     function automatic real vd_for_code(input real x);
         int ta, tb;
         ta = dut.trima; tb = dut.trimb;
-        return (x - 128.0) * dut.u_afe.vref / 128.0 - dut.u_afe.vos + (ta - tb) * dut.u_afe.vtrim_lsb;
+        return (x - 128.0) * dut.u_afe.vref_v / 128.0 - dut.u_afe.vos + (ta - tb) * dut.u_afe.vtrim_lsb;
     endfunction
 
     // ----------------------------------------------------------- monitors

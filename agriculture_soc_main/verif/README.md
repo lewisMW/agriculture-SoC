@@ -22,6 +22,13 @@ standalone SoC in `agriculture_soc_main/` and by the NanoSoC integration in
 5. **Firmware cannot stop the RTC counter.** The wrapper forces bit 0 of every
    firmware RTCCR write to 1 (FIX-3 below); polling is paused with `RTC_CTRL`
    instead.
+6. **Byte strobes follow one rule.** Multi-byte registers update only the
+   strobed lanes; byte-0 registers (`ADC_CAL`, `RTC_CTRL`, `ADC_TRIGGER`,
+   `ADC_CLKDIV`, `ADC_SAMPLEDIV`, `IRQ_ENABLE`) change only when lane 0 is
+   strobed; `FIFO_CLEAR` acts on any lane; sub-word RTC writes are dropped.
+7. **The interrupt is a registered level**: high while an enabled condition
+   holds (`IRQ_ENABLE` bit 0: FIFO not empty, bit 1: FIFO full), cleared by
+   reading the samples out, a FIFO clear or clearing the enable.
 
 The register map is defined in `Wrapper/adc_apb_wrapper_rev2.v` and
 `nanosoc/system/testcodes/sensing_ip.h`.
@@ -74,33 +81,33 @@ tagged `[SUSPECTED RTL BUG <ID>]`. They still count as failures. With
 | `uvm_fifo`, `uvm_sensing` | `verif/uvm/` | UVM benches for the FIFO and the whole peripheral |
 | `rtc`, `rtc_rand`, `rtc_clo` | `RTC/` | RTC controller: directed, random, and closure tests RTC-1..14 |
 | `wrap`, `wrap_rand`, `wrap_sva` | `Wrapper/` | wrapper directed and constrained-random traffic, with bound SVA |
-| `gap`, `params` | `Wrapper/sens_gap_tb.sv` | APB4 protocol, byte strobes, register map, reset behaviour; `params` reruns it at other parameter values |
+| `gap`, `params` | `Wrapper/sens_gap_tb.sv` | APB4 protocol, byte strobes, register map, reset behaviour, the interrupt and the clock registers (T14); `params` reruns it at other parameter values |
 | `clo`, `adcdiv` | `Wrapper/sens_closure_tb.sv` | WRP-1..5 and ADC-6 at wrapper level; `adcdiv` repeats ADC-6 at ADC clock dividers 1, 2, 8 and 255 (the slowest clock the conversion timeout is sized for) |
-| `soak` | `Wrapper/sens_soak_tb.sv` | WRP-6: 2000+ sample periods per seed under random firmware traffic |
+| `soak` | `Wrapper/sens_soak_tb.sv` | WRP-6: 2000+ sample periods per seed under random firmware traffic, including the clock registers and the interrupt enables |
 | `rob` | `Wrapper/sens_rob_tb.sv` | ROB-1: recovery from illegal FSM states |
 | `xsafe` | `Wrapper/` (directed bench, random initial values) | ROB-2: no X propagation from uninitialised registers, 5 seeds |
 | `soc_check`, `soc_reset` | `agriculture_soc_checked_tb.v`, `agriculture_soc_reset_rand_tb.v` | full standalone SoC, including random reset timing |
 
 At chip level, the NanoSoC firmware tests in `nanosoc/system/testcodes/`
-(`sensing_*_test`, FW-1..6, and the earlier `adc_*`, `fifo_drain`, `rtc_time`,
-`pslverr`, `fault_recovery` tests) and the debug-port (ADP) bus tests in
+(`sensing_*_test`, FW-1..6, `clock_ctrl_test`, `sensing_irq_test`, and the
+earlier `adc_*`, `fifo_drain`, `rtc_time`, `pslverr`, `fault_recovery` tests) and the debug-port (ADP) bus tests in
 `nanosoc/system/verif/cov/adp_tests/` exercise the peripheral through the
 Cortex-M0 and the AHB bus.
 
 ## Current results
 
-Full sign-off with the real ARM PL031, 2026-11-22, on the tree with every fix
-in the table below:
+Full sign-off with the real ARM PL031, 2026-11-22, including the interrupt
+and the clock registers:
 
 | Gate | Result |
 |---|---|
 | All benches | pass, apart from the two open ADC bugs below |
-| Functional coverage | 657 / 657 goal bins, no `viol_*` bin hit |
+| Functional coverage | 730 / 730 goal bins, no `viol_*` bin hit |
 | Code coverage | 100 % line and branch on the peripheral RTL (waivers in `cov/waivers.txt`) |
-| SVA mutation | 52 / 52 assertions shown to fail on a deliberate RTL mutation |
+| SVA mutation | 55 / 55 assertions shown to fail on a deliberate RTL mutation |
 | Lint | clean apart from waived warnings |
-| NanoSoC ADP bus tests | 762 passed, 0 failed |
-| NanoSoC firmware tests | 13 / 13 pass |
+| NanoSoC ADP bus tests | 801 passed, 0 failed |
+| NanoSoC firmware tests | 15 / 15 pass |
 
 ## RTL fixes made during verification
 
@@ -117,6 +124,7 @@ Each fix has a regression test that failed before the fix.
 | FIX-4 | `rtc_control_2.v` | a warm reset just after an alarm could produce a duplicate sample |
 | RTC-NPOR-2 | `rtc_control_2.v` | after a power-on reset of the RTC alone (`nPOR` without `PRESETn`), any alarm-register write before the next idle (a FIX-1 offset re-arm, an arm already in progress, a watchdog service) left the counter stopped for good; with a long offset it stayed stopped for the whole period. The enable flag is now reset by `nPOR` only, and the controller re-enables as soon as the counter reset releases (RTC-14) |
 | FSM-STALE-2 | `wrapper_control_2.v` | after a FIX-2 timeout of a slow (not dead) ADC, the next trigger could store the result of the conversion that was still running (FSM-5) |
+| CLK-STRB | `adc_apb_wrapper_rev2.v` | the clock registers and `IRQ_ENABLE` ignored `PSTRB`: a byte or halfword store to another lane rewrote `ADC_CLKDIV`, `ADC_SAMPLEDIV` or `IRQ_ENABLE` from that lane's data, and `RTC_PRESCALE` took all 32 bits (gap T5, `sensing_regmap_test`, SVA `a_byte0_need_lane0`, `a_prescale_lanes`) |
 | TMO-DIV | `adc_apb_wrapper_rev2.v` | the FIX-2 timeout was sized for the default ADC clock, so a slower ADC clock (a programmable divider) would time out every conversion; it is now sized for the slowest divider, `ADC_CLK_DIV_MAX` = 255 (85680 PCLK) |
 
 FIX-1 to FIX-4 are pending confirmation by the rest of the team. RTC-NPOR-2
@@ -131,6 +139,4 @@ and FSM-STALE-2 correct FIX-4 and FIX-2.
   [`cov/OPEN_BUGS_REPORT.md`](cov/OPEN_BUGS_REPORT.md).
 - **Not covered here:** clock-domain-crossing analysis, gate-level simulation
   of this flow's netlist, the analog behaviour of the real ADC (needs
-  mixed-signal simulation), and hardware runs. The CPU interrupt from the
-  peripheral is being added on a separate branch and is not yet part of these
-  checks.
+  mixed-signal simulation), and hardware runs.

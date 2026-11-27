@@ -4,7 +4,8 @@
 // nanosoc_cov.flist for system runs and by agriculture_soc_main/verif/cov
 // (`make wrapper`) for block runs. No RTL is modified.
 // -----------------------------------------------------------------------------
-bind adc_apb_wrapper_rev2 nsc_sens_apb_cov #(.ADDR_WIDTH(ADDR_WIDTH), .DEFAULT_ALARM_OFFSET(DEFAULT_ALARM_OFFSET)) u_nsc_sens_apb_cov (
+bind adc_apb_wrapper_rev2 nsc_sens_apb_cov #(.ADDR_WIDTH(ADDR_WIDTH), .DEFAULT_ALARM_OFFSET(DEFAULT_ALARM_OFFSET),
+    .ADC_CLK_DIV(ADC_CLK_DIV), .ADC_SAMPLE_DIV(ADC_SAMPLE_DIV), .RTC_PRESCALE_RESET(RTC_PRESCALE_RESET)) u_nsc_sens_apb_cov (
     .PCLK          (PCLK),
     .PRESETn       (PRESETn),
     .nPOR          (nPOR),

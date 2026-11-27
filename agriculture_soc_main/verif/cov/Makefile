@@ -84,6 +84,9 @@ B_adc_TOP     = sar_adc_tb
 B_adc_SRC     = $(ROOT)/ADC/tb/sar_adc_tb.v $(ADC_FILES) $(ROOT)/FSM/wrapper_control_2.v
 B_adc_COV     = sar_cov.sv fsm_cov.sv $(SVA)
 B_adc_FFLG    = --assert
+# functional run only: skip the deliberate illegal-state injection (it would
+# hit cg_sar's viol_illegal_state bin); the adc step and code coverage run it
+B_adc_FRUN    = +no_fault_inject
 
 B_adccal_TOP  = sar_adc_cal_tb
 B_adccal_SRC  = $(ROOT)/ADC/tb/sar_adc_cal_tb.sv $(ADC_FILES)
@@ -165,7 +168,7 @@ endef
 
 $(BENCHES):
 	$(call func_build,$@)
-	$(OBJ)/obj_$@/V$@ $(B_$@_RUN) +verilator+coverage+file+coverage_$@.dat > run_$@.log 2>&1; \
+	$(OBJ)/obj_$@/V$@ $(B_$@_RUN) $(B_$@_FRUN) +verilator+coverage+file+coverage_$@.dat > run_$@.log 2>&1; \
 	    grep -E "^FAIL|TIMEOUT|%Error|Assertion|=== " run_$@.log | tail -40
 	@test -s coverage_$@.dat || { echo "ERROR: $@ wrote no coverage file (did the run abort?)"; tail -5 run_$@.log; false; }
 

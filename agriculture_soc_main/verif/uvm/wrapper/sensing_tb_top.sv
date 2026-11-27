@@ -50,7 +50,11 @@ module sensing_tb_top;
         .PSLVERR  (apb.PSLVERR),
         .APBACTIVE(1'b1),
         .PPROT    (3'b000),
-        .PSTRB    (4'hF)
+        .PSTRB    (4'hF),
+        .IRQ      (),
+        .RTC_PRESCALE(),
+        .ADC_VINP (1'b0),
+        .ADC_VINN (1'b0)
     );
 
     // FIFO-push snoop for the end-to-end scoreboard

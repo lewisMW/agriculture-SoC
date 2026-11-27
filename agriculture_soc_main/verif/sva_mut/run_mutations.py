@@ -124,6 +124,12 @@ MUTS = [
     ("wrap_capture",  "a_sample_capture",  "clo", W, "else if (adc_valid_rise) adc_sample <= adc_result;", "else adc_sample <= adc_result;"),
     ("wrap_rtccr",    "a_rtccr_never_cleared", "gap", W, "rtc_wr_ccr ? (PWDATA | {{(DATA_WIDTH-1){1'b0}}, 1'b1}) : PWDATA;",
                                                          "rtc_wr_ccr ? PWDATA : PWDATA;"),
+    ("wrap_irq",      "a_irq_def",           "gap", W, "irq_reg <= (irq_enable_reg[0] & ~fifo_empty) | (irq_enable_reg[1] & fifo_full);",
+                                                       "irq_reg <= (irq_enable_reg[0] & ~fifo_empty) | (irq_enable_reg[1] & ~fifo_empty);"),
+    ("wrap_byte0",    "a_byte0_need_lane0",  "gap", W, "write_enable && strb0 && (PADDR == ADC_SAMPLEDIV_ADDR)",
+                                                       "write_enable && (PADDR == ADC_SAMPLEDIV_ADDR)"),
+    ("wrap_presc",    "a_prescale_lanes",    "gap", W, "rtc_prescale_reg <= strb_merge(rtc_prescale_reg, PWDATA, PSTRB);",
+                                                       "rtc_prescale_reg <= PWDATA;"),
     ("wrap_status",   "a_status_reserved", "clo", W, "status_reg[DATA_WIDTH-1:7] <= {(DATA_WIDTH-7){1'b0}};",
                                                      "status_reg[DATA_WIDTH-1:7] <= {(DATA_WIDTH-7){adc_en}};"),
     # ---- RTC controller / PL031 port

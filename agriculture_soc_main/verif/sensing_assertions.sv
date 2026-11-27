@@ -220,7 +220,8 @@ module apb_sva #(
     // reserved offsets and the write-only registers read 0
     wire mapped_rd = (PADDR == 'h004) || (PADDR == 'h008) || (PADDR == 'h00C) ||
                      (PADDR == 'h100) || (PADDR == 'h104) || (PADDR == 'h10C) ||
-                     (PADDR == 'h224) || (PADDR == 'h228);
+                     (PADDR == 'h110) || (PADDR == 'h114) || (PADDR == 'h118) ||
+                     (PADDR == 'h224) || (PADDR == 'h228) || (PADDR == 'h22C);
     a_reserved_reads_zero: assert property (@(posedge PCLK) disable iff (!PRESETn)
         (PSEL && PENABLE && !PWRITE && !rtc_region && !mapped_rd) |-> (PRDATA == 32'h0))
         else $error("reserved offset 0x%0h read 0x%08h", PADDR, PRDATA);
@@ -249,7 +250,17 @@ module wrap_sva #(
     input logic                    rtc_psel,
     input logic                    PWRITE,
     input logic [2:0]              rtc_word,      // PADDR[4:2]: 3 = RTCCR
-    input logic [31:0]             rtc_pwdata
+    input logic [31:0]             rtc_pwdata,
+    // interrupt and the clock registers
+    input logic                    IRQ,
+    input logic [1:0]              irq_enable_reg,
+    input logic                    fifo_full,
+    input logic                    byte0_reg_wr,  // write to 0x110 / 0x114 / 0x118
+    input logic                    prescale_wr,   // write to 0x22C
+    input logic [3:0]              PSTRB,
+    input logic [7:0]              adc_clkdiv_reg,
+    input logic [7:0]              adc_samplediv_reg,
+    input logic [31:0]             rtc_prescale_reg
 );
     // $past / $stable refer to the previous clock edge: only meaningful from
     // the second edge after a reset (the clock may not even run during reset).
@@ -289,6 +300,24 @@ module wrap_sva #(
     a_rtccr_never_cleared: assert property (@(posedge PCLK) disable iff (!PRESETn)
         (rtc_psel && PWRITE && rtc_word == 3'd3) |-> rtc_pwdata[0])
         else $error("RTCCR write forwarded with start = 0 (data 0x%08h)", rtc_pwdata);
+
+    // IRQ is a registered level: exactly the enabled FIFO conditions of the
+    // previous cycle (irq_enable [0] FIFO not empty, [1] FIFO full)
+    a_irq_def: assert property (@(posedge PCLK) disable iff (!PRESETn)
+        past_ok |-> (IRQ == $past((irq_enable_reg[0] && !fifo_empty) || (irq_enable_reg[1] && fifo_full))))
+        else $error("IRQ %b, expected from irq_enable %b, empty %b, full %b", IRQ,
+                    $past(irq_enable_reg), $past(fifo_empty), $past(fifo_full));
+
+    // PSTRB (F6 policy): the byte-0 registers change only when lane 0 is
+    // strobed; rtc_prescale keeps the bytes whose lane is not strobed
+    a_byte0_need_lane0: assert property (@(posedge PCLK) disable iff (!PRESETn)
+        (byte0_reg_wr && !PSTRB[0]) |=>
+            ($stable(adc_clkdiv_reg) && $stable(adc_samplediv_reg) && $stable(irq_enable_reg)))
+        else $error("byte-0 register changed on a write without lane 0 strobed");
+    a_prescale_lanes: assert property (@(posedge PCLK) disable iff (!PRESETn)
+        prescale_wr |=> (((rtc_prescale_reg ^ $past(rtc_prescale_reg)) &
+                          ~{{8{$past(PSTRB[3])}}, {8{$past(PSTRB[2])}}, {8{$past(PSTRB[1])}}, {8{$past(PSTRB[0])}}}) == 32'h0))
+        else $error("rtc_prescale changed in a byte lane that was not strobed");
 endmodule
 
 bind adc_apb_wrapper_rev2 wrap_sva #(.SAMPLE_WIDTH(SAMPLE_WIDTH)) u_wrap_sva (
@@ -296,7 +325,14 @@ bind adc_apb_wrapper_rev2 wrap_sva #(.SAMPLE_WIDTH(SAMPLE_WIDTH)) u_wrap_sva (
     .manual_trig(manual_trig), .fifo_clear(fifo_clear), .fifo_rd_en(fifo_rd_en),
     .fifo_empty(fifo_empty), .adc_valid_rise(adc_valid_rise),
     .adc_sample(adc_sample), .status_reg(status_reg),
-    .rtc_psel(rtc_psel), .PWRITE(PWRITE), .rtc_word(PADDR[4:2]), .rtc_pwdata(rtc_pwdata)
+    .rtc_psel(rtc_psel), .PWRITE(PWRITE), .rtc_word(PADDR[4:2]), .rtc_pwdata(rtc_pwdata),
+    .IRQ(IRQ), .irq_enable_reg(irq_enable_reg), .fifo_full(fifo_full),
+    .byte0_reg_wr(write_enable && !rtc_region &&
+                  ((PADDR == ADC_CLKDIV_ADDR) || (PADDR == ADC_SAMPLEDIV_ADDR) || (PADDR == IRQ_ENABLE_ADDR))),
+    .prescale_wr(write_enable && (PADDR == RTC_PRESCALE_ADDR)),
+    .PSTRB(PSTRB),
+    .adc_clkdiv_reg(adc_clkdiv_reg), .adc_samplediv_reg(adc_samplediv_reg),
+    .rtc_prescale_reg(rtc_prescale_reg)
 );
 
 // ── RTC controller and the PL031 port (rtc_control_2) ────────────────────────

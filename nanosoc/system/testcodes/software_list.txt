@@ -9,3 +9,4 @@ sensing_sleep_poll_test
 sensing_reset_test
 sensing_cal_test
 clock_ctrl_test
+sensing_irq_test

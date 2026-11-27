@@ -36,6 +36,9 @@ int main(void)
     uint32_t t0, t, elapsed = 0, samples = 0, loops = 0, sink = 0, drop_seen = 0;
     UartStdOutInit();
     sp_str("sensing_stress_test: start\n");
+    /* rtc_prescale resets to the value for the real clock; this test counts
+     * RTC seconds, so it selects the simulation tick (a "second" of 100 clocks). */
+    SENSING_IP_REGS->rtc_prescale = SENSING_RTC_PRESCALE_FAST;
     sensing_init(1, 0);
     sensing_clear_fifo();
     t0 = RTC->rtc_dr;
