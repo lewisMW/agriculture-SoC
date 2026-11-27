@@ -1,0 +1,53 @@
+# -----------------------------------------------------------------------------
+# verif/uvm/fifo/Makefile — UVM bench for fifo_apb_adc (no ARM IP needed).
+#
+#   make                       build + run fifo_full_test (with coverage)
+#   make TEST=fifo_smoke_test  pick a test
+#   make SEED=1234             different random seed (no rebuild needed)
+#   make run                   re-run the existing binary (no rebuild)
+#   make report                coverage summary + holes for the last run
+#
+# The first build compiles the whole UVM library and is slow on one core
+# (see ../../verilator_1core.mk); later builds reuse ccache.
+# -----------------------------------------------------------------------------
+include ../../verilator_1core.mk
+
+# build directory: BUILD_ROOT/uvm_fifo when BUILD_ROOT is set (local disk), else obj_dir
+UVM_OBJ = $(if $(BUILD_ROOT),$(BUILD_ROOT)/uvm_fifo,obj_dir)
+
+ROOT   = ../../..
+TOP    = fifo_tb_top
+TEST  ?= fifo_full_test
+SEED  ?= 1
+VERB  ?= UVM_LOW
+
+FILES = $(VL_UVM) \
+        fifo_if.sv fifo_uvm_pkg.sv fifo_tb_top.sv \
+        $(ROOT)/FIFO/fifo_apb_adc.v \
+        ../../cov/fifo_cov.sv
+
+.PHONY: all build run report clean
+
+# build -> run -> report must stay in order: verilator_1core.mk exports
+# MAKEFLAGS=-j$(JOBS), so with JOBS>1 `run` would otherwise start alongside
+# `build` and execute the PREVIOUS binary. (Verilator's own C++ compile in
+# obj_dir still uses JOBS.)
+.NOTPARALLEL:
+
+all: build run report
+
+build:
+	@echo "===== BUILD $(TOP) (single core; first UVM build is slow) ====="
+	$(RUN_LIMITED) $(VERILATOR) $(VL_COMMON) $(VL_COV_UVM) --Mdir $(UVM_OBJ) --top $(TOP) -o V$(TOP) \
+	    $(FILES) > build.log 2>&1 || { grep -E "^%Error" build.log | head -30; tail -5 build.log; false; }
+	@grep -c "^%Warning" build.log | xargs echo "warnings (see build.log):"
+
+run:
+	$(UVM_OBJ)/V$(TOP) +UVM_TESTNAME=$(TEST) +UVM_VERBOSITY=$(VERB) +verilator+seed+$(SEED) \
+	    +verilator+coverage+file+coverage.dat | tee run.log
+
+report:
+	@python3 ../../cov/holes.py coverage.dat
+
+clean:
+	rm -rf $(UVM_OBJ) obj_dir build.log run.log coverage.dat

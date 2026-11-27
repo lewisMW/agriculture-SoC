@@ -49,7 +49,9 @@ int main(void)
     /* Exercise sensing_init, then pause autonomous polling so ONLY manual
      * triggers feed the FIFO (deterministic counts, RTC-independent). */
     sensing_init(5u, 0);            /* period 5s, no calibration, polling on */
-    sensing_polling_disable();      /* Task A: no autonomous samples during the counts */
+    sensing_quiesce();              /* Task A: pause polling AND let an in-flight
+                                     * autonomous conversion finish, else it lands
+                                     * after the clear (seen with the SAR ADC) */
     sensing_clear_fifo();
     sensing_delay(CONV_SETTLE);
 
@@ -57,7 +59,7 @@ int main(void)
     else                         sp_str("clear_fifo -> empty (ok)\n");
 
     /* --- manual trigger + drain: exact count --- */
-    for (n = 0; n < FILL_N; n++) { sensing_trigger_oneshot(); sensing_delay(CONV_SETTLE); }
+    for (n = 0; n < FILL_N; n++) { sensing_trigger_oneshot(); sensing_delay(CONV_SETTLE); sensing_wait_adc_idle(); }
     n = sensing_fifo_drain(buf, sizeof buf);
     sp_str("trigger x"); sp_dec(FILL_N); sp_str(" -> drained "); sp_dec(n); sp_nl();
     if (n != FILL_N)            { sp_str("FAIL: drain count != triggers\n"); failures++; }
@@ -67,17 +69,33 @@ int main(void)
     /* --- overflow: fill past DEPTH, expect FULL + drop flag, drain exactly 16 --- */
     sensing_clear_fifo();
     sensing_delay(CONV_SETTLE);
-    for (n = 0; n < OVERFILL_N; n++) { sensing_trigger_oneshot(); sensing_delay(CONV_SETTLE); }
+    for (n = 0; n < OVERFILL_N; n++) { sensing_trigger_oneshot(); sensing_delay(CONV_SETTLE); sensing_wait_adc_idle(); }
     if (!sensing_fifo_full())      { sp_str("FAIL: not FULL after overfill\n"); failures++; }
     else                             sp_str("fills to FULL (ok)\n");
     if (!sensing_sample_dropped()) { sp_str("FAIL: drop flag not set on overflow\n"); failures++; }
     else                             sp_str("sample_dropped flag set (ok)\n");
+    /* trigger_wait on a full FIFO reports the drop, not a timeout or a sample */
+    if (sensing_trigger_wait() != SENSING_SAMPLE_DROPPED) { sp_str("FAIL: trigger_wait on full FIFO != DROPPED\n"); failures++; }
+    else                             sp_str("trigger_wait on full FIFO -> DROPPED (ok)\n");
     n = sensing_fifo_drain(buf, sizeof buf);
     sp_str("drained "); sp_dec(n); sp_str(" (expect 16)\n");
     if (n != FIFO_DEPTH)           { sp_str("FAIL: expected 16 samples\n"); failures++; }
 
+    /* trigger_wait with room in the FIFO: one sample */
+    if (sensing_trigger_wait() != SENSING_SAMPLE_OK || sensing_fifo_drain(buf, sizeof buf) != 1u)
+                                   { sp_str("FAIL: trigger_wait with room != OK + 1 sample\n"); failures++; }
+    else                             sp_str("trigger_wait -> OK, 1 sample (ok)\n");
+
     /* --- RTC time helpers: must return safely; advance only once Task D is in. --- */
     sensing_clear_fifo();
+    /* polling is paused here (sensing_quiesce above): the time helpers must
+     * leave it paused, or autonomous samples would land in the FIFO */
+    (void)sensing_read_time();
+    sensing_set_time(0x00000800u);
+    if ((SENSING_IP_REGS->rtc_ctrl & RTC_CTRL_POLL_ENABLE) != 0u)
+                                   { sp_str("FAIL: read_time/set_time re-enabled paused polling\n"); failures++; }
+    else                             sp_str("read_time/set_time keep polling paused (ok)\n");
+    sensing_polling_enable();       /* the RTC checks below run with polling on */
     t0 = sensing_read_time();
     sensing_delay(20000u);
     t1 = sensing_read_time();

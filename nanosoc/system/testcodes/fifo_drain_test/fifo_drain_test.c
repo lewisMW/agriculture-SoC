@@ -4,7 +4,7 @@
  *
  * End-to-end firmware test of the sensing peripheral's FIFO path, driven by
  * manual one-shot triggers (deterministic — no dependence on the RTC/CLK1HZ
- * rate). Exercises the properties from VERIFICATION.md that the directed RTL
+ * rate). Exercises the FIFO properties that the directed RTL
  * wrapper test cannot reach from software:
  *
  *   1. Fill the 16-deep FIFO with 16 manual samples  -> status reads FULL.

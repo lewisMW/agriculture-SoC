@@ -12,16 +12,15 @@
  *
  * The autonomous RTC only grants its APB bus to firmware while parked in
  * WAITING/IDLE; a collision with an arm cycle returns PSLVERR. On Cortex-M0
- * that surfaces as a bus fault with no recovery handler wired yet (see HANDOFF
- * "interrupt routing" gap), so this test first pushes the poll period very high
+ * that surfaces as a bus fault with no recovery handler wired yet, so this test first pushes the poll period very high
  * (rtc_alarm_offset) to make re-arm collisions astronomically unlikely, then
  * does its accesses while the RTC sits in WAITING.
  *
  * NOTE: this leans on the RTC being parked. If a future change makes arm cycles
- * frequent, add a HardFault-based retry (HANDOFF Task 2, sensing_read_time).
+ * frequent, add a HardFault-based retry (see sensing_read_time).
  *
  * PREREQUISITE (NanoSoC): accelerator_subsystem.v must wire CLK1HZ + nPOR into
- * the sensor_wrapper (currently unconnected — see VERIFICATION.md). Without that
+ * the sensor_wrapper (currently unconnected). Without that
  * the RTC counter never runs and this test cannot pass under NanoSoC.
  *-----------------------------------------------------------------------------
  */

@@ -378,7 +378,7 @@ cmsdk_ahb_to_apb  #(
   /*output wire*/.PADDR(apb_addr),     // APB Address
   /*output wire*/.PENABLE(apb_wrapper_en),   // APB Enable
   /*output wire*/.PWRITE(apb_wen),    // APB Write
-  /*output wire*/.PSTRB(),     // APB Byte Strobe
+  /*output wire*/.PSTRB(apb_strb), // APB Byte Strobe
   /*output wire*/.PPROT(),     // APB Prot
   /*output wire*/.PWDATA(apb_wdata),    // APB write data
   /*output wire*/.PSEL(apb_wrapper_sel),      // APB Select
@@ -386,9 +386,11 @@ cmsdk_ahb_to_apb  #(
 // APB Input:
   /*input  wire*/.PRDATA(apb_rdata),    // Read data for each APB slave
   /*input  wire*/.PREADY(apb_wrapper_ready),    // Ready for each APB slave
-  /*input  wire*/.PSLVERR());  // Error state for each APB slave
+  /*input  wire*/.PSLVERR(apb_wrapper_slverr));  // Error state for each APB slave
 
 wire [W-1:0] apb_wdata;
+wire [3:0] apb_strb;            // byte strobes: the wrapper honours them (sub-word stores)
+wire apb_wrapper_slverr;        // tied low inside the wrapper; connected so the bridge input is driven
 wire apb_wen;
 wire [W-1:0] apb_rdata;
 wire [W_APB_ADDR-1:0] apb_addr;
@@ -416,11 +418,15 @@ adc_apb_wrapper_rev2 #(
    // Handshake
    .PRDATA(apb_rdata),
    .PREADY(apb_wrapper_ready),
-   .PSLVERR(),
-   // Unused APB sidebands
+   .PSLVERR(apb_wrapper_slverr),
+   // APB sidebands
    .APBACTIVE(1'b1),
    .PPROT(3'b000),
-   .PSTRB(4'b1111)
+   .PSTRB(apb_strb),     // from the bridge, so STRB/STRH only change their own bytes (as in nanosoc)
+   // SAR ADC analog inputs: no pads in the standalone SoC. RTL simulation uses
+   // the behavioural sar_afe model, which ignores these nets.
+   .ADC_VINP(1'b0),
+   .ADC_VINN(1'b0)
 );
 
 endmodule

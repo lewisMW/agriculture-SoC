@@ -188,8 +188,12 @@ task ext_apb_write;
         PENABLE = 1'b0;
         @(posedge PCLK); #1;
         PENABLE = 1'b1;
-        @(posedge PCLK); #1;
-        while (!PREADY) begin @(posedge PCLK); #1; end
+        // PREADY is sampled AT the edge (not #1 after it, when the slave has
+        // already moved on) so a stalled access is neither abandoned nor held
+        // past its completing edge.
+        @(posedge PCLK);
+        while (!PREADY) @(posedge PCLK);
+        #1;
         PSEL    = 1'b0;
         PENABLE = 1'b0;
         PWRITE  = 1'b0;
@@ -209,10 +213,14 @@ task ext_apb_read;
         PENABLE = 1'b0;
         @(posedge PCLK); #1;
         PENABLE = 1'b1;
-        @(posedge PCLK); #1;
-        while (!PREADY) begin @(posedge PCLK); #1; end
+        // PREADY is sampled AT the edge (not #1 after it, when the slave has
+        // already moved on) so a stalled access is neither abandoned nor held
+        // past its completing edge.
+        @(posedge PCLK);
+        while (!PREADY) @(posedge PCLK);
         rdata  = PRDATA;
         slverr = PSLVERR;
+        #1;
         PSEL    = 1'b0;
         PENABLE = 1'b0;
     end
@@ -456,8 +464,9 @@ initial begin
     PRESETn = 1'b1;
     // nRTCRST stays high across an APB reset (tracks nPOR), so the FSM re-arms
     // immediately -- catch it in a busy (non-idle/non-waiting) state so the
-    // external ACCESS below lands while the FSM owns the bus.
-    wait_for_state(`S_ENABLE_ACCESS, 20);
+    // external ACCESS below lands while the FSM owns the bus. (FIX-4: a warm
+    // reset no longer rewrites RTCCR, so catch it in the RTCDR read instead.)
+    wait_for_state(`S_READ_ACCESS, 20);
     // Drive a RAW external read (no auto-wait) so we can observe the stall.
     PSEL    = 1'b1;
     PENABLE = 1'b0;
@@ -471,8 +480,10 @@ initial begin
     // Hold ACCESS until the slave completes (models the AHB->APB bridge).
     // Bounded so a (hypothetical) permanent stall fails loudly instead of
     // hanging the sim -- the FSM always parks within ~10 PCLK, so this exits fast.
+    // Wait for the completing edge, sampling PREADY at the edge.
     stall_cycles = 0;
-    while (!PREADY && stall_cycles < 200) begin @(posedge PCLK); #1; stall_cycles = stall_cycles + 1; end
+    @(posedge PCLK);
+    while (!PREADY && stall_cycles < 200) begin @(posedge PCLK); stall_cycles = stall_cycles + 1; end
     // NOTE: check/check_true name inputs are [511:0] = 64 chars max — longer
     // literals fail Verilator elaboration ("generates N bits ... doesn't fit").
     check_true(PREADY === 1'b1, "P17c colliding access completes (bounded stall, PREADY high)");
@@ -481,6 +492,7 @@ initial begin
     #1;
     PSEL    = 1'b0;
     PENABLE = 1'b0;
+    #1;   // let the combinational PREADY settle before P18 samples it
     $display("    P17: collision stalled %0d extra cycle(s) then completed, RTCDR=0x%08h",
              stall_cycles, rd_data);
 
@@ -660,6 +672,7 @@ initial begin
     // =========================================================================
     $display("\n─────────────────────────────────────");
     $display("Results: %0d PASSED, %0d FAILED", pass_count, fail_count);
+    $display("=== RTC: %0d PASSED, %0d FAILED ===", pass_count, fail_count);
     $display("─────────────────────────────────────");
 
     #100;
@@ -670,6 +683,7 @@ end
 initial begin
     #50_000_000;
     $display("WATCHDOG TIMEOUT - simulation hung");
+    $display("=== RTC: %0d PASSED, %0d FAILED (TIMEOUT) ===", pass_count, fail_count + 1);
     $finish;
 end
 

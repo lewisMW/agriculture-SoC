@@ -1,0 +1,57 @@
+SVA MUTATION REPORT (real PL031)
+Each assertion with one deliberate mutation; PROVEN = the target assertion fired.
+
+fifo_le_depth   a_count_le_depth             fifo    PROVEN       fired: a_count_le_depth, a_full_iff
+fifo_full       a_full_iff                   fifo    PROVEN       fired: a_full_iff
+fifo_empty      a_empty_iff                  fifo    PROVEN       fired: a_empty_iff
+fifo_ptr        a_ptr_count                  fifo    PROVEN       fired: a_ptr_count
+fifo_step       a_count_step                 fifo    PROVEN       fired: a_count_le_depth, a_count_step, a_ptr_count
+fifo_clear      a_clear                      fifo    PROVEN       fired: a_clear, a_ptr_count
+fifo_data       a_empty_data                 fifo    PROVEN       fired: a_empty_data
+fsm_en_bound    a_adc_en_bounded             fsm     PROVEN       fired: a_adc_en_bounded
+fsm_arc_tmo     a_arc_timeout                fsm     PROVEN       fired: a_arc_timeout
+fsm_full_wr     a_no_write_when_full         clo     PROVEN       fired: a_no_write_when_full
+fsm_wr_1cyc     a_write_one_cycle            fsm     PROVEN       fired: a_write_one_cycle
+fsm_en_states   a_adc_en_states              fsm     PROVEN       fired: a_adc_en_states
+fsm_arc_idle    a_arc_idle                   fsm     PROVEN       fired: a_arc_idle
+fsm_arc_check   a_arc_check                  fsm     PROVEN       fired: a_arc_check
+fsm_arc_enable  a_arc_enable                 fsm     PROVEN       fired: a_arc_enable
+fsm_arc_wstart  a_arc_wstart                 fsm     PROVEN       fired: a_arc_wstart
+fsm_arc_wdone   a_arc_wdone                  fsm     PROVEN       fired: a_arc_wdone
+fsm_arc_write   a_arc_write                  fsm     PROVEN       fired: a_arc_write
+fsm_arc_err     a_arc_err                    fsm     PROVEN       fired: a_arc_err
+fsm_tmo_quiet   a_timeout_not_quiet          fsm     PROVEN       fired: a_timeout_not_quiet
+fsm_err_rise    a_err_rise                   fsm     PROVEN       fired: a_err_rise
+apb_stall       a_stall_bounded              clo     PROVEN       fired: a_stall_bounded
+apb_en_sel      a_enable_needs_sel           clo     PROVEN       fired: a_enable_needs_sel
+apb_pslverr     a_no_pslverr                 clo     PROVEN       fired: a_no_pslverr
+apb_pready      a_pready_non_rtc             clo     PROVEN       fired: a_pready_non_rtc
+apb_prdata      a_prdata_idle_zero           clo     PROVEN       fired: a_prdata_idle_zero
+apb_reserved    a_reserved_reads_zero        gap     PROVEN       fired: a_reserved_reads_zero
+wrap_trig       a_manual_trig_pulse          clo     PROVEN       fired: a_manual_trig_pulse
+wrap_clear      a_fifo_clear_pulse           clo     PROVEN       fired: a_fifo_clear_pulse
+wrap_rd_en      a_fifo_rd_en_pulse           clo     PROVEN       fired: a_fifo_rd_en_pulse, a_no_pop_when_empty
+wrap_pop_empty  a_no_pop_when_empty          soak    PROVEN       fired: a_no_pop_when_empty
+wrap_capture    a_sample_capture             clo     PROVEN       fired: a_sample_capture
+wrap_rtccr      a_rtccr_never_cleared        gap     PROVEN       fired: a_rtccr_never_cleared
+wrap_status     a_status_reserved            clo     PROVEN       fired: a_status_reserved
+rtc_legal       a_legal_state                rtc     PROVEN       fired: a_legal_state
+rtc_trig_1cyc   a_trig_one_cycle             rtc     PROVEN       fired: a_trig_one_cycle, a_trig_source
+rtc_trig_src    a_trig_source                rtc     PROVEN       fired: a_trig_one_cycle, a_trig_source
+rtc_bus_excl    a_bus_exclusive              rtc     PROVEN       fired: a_bus_exclusive
+rtc_acc_setup   a_pl031_access_after_setup   rtc     PROVEN       fired: a_pl031_access_after_setup
+rtc_setup_acc   a_pl031_setup_then_access    rtc     PROVEN       fired: a_pl031_access_after_setup, a_pl031_setup_then_access
+rtc_wd_frozen   a_wd_frozen_paused           rtc     PROVEN       fired: a_wd_frozen_paused
+rtc_rearm_trig  a_rearm_no_trig              rtc     PROVEN       fired: a_rearm_no_trig, a_trig_source
+rtc_warm_clr    a_warm_arm_clears            rtc     PROVEN       fired: a_warm_arm_clears
+rtc_one_extra   a_arm_one_extra_write        rtc     PROVEN       fired: a_arm_one_extra_write
+rtc_npor_rearm  a_npor_rearm                 rtc     PROVEN       fired: a_npor_rearm
+rtc_npor_enable a_npor_enable                rtc     PROVEN       fired: a_npor_enable
+rtc_offset_armed a_offset_armed               rtc     PROVEN       fired: a_offset_armed
+rtc_setup_psel  a_setup_done_needs_psel      rtc     PROVEN       fired: a_setup_done_needs_psel
+sar_legal       a_legal_state                adccal  PROVEN       fired: a_legal_state
+sar_result      a_result_only_in_done        adccal  PROVEN       fired: a_result_only_in_done
+sar_valid       a_valid_falls                adccal  PROVEN       fired: a_valid_falls
+sar_clkc        a_clkc_gated                 adccal  PROVEN       fired: a_clkc_gated
+
+RESULT: 52/52 PROVEN

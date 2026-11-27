@@ -1,67 +1,89 @@
-VERILATOR = verilator
-TB_MODULE = adc_apb_wrapper_rev2_tb
+# -----------------------------------------------------------------------------
+# Wrapper/Makefile - sensing peripheral (adc_apb_wrapper_rev2) integration
+# benches: RTC controller + sampling FSM + SAR ADC + FIFO behind one APB slave.
+#
+#   make          adc_apb_wrapper_rev2_tb   directed
+#   make rand     adc_apb_wrapper_rand_tb   constrained-random APB traffic
+#   make sva      same as rand, with the bound SVA (--assert)
+#   make gap      sens_gap_tb               coverage-gap tests T1-T13 (+SVA)
+#   make clo      sens_closure_tb           closure tests WRP-1..5, ADC-6,
+#                                           RTC-2/3/4/7/10 at wrapper level (+SVA)
+#   make soak     sens_soak_tb              WRP-6: SEEDS seeds x >= 2000
+#                                           autonomous periods, random APB
+#                                           traffic, scoreboard, SVA
+#   make params   WRP-7: directed + gap with ADDR_WIDTH=12, DEFAULT_ALARM_OFFSET=1
+#   make adcdiv   ADC-6: closure bench at ADC_CLK_DIV = 1, 2, 8, 255 (slowest)
+#   make rob      ROB-1: illegal-state recovery (no coverage models bound)
+#   make xsafe    ROB-2: directed bench with randomised initial values, 5 seeds
+#
+#   STUB_RTC=1    PL031 stand-in (no ARM IP; NOT sign-off)
+# Explicit file lists - never glob (rev0/rev1 and other benches live here).
+# One core / BUILD_ROOT: see ../verif/block_tb.mk.
+# -----------------------------------------------------------------------------
+include ../verif/block_tb.mk
 
-# ARM PL031 RTC IP (needed by rtc_control_2). Set ARM_IP_LIBRARY_PATH in your env.
-rtc_ip = $(ARM_IP_LIBRARY_PATH)/PL031/PL031-r1p3-00rel0/PL031-BU-00000-r1p3-00rel0/PL031_VC/rtc_pl031/verilog/rtl_source
+DIR_FILES  = ./adc_apb_wrapper_rev2_tb.v $(SENS_DUT)
+RAND_FILES = ./adc_apb_wrapper_rand_tb.v $(SENS_DUT)
+GAP_FILES  = ./sens_gap_tb.sv $(SENS_DUT) $(SVA_FILE)
+CLO_FILES  = ./sens_closure_tb.sv $(SENS_DUT) $(SVA_FILE)
+SOAK_FILES = ./sens_soak_tb.sv $(SENS_DUT) $(SVA_FILE)
+ROB_FILES  = ./sens_rob_tb.sv $(SENS_DUT)
 
-# The SAR ADC: sar_adc + latch + sarlogic (synthesisable), with the
-# simulation-only nand2 cell model and behavioural sar_afe macro model.
-ADC_FILES = \
-    ../ADC/sar_adc.v \
-    ../ADC/sar_comp_latch.v \
-    ../../analog/cadence/sar_adc/sarlogic/functional/verilog.v \
-    ../ADC/sim/sky130_fd_sc_hd__nand2_1.v \
-    ../ADC/sim/sar_afe_model.v
+SEEDS     ?= 10
+SEED_LIST  = $(shell seq 1 $(SEEDS))
+ADC_DIVS  ?= 1 2 8 255
+X_SEEDS   ?= 1 2 3 4 5
 
-# Explicit file list — do NOT glob the sibling dirs (they contain rev0, *_old.v
-# and other testbenches that would collide with these modules).
-VERILOG_FILES = \
-    ./adc_apb_wrapper_rev2.v \
-    ./adc_apb_wrapper_rev2_tb.v \
-    ../FSM/wrapper_control_2.v \
-    ../FIFO/fifo_apb_adc.v \
-    $(ADC_FILES) \
-    ../Dummy/dummy_amux.v \
-    ../Dummy/dummy_pll.v \
-    ../RTC/rtc_control_2.v \
-    $(shell find $(rtc_ip) -type f -name "*.v")
-
-simulation_defs = -DSIMULATION
-VERILATOR_FLAGS = -Wno-fatal
-
-.PHONY: all clean
+.PHONY: all rand sva gap clo soak params adcdiv rob xsafe clean
 
 all:
-	$(VERILATOR) --cc --trace --exe --main $(VERILATOR_FLAGS) --top $(TB_MODULE) $(VERILOG_FILES) --timing $(simulation_defs) -I$(rtc_ip)
-	$(MAKE) -C obj_dir -f V$(TB_MODULE).mk
-	./obj_dir/V$(TB_MODULE)
-
-# Constrained-random integration test (directed phases + random APB traffic +
-# functional coverage) against the autonomous RTC.
-RAND_MODULE = adc_apb_wrapper_rand_tb
-RAND_FILES = \
-    ./adc_apb_wrapper_rev2.v \
-    ./adc_apb_wrapper_rand_tb.v \
-    ../FSM/wrapper_control_2.v \
-    ../FIFO/fifo_apb_adc.v \
-    $(ADC_FILES) \
-    ../Dummy/dummy_amux.v \
-    ../Dummy/dummy_pll.v \
-    ../RTC/rtc_control_2.v \
-    $(shell find $(rtc_ip) -type f -name "*.v")
+	$(call tb_run,wrap,adc_apb_wrapper_rev2_tb,$(DIR_FILES),$(RTC_INC) --trace,)
 
 rand:
-	$(VERILATOR) --cc --trace --exe --main $(VERILATOR_FLAGS) --top $(RAND_MODULE) $(RAND_FILES) --timing $(simulation_defs) -I$(rtc_ip)
-	$(MAKE) -C obj_dir -f V$(RAND_MODULE).mk
-	./obj_dir/V$(RAND_MODULE)
-
-# Same random test, but with the bound SVA sign-off assertions enabled.
-SVA_FILE = ../verif/sensing_assertions.sv
+	$(call tb_run,wrap_rand,adc_apb_wrapper_rand_tb,$(RAND_FILES),$(RTC_INC) --trace,)
 
 sva:
-	$(VERILATOR) --cc --trace --exe --main --assert $(VERILATOR_FLAGS) --top $(RAND_MODULE) $(RAND_FILES) $(SVA_FILE) --timing $(simulation_defs) -I$(rtc_ip)
-	$(MAKE) -C obj_dir -f V$(RAND_MODULE).mk
-	./obj_dir/V$(RAND_MODULE)
+	$(call tb_run,wrap_sva,adc_apb_wrapper_rand_tb,$(RAND_FILES) $(SVA_FILE),$(RTC_INC) --assert,)
+
+gap:
+	$(call tb_run,wrap_gap,sens_gap_tb,$(GAP_FILES),$(RTC_INC) --assert,)
+
+clo:
+	$(call tb_run,wrap_clo,sens_closure_tb,$(CLO_FILES),$(RTC_INC) --assert,)
+
+# One build, SEEDS runs.
+soak:
+	@mkdir -p $(OBJ)
+	$(RUN_LIMITED) $(VERILATOR) $(VL_COMMON) $(TB_DEFS) $(RTC_INC) --assert --Mdir $(OBJ)/obj_wrap_soak \
+	    --top sens_soak_tb -o Vwrap_soak $(SOAK_FILES) > build_wrap_soak.log 2>&1 \
+	    || { tail -30 build_wrap_soak.log; false; }
+	@for s in $(SEED_LIST); do $(OBJ)/obj_wrap_soak/Vwrap_soak +seed=$$s || exit 1; done
+
+# WRP-7: the other value of each wrapper parameter (the default builds above
+# are ADDR_WIDTH 12 / 16 with DEFAULT_ALARM_OFFSET 5).
+params:
+	$(call tb_run,wrap_p16,adc_apb_wrapper_rev2_tb,$(DIR_FILES),$(RTC_INC) -GADDR_WIDTH=16 -GDEFAULT_ALARM_OFFSET=1,)
+	$(call tb_run,wrap_gap_p12,sens_gap_tb,$(GAP_FILES),$(RTC_INC) --assert -GAW=12 -GDEF_OFF=1,)
+
+# ADC-6: every ADC clock divider, up to the slowest one the conversion timeout
+# is sized for (255): no good conversion may time out there either.
+adcdiv:
+	$(foreach d,$(ADC_DIVS),$(call tb_run,wrap_clo_div$(d),sens_closure_tb,$(CLO_FILES),$(RTC_INC) --assert -GADC_CLK_DIV=$(d),+adc_only)$(newline))
+
+rob:
+	$(call tb_run,wrap_rob,sens_rob_tb,$(ROB_FILES),$(RTC_INC),)
+
+# ROB-2: no dependence on uninitialised state.
+xsafe:
+	@mkdir -p $(OBJ)
+	$(RUN_LIMITED) $(VERILATOR) $(VL_COMMON) $(TB_DEFS) $(RTC_INC) --x-initial unique --x-assign unique \
+	    --Mdir $(OBJ)/obj_wrap_x --top adc_apb_wrapper_rev2_tb -o Vwrap_x $(DIR_FILES) > build_wrap_x.log 2>&1 \
+	    || { tail -30 build_wrap_x.log; false; }
+	@for s in $(X_SEEDS); do \
+	    echo "--- xsafe seed $$s ---"; \
+	    $(OBJ)/obj_wrap_x/Vwrap_x +verilator+rand+reset+2 +verilator+seed+$$s | grep -E "FAIL|TIMEOUT|===" \
+	        | sed "s/=== WRAPPER:/=== WRAPPER-XSAFE[seed$$s]:/"; \
+	done
 
 clean:
-	rm -rf obj_dir waveform.vcd
+	rm -rf $(OBJ)/obj_wrap* obj_dir build_*.log waveform.vcd *.vcd

@@ -1,36 +1,21 @@
-# VERILATOR = verilator
-# TOP_MODULE = fifo_apb_adc_tb
+# -----------------------------------------------------------------------------
+# FIFO/Makefile - fifo_apb_adc unit benches (no ARM IP needed).
+#   make        fifo_apb_adc_tb       original smoke bench
+#   make rand   fifo_apb_adc_rand_tb  reference model + invariants + random
+# Explicit file lists; one core / BUILD_ROOT: see ../verif/block_tb.mk.
+# -----------------------------------------------------------------------------
+include ../verif/block_tb.mk
 
-# all: sim
+VERILOG_FILES = ./fifo_apb_adc_tb.v ./fifo_apb_adc.v
+RAND_FILES    = ./fifo_apb_adc_rand_tb.v ./fifo_apb_adc.v
 
-# sim:
-# 	verilator --cc --exe --trace --timing sim_main.cpp fifo_apb_adc_tb.v fifo_apb_adc.v --build
-
-# 	make -C obj_dir -f V$(TOP_MODULE).mk
-# 	./obj_dir/V$(TOP_MODULE)
-
-# clean:
-# 	rm -rf obj_dir waveform.vcd
-VERILATOR = verilator
-TB_MODULE = fifo_apb_adc_tb
-
-VERILOG_FILES = \
-    ./fifo_apb_adc_tb.v \
-    ./fifo_apb_adc.v
+.PHONY: all rand clean
 
 all:
-	$(VERILATOR) --Wno-fatal --trace --exe --main --top $(TB_MODULE) $(VERILOG_FILES) --timing;
-	$(MAKE) -C obj_dir -f V$(TB_MODULE).mk;
-	./obj_dir/V$(TB_MODULE);
-
-# Rigorous self-checking unit test (reference model + invariants + random)
-RAND_MODULE = fifo_apb_adc_rand_tb
-RAND_FILES  = ./fifo_apb_adc_rand_tb.v ./fifo_apb_adc.v
+	$(call tb_run,fifo,fifo_apb_adc_tb,$(VERILOG_FILES),--trace,)
 
 rand:
-	$(VERILATOR) --Wno-fatal --trace --exe --main --top $(RAND_MODULE) $(RAND_FILES) --timing;
-	$(MAKE) -C obj_dir -f V$(RAND_MODULE).mk;
-	./obj_dir/V$(RAND_MODULE);
+	$(call tb_run,fifo_rand,fifo_apb_adc_rand_tb,$(RAND_FILES),--trace,)
 
 clean:
-	rm -rf obj_dir waveform.vcd
+	rm -rf $(OBJ)/obj_fifo* obj_dir build_*.log waveform.vcd

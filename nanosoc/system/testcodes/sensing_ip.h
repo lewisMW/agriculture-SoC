@@ -22,7 +22,7 @@ typedef struct
     volatile uint32_t rtc_dr;            // 0x200 - RTC Data Register
     volatile uint32_t rtc_mr;            // 0x204 - RTC Match Register
     volatile uint32_t rtc_lr;            // 0x208 - RTC Load Register
-    volatile uint32_t rtc_cr;            // 0x20C - RTC Control Register
+    volatile uint32_t rtc_cr;            // 0x20C - RTC Control Register: start is set-only here (a write of 0 is ignored, FIX-3)
     volatile uint32_t rtc_imsc;          // 0x210 - RTC Interrupt Mask Set or Clear
     volatile uint32_t rtc_ris;           // 0x214 - RTC Raw Interrupt Status
     volatile uint32_t rtc_mis;           // 0x218 - RTC Masked Interrupt Status
@@ -41,6 +41,7 @@ typedef struct
 #define STATUS_ADC_SHIFT      2
 #define STATUS_FIFO_DROP_MASK 0x10   // [4] last sample dropped (FIFO was full)
 #define STATUS_RTC_INTR_MASK  0x20   // [5] RTC interrupt pending
+#define STATUS_ADC_TIMEOUT_MASK 0x40 // [6] last conversion timed out (FIX-2); clears on the next written sample
 
 #define STATUS_FIFO_EMPTY     0x00
 #define STATUS_FIFO_READY     0x01

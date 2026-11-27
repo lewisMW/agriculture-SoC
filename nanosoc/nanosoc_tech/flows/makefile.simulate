@@ -56,7 +56,14 @@ ifdef AMS
 endif
 
 # Icarus Verilog options
-IVERILOG_OPTIONS = -g2005-sv -DVCD_SIM
+# VCD dumping follows VCD_SIM (default no) instead of being forced on: the
+# hardcoded -DVCD_SIM dumped a multi-hundred-MB waves.vcd every run and made
+# iverilog crawl on /mnt/c. (NANOSOC_DEFINES alone doesn't reach iverilog — the
+# sim flist doesn't include gen_defines.v.) Use VCD_SIM=yes for sim_iverilog.
+IVERILOG_OPTIONS = -g2005-sv
+ifeq ($(VCD_SIM),yes)
+IVERILOG_OPTIONS += -DVCD_SIM
+endif
 DEFINES_VC_IVERILOG=$(subst +define+, -D, $(DEFINES_VC))
 
 
@@ -209,8 +216,12 @@ lib_mti :
 compile_iverilog: bootrom gen_defs flist_vfiles_nanosoc
 	cd $(SIM_DIR); iverilog $(IVERILOG_OPTIONS) $(DEFINES_VC_IVERILOG) -o nanosoc_chip_pads -c tbench.vc
 
+# -n: $stop acts as $finish. nanosoc_tb ends with $stop, which in Icarus drops
+# into vvp's interactive prompt and waits on stdin forever under a script.
+# Override with VVP_FLAGS= to get the interactive prompt back.
+VVP_FLAGS ?= -n
 run_iverilog: code compile_iverilog
-	cd $(SIM_DIR); vvp -l $(SIM_DIR)/logs/run_$(TESTNAME).log nanosoc_chip_pads;
+	cd $(SIM_DIR); vvp $(VVP_FLAGS) -l $(SIM_DIR)/logs/run_$(TESTNAME).log nanosoc_chip_pads;
 
 sim_iverilog: run_iverilog
 	cd $(SIM_DIR); gtkwave waves.vcd

@@ -190,7 +190,7 @@ adc_apb_wrapper_rev2 #(
    .CLK1HZ(clk1hz),      // ~1 Hz RTC tick (divided from HCLK)
    .RTC_PRESCALE(rtc_prescale),  // half period of that tick, in clock cycles
    .PRESETn(HRESETn),
-   .nPOR(nPOR),          // power-on reset (survives warm HRESETn; keeps RTC time)
+   .nPOR(nPOR),          // power-on reset; = HRESETn here (see above): RTC time does NOT survive a system reset
    // Address and Control
    .PSEL(PSEL),
    .PADDR(PADDR),
