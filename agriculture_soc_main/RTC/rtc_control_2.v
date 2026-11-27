@@ -329,6 +329,7 @@ wire bus_free   = (((state == S_IDLE) && !nrtcrst_pclk) || (state == S_WAITING))
 // Before, the grant was lost: the PL031 saw a SETUP with no ACCESS, and ~13
 // cycles later an ACCESS with no SETUP (bug RTC-RSTREL, found by the WRP-6
 // soak, regression RTC/tb_rtc_closure.sv RTC-10b).
+reg  pt_setup_done;   // declared before its first use (see below)
 wire grant = PSEL & (bus_free | (pt_setup_done & ~fsm_psel));   // external owns the RTC bus this cycle
 wire ext_sel = grant;
 
@@ -337,7 +338,6 @@ wire ext_sel = grant;
 // the bus frees, so on the first granted cycle we force an RTC SETUP (PENABLE
 // low) regardless of the external PENABLE, then drive ACCESS the next cycle —
 // the RTC always sees a protocol-correct SETUP -> ACCESS.
-reg  pt_setup_done;
 wire ext_penable = PENABLE & pt_setup_done;         // RTC ACCESS only after SETUP
 wire ext_done    = grant & pt_setup_done & PENABLE; // transfer completes this cycle
 
