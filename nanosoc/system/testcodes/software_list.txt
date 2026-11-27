@@ -10,3 +10,4 @@ sensing_reset_test
 sensing_cal_test
 clock_ctrl_test
 sensing_irq_test
+rtc_warm_reset_test

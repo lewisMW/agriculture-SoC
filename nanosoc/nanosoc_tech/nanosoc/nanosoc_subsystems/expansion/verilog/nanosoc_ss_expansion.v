@@ -28,6 +28,7 @@ module nanosoc_ss_expansion #(
     // System Clocks and Resets
     input  wire                   SYS_HCLK,
     input  wire                   SYS_HRESETn,
+    input  wire                   SYS_PORESETn,   // Power-on reset, for the expansion region
     
     // Expansion Region AHB Port
     input  wire                   EXP_HSEL,
@@ -139,6 +140,7 @@ module nanosoc_ss_expansion #(
         // Clock and Reset
         .HCLK(SYS_HCLK),
         .HRESETn(SYS_HRESETn),
+        .PORESETn(SYS_PORESETn),
 
         // AHB Subordinate Port
         .HSEL(EXP_HSEL),
