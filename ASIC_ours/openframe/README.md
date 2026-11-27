@@ -1337,6 +1337,37 @@ and the firmware test passing.
   99 minutes each): the extraction of the new array is larger (18.7k
   resistors, from 10.2k).
 
+## After the merge into main (28 Nov 2026)
+
+Every result above is for the layout built on 19 Nov with the ADC macro of
+20 Nov. This work was then rebased onto main, which had taken other work in the
+meantime:
+
+| Now on main | In the signed-off layout |
+| --- | --- |
+| Ten fixes to the sensing peripheral's RTL, a conversion timeout (`status[6]`), byte strobes on the clock registers and `irq_enable` (#145, #146) | no |
+| A new power plan for the ADC macro's supplies: 20 um rings for `vdda1`, `vssa1` and the reference, none for `vccd1`, and the macro's `vdd` pin no longer wired (#142) | no |
+| A scan-chain script, `Cadence/scripts/dft_setup.tcl`, off by default (`DFT 0`) | no |
+| The new capacitor array (#135) | yes, since 20 Nov |
+
+- **Checked on the rebased RTL:** the 16 firmware tests pass in RTL simulation
+  (Xcelium), `rtc_warm_reset_test` and `sensing_reset_test` among them. The
+  peripheral's block and wrapper benches (`make verify` in
+  `agriculture_soc_main`) pass apart from its two open ADC items; its two UVM
+  benches were not run.
+- **Not run again:** synthesis, place and route, the sign-off, gate-level
+  simulation, the mixed-signal runs, ChipFoundry's checks. main's flow does not
+  reproduce the layout above: its power plan expects an ADC macro without a
+  `vdd` pin.
+- **Where the two lines of work met:** `rtc_prescale` keeps its reset by the
+  power-on reset alone and takes the byte strobes; `sensing_reset_test` now
+  expects it to keep its value through a system reset.
+- `rtc_control_2.v` read `pt_setup_done` above its declaration, which Xcelium
+  and Genus reject (Verilator and Icarus do not). The declaration moved up in
+  #145.
+
+`TODO.md` has the rebuild and what has to be settled before it.
+
 ## Known gaps
 
 `TODO.md` beside this file is the list of open items; the ones below are the

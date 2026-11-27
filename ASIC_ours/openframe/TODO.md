@@ -2,8 +2,34 @@
 
 Open items found while putting nanosoc in the OpenFrame wrapper and checking it
 (`README.md` has the background for each). Recorded 17 Nov 2026, last worked
-through 20 Nov. Tick an item when it is settled, or delete it with a line in the
+through 20 Nov; the first section was added on 28 Nov. Tick an item when it is settled, or delete it with a line in the
 commit message saying why. A ticked item says in one line what settled it.
+
+## Since the last results (28 Nov)
+
+The results in `README.md` are for the layout built on 19 Nov, with the ADC
+macro swapped on 20 Nov. main has since taken work that is not in that layout
+(README, "After the merge into main").
+
+- [ ] **Rebuild on main as it is now, and run the whole sign-off again.** Not
+      in the signed-off layout: the fixes to the sensing peripheral's RTL, its
+      conversion timeout and the byte strobes on its clock registers (#145,
+      #146), and the new power plan for the ADC macro's supplies (#142).
+- [ ] **The ADC macro's `vdd` pin.** main's power plan no longer wires it,
+      expecting a macro without it (comparator on `vdda`, as in #135's `sar`).
+      Until the macro changes, main's flow leaves that pin open. Settle it
+      with the `sar` item under "The ADC macro".
+- [ ] **Scan chain.** `Cadence/scripts/dft_setup.tcl` stops in Genus (DFT-320
+      at `define_scan_chain`), so `DFT` is 0 in `config.tcl`. A scan chain
+      changes the netlist and puts test functions on some pads.
+- [ ] **The two open items in the ADC's control logic** from the peripheral's
+      verification (`agriculture_soc_main/verif/cov/OPEN_BUGS_REPORT.md`):
+      calibration runs the trim to a rail (ADC-CAL), and `clkc` has an
+      incomplete sensitivity list, which matters in RTL simulation only
+      (ADC-CLKC).
+- [ ] **The switch on the `bootstrap-sw` branch changed again on 24 Nov**
+      (commit 086c4aa). The macro has the switch of 15 Nov (7c1cf85). Compare
+      the two layouts and rebuild the macro if the geometry differs.
 
 ## Decisions that change the chip
 
