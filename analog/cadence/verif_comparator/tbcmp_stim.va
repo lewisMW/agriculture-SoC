@@ -1,0 +1,70 @@
+// tbcmp_stim: clock, differential input and trim stimulus for tb_comparator_parasitic.
+// Evaluate = clk high, reset (precharge) = clk low. Inputs only change during reset.
+//   cycle k: rising edge at t0 + k*T, falling edge at t0 + (k+duty)*T, with t0 = T/2.
+// mode 0: vin = vd                          (static)
+// mode 1: vin = vstart + vstep*floor(k/nrep) (staircase; offset, noise S-curve)
+// mode 2: vin = +vd / -vd alternating        (pos/neg decisions)
+// mode 3: 4-cycle groups [+vagg, test, -vagg, test], test = vstart + vstep*j (history)
+`include "constants.vams"
+`include "disciplines.vams"
+
+module tbcmp_stim (clk, vinp, vinn, ta, tb);
+    output clk, vinp, vinn;
+    output [4:0] ta, tb;
+    electrical clk, vinp, vinn;
+    electrical [4:0] ta, tb;
+
+    parameter real    vcc    = 1.8;
+    parameter real    vcm    = 0.9;
+    parameter real    fclk   = 1e6;
+    parameter real    duty   = 0.5;
+    parameter real    tr     = 100p;
+    parameter real    tf     = 100p;
+    parameter integer mode   = 0;
+    parameter real    vd     = 10m;
+    parameter real    vstart = -20m;
+    parameter real    vstep  = 1m;
+    parameter integer nrep   = 1;
+    parameter real    vagg   = 300m;
+    parameter integer trim_a = 8;
+    parameter integer trim_b = 8;
+
+    real T, t0, tset, vin, sgn;
+    integer k, c, j, p;
+    genvar i;
+
+    analog begin
+        @(initial_step) begin
+            T    = 1.0 / fclk;
+            t0   = 0.5 * T;
+            tset = 0.25 * (1.0 - duty) * T;
+            k    = 0;
+            c    = 0;
+        end
+
+        @(timer(t0, T)) c = 1;
+        @(timer(t0 + duty * T, T)) begin
+            c = 0;
+            k = k + 1;
+        end
+
+        j = k / 4;
+        p = k % 4;
+        sgn = (k % 2 == 0) ? 1.0 : -1.0;
+        case (mode)
+            1:       vin = vstart + vstep * (k / nrep);
+            2:       vin = sgn * vd;
+            3:       vin = (p == 0) ? vagg : ((p == 2) ? -vagg : (vstart + vstep * j));
+            default: vin = vd;
+        endcase
+
+        V(clk)  <+ transition(c * vcc, 0, tr, tf);
+        V(vinp) <+ transition(vcm + 0.5 * vin, tset, 1n);
+        V(vinn) <+ transition(vcm - 0.5 * vin, tset, 1n);
+
+        for (i = 0; i < 5; i = i + 1) begin
+            V(ta[i]) <+ ((trim_a >> i) & 1) ? vcc : 0.0;
+            V(tb[i]) <+ ((trim_b >> i) & 1) ? vcc : 0.0;
+        end
+    end
+endmodule

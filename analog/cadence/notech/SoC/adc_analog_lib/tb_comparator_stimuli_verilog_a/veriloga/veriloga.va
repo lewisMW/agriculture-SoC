@@ -1,0 +1,31 @@
+// VerilogA for adc_analog_lib, tb_comparator_stimuli_verilog_a, veriloga
+
+`include "constants.vams"
+`include "disciplines.vams"
+
+module tb_comparator_stimuli (trima, trimb, clk);
+    output [4:0] trima, trimb;
+    output clk;
+    electrical [4:0] trima, trimb;
+    electrical clk;
+
+    parameter real freq_s = 100e3;
+    parameter integer trimp = 8;
+    parameter integer trimn = 8;
+    parameter real vdd = 1.8;
+    parameter real tr = 100p;
+
+    integer c;
+    genvar i;
+
+    analog begin
+        @(initial_step) c = 0;
+        @(timer(0.5/freq_s, 0.5/freq_s)) c = !c;
+        V(clk) <+ transition(c ? vdd : 0.0, 0, tr);
+
+        for (i = 0; i < 5; i = i + 1) begin
+            V(trima[i]) <+ ((trimp >> i) & 1) ? vdd : 0.0;
+            V(trimb[i]) <+ ((trimn >> i) & 1) ? vdd : 0.0;
+        end
+    end
+endmodule
